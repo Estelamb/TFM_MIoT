@@ -1,0 +1,8 @@
+aiomqtt==2.3.0
+httpx==0.27.2
+numpy
+psutil==6.0.0
+# Según hardware:
+# hailo:      hailo_platform (incluido en HailoRT SDK)
+# rpi tflite: tflite-runtime
+# rpi ai cam: picamera2

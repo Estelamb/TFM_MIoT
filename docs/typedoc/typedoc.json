@@ -1,0 +1,21 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["../../frontend/lib", "../../frontend/hooks", "../../frontend/components"],
+  "entryPointStrategy": "expand",
+  "out": "../../docs/typedoc/output",
+  "name": "AURA Frontend",
+  "readme": "../../README.md",
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "categoryOrder": ["lib", "hooks", "components", "*"],
+  "plugin": [],
+  "exclude": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "navigationLinks": {
+    "Platform Docs": "../sphinx/build/html/index.html"
+  }
+}

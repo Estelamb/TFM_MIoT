@@ -1,0 +1,39 @@
+# Run from project root: docker compose -f docker/api-gateway.yml up -d
+# Requiere todos los servicios gRPC corriendo (ver puertos en .env o ajustar variables)
+networks:
+  aura-net:
+    driver: bridge
+volumes:
+  minio-data:
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: aura-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-aura}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-aura_dev}
+    volumes: [minio-data:/data]
+    ports: ["9000:9000", "9001:9001"]
+    networks: [aura-net]
+  api-gateway:
+    build: { context: .., dockerfile: services/api-gateway/Dockerfile }
+    container_name: aura-api-gateway
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-dev-insecure-change-me}
+      DEVICE_SERVICE_GRPC: ${DEVICE_SERVICE_GRPC:-host.docker.internal:50051}
+      AI_SERVICE_GRPC: ${AI_SERVICE_GRPC:-host.docker.internal:50052}
+      SCRIPT_SERVICE_GRPC: ${SCRIPT_SERVICE_GRPC:-host.docker.internal:50053}
+      COMPILATION_SERVICE_GRPC: ${COMPILATION_SERVICE_GRPC:-host.docker.internal:50054}
+      DEPLOYMENT_SERVICE_GRPC: ${DEPLOYMENT_SERVICE_GRPC:-host.docker.internal:50055}
+      MONITORING_SERVICE_GRPC: ${MONITORING_SERVICE_GRPC:-host.docker.internal:50056}
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-aura}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-aura_dev}
+      MINIO_SECURE: "false"
+      LOG_LEVEL: DEBUG
+    ports: ["8000:8000"]
+    networks: [aura-net]
+    volumes: [../services/api-gateway/app:/app/app, ./shared:/app/shared]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

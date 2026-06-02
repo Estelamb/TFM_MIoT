@@ -1,0 +1,18 @@
+# Run from project root: docker compose -f docker/frontend.yml up -d
+# Requiere que el api-gateway esté corriendo en localhost:8000
+networks:
+  aura-net:
+    driver: bridge
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: aura-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://host.docker.internal:8000
+    ports:
+      - "3000:3000"
+    networks: [aura-net]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

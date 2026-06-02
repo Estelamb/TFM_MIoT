@@ -1,3 +1,20 @@
-__pycache__
-.vscode
-.venv
+.env
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+
+
+shared/proto_gen/__pycache__/
+*.egg-info/
+.DS_Store
+/tmp/aura-compilation/
+
+.vscode/
+.venv/
+.venv_ubuntu/

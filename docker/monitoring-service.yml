@@ -1,0 +1,39 @@
+# Run from project root: docker compose -f docker/monitoring-service.yml up -d
+networks:
+  aura-net:
+    driver: bridge
+volumes:
+  mongo-data:
+  mosquitto-data:
+services:
+  mongodb:
+    image: mongo:7
+    container_name: aura-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${POSTGRES_USER:-aura}
+      MONGO_INITDB_ROOT_PASSWORD: ${POSTGRES_PASSWORD:-aura_dev}
+    volumes: [mongo-data:/data/db]
+    ports: ["27017:27017"]
+    networks: [aura-net]
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: aura-mosquitto
+    volumes:
+      - ../infra/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto-data:/mosquitto/data
+    ports: ["1883:1883"]
+    networks: [aura-net]
+  monitoring-service:
+    build: { context: .., dockerfile: services/monitoring-service/Dockerfile }
+    container_name: aura-monitoring-service
+    depends_on: [mongodb, mosquitto]
+    environment:
+      MONGO_URI: mongodb://${POSTGRES_USER:-aura}:${POSTGRES_PASSWORD:-aura_dev}@mongodb:27017/aura?authSource=admin
+      MONGO_DB: aura
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
+      PROMETHEUS_PORT: 9100
+      LOG_LEVEL: DEBUG
+    ports: ["50056:50056", "9100:9100"]
+    networks: [aura-net]
+    volumes: [../services/monitoring-service/app:/app/app, ./shared:/app/shared]
