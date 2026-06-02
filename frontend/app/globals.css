@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-100 dark:bg-gray-950 text-slate-800 dark:text-gray-200 antialiased;
+  }
+}
+
+/* Hide scrollbar for the carousel */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Filtro para convertir mapas claros detallados en tácticos oscuros */
+.dark-tactical-tiles {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(105%);
+}
+
+/* Soft matte dot grid */
+.dot-grid {
+  background-image: radial-gradient(theme("colors.slate.300") 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Keep the dark mode subtle too */
+.dark .dot-grid {
+  background-image: radial-gradient(theme("colors.gray.800") 1px, transparent 1px);
+}

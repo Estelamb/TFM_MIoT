@@ -1,0 +1,462 @@
+"use client";
+
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getDevices, createDevice, deleteDevice, HARDWARE_TYPES } from "@/lib/api";
+import { useDataMode } from "@/hooks/useDataMode";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Input, Select } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
+import { Modal } from "@/components/ui/Modal";
+import { HW_LABELS } from "@/lib/utils";
+import { Cpu, Plus, Trash2, Zap, Radio, Layers, Server, Check, Info } from "lucide-react";
+
+type TabType = "devices" | "architectures" | "sensors" | "actuators" | "nodes";
+
+const HW_OPTIONS = HARDWARE_TYPES.map(v => ({ value: v, label: HW_LABELS[v] || v }));
+
+export default function DevicesPage() {
+  const qc = useQueryClient();
+  const { mode, demoData } = useDataMode();
+  const isDemo = mode === "demo";
+
+  const [activeTab, setActiveTab] = useState<TabType>("devices");
+  const [openRegisterDevice, setOpenRegisterDevice] = useState(false);
+  const [openRegisterComponent, setOpenRegisterComponent] = useState(false);
+  const [selectedDevice, setSelectedDevice] = useState<any>(null);
+  const [componentName, setComponentName] = useState("");
+
+  const [deviceForm, setDeviceForm] = useState({
+    name: "",
+    hardware_type: "hailo8",
+    architecture_id: "",
+    selected_sensors: [] as string[],
+    selected_actuators: [] as string[],
+    selected_nodes: [] as string[],
+  });
+
+  const { data: realDevices = [], isLoading } = useQuery({
+    queryKey: ["devices"],
+    queryFn: getDevices,
+  });
+
+  const devices = isDemo ? demoData.devices : realDevices;
+
+  const globalArchitectures = isDemo ? demoData.architectures : [];
+  const globalSensors       = isDemo ? demoData.sensors : [];
+  const globalActuators     = isDemo ? demoData.actuators : [];
+  const globalNodes         = isDemo ? demoData.nodes : [];
+
+  const registerDevice = useMutation({
+    mutationFn: () =>
+      createDevice({
+        name: deviceForm.name,
+        hardware_type: deviceForm.hardware_type,
+        description: deviceForm.architecture_id || undefined,
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["devices"] });
+      setOpenRegisterDevice(false);
+      setDeviceForm({ name: "", hardware_type: "hailo8", architecture_id: "", selected_sensors: [], selected_actuators: [], selected_nodes: [] });
+    },
+  });
+
+  const removeDevice = useMutation({
+    mutationFn: (id: string) => deleteDevice(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["devices"] }),
+  });
+
+  const toggleFormArray = (
+    field: "selected_sensors" | "selected_actuators" | "selected_nodes",
+    value: string
+  ) => {
+    setDeviceForm(prev => ({
+      ...prev,
+      [field]: prev[field].includes(value)
+        ? prev[field].filter(item => item !== value)
+        : [...prev[field], value],
+    }));
+  };
+
+  const PoCNotice = ({ feature }: { feature: string }) => (
+    <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl">
+      <Info size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
+      <div>
+        <p className="text-sm font-semibold text-amber-800 dark:text-amber-400">Not Available in this PoC</p>
+        <p className="text-xs text-amber-700 dark:text-amber-500 mt-0.5">
+          {feature} management is planned for a future iteration. Switch to Demo Mode to explore the UI with mock data.
+        </p>
+      </div>
+    </div>
+  );
+
+  const EmptySlotCard = ({
+    icon: Icon, title, description, actionLabel, onAction,
+  }: { icon: any; title: string; description: string; actionLabel: string; onAction: () => void }) => (
+    <Card className="border-dashed border-2 bg-transparent shadow-none opacity-70 py-8">
+      <div className="flex flex-col items-center text-center max-w-sm mx-auto space-y-3">
+        <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+          <Icon size={24} className="text-gray-400" />
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-gray-700 dark:text-gray-300">{title}</h3>
+          <p className="text-xs text-gray-400 mt-1">{description}</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={onAction} className="gap-2">
+          <Plus size={14} /> {actionLabel}
+        </Button>
+      </div>
+    </Card>
+  );
+
+  return (
+    <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-fade-in px-4 sm:px-6 lg:px-12 py-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2">
+            Infrastructure Manager
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Orchestrate your edge gateways, structural nodes, and modular peripheral devices.
+          </p>
+        </div>
+        {activeTab === "devices" ? (
+          <Button onClick={() => setOpenRegisterDevice(true)} className="gap-2 shrink-0">
+            <Plus size={16} /> Register Device
+          </Button>
+        ) : (
+          <Button onClick={() => setOpenRegisterComponent(true)} className="gap-2 shrink-0 capitalize">
+            <Plus size={16} /> Register {activeTab.slice(0, -1)}
+          </Button>
+        )}
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 dark:border-gray-800 gap-2 overflow-x-auto pb-px">
+        {([
+          { id: "devices",       label: "IoT Edge Devices",       icon: Cpu },
+          { id: "architectures", label: "Hardware Architectures",  icon: Layers },
+          { id: "sensors",       label: "Sensors Catalog",         icon: Radio },
+          { id: "actuators",     label: "Actuators Catalog",       icon: Zap },
+          { id: "nodes",         label: "Infrastructure Nodes",    icon: Server },
+        ] as const).map(tab => {
+          const TabIcon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-all whitespace-nowrap ${
+                isActive
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400 font-bold"
+                  : "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              }`}
+            >
+              <TabIcon size={16} />
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* TAB: DEVICES */}
+      {activeTab === "devices" && (
+        <div className="space-y-4">
+          {isLoading && !isDemo ? (
+            <div className="text-center py-10 text-gray-500">Loading devices...</div>
+          ) : devices.length === 0 ? (
+            <EmptySlotCard
+              icon={Cpu}
+              title="Empty Device Topology"
+              description="No edge gateways are registered yet."
+              actionLabel="Register First Gateway"
+              onAction={() => setOpenRegisterDevice(true)}
+            />
+          ) : (
+            <div className="grid gap-4">
+              {devices.map((d: any) => (
+                <Card key={d.id} className="p-5 flex items-center justify-between hover:border-blue-500 transition-all">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-50 dark:bg-gray-800 rounded-xl">
+                      <Cpu size={22} className="text-blue-500" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-lg">{d.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="default">{HW_LABELS[d.hardware_type] || d.hardware_type}</Badge>
+                        <span className="text-xs text-gray-400 font-mono">{d.id}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedDevice(d)}>
+                      Specs & Stack
+                    </Button>
+                    <button
+                      onClick={() => removeDevice.mutate(d.id)}
+                      className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: ARCHITECTURES */}
+      {activeTab === "architectures" && (
+        <div className="space-y-4">
+          {!isDemo && <PoCNotice feature="Hardware architecture" />}
+          {globalArchitectures.length === 0 ? (
+            <EmptySlotCard
+              icon={Layers}
+              title="No Base Architectures"
+              description="Register standardized hardware environments (e.g., Raspberry Pi, Jetson Boards)."
+              actionLabel="Add Architecture Definition"
+              onAction={() => setOpenRegisterComponent(true)}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {globalArchitectures.map((arch: string) => (
+                <Card key={arch} className="p-5 border-l-4 border-l-blue-500 flex items-center justify-between">
+                  <span className="font-bold text-gray-800 dark:text-gray-200">{arch}</span>
+                  <Badge variant="default">Hardware Base</Badge>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: SENSORS */}
+      {activeTab === "sensors" && (
+        <div className="space-y-4">
+          {!isDemo && <PoCNotice feature="Sensor catalog" />}
+          {globalSensors.length === 0 ? (
+            <EmptySlotCard
+              icon={Radio}
+              title="No Registered Sensors"
+              description="Define reusable peripheral entry nodes or cameras."
+              actionLabel="Add Sensor Layer"
+              onAction={() => setOpenRegisterComponent(true)}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {globalSensors.map((sensor: string) => (
+                <Card key={sensor} className="p-5 border-l-4 border-l-emerald-500 flex items-center justify-between">
+                  <span className="font-bold text-gray-800 dark:text-gray-200">{sensor}</span>
+                  <Badge variant="success">Input Peripheral</Badge>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: ACTUATORS */}
+      {activeTab === "actuators" && (
+        <div className="space-y-4">
+          {!isDemo && <PoCNotice feature="Actuator catalog" />}
+          {globalActuators.length === 0 ? (
+            <EmptySlotCard
+              icon={Zap}
+              title="No Registered Actuators"
+              description="Define functional output layers or execution hardware components."
+              actionLabel="Add Actuator Layer"
+              onAction={() => setOpenRegisterComponent(true)}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {globalActuators.map((actuator: string) => (
+                <Card key={actuator} className="p-5 border-l-4 border-l-yellow-500 flex items-center justify-between">
+                  <span className="font-bold text-gray-800 dark:text-gray-200">{actuator}</span>
+                  <Badge variant="warning">Output Relay</Badge>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: NODES */}
+      {activeTab === "nodes" && (
+        <div className="space-y-4">
+          {!isDemo && <PoCNotice feature="Infrastructure node" />}
+          {globalNodes.length === 0 ? (
+            <EmptySlotCard
+              icon={Server}
+              title="No Infrastructure Nodes"
+              description="Map master clusters or logical localized deployment zones."
+              actionLabel="Add Parent Node Cluster"
+              onAction={() => setOpenRegisterComponent(true)}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {globalNodes.map((node: string) => (
+                <Card key={node} className="p-5 border-l-4 border-l-purple-500 flex items-center justify-between">
+                  <span className="font-bold text-gray-800 dark:text-gray-200">{node}</span>
+                  <Badge variant="info">Zone Cluster</Badge>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* MODAL: DEVICE REGISTRATION */}
+      <Modal open={openRegisterDevice} onClose={() => setOpenRegisterDevice(false)} title="Register New Device" size="lg">
+        <form
+          onSubmit={e => { e.preventDefault(); registerDevice.mutate(); }}
+          className="space-y-6 pt-4"
+        >
+          <Input
+            label="Device Label / Hostname"
+            value={deviceForm.name}
+            onChange={e => setDeviceForm(prev => ({ ...prev, name: e.target.value }))}
+            placeholder="e.g. Edge-Gateway-01"
+            required
+          />
+
+          <Select
+            label="Hardware Type"
+            value={deviceForm.hardware_type}
+            onChange={e => setDeviceForm(prev => ({ ...prev, hardware_type: e.target.value }))}
+            options={HW_OPTIONS}
+          />
+
+          {isDemo && (
+            <Select
+              label="Hardware Base Architecture (Optional)"
+              value={deviceForm.architecture_id}
+              onChange={e => setDeviceForm(prev => ({ ...prev, architecture_id: e.target.value }))}
+              options={[
+                { value: "", label: "Select base layer configuration..." },
+                ...globalArchitectures.map((arch: string) => ({ value: arch, label: arch })),
+              ]}
+            />
+          )}
+
+          {isDemo && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4 dark:border-gray-800">
+              {/* Sensors */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Sensors</label>
+                <div className="border rounded-lg p-2 max-h-40 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+                  {globalSensors.map((sensor: string) => (
+                    <button key={sensor} type="button" onClick={() => toggleFormArray("selected_sensors", sensor)}
+                      className={`w-full text-left flex items-center justify-between p-1.5 rounded text-xs border mt-1 first:mt-0 ${deviceForm.selected_sensors.includes(sensor) ? "bg-emerald-50 dark:bg-emerald-950 border-emerald-500 text-emerald-700" : "border-transparent bg-white dark:bg-gray-800"}`}>
+                      <span>{sensor}</span>
+                      {deviceForm.selected_sensors.includes(sensor) && <Check size={12} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Actuators */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actuators</label>
+                <div className="border rounded-lg p-2 max-h-40 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+                  {globalActuators.map((actuator: string) => (
+                    <button key={actuator} type="button" onClick={() => toggleFormArray("selected_actuators", actuator)}
+                      className={`w-full text-left flex items-center justify-between p-1.5 rounded text-xs border mt-1 first:mt-0 ${deviceForm.selected_actuators.includes(actuator) ? "bg-yellow-50 dark:bg-yellow-950 border-yellow-500 text-yellow-700" : "border-transparent bg-white dark:bg-gray-800"}`}>
+                      <span>{actuator}</span>
+                      {deviceForm.selected_actuators.includes(actuator) && <Check size={12} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Nodes */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Parent Nodes</label>
+                <div className="border rounded-lg p-2 max-h-40 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+                  {globalNodes.map((node: string) => (
+                    <button key={node} type="button" onClick={() => toggleFormArray("selected_nodes", node)}
+                      className={`w-full text-left flex items-center justify-between p-1.5 rounded text-xs border mt-1 first:mt-0 ${deviceForm.selected_nodes.includes(node) ? "bg-purple-50 dark:bg-purple-950 border-purple-500 text-purple-700" : "border-transparent bg-white dark:bg-gray-800"}`}>
+                      <span>{node}</span>
+                      {deviceForm.selected_nodes.includes(node) && <Check size={12} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Button type="submit" className="w-full" loading={registerDevice.isPending}>
+            Register Device
+          </Button>
+        </form>
+      </Modal>
+
+      {/* MODAL: CATALOG COMPONENT REGISTRATION (demo only feedback in real mode) */}
+      <Modal
+        open={openRegisterComponent}
+        onClose={() => { setOpenRegisterComponent(false); setComponentName(""); }}
+        title={`Register Global ${activeTab.slice(0, -1)}`}
+      >
+        {!isDemo ? (
+          <div className="pt-4">
+            <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl">
+              <Info size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-400">Not Available in this PoC</p>
+                <p className="text-xs text-amber-700 dark:text-amber-500 mt-1">
+                  Catalog management is planned for a future iteration. Switch to Demo Mode to explore this feature with mock data.
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" className="w-full mt-4" onClick={() => setOpenRegisterComponent(false)}>Close</Button>
+          </div>
+        ) : (
+          <form onSubmit={e => { e.preventDefault(); setOpenRegisterComponent(false); setComponentName(""); }} className="space-y-4 pt-4">
+            <Input
+              label="Component Model Name"
+              value={componentName}
+              onChange={e => setComponentName(e.target.value)}
+              placeholder={`e.g. Specialized ${activeTab.slice(0, -1)} model label...`}
+              required
+            />
+            <div className="flex gap-3 pt-2">
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setOpenRegisterComponent(false)}>Cancel</Button>
+              <Button type="submit" className="flex-1">Save to Catalog</Button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+      {/* MODAL: DEVICE SPEC VIEW */}
+      <Modal open={!!selectedDevice} onClose={() => setSelectedDevice(null)} title={`Stack Details: ${selectedDevice?.name}`}>
+        <div className="space-y-6 pt-4">
+          <div>
+            <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Hardware Type</h4>
+            <Badge variant="default">{HW_LABELS[selectedDevice?.hardware_type] || selectedDevice?.hardware_type || "—"}</Badge>
+          </div>
+          {(selectedDevice?.sensors?.length > 0 || selectedDevice?.actuators?.length > 0) && (
+            <div>
+              <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Attached Peripherals</h4>
+              <div className="space-y-2">
+                {selectedDevice?.sensors?.map((s: any, i: number) => (
+                  <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
+                    <span className="flex items-center gap-2"><Radio size={14} className="text-emerald-500" /> {s.name || s}</span>
+                    <Badge variant="success">Sensor</Badge>
+                  </div>
+                ))}
+                {selectedDevice?.actuators?.map((a: any, i: number) => (
+                  <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
+                    <span className="flex items-center gap-2"><Zap size={14} className="text-yellow-500" /> {a.name || a}</span>
+                    <Badge variant="warning">Actuator</Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {!selectedDevice?.sensors?.length && !selectedDevice?.actuators?.length && (
+            <p className="text-xs text-gray-500 italic">No peripheral components linked to this unit.</p>
+          )}
+        </div>
+      </Modal>
+    </div>
+  );
+}
