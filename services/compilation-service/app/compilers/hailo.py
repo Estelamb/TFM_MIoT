@@ -35,7 +35,8 @@ class HailoCompiler(CompilerBase):
         self._bucket_compiled = minio_bucket_compiled
 
     async def compile(self, model_id: str, source_key: str, num_classes: int,
-                      class_names: list[str], hardware_type: str) -> CompilationResult:
+                      class_names: list[str], hardware_type: str,
+                      dataset_version_id: str, dataset_key: str) -> CompilationResult:
         logger.info(f"[Hailo] Starting compilation for model {model_id}, hw={hardware_type}")
 
         with tempfile.TemporaryDirectory() as tmpdir:

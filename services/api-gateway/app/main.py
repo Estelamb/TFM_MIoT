@@ -16,7 +16,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.auth.jwt import create_token, DEMO_USER
 from app.config import get_settings
 from app.stubs import init_stubs
-from app.routers import devices, models, scripts, deployments, monitoring
+from app.routers import devices, models, scripts, deployments, monitoring, datasets
 from shared.utils.logging import configure_logging
 from shared.utils.minio import init_minio, ensure_buckets
 
@@ -35,6 +35,7 @@ async def lifespan(app: FastAPI):
             "models":   s.minio_bucket_models,
             "compiled": s.minio_bucket_compiled,
             "scripts":  s.minio_bucket_scripts,
+            "datasets": s.minio_bucket_datasets,
         },
     )
     await ensure_buckets()
@@ -62,6 +63,7 @@ async def health():
 
 app.include_router(devices.router)
 app.include_router(models.router)
+app.include_router(datasets.router)
 app.include_router(scripts.router)
 app.include_router(deployments.router)
 app.include_router(monitoring.router)

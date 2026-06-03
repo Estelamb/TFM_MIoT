@@ -15,7 +15,7 @@ docker compose up -d
 
 | URL | Credentials |
 |---|---|
-| http://localhost:3000 | admin / aura2024 |
+| http://localhost:3000 | admin / aura2026 |
 | http://localhost:8000/docs | — |
 | http://localhost:9001 | aura / aura_dev |
 

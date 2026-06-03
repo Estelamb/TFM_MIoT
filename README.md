@@ -7,45 +7,10 @@ Edge AI deployment platform for IoT devices. Upload a trained YOLOv8 model, comp
 ## What it does
 
 1. **Register** edge devices (Hailo-8, Hailo-8L, RPi AI Camera, Jetson Orin Nano, plain RPi)
-2. **Upload** a trained `.pt` model — the platform compiles it to the right format for the target hardware
+2. **Upload** a trained `.pt` model and the platform compiles it to the right format for the target hardware
 3. **Upload** an inference script (pre/post-processing logic)
 4. **Deploy** model + script to a device with one click
 5. **Monitor** live CPU/RAM telemetry and inference results from all devices
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      CLOUD / SERVER PLATFORM                    │
-│                                                                 │
-│  ┌──────────┐   ┌──────────────────────────────────────────┐   │
-│  │ Next.js  │──▶│           API Gateway  :8000             │   │
-│  │ :3000    │   └───┬──────┬──────┬──────┬──────┬──────────┘   │
-│  └──────────┘       │ gRPC │      │      │      │              │
-│                      ▼      ▼      ▼      ▼      ▼              │
-│              device  ai  script compile deploy monitor          │
-│              :50051 :50052 :50053 :50054 :50055 :50056          │
-│                 │     │      │       │      │      │            │
-│              ┌──┴─────┴──────┴───────┘      │   ┌──┴──┐        │
-│              │        PostgreSQL             │   │Mongo│        │
-│              └──────────────────────────────┘   └─────┘        │
-│                       MinIO (models, scripts, compiled)         │
-└──────────────────────────────────────┬──────────────────────────┘
-                                       │ MQTT :1883 (anonymous)
-                                ┌──────┴──────┐
-                                │  Mosquitto  │
-                                └──────┬──────┘
-                      ┌────────────────┼────────────────┐
-                      │                │                │
-                ┌─────┴─────┐   ┌──────┴────┐   ┌──────┴────┐
-                │ Hailo-8   │   │RPi AI Cam │   │  Jetson   │
-                │  RPi5     │   │   RPi5    │   │ Orin Nano │
-                └───────────┘   └───────────┘   └───────────┘
-```
-
-All inter-service communication uses **gRPC + Protobuf** (async). The transport layer (`shared/transport/`) is abstracted so MQTT can be replaced with WebSocket or AMQP without touching business logic.
 
 ---
 
@@ -53,7 +18,7 @@ All inter-service communication uses **gRPC + Protobuf** (async). The transport 
 
 | Service | Port | Stack | Responsibility |
 |---|---|---|---|
-| `api-gateway` | 8000 (HTTP) | FastAPI + JWT | Single entry point for the frontend. Proxies to gRPC services. Handles file uploads to MinIO directly. |
+| `api-gateway` | 8000 (HTTP) | FastAPI + JWT | Single entry point for the frontend. Proxies to gRPC services. |
 | `device-service` | 50051 (gRPC) | Python + PostgreSQL | CRUD for edge devices. |
 | `ai-service` | 50052 (gRPC) | Python + PostgreSQL + MinIO | Manages uploaded models (.pt) and tracks compilation status. |
 | `script-service` | 50053 (gRPC) | Python + PostgreSQL + MinIO | Manages inference scripts (.py). |
@@ -284,15 +249,13 @@ Pages: **Dashboard** · **Devices** · **Models** · **Scripts** · **Deployment
 | `MQTT_HOST` | `mosquitto` | MQTT broker hostname |
 | `MQTT_PORT` | `1883` | MQTT broker port |
 | `HAILO_DOCKER_IMAGE` | `hailo_ai_sw_suite:latest` | Docker image for Hailo compilation |
-| `EDGE_DEVICE_ID` | `dev-device-001` | Device ID for the simulated edge agent |
-| `EDGE_HARDWARE_TYPE` | `rpi` | Hardware override for the simulated edge agent |
 | `LOG_LEVEL` | `INFO` | Log level: DEBUG \| INFO \| WARNING \| ERROR |
 
 ---
 
 ## Known limitations (PoC)
 
-- Auth uses a hardcoded user (`admin` / `aura2024`). Replace with DB-backed auth in the next iteration.
+- Auth uses a hardcoded user (`admin` / `aura2026`). Replace with DB-backed auth in the next iteration.
 - Calibration images for Hailo and AI Camera compilation are currently dummy frames. Real dataset support is pending.
 - Compilers for `rpi` (TFLite) and `jetson_orin_nano` (TensorRT) are stubs.
 - No deployment rollback if `deploy_failed`.

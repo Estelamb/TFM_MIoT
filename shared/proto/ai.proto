@@ -7,6 +7,14 @@ service AIService {
   rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
   rpc DeleteModel(DeleteModelRequest) returns (DeleteModelResponse);
   rpc UpdateModelCompiled(UpdateModelCompiledRequest) returns (ModelResponse);
+  rpc UploadDataset(UploadDatasetRequest) returns (DatasetResponse);
+  rpc GetDataset(GetDatasetRequest) returns (DatasetResponse);
+  rpc ListDatasets(ListDatasetsRequest) returns (ListDatasetsResponse);
+  rpc DeleteDataset(DeleteDatasetRequest) returns (DeleteDatasetResponse);
+  rpc UploadDatasetVersion(UploadDatasetVersionRequest) returns (DatasetVersionResponse);
+  rpc GetDatasetVersion(GetDatasetVersionRequest) returns (DatasetVersionResponse);
+  rpc ListDatasetVersions(ListDatasetVersionsRequest) returns (ListDatasetVersionsResponse);
+  rpc AssociateModelDatasetVersion(AssociateModelDatasetVersionRequest) returns (ModelResponse);
 }
 
 message UploadModelRequest {
@@ -14,6 +22,7 @@ message UploadModelRequest {
   string description = 2;
   string source_key = 3;
   string source_sha256 = 4;
+  string dataset_version_id = 5;
 }
 message GetModelRequest    { string id = 1; }
 message ListModelsRequest  {}
@@ -39,5 +48,51 @@ message ModelResponse {
   string compile_status = 9;
   string compile_error = 10;
   string created_at = 11;
+  string dataset_id = 12;
+  string dataset_version_id = 13;
 }
 message ListModelsResponse { repeated ModelResponse models = 1; }
+
+message UploadDatasetRequest {
+  string name = 1;
+  string description = 2;
+}
+message GetDatasetRequest { string id = 1; }
+message ListDatasetsRequest {}
+message DeleteDatasetRequest { string id = 1; }
+message DeleteDatasetResponse { bool success = 1; }
+message DatasetResponse {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string created_at = 4;
+}
+message ListDatasetsResponse { repeated DatasetResponse datasets = 1; }
+
+message UploadDatasetVersionRequest {
+  string dataset_id = 1;
+  string version = 2;
+  string description = 3;
+  string object_key = 4;
+  string sha256 = 5;
+  int64 size_bytes = 6;
+}
+message GetDatasetVersionRequest { string id = 1; }
+message ListDatasetVersionsRequest { string dataset_id = 1; }
+message DatasetVersionResponse {
+  string id = 1;
+  string dataset_id = 2;
+  string version = 3;
+  string description = 4;
+  string object_key = 5;
+  string sha256 = 6;
+  int64 size_bytes = 7;
+  string created_at = 8;
+  repeated string model_ids = 9;
+}
+message ListDatasetVersionsResponse { repeated DatasetVersionResponse versions = 1; }
+
+message AssociateModelDatasetVersionRequest {
+  string model_id = 1;
+  string dataset_version_id = 2;
+}

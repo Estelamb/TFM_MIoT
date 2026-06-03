@@ -44,6 +44,16 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
 
     async def CompileModel(self, req, ctx):
         logger.info(f"CompileModel: model_id={req.model_id} hw={req.hardware_type}")
+        dataset_key = (req.dataset_key or "").strip()
+
+        if not dataset_key:
+            msg = "Dataset version is required for compilation"
+            await self._notify(req.model_id, "failed", "", "", req.hardware_type, msg)
+            return compilation_pb2.CompileModelResponse(
+                model_id=req.model_id,
+                status="failed",
+                error=msg,
+            )
 
         compiler: CompilerBase | None = self._registry.get(req.hardware_type)
         if compiler is None:
@@ -59,7 +69,8 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
         # Lanzar compilación en background (no bloqueante)
         asyncio.create_task(
             self._run_compilation(compiler, req.model_id, req.source_key,
-                                  req.hardware_type, req.num_classes, list(req.class_names))
+                                  req.hardware_type, req.num_classes, list(req.class_names),
+                                  req.dataset_version_id or "", dataset_key)
         )
 
         return compilation_pb2.CompileModelResponse(
@@ -77,12 +88,15 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
 
     async def _run_compilation(self, compiler: CompilerBase, model_id: str,
                                 source_key: str, hardware_type: str,
-                                num_classes: int, class_names: list[str]):
+                                num_classes: int, class_names: list[str],
+                                dataset_version_id: str, dataset_key: str):
         try:
             result: CompilationResult = await compiler.compile(
                 model_id=model_id, source_key=source_key,
                 num_classes=num_classes, class_names=class_names,
                 hardware_type=hardware_type,
+                dataset_version_id=dataset_version_id,
+                dataset_key=dataset_key,
             )
             if result.success:
                 await self._notify(model_id, "ready", result.compiled_key,

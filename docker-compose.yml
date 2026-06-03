@@ -98,6 +98,7 @@ services:
       MINIO_SECURE: "false"
       MINIO_BUCKET_MODELS: ${MINIO_BUCKET_MODELS:-models}
       MINIO_BUCKET_COMPILED: ${MINIO_BUCKET_COMPILED:-compiled}
+      MINIO_BUCKET_DATASETS: ${MINIO_BUCKET_DATASETS:-datasets}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports: ["50052:50052"]
     networks: [aura-net]
@@ -202,26 +203,11 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-aura}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-aura_dev}
       MINIO_SECURE: "false"
+      MINIO_BUCKET_DATASETS: ${MINIO_BUCKET_DATASETS:-datasets}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports: ["8000:8000"]
     networks: [aura-net]
     volumes: [./services/api-gateway/app:/app/app, ./shared:/app/shared]
-
-  # ── Edge simulado ─────────────────────────────────────────────────────────
-
-  edge-agent:
-    build: { context: ., dockerfile: edge-runtime/Dockerfile }
-    container_name: aura-edge-agent
-    restart: unless-stopped
-    depends_on: [mosquitto]
-    environment:
-      AURA_DEVICE_ID: ${EDGE_DEVICE_ID:-dev-device-001}
-      AURA_MQTT_HOST: mosquitto
-      AURA_MQTT_PORT: 1883
-      AURA_HARDWARE_TYPE: ${EDGE_HARDWARE_TYPE:-rpi}
-      AURA_TELEMETRY_INTERVAL: 10
-    networks: [aura-net]
-    volumes: [./edge-runtime/aura_hw:/app/aura_hw, ./edge-runtime/scripts:/app/scripts]
 
   frontend:
     build:

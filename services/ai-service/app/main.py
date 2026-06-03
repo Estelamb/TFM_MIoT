@@ -23,7 +23,11 @@ async def main():
         await conn.run_sync(Base.metadata.create_all)
     sf = build_session_factory(engine)
     init_minio(s.minio_endpoint, s.minio_access_key, s.minio_secret_key, s.minio_secure,
-               {"models": s.minio_bucket_models, "compiled": s.minio_bucket_compiled})
+               {
+                   "models": s.minio_bucket_models,
+                   "compiled": s.minio_bucket_compiled,
+                   "datasets": s.minio_bucket_datasets,
+               })
     await ensure_buckets()
     await serve(
         port=s.grpc_port,

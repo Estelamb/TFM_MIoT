@@ -11,7 +11,7 @@ from jose import JWTError, jwt
 from app.config import get_settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
-DEMO_USER = {"username": "admin", "password": "aura2024"}
+DEMO_USER = {"username": "admin", "password": "aura2026"}
 
 def create_token(username: str) -> str:
     s = get_settings()

@@ -27,19 +27,19 @@ openssl rand -hex 32
 
 All other defaults work out of the box for local development.
 
-### 2. Start everything
+### 2. Start the platform
 
 ```bash
 docker compose up -d
 ```
 
-First run takes 3–5 minutes to build all images.
+First run takes 3–5 minutes to build all images. This starts the core platform services.
 
 ### 3. Access the platform
 
 | Service | URL | Credentials |
 |---|---|---|
-| Frontend | http://localhost:3000 | `admin` / `aura2024` |
+| Frontend | http://localhost:3000 | `admin` / `aura2026` |
 | API docs (Swagger) | http://localhost:8000/docs | Login first at `/auth/token` |
 | MinIO console | http://localhost:9001 | `aura` / `aura_dev` |
 | Prometheus metrics | http://localhost:9100/metrics | — |

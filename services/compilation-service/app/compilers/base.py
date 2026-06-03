@@ -49,6 +49,8 @@ class CompilerBase(ABC):
         num_classes: int,
         class_names: list[str],
         hardware_type: str,
+        dataset_version_id: str,
+        dataset_key: str,
     ) -> CompilationResult:
         """Compile a ``.pt`` model for a specific hardware target.
 

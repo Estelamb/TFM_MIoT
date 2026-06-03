@@ -12,6 +12,8 @@ message CompileModelRequest {
   string hardware_type = 3;
   int32 num_classes = 4;
   repeated string class_names = 5;
+  string dataset_version_id = 6;
+  string dataset_key = 7;
 }
 message GetCompilationStatusRequest { string model_id = 1; }
 message CompileModelResponse {

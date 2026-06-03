@@ -99,7 +99,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: sphinx-html
-          path: site/
+          path: site/platform/
 
       - name: Download TypeDoc HTML
         uses: actions/download-artifact@v4
@@ -115,7 +115,7 @@ jobs:
           <head>
             <meta charset="utf-8">
             <title>AURA Platform Docs</title>
-            <meta http-equiv="refresh" content="0; url=index.html">
+            <meta http-equiv="refresh" content="0; url=platform/index.html">
             <style>
               body { font-family: sans-serif; padding: 2rem; }
               a { color: #6366f1; }
@@ -124,7 +124,7 @@ jobs:
           <body>
             <h1>AURA Platform Documentation</h1>
             <ul>
-              <li><a href="index.html">Platform Docs (Sphinx)</a></li>
+              <li><a href="platform/index.html">Platform Docs (Sphinx)</a></li>
               <li><a href="frontend/index.html">Frontend Docs (TypeDoc)</a></li>
             </ul>
           </body>

@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     minio_bucket_models: str = "models"
     minio_bucket_compiled: str = "compiled"
     minio_bucket_scripts: str = "scripts"
+    minio_bucket_datasets: str = "datasets"
     log_level: str = "DEBUG"
 
     class Config:

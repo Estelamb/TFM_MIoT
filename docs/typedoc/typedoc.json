@@ -16,6 +16,6 @@
     "**/*.spec.ts"
   ],
   "navigationLinks": {
-    "Platform Docs": "../sphinx/build/html/index.html"
+    "Platform Docs": "../platform/index.html"
   }
 }
