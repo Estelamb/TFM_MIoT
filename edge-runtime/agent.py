@@ -1,125 +1,149 @@
 """
-AURA Edge Agent
-===============
-Comandos MQTT recibidos:  device/{DEVICE_ID}/commands
-Eventos publicados:       device/{DEVICE_ID}/events
-Telemetría publicada:     device/{DEVICE_ID}/telemetry
-Inferencia publicada:     device/{DEVICE_ID}/inference
+AURA Edge Agent — Entrypoint
+=============================
+Minimal entrypoint that wires together the PAL components:
+
+* :class:`~pal.comm_client.CommunicationClient` — MQTT publish/subscribe
+* :class:`~pal.ota_handler.OTAHandler`          — OTA deploy handler
+* :class:`~pal.orchestrator.Orchestrator`        — inference + telemetry loops
+* :class:`~aura_hw.device_manager.DeviceManager` — connected device backends
+
+Configuration (priority order)
+-------------------------------
+1. Environment variables
+2. ``config/device_config.yaml``
+3. Built-in defaults
+
+MQTT Topics
+-----------
+Subscribe:  device/{DEVICE_ID}/commands
+Publish:    device/{DEVICE_ID}/events
+            device/{DEVICE_ID}/telemetry
+            device/{DEVICE_ID}/inference
 """
-import asyncio, hashlib, importlib.util, json, logging, os, sys
+from __future__ import annotations
+
+import asyncio
+import logging
+import os
+import sys
+import time
 from pathlib import Path
-import aiomqtt, httpx, psutil
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
-    format="%(asctime)s [edge-agent] %(levelname)s — %(message)s")
-logger = logging.getLogger(__name__)
+import yaml
 
-DEVICE_ID = os.environ.get("AURA_DEVICE_ID", "dev-device-001")
-MQTT_HOST = os.environ.get("AURA_MQTT_HOST", "localhost")
-MQTT_PORT = int(os.environ.get("AURA_MQTT_PORT", "1883"))
-WORK_DIR  = Path(os.environ.get("AURA_WORK_DIR", "/tmp/aura"))
-TELEMETRY_INTERVAL = int(os.environ.get("AURA_TELEMETRY_INTERVAL", "10"))
+# ── Logging ──────────────────────────────────────────────────────────────────
 
-WORK_DIR.mkdir(parents=True, exist_ok=True)
+def _setup_logging(level_str: str) -> None:
+    level = getattr(logging, level_str.upper(), logging.INFO)
+    logging.basicConfig(
+        stream=sys.stdout,
+        level=level,
+        format="%(asctime)s [edge-agent] %(levelname)s — %(message)s",
+    )
 
-_state = {"active_model_id": "", "active_script_id": "", "active_deployment_id": ""}
-_script_module = None
+# ── Config loading ────────────────────────────────────────────────────────────
+
+_CONFIG_DIR = Path(__file__).parent / "config"
+_DEVICE_CONFIG_PATH  = _CONFIG_DIR / "device_config.yaml"
+_COMPONENTS_CONFIG_PATH = _CONFIG_DIR / "components_config.yaml"
 
 
-async def publish(client: aiomqtt.Client, topic: str, payload: dict):
-    await client.publish(topic, json.dumps(payload))
-
-def _sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""): h.update(chunk)
-    return h.hexdigest()
-
-async def _download(url: str, dest: Path):
-    async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        async with http.stream("GET", url) as r:
-            r.raise_for_status()
-            with open(dest, "wb") as f:
-                async for chunk in r.aiter_bytes(65536): f.write(chunk)
-
-def _load_script(path: Path):
-    spec = importlib.util.spec_from_file_location("user_script", path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-async def handle_deploy(client: aiomqtt.Client, payload: dict):
-    global _script_module, _state
-    dep_id     = payload["deployment_id"]
-    model_url  = payload["model_url"];  model_sha  = payload["model_sha256"]
-    script_url = payload["script_url"]; script_sha = payload["script_sha256"]
-    model_id   = payload.get("model_id", "")
-    script_id  = payload.get("script_id", "")
-
-    model_path  = WORK_DIR / "model"
-    script_path = WORK_DIR / "script.py"
+def _load_device_config() -> dict:
+    """Load device_config.yaml, falling back to an empty dict on error."""
     try:
-        logger.info(f"[{dep_id}] Downloading model...")
-        await _download(model_url, model_path)
-        if _sha256(model_path) != model_sha:
-            raise ValueError("Model SHA256 mismatch")
+        with open(_DEVICE_CONFIG_PATH) as fh:
+            return yaml.safe_load(fh) or {}
+    except FileNotFoundError:
+        return {}
+    except Exception as exc:  # noqa: BLE001
+        logging.getLogger(__name__).warning(
+            f"Could not read device_config.yaml: {exc}"
+        )
+        return {}
 
-        logger.info(f"[{dep_id}] Downloading script...")
-        await _download(script_url, script_path)
-        if _sha256(script_path) != script_sha:
-            raise ValueError("Script SHA256 mismatch")
 
-        from aura_hw import load_model, unload_model
-        unload_model()
-        load_model(str(model_path))
-        _script_module = _load_script(script_path)
+def _cfg(env_key: str, yaml_key: str, default: str, file_cfg: dict) -> str:
+    """Resolve a config value: env var > YAML > default."""
+    return os.environ.get(env_key) or str(file_cfg.get(yaml_key, default))
 
-        _state = {"active_model_id": model_id, "active_script_id": script_id,
-                  "active_deployment_id": dep_id}
-        logger.info(f"[{dep_id}] Deploy OK")
-        await publish(client, f"device/{DEVICE_ID}/events",
-                      {"event": "deploy_ack", "deployment_id": dep_id})
-    except Exception as e:
-        logger.error(f"[{dep_id}] Deploy failed: {e}")
-        await publish(client, f"device/{DEVICE_ID}/events",
-                      {"event": "deploy_failed", "deployment_id": dep_id, "error": str(e)})
 
-async def telemetry_loop(client: aiomqtt.Client):
-    while True:
-        try:
-            mem = psutil.virtual_memory()
-            payload = {
-                "cpu_percent": psutil.cpu_percent(interval=1),
-                "ram_percent": mem.percent,
-                "ram_used_mb": round(mem.used / 1024 / 1024, 1),
-                **_state,
-            }
-            await publish(client, f"device/{DEVICE_ID}/telemetry", payload)
-        except Exception as e:
-            logger.warning(f"Telemetry error: {e}")
-        await asyncio.sleep(TELEMETRY_INTERVAL)
+# ── Main ──────────────────────────────────────────────────────────────────────
 
-async def main():
-    logger.info(f"AURA Edge Agent — device_id={DEVICE_ID}")
-    while True:
-        try:
-            async with aiomqtt.Client(hostname=MQTT_HOST, port=MQTT_PORT) as client:
-                await client.subscribe(f"device/{DEVICE_ID}/commands")
-                logger.info(f"Subscribed to device/{DEVICE_ID}/commands")
-                asyncio.create_task(telemetry_loop(client))
-                async for msg in client.messages:
-                    try:
-                        payload = json.loads(msg.payload)
-                        cmd = payload.get("command")
-                        if cmd == "deploy":
-                            asyncio.create_task(handle_deploy(client, payload))
-                        else:
-                            logger.warning(f"Unknown command: {cmd}")
-                    except Exception as e:
-                        logger.error(f"Message handling error: {e}")
-        except aiomqtt.MqttError as e:
-            logger.warning(f"MQTT error: {e} — retrying in 5s")
-            await asyncio.sleep(5)
+async def main() -> None:
+    file_cfg = _load_device_config()
+
+    # Resolve all config values
+    device_id          = _cfg("AURA_DEVICE_ID",         "device_id",                  "dev-device-001", file_cfg)
+    mqtt_host          = _cfg("AURA_MQTT_HOST",         "mqtt_host",                  "localhost",      file_cfg)
+    mqtt_port          = int(_cfg("AURA_MQTT_PORT",     "mqtt_port",                  "1883",           file_cfg))
+    reconnect_s        = int(_cfg("AURA_RECONNECT_S",   "mqtt_reconnect_interval_s",  "5",              file_cfg))
+    telemetry_interval = float(_cfg("AURA_TELEMETRY_INTERVAL", "telemetry_interval_s","10",             file_cfg))
+    inference_interval = float(_cfg("AURA_INFERENCE_INTERVAL", "inference_interval_s","0.1",            file_cfg))
+    work_dir           = Path(_cfg("AURA_WORK_DIR",     "work_dir",                   "/tmp/aura",      file_cfg))
+    log_level          = _cfg("AURA_LOG_LEVEL",         "log_level",                  "INFO",           file_cfg)
+    primary_camera_id  = _cfg("AURA_PRIMARY_CAMERA",    "primary_camera_id",          "camera_0",       file_cfg)
+
+    _setup_logging(log_level)
+    logger = logging.getLogger(__name__)
+
+    work_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"AURA Edge Agent starting — device_id={device_id}")
+
+    # ── Instantiate PAL + HAL components ─────────────────────────────────
+    from pal.comm_client import CommunicationClient
+    from pal.ota_handler import OTAHandler
+    from pal.orchestrator import Orchestrator
+    from aura_hw.device_manager import DeviceManager
+
+    start_time = time.monotonic()
+
+    # Device manager — opens peripheral backends from components_config.yaml
+    device_manager = DeviceManager(_COMPONENTS_CONFIG_PATH)
+    device_manager.open_all()
+    logger.info(
+        f"Device manager initialised: "
+        f"components={device_manager.list_components()}"
+    )
+
+    comm = CommunicationClient(
+        device_id=device_id,
+        host=mqtt_host,
+        port=mqtt_port,
+        reconnect_interval_s=reconnect_s,
+    )
+
+    orchestrator = Orchestrator(
+        comm_client=comm,
+        device_manager=device_manager,
+        work_dir=work_dir,
+        inference_interval_s=inference_interval,
+        telemetry_interval_s=telemetry_interval,
+        start_time=start_time,
+        primary_camera_id=primary_camera_id,
+    )
+
+    ota = OTAHandler(
+        work_dir=work_dir,
+        on_event=comm.publish_event,
+        on_deploy_success=orchestrator.apply_deployment,
+    )
+
+    # ── Register MQTT command handlers ────────────────────────────────────
+    comm.register_command_handler("deploy", ota.handle_deploy)
+    comm.register_command_handler("update_libraries", ota.handle_update_libraries)
+
+    # ── Launch concurrent async tasks ─────────────────────────────────────
+    try:
+        async with asyncio.TaskGroup() as tg:
+            tg.create_task(comm.run(),                    name="mqtt-loop")
+            tg.create_task(orchestrator.run_inference_loop(), name="inference-loop")
+            tg.create_task(orchestrator.run_telemetry_loop(), name="telemetry-loop")
+    finally:
+        # Ensure devices are cleanly closed on exit
+        logger.info("Shutting down — closing all devices")
+        device_manager.close_all()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

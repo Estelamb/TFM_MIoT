@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDevices, createDevice, deleteDevice, HARDWARE_TYPES } from "@/lib/api";
+import { getDevices, createDevice, deleteDevice, getHardwareTypes, getSensors, getActuators } from "@/lib/api";
 import { useDataMode } from "@/hooks/useDataMode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -10,16 +10,66 @@ import { Input, Select } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { HW_LABELS } from "@/lib/utils";
-import { Cpu, Plus, Trash2, Zap, Radio, Layers, Server, Check, Info } from "lucide-react";
+import {
+  Cpu, Plus, Trash2, Zap, Radio, Layers, Server, Check, Info, ChevronDown, ChevronRight,
+  Camera, Thermometer, Ruler, Compass, Power, Disc, Volume2, Lightbulb
+} from "lucide-react";
 
 type TabType = "devices" | "architectures" | "sensors" | "actuators" | "nodes";
 
-const HW_OPTIONS = HARDWARE_TYPES.map(v => ({ value: v, label: HW_LABELS[v] || v }));
+const CATEGORY_ICONS: Record<string, any> = {
+  camera: Camera,
+  temperature: Thermometer,
+  distance: Ruler,
+  imu: Compass,
+  relay: Power,
+  servo: Disc,
+  buzzer: Volume2,
+  led: Lightbulb,
+};
+
+const getPeripheralIcon = (name: string, defaultIcon: any) => {
+  const parts = name.split("/");
+  const category = parts.length > 1 ? parts[0] : "";
+  return CATEGORY_ICONS[category] || defaultIcon;
+};
 
 export default function DevicesPage() {
   const qc = useQueryClient();
   const { mode, demoData } = useDataMode();
   const isDemo = mode === "demo";
+
+  const { data: hardwareTypes = [] } = useQuery({
+    queryKey: ["hardwareTypes"],
+    queryFn: getHardwareTypes,
+  });
+
+  const { data: sensors = [] } = useQuery({
+    queryKey: ["sensors"],
+    queryFn: getSensors,
+  });
+
+  const { data: actuators = [] } = useQuery({
+    queryKey: ["actuators"],
+    queryFn: getActuators,
+  });
+
+  const hwOptions = hardwareTypes.map(v => ({ value: v, label: HW_LABELS[v] || v }));
+
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
+    camera: true,
+    temperature: true,
+    distance: true,
+    imu: true,
+    relay: true,
+    servo: true,
+    buzzer: true,
+    led: true,
+  });
+
+  const toggleCategory = (cat: string) => {
+    setExpandedCategories(prev => ({ ...prev, [cat]: !prev[cat] }));
+  };
 
   const [activeTab, setActiveTab] = useState<TabType>("devices");
   const [openRegisterDevice, setOpenRegisterDevice] = useState(false);
@@ -43,10 +93,26 @@ export default function DevicesPage() {
 
   const devices = isDemo ? demoData.devices : realDevices;
 
-  const globalArchitectures = isDemo ? demoData.architectures : [];
-  const globalSensors       = isDemo ? demoData.sensors : [];
-  const globalActuators     = isDemo ? demoData.actuators : [];
-  const globalNodes         = isDemo ? demoData.nodes : [];
+  const globalArchitectures = isDemo ? demoData.architectures : hardwareTypes;
+  const globalSensors = isDemo ? demoData.sensors : sensors;
+  const globalActuators = isDemo ? demoData.actuators : actuators;
+  const globalNodes = isDemo ? demoData.nodes : [];
+
+  const groupedSensors = globalSensors.reduce((acc, sensor) => {
+    const parts = sensor.split("/");
+    const category = parts.length > 1 ? parts[0] : "other";
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(sensor);
+    return acc;
+  }, {} as Record<string, string[]>);
+
+  const groupedActuators = globalActuators.reduce((acc, actuator) => {
+    const parts = actuator.split("/");
+    const category = parts.length > 1 ? parts[0] : "other";
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(actuator);
+    return acc;
+  }, {} as Record<string, string[]>);
 
   const registerDevice = useMutation({
     mutationFn: () =>
@@ -54,6 +120,8 @@ export default function DevicesPage() {
         name: deviceForm.name,
         hardware_type: deviceForm.hardware_type,
         description: deviceForm.architecture_id || undefined,
+        sensors: deviceForm.selected_sensors,
+        actuators: deviceForm.selected_actuators,
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["devices"] });
@@ -93,7 +161,7 @@ export default function DevicesPage() {
 
   const EmptySlotCard = ({
     icon: Icon, title, description, actionLabel, onAction,
-  }: { icon: any; title: string; description: string; actionLabel: string; onAction: () => void }) => (
+  }: { icon: any; title: string; description: string; actionLabel?: string; onAction?: () => void }) => (
     <Card className="border-dashed border-2 bg-transparent shadow-none opacity-70 py-8">
       <div className="flex flex-col items-center text-center max-w-sm mx-auto space-y-3">
         <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700">
@@ -103,9 +171,11 @@ export default function DevicesPage() {
           <h3 className="text-base font-bold text-gray-700 dark:text-gray-300">{title}</h3>
           <p className="text-xs text-gray-400 mt-1">{description}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={onAction} className="gap-2">
-          <Plus size={14} /> {actionLabel}
-        </Button>
+        {actionLabel && onAction && (
+          <Button variant="outline" size="sm" onClick={onAction} className="gap-2">
+            <Plus size={14} /> {actionLabel}
+          </Button>
+        )}
       </div>
     </Card>
   );
@@ -125,9 +195,9 @@ export default function DevicesPage() {
           <Button onClick={() => setOpenRegisterDevice(true)} className="gap-2 shrink-0">
             <Plus size={16} /> Register Device
           </Button>
-        ) : (
+        ) : ["architectures", "sensors", "actuators"].includes(activeTab) ? null : (
           <Button onClick={() => setOpenRegisterComponent(true)} className="gap-2 shrink-0 capitalize">
-            <Plus size={16} /> Register {activeTab.slice(0, -1)}
+            <Plus size={16} /> Register {activeTab === "nodes" ? "Other Component" : activeTab.slice(0, -1)}
           </Button>
         )}
       </div>
@@ -135,11 +205,11 @@ export default function DevicesPage() {
       {/* Tabs */}
       <div className="flex border-b border-gray-200 dark:border-gray-800 gap-2 overflow-x-auto pb-px">
         {([
-          { id: "devices",       label: "IoT Edge Devices",       icon: Cpu },
-          { id: "architectures", label: "Hardware Architectures",  icon: Layers },
-          { id: "sensors",       label: "Sensors Catalog",         icon: Radio },
-          { id: "actuators",     label: "Actuators Catalog",       icon: Zap },
-          { id: "nodes",         label: "Infrastructure Nodes",    icon: Server },
+          { id: "devices", label: "IoT Edge Devices", icon: Cpu },
+          { id: "architectures", label: "Hardware Architectures", icon: Layers },
+          { id: "sensors", label: "Sensors Catalog", icon: Radio },
+          { id: "actuators", label: "Actuators Catalog", icon: Zap },
+          { id: "nodes", label: "Others Catalog", icon: Server },
         ] as const).map(tab => {
           const TabIcon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -147,11 +217,10 @@ export default function DevicesPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-all whitespace-nowrap ${
-                isActive
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400 font-bold"
-                  : "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-all whitespace-nowrap ${isActive
+                ? "border-blue-500 text-blue-600 dark:text-blue-400 font-bold"
+                : "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                }`}
             >
               <TabIcon size={16} />
               {tab.label}
@@ -210,20 +279,17 @@ export default function DevicesPage() {
       {/* TAB: ARCHITECTURES */}
       {activeTab === "architectures" && (
         <div className="space-y-4">
-          {!isDemo && <PoCNotice feature="Hardware architecture" />}
           {globalArchitectures.length === 0 ? (
             <EmptySlotCard
               icon={Layers}
               title="No Base Architectures"
-              description="Register standardized hardware environments (e.g., Raspberry Pi, Jetson Boards)."
-              actionLabel="Add Architecture Definition"
-              onAction={() => setOpenRegisterComponent(true)}
+              description="No compiler architectures detected from the platform."
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {globalArchitectures.map((arch: string) => (
                 <Card key={arch} className="p-5 border-l-4 border-l-blue-500 flex items-center justify-between">
-                  <span className="font-bold text-gray-800 dark:text-gray-200">{arch}</span>
+                  <span className="font-bold text-gray-800 dark:text-gray-200">{HW_LABELS[arch] || arch}</span>
                   <Badge variant="default">Hardware Base</Badge>
                 </Card>
               ))}
@@ -234,24 +300,47 @@ export default function DevicesPage() {
 
       {/* TAB: SENSORS */}
       {activeTab === "sensors" && (
-        <div className="space-y-4">
-          {!isDemo && <PoCNotice feature="Sensor catalog" />}
-          {globalSensors.length === 0 ? (
+        <div className="space-y-6">
+          {Object.keys(groupedSensors).length === 0 ? (
             <EmptySlotCard
               icon={Radio}
               title="No Registered Sensors"
-              description="Define reusable peripheral entry nodes or cameras."
-              actionLabel="Add Sensor Layer"
-              onAction={() => setOpenRegisterComponent(true)}
+              description="No sensor libraries detected in the platform folders."
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {globalSensors.map((sensor: string) => (
-                <Card key={sensor} className="p-5 border-l-4 border-l-emerald-500 flex items-center justify-between">
-                  <span className="font-bold text-gray-800 dark:text-gray-200">{sensor}</span>
-                  <Badge variant="success">Input Peripheral</Badge>
-                </Card>
-              ))}
+            <div className="space-y-4">
+              {Object.entries(groupedSensors).map(([category, items]) => {
+                const isExpanded = expandedCategories[category] !== false;
+                const CatIcon = CATEGORY_ICONS[category] || Radio;
+                return (
+                  <Card key={category} className="p-0 overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm">
+                    <button
+                      type="button"
+                      onClick={() => toggleCategory(category)}
+                      className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <span className="flex items-center gap-2">
+                        <CatIcon size={16} className="text-emerald-500" />
+                        {HW_LABELS[category] || category}
+                      </span>
+                      {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                    </button>
+                    {isExpanded && (
+                      <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border-t dark:border-gray-800 bg-white dark:bg-gray-950">
+                        {items.map((sensor: string) => (
+                          <Card key={sensor} className="p-4 flex items-center justify-between border hover:border-emerald-500 transition-all bg-white dark:bg-gray-950">
+                            <span className="font-semibold text-gray-850 dark:text-gray-150 flex items-center gap-2">
+                              <CatIcon size={14} className="text-emerald-500/80" />
+                              {HW_LABELS[sensor] || sensor}
+                            </span>
+                            <Badge variant="success">Input Peripheral</Badge>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
@@ -259,24 +348,47 @@ export default function DevicesPage() {
 
       {/* TAB: ACTUATORS */}
       {activeTab === "actuators" && (
-        <div className="space-y-4">
-          {!isDemo && <PoCNotice feature="Actuator catalog" />}
-          {globalActuators.length === 0 ? (
+        <div className="space-y-6">
+          {Object.keys(groupedActuators).length === 0 ? (
             <EmptySlotCard
               icon={Zap}
               title="No Registered Actuators"
-              description="Define functional output layers or execution hardware components."
-              actionLabel="Add Actuator Layer"
-              onAction={() => setOpenRegisterComponent(true)}
+              description="No actuator libraries detected in the platform folders."
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {globalActuators.map((actuator: string) => (
-                <Card key={actuator} className="p-5 border-l-4 border-l-yellow-500 flex items-center justify-between">
-                  <span className="font-bold text-gray-800 dark:text-gray-200">{actuator}</span>
-                  <Badge variant="warning">Output Relay</Badge>
-                </Card>
-              ))}
+            <div className="space-y-4">
+              {Object.entries(groupedActuators).map(([category, items]) => {
+                const isExpanded = expandedCategories[category] !== false;
+                const CatIcon = CATEGORY_ICONS[category] || Zap;
+                return (
+                  <Card key={category} className="p-0 overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm">
+                    <button
+                      type="button"
+                      onClick={() => toggleCategory(category)}
+                      className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <span className="flex items-center gap-2">
+                        <CatIcon size={16} className="text-yellow-500" />
+                        {HW_LABELS[category] || category}
+                      </span>
+                      {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                    </button>
+                    {isExpanded && (
+                      <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border-t dark:border-gray-800 bg-white dark:bg-gray-950">
+                        {items.map((actuator: string) => (
+                          <Card key={actuator} className="p-4 flex items-center justify-between border hover:border-yellow-500 transition-all bg-white dark:bg-gray-950">
+                            <span className="font-semibold text-gray-850 dark:text-gray-150 flex items-center gap-2">
+                              <CatIcon size={14} className="text-yellow-500/80" />
+                              {HW_LABELS[actuator] || actuator}
+                            </span>
+                            <Badge variant="warning">Output Relay</Badge>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
@@ -285,13 +397,13 @@ export default function DevicesPage() {
       {/* TAB: NODES */}
       {activeTab === "nodes" && (
         <div className="space-y-4">
-          {!isDemo && <PoCNotice feature="Infrastructure node" />}
+          {!isDemo && <PoCNotice feature="Others Catalog components" />}
           {globalNodes.length === 0 ? (
             <EmptySlotCard
               icon={Server}
-              title="No Infrastructure Nodes"
-              description="Map master clusters or logical localized deployment zones."
-              actionLabel="Add Parent Node Cluster"
+              title="No Components in Others Catalog"
+              description="Register additional peripheral components or other devices."
+              actionLabel="Add Component"
               onAction={() => setOpenRegisterComponent(true)}
             />
           ) : (
@@ -299,7 +411,7 @@ export default function DevicesPage() {
               {globalNodes.map((node: string) => (
                 <Card key={node} className="p-5 border-l-4 border-l-purple-500 flex items-center justify-between">
                   <span className="font-bold text-gray-800 dark:text-gray-200">{node}</span>
-                  <Badge variant="info">Zone Cluster</Badge>
+                  <Badge variant="info">Component</Badge>
                 </Card>
               ))}
             </div>
@@ -325,7 +437,7 @@ export default function DevicesPage() {
             label="Hardware Type"
             value={deviceForm.hardware_type}
             onChange={e => setDeviceForm(prev => ({ ...prev, hardware_type: e.target.value }))}
-            options={HW_OPTIONS}
+            options={hwOptions}
           />
 
           {isDemo && (
@@ -340,38 +452,78 @@ export default function DevicesPage() {
             />
           )}
 
-          {isDemo && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4 dark:border-gray-800">
-              {/* Sensors */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Sensors</label>
-                <div className="border rounded-lg p-2 max-h-40 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-                  {globalSensors.map((sensor: string) => (
-                    <button key={sensor} type="button" onClick={() => toggleFormArray("selected_sensors", sensor)}
-                      className={`w-full text-left flex items-center justify-between p-1.5 rounded text-xs border mt-1 first:mt-0 ${deviceForm.selected_sensors.includes(sensor) ? "bg-emerald-50 dark:bg-emerald-950 border-emerald-500 text-emerald-700" : "border-transparent bg-white dark:bg-gray-800"}`}>
-                      <span>{sensor}</span>
-                      {deviceForm.selected_sensors.includes(sensor) && <Check size={12} />}
-                    </button>
-                  ))}
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-t pt-4 dark:border-gray-800">
+            {/* Sensors */}
+            <div className="space-y-4">
+              <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider block">Attached Sensors</label>
+              <div className="space-y-3">
+                {Object.keys(groupedSensors).length === 0 ? (
+                  <p className="text-xs text-gray-400 italic">No sensors registered</p>
+                ) : (
+                  Object.entries(groupedSensors).map(([category, items]) => {
+                    const selectedValue = items.find(v => deviceForm.selected_sensors.includes(v)) || "";
+                    const options = [
+                      { value: "", label: `Select ${HW_LABELS[category] || category}...` },
+                      ...items.map(v => ({ value: v, label: HW_LABELS[v] || v }))
+                    ];
+                    return (
+                      <div key={category} className="space-y-1">
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{HW_LABELS[category] || category}</span>
+                        <Select
+                          value={selectedValue}
+                          onChange={e => {
+                            const val = e.target.value;
+                            const filtered = deviceForm.selected_sensors.filter(v => !items.includes(v));
+                            const newSelection = val ? [...filtered, val] : filtered;
+                            setDeviceForm(prev => ({ ...prev, selected_sensors: newSelection }));
+                          }}
+                          options={options}
+                        />
+                      </div>
+                    );
+                  })
+                )}
               </div>
-              {/* Actuators */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actuators</label>
-                <div className="border rounded-lg p-2 max-h-40 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-                  {globalActuators.map((actuator: string) => (
-                    <button key={actuator} type="button" onClick={() => toggleFormArray("selected_actuators", actuator)}
-                      className={`w-full text-left flex items-center justify-between p-1.5 rounded text-xs border mt-1 first:mt-0 ${deviceForm.selected_actuators.includes(actuator) ? "bg-yellow-50 dark:bg-yellow-950 border-yellow-500 text-yellow-700" : "border-transparent bg-white dark:bg-gray-800"}`}>
-                      <span>{actuator}</span>
-                      {deviceForm.selected_actuators.includes(actuator) && <Check size={12} />}
-                    </button>
-                  ))}
-                </div>
+            </div>
+
+            {/* Actuators */}
+            <div className="space-y-4">
+              <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider block">Attached Actuators</label>
+              <div className="space-y-3">
+                {Object.keys(groupedActuators).length === 0 ? (
+                  <p className="text-xs text-gray-400 italic">No actuators registered</p>
+                ) : (
+                  Object.entries(groupedActuators).map(([category, items]) => {
+                    const selectedValue = items.find(v => deviceForm.selected_actuators.includes(v)) || "";
+                    const options = [
+                      { value: "", label: `Select ${HW_LABELS[category] || category}...` },
+                      ...items.map(v => ({ value: v, label: HW_LABELS[v] || v }))
+                    ];
+                    return (
+                      <div key={category} className="space-y-1">
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{HW_LABELS[category] || category}</span>
+                        <Select
+                          value={selectedValue}
+                          onChange={e => {
+                            const val = e.target.value;
+                            const filtered = deviceForm.selected_actuators.filter(v => !items.includes(v));
+                            const newSelection = val ? [...filtered, val] : filtered;
+                            setDeviceForm(prev => ({ ...prev, selected_actuators: newSelection }));
+                          }}
+                          options={options}
+                        />
+                      </div>
+                    );
+                  })
+                )}
               </div>
-              {/* Nodes */}
+            </div>
+
+            {/* Nodes */}
+            {isDemo && (
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Parent Nodes</label>
-                <div className="border rounded-lg p-2 max-h-40 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider block">Others Catalog Items</label>
+                <div className="border rounded-lg p-2 max-h-56 overflow-y-auto bg-gray-50 dark:bg-gray-900">
                   {globalNodes.map((node: string) => (
                     <button key={node} type="button" onClick={() => toggleFormArray("selected_nodes", node)}
                       className={`w-full text-left flex items-center justify-between p-1.5 rounded text-xs border mt-1 first:mt-0 ${deviceForm.selected_nodes.includes(node) ? "bg-purple-50 dark:bg-purple-950 border-purple-500 text-purple-700" : "border-transparent bg-white dark:bg-gray-800"}`}>
@@ -381,8 +533,8 @@ export default function DevicesPage() {
                   ))}
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           <Button type="submit" className="w-full" loading={registerDevice.isPending}>
             Register Device
@@ -394,7 +546,7 @@ export default function DevicesPage() {
       <Modal
         open={openRegisterComponent}
         onClose={() => { setOpenRegisterComponent(false); setComponentName(""); }}
-        title={`Register Global ${activeTab.slice(0, -1)}`}
+        title={`Register Global ${activeTab === "nodes" ? "Other Component" : activeTab.slice(0, -1)}`}
       >
         {!isDemo ? (
           <div className="pt-4">
@@ -437,18 +589,32 @@ export default function DevicesPage() {
             <div>
               <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Attached Peripherals</h4>
               <div className="space-y-2">
-                {selectedDevice?.sensors?.map((s: any, i: number) => (
-                  <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
-                    <span className="flex items-center gap-2"><Radio size={14} className="text-emerald-500" /> {s.name || s}</span>
-                    <Badge variant="success">Sensor</Badge>
-                  </div>
-                ))}
-                {selectedDevice?.actuators?.map((a: any, i: number) => (
-                  <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
-                    <span className="flex items-center gap-2"><Zap size={14} className="text-yellow-500" /> {a.name || a}</span>
-                    <Badge variant="warning">Actuator</Badge>
-                  </div>
-                ))}
+                {selectedDevice?.sensors?.map((s: any, i: number) => {
+                  const name = s.name || s;
+                  const Icon = getPeripheralIcon(name, Radio);
+                  return (
+                    <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
+                      <span className="flex items-center gap-2">
+                        <Icon size={14} className="text-emerald-500" />
+                        {HW_LABELS[name] || name}
+                      </span>
+                      <Badge variant="success">Sensor</Badge>
+                    </div>
+                  );
+                })}
+                {selectedDevice?.actuators?.map((a: any, i: number) => {
+                  const name = a.name || a;
+                  const Icon = getPeripheralIcon(name, Zap);
+                  return (
+                    <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
+                      <span className="flex items-center gap-2">
+                        <Icon size={14} className="text-yellow-500" />
+                        {HW_LABELS[name] || name}
+                      </span>
+                      <Badge variant="warning">Actuator</Badge>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

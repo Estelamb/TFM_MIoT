@@ -23,6 +23,39 @@ from shared.utils.minio import init_minio, ensure_buckets
 s = get_settings()
 configure_logging("api-gateway", s.log_level)
 
+async def bootstrap_base_models():
+    import logging
+    import io
+    from shared.utils.minio import get_minio
+    from app.config import get_settings
+    from app.routers.models import ALLOWED_BASE_MODELS
+
+    logger = logging.getLogger("api-gateway")
+    s = get_settings()
+    minio = get_minio()
+    bucket = s.minio_bucket_base_models
+
+    try:
+        try:
+            existing_objects = await minio.list_objects(bucket)
+        except IndexError:
+            existing_objects = []
+            
+        existing_names = set()
+        for obj in existing_objects:
+            if obj.object_name not in ALLOWED_BASE_MODELS:
+                await minio.remove_object(bucket, obj.object_name)
+                logger.info(f"Cleaned up old base model: {obj.object_name}")
+            else:
+                existing_names.add(obj.object_name)
+        
+        for base_model in ALLOWED_BASE_MODELS:
+            if base_model not in existing_names:
+                await minio.put_object(bucket, base_model, io.BytesIO(b""), 0)
+                logger.info(f"Bootstrapped base model: {base_model}")
+    except Exception as e:
+        logger.error(f"Failed to bootstrap base models: {e}", exc_info=True)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_stubs()
@@ -36,9 +69,11 @@ async def lifespan(app: FastAPI):
             "compiled": s.minio_bucket_compiled,
             "scripts":  s.minio_bucket_scripts,
             "datasets": s.minio_bucket_datasets,
+            "base-models": s.minio_bucket_base_models,
         },
     )
     await ensure_buckets()
+    await bootstrap_base_models()
     logging.getLogger("api-gateway").info("API Gateway ready")
     yield
 

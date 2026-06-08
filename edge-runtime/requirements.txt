@@ -2,7 +2,20 @@ aiomqtt==2.3.0
 httpx==0.27.2
 numpy
 psutil==6.0.0
-# Según hardware:
-# hailo:      hailo_platform (incluido en HailoRT SDK)
-# rpi tflite: tflite-runtime
-# rpi ai cam: picamera2
+pyyaml>=6.0
+
+# ── Camera backends (install only what matches your hardware) ──────────────
+# opencv (generic USB/CSI/RTSP):
+#   pip install opencv-python-headless
+#
+# libcamera / imx500 (Raspberry Pi):
+#   pip install picamera2
+
+# ── Inference backends (install only what matches your hardware) ───────────
+# Hailo-8 / Hailo-8L:     hailo_platform  (included in HailoRT SDK)
+# RPi TFLite (CPU):        tflite-runtime   or tensorflow
+# Jetson TensorRT:         tensorrt         (included in JetPack SDK)
+
+# ── Sensor backends ────────────────────────────────────────────────────────
+# BME280 (I2C temp/humidity/pressure):
+#   pip install smbus2 RPi.bme280

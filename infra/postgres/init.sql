@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS datasets (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            TEXT NOT NULL,
     description     TEXT,
+    object_key      TEXT,
+    sha256          TEXT,
+    size_bytes      BIGINT,
+    meta_info       JSON,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -30,6 +34,7 @@ CREATE TABLE IF NOT EXISTS dataset_versions (
     object_key      TEXT NOT NULL,  -- MinIO: datasets/<dataset_id>/<version>/<file>
     sha256          TEXT NOT NULL,
     size_bytes      BIGINT NOT NULL,
+    meta_info       JSON,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(dataset_id, version)
 );
@@ -47,6 +52,10 @@ CREATE TABLE IF NOT EXISTS models (
     compile_error   TEXT,
     dataset_id      UUID REFERENCES datasets(id) ON DELETE SET NULL,
     dataset_version_id UUID REFERENCES dataset_versions(id) ON DELETE SET NULL,
+    base_architecture TEXT,
+    epochs          INT,
+    input_size      TEXT,
+    batch_size      INT,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -64,9 +73,9 @@ CREATE TABLE IF NOT EXISTS scripts (
 -- Despliegues
 CREATE TABLE IF NOT EXISTS deployments (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    device_id       UUID NOT NULL REFERENCES devices(id),
-    model_id        UUID NOT NULL REFERENCES models(id),
-    script_id       UUID NOT NULL REFERENCES scripts(id),
+    device_id       UUID NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
+    model_id        UUID NOT NULL REFERENCES models(id) ON DELETE CASCADE,
+    script_id       UUID NOT NULL REFERENCES scripts(id) ON DELETE CASCADE,
     status          TEXT NOT NULL DEFAULT 'pending',  -- pending | sent | running | failed
     sent_at         TIMESTAMPTZ,
     running_at      TIMESTAMPTZ,

@@ -39,8 +39,8 @@ export const useDataMode = create<DataStore>((set) => ({
       { value: 'yolo8s', label: 'YOLOv8 Small' }
     ],
     architectures: ['RPi 5', 'Hailo 8 M.2', 'Jetson Orin Nano', 'Coral TPU'],
-    sensors: ['RPi Camera Module 3', 'DHT22 Temperature', 'Ultrasonic HC-SR04', 'IMU 6-DOF'],
-    actuators: ['Relay Module 5V', 'SG90 Micro Servo', 'Active Buzzer', 'Stepper Motor'],
+    sensors: ['camera/rpi_camera_module_3', 'temperature/dht22_temperature', 'distance/ultrasonic_hcsr04', 'imu/imu_6dof'],
+    actuators: ['relay/relay_5v_module', 'servo/servo_sg90', 'buzzer/buzzer_alarm', 'led/led_status_rgb'],
     nodes: ['Gateway-ZoneA', 'Node-Cluster-01', 'Factory-Floor-Hub'],
 
     // ==========================================
@@ -57,16 +57,24 @@ export const useDataMode = create<DataStore>((set) => ({
     },
     halDocs: {
       python: [
-        { name: "aura.capture()", desc: "Initiates capture from the sensor." },
-        { name: "aura.process(frame)", desc: "Applies inference to the frame." },
-        { name: "aura.actuate(pin, val)", desc: "Sends a signal to an actuator." }
+        { name: "execute_inference(raw_input)", desc: "Runs neural network inference on the preprocessed input image/tensor using the loaded compiled model." },
+        { name: "get_hardware_info()", desc: "Returns a dictionary containing details of the auto-detected or configured edge hardware (e.g., hailo8, rpi_ai_cam)." },
+        { name: "get_last_inference()", desc: "Fetches the most recent cached inference output dictionary from the device runtime." },
+        { name: "load_model(model_path, hardware_type)", desc: "Loads a compiled model (e.g. .hef, .zip, .tflite) from MinIO to the target hardware accelerator." },
+        { name: "unload_model()", desc: "Safely unloads the active neural network from the hardware context to free resources." },
+        { name: "DeviceManager(config_path)", desc: "Instantiates the hardware manager. Methods: open_all(), close_all(), get_device(id), list_components()." }
       ],
       cpp: [
-        { name: "aura_capture()", desc: "Frame capture in C++." },
-        { name: "aura_process(void* ptr)", desc: "High-performance native processing." }
+        { name: "void* aura_load_model(const char* path, const char* hw_type)", desc: "Initializes the native context and loads the model into accelerator memory." },
+        { name: "void aura_unload_model()", desc: "Frees accelerator assets and releases native hardware context." },
+        { name: "int aura_execute_inference(void* input, void* output)", desc: "Performs high-performance zero-copy inference execution directly in C++." },
+        { name: "const char* aura_get_hardware_info()", desc: "Returns a JSON string containing detected hardware specifications." }
       ],
       java: [
-        { name: "Aura.capture()", desc: "Frame capture via JNI." }
+        { name: "AuraRuntime.loadModel(String path, String hwType)", desc: "Invokes the native JNI wrapper to load the model on the edge device accelerator." },
+        { name: "AuraRuntime.unloadModel()", desc: "Closes JNI runtime session and unloads model." },
+        { name: "List<Detection> AuraRuntime.executeInference(Object input)", desc: "Executes inference and returns a list of Detection objects." },
+        { name: "Map<String, Object> AuraRuntime.getHardwareInfo()", desc: "Queries JNI runtime for a Map representing hardware details." }
       ]
     },
 
@@ -103,14 +111,22 @@ export const useDataMode = create<DataStore>((set) => ({
         name: 'Defect-Detection-v2.pt',
         hardware_type: 'hailo8',
         compile_status: 'ready',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        base_architecture: 'yolov8n.yaml',
+        epochs: 100,
+        input_size: '640x640',
+        batch_size: 16
       },
       {
         id: 'mod-102',
         name: 'Forklift-Tracker.pt',
         hardware_type: 'jetson_orin_nano',
-        compile_status: 'compiling',
-        created_at: new Date().toISOString()
+        compile_status: 'training',
+        created_at: new Date().toISOString(),
+        base_architecture: 'yolov8s.yaml',
+        epochs: 50,
+        input_size: '640x640',
+        batch_size: 32
       }
     ],
     scripts: [

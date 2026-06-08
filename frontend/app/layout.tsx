@@ -5,6 +5,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "AURA Platform",
   description: "Edge AI Deployment Platform",
+  // Add this icons property:
+  icons: {
+    icon: "/logo.png", // Points directly to public/logo.png
+    apple: "/logo.png", // Optional: Also uses it for iOS home screen bookmarks
+  },
 };
 
 export default function RootLayout({

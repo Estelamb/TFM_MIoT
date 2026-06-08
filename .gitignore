@@ -18,3 +18,22 @@ shared/proto_gen/__pycache__/
 .vscode/
 .venv/
 .venv_ubuntu/
+
+# YOLO / Ultralytics outputs & weights
+runs/
+run/
+*.pt
+datasets/
+data/
+
+# Local configuration overrides
+docker-compose.override.yml
+.env.*
+!.env.example
+
+# IDEs & System files
+.idea/
+Thumbs.db
+
+# Logs
+*.log

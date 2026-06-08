@@ -1,0 +1,39 @@
+# Git
+.git
+.github
+
+# Python
+.venv
+venv
+ENV
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.eggs/
+
+# Node/Frontend
+**/node_modules/
+frontend/.next/
+frontend/out/
+
+# Environments / Configs / Credentials
+.env
+.env*.local
+
+# Database/Storage
+postgres-data/
+mongo-data/
+minio-data/
+mosquitto-data/
+redis-data/
+data/
+
+# Logs & temp
+*.log
+.DS_Store
+Thumbs.db

@@ -1,4 +1,5 @@
 # Run from project root: docker compose -f docker/ai-service.yml up -d
+name: aura
 networks:
   aura-net:
     driver: bridge

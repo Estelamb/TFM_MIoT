@@ -44,6 +44,26 @@ class CompilationServiceStub(object):
                 request_serializer=compilation__pb2.GetCompilationStatusRequest.SerializeToString,
                 response_deserializer=compilation__pb2.CompileModelResponse.FromString,
                 _registered_method=True)
+        self.TrainModel = channel.unary_unary(
+                '/aura.compilation.v1.CompilationService/TrainModel',
+                request_serializer=compilation__pb2.TrainModelRequest.SerializeToString,
+                response_deserializer=compilation__pb2.TrainModelResponse.FromString,
+                _registered_method=True)
+        self.GetSupportedHardware = channel.unary_unary(
+                '/aura.compilation.v1.CompilationService/GetSupportedHardware',
+                request_serializer=compilation__pb2.GetSupportedHardwareRequest.SerializeToString,
+                response_deserializer=compilation__pb2.GetSupportedHardwareResponse.FromString,
+                _registered_method=True)
+        self.GetSupportedSensors = channel.unary_unary(
+                '/aura.compilation.v1.CompilationService/GetSupportedSensors',
+                request_serializer=compilation__pb2.GetSupportedSensorsRequest.SerializeToString,
+                response_deserializer=compilation__pb2.GetSupportedSensorsResponse.FromString,
+                _registered_method=True)
+        self.GetSupportedActuators = channel.unary_unary(
+                '/aura.compilation.v1.CompilationService/GetSupportedActuators',
+                request_serializer=compilation__pb2.GetSupportedActuatorsRequest.SerializeToString,
+                response_deserializer=compilation__pb2.GetSupportedActuatorsResponse.FromString,
+                _registered_method=True)
 
 
 class CompilationServiceServicer(object):
@@ -61,6 +81,30 @@ class CompilationServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def TrainModel(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetSupportedHardware(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetSupportedSensors(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetSupportedActuators(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_CompilationServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -73,6 +117,26 @@ def add_CompilationServiceServicer_to_server(servicer, server):
                     servicer.GetCompilationStatus,
                     request_deserializer=compilation__pb2.GetCompilationStatusRequest.FromString,
                     response_serializer=compilation__pb2.CompileModelResponse.SerializeToString,
+            ),
+            'TrainModel': grpc.unary_unary_rpc_method_handler(
+                    servicer.TrainModel,
+                    request_deserializer=compilation__pb2.TrainModelRequest.FromString,
+                    response_serializer=compilation__pb2.TrainModelResponse.SerializeToString,
+            ),
+            'GetSupportedHardware': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetSupportedHardware,
+                    request_deserializer=compilation__pb2.GetSupportedHardwareRequest.FromString,
+                    response_serializer=compilation__pb2.GetSupportedHardwareResponse.SerializeToString,
+            ),
+            'GetSupportedSensors': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetSupportedSensors,
+                    request_deserializer=compilation__pb2.GetSupportedSensorsRequest.FromString,
+                    response_serializer=compilation__pb2.GetSupportedSensorsResponse.SerializeToString,
+            ),
+            'GetSupportedActuators': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetSupportedActuators,
+                    request_deserializer=compilation__pb2.GetSupportedActuatorsRequest.FromString,
+                    response_serializer=compilation__pb2.GetSupportedActuatorsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -129,6 +193,114 @@ class CompilationService(object):
             '/aura.compilation.v1.CompilationService/GetCompilationStatus',
             compilation__pb2.GetCompilationStatusRequest.SerializeToString,
             compilation__pb2.CompileModelResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def TrainModel(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aura.compilation.v1.CompilationService/TrainModel',
+            compilation__pb2.TrainModelRequest.SerializeToString,
+            compilation__pb2.TrainModelResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetSupportedHardware(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aura.compilation.v1.CompilationService/GetSupportedHardware',
+            compilation__pb2.GetSupportedHardwareRequest.SerializeToString,
+            compilation__pb2.GetSupportedHardwareResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetSupportedSensors(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aura.compilation.v1.CompilationService/GetSupportedSensors',
+            compilation__pb2.GetSupportedSensorsRequest.SerializeToString,
+            compilation__pb2.GetSupportedSensorsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetSupportedActuators(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aura.compilation.v1.CompilationService/GetSupportedActuators',
+            compilation__pb2.GetSupportedActuatorsRequest.SerializeToString,
+            compilation__pb2.GetSupportedActuatorsResponse.FromString,
             options,
             channel_credentials,
             insecure,

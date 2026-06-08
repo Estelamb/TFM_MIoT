@@ -13,6 +13,8 @@ import miniopy_async as minio_lib
 
 _client = None
 _bucket_map: dict[str, str] = {}
+_access_key = None
+_secret_key = None
 
 
 def init_minio(
@@ -36,7 +38,9 @@ def init_minio(
                     actual bucket name, e.g.
                     ``{"models": "models", "compiled": "compiled"}``.
     """
-    global _client, _bucket_map
+    global _client, _bucket_map, _access_key, _secret_key
+    _access_key = access_key
+    _secret_key = secret_key
     _client = minio_lib.Minio(
         endpoint, access_key=access_key, secret_key=secret_key, secure=secure
     )
@@ -98,7 +102,28 @@ async def presigned_url(
     Returns:
         A presigned HTTPS/HTTP URL string valid for ``expiry_seconds``.
     """
+    import os
+    from urllib.parse import urlparse, urlunparse
     bucket = _bucket_map[bucket_key]
-    return await _client.presigned_get_object(
-        bucket, object_key, expires=timedelta(seconds=expiry_seconds)
-    )
+    public_url = os.getenv("MINIO_PUBLIC_URL")
+    if public_url:
+        parsed_public = urlparse(public_url)
+        host = parsed_public.netloc
+        scheme = parsed_public.scheme
+        
+        tmp_client = minio_lib.Minio(
+            host, 
+            access_key=_access_key, 
+            secret_key=_secret_key, 
+            secure=(scheme == "https"),
+            region="us-east-1"
+        )
+        url = await tmp_client.presigned_get_object(
+            bucket, object_key, expires=timedelta(seconds=expiry_seconds)
+        )
+    else:
+        url = await _client.presigned_get_object(
+            bucket, object_key, expires=timedelta(seconds=expiry_seconds)
+        )
+        
+    return url

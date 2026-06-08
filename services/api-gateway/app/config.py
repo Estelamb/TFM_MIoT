@@ -20,7 +20,9 @@ class Settings(BaseSettings):
     minio_bucket_compiled: str = "compiled"
     minio_bucket_scripts: str = "scripts"
     minio_bucket_datasets: str = "datasets"
+    minio_bucket_base_models: str = "base-models"
     log_level: str = "DEBUG"
+    redis_url: str = "redis://localhost:6379"
 
     class Config:
         env_file = ".env"

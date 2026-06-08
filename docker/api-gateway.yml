@@ -1,5 +1,6 @@
 # Run from project root: docker compose -f docker/api-gateway.yml up -d
 # Requiere todos los servicios gRPC corriendo (ver puertos en .env o ajustar variables)
+name: aura
 networks:
   aura-net:
     driver: bridge

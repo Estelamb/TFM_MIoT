@@ -25,14 +25,58 @@ async def upload_script(
 @router.get("")
 async def list_scripts(_=Depends(verify_token)):
     r = await get_stub("script").ListScripts(script_pb2.ListScriptsRequest())
-    return [{"id": s.id, "name": s.name, "hardware_type": s.hardware_type, "created_at": s.created_at}
-            for s in r.scripts]
+    from shared.utils.minio import get_minio
+    from app.config import get_settings
+    s_settings = get_settings()
+    minio = get_minio()
+    
+    scripts_list = []
+    for s in r.scripts:
+        content = ""
+        if s.script_key:
+            try:
+                resp = await minio.get_object(s_settings.minio_bucket_scripts, s.script_key)
+                content_bytes = await resp.read()
+                content = content_bytes.decode("utf-8")
+            except Exception:
+                pass
+        scripts_list.append({
+            "id": s.id,
+            "name": s.name,
+            "description": s.description,
+            "hardware_type": s.hardware_type,
+            "script_sha256": s.script_sha256,
+            "created_at": s.created_at,
+            "content": content
+        })
+    return scripts_list
 
 @router.get("/{script_id}")
 async def get_script(script_id: str, _=Depends(verify_token)):
     s = await get_stub("script").GetScript(script_pb2.GetScriptRequest(id=script_id))
-    return {"id": s.id, "name": s.name, "description": s.description,
-            "hardware_type": s.hardware_type, "script_sha256": s.script_sha256, "created_at": s.created_at}
+    from shared.utils.minio import get_minio
+    from app.config import get_settings
+    s_settings = get_settings()
+    minio = get_minio()
+    
+    content = ""
+    if s.script_key:
+        try:
+            resp = await minio.get_object(s_settings.minio_bucket_scripts, s.script_key)
+            content_bytes = await resp.read()
+            content = content_bytes.decode("utf-8")
+        except Exception:
+            pass
+            
+    return {
+        "id": s.id,
+        "name": s.name,
+        "description": s.description,
+        "hardware_type": s.hardware_type,
+        "script_sha256": s.script_sha256,
+        "created_at": s.created_at,
+        "content": content
+    }
 
 @router.delete("/{script_id}", status_code=204)
 async def delete_script(script_id: str, _=Depends(verify_token)):

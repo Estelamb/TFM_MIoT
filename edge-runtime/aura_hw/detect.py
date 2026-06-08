@@ -12,7 +12,11 @@ Detection order
 3. ``/etc/nv_tegra_release`` → ``jetson_orin_nano``
 4. ``libcamera-hello --list-cameras`` with *imx500* in output → ``rpi_ai_cam``
 5. ``/proc/device-tree/model`` containing *raspberry* → ``rpi``
-6. Fallback → ``unknown`` (TFLite CPU backend used)
+6. Fallback → ``unknown``
+
+If the result is ``"unknown"``, :func:`~aura_hw.runtime.load_model` will
+raise :exc:`RuntimeError`.  Set ``AURA_HARDWARE_TYPE`` to a supported
+target to override auto-detection.
 """
 import os
 import subprocess
@@ -38,7 +42,7 @@ def detect_hardware() -> str:
 
     Note:
         Set the environment variable ``AURA_HARDWARE_TYPE`` to bypass
-        auto-detection entirely, which is useful for local simulation::
+        auto-detection entirely::
 
             AURA_HARDWARE_TYPE=hailo8 python agent.py
     """

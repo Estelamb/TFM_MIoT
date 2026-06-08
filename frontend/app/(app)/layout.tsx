@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { TopBar } from "@/components/TopBar";
-import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
+import { QueryClient, QueryClientProvider, useQueryClient, useQuery } from "@tanstack/react-query";
+import { cn, HW_LABELS } from "@/lib/utils";
 import { useDataMode } from "@/hooks/useDataMode";
 import { Button } from "@/components/ui/Button";
+import { api } from "@/lib/api";
 
 const queryClient = new QueryClient({ 
   defaultOptions: { 
@@ -14,22 +15,51 @@ const queryClient = new QueryClient({
   } 
 });
 
+function DynamicLabelsLoader() {
+  const { data: labels } = useQuery({
+    queryKey: ["hw-labels"],
+    queryFn: async () => {
+      try {
+        const response = await api.get<Record<string, string>>("/api/devices/labels");
+        return response.data;
+      } catch {
+        return {};
+      }
+    },
+    enabled: useDataMode.getState().mode === "real",
+  });
+
+  useEffect(() => {
+    if (labels) {
+      Object.assign(HW_LABELS, labels);
+    }
+  }, [labels]);
+
+  return null;
+}
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [hasToken, setHasToken] = useState<boolean | null>(null);
 
   useEffect(() => {
     setMounted(true);
-    if (!localStorage.getItem("aura_token")) {
+    const token = localStorage.getItem("aura_token");
+    if (!token) {
+      setHasToken(false);
       router.push("/login");
+    } else {
+      setHasToken(true);
     }
   }, [router]);
 
-  if (!mounted) return null;
+  if (!mounted || hasToken === null || hasToken === false) return null;
 
   return (
     <QueryClientProvider client={queryClient}>
+      <DynamicLabelsLoader />
       <div className="flex h-screen overflow-hidden bg-slate-100 dark:bg-gray-950">
         
         {/* ... Sidebar y Main ... */}

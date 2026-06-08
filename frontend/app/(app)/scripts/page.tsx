@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { getScripts, deleteScript, uploadScript, HARDWARE_TYPES } from "@/lib/api";
+import { getScripts, deleteScript, uploadScript, getHardwareTypes } from "@/lib/api";
 import { useDataMode } from "@/hooks/useDataMode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -24,7 +24,7 @@ const Editor = dynamic(() => import("@monaco-editor/react"), {
   ),
 });
 
-const HW_OPTIONS = HARDWARE_TYPES.map(v => ({ value: v, label: HW_LABELS[v] || v }));
+
 
 const SCRIPT_TEMPLATE = `"""
 AURA Edge Script Template
@@ -81,6 +81,13 @@ export default function ScriptsPage() {
   const isDemo = mode === "demo";
   const qc = useQueryClient();
 
+  const { data: hardwareTypes = [] } = useQuery({
+    queryKey: ["hardwareTypes"],
+    queryFn: getHardwareTypes,
+  });
+
+  const hwOptions = hardwareTypes.map(v => ({ value: v, label: HW_LABELS[v] || v }));
+
   const { data: realScripts = [], isLoading } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
   const scripts = isDemo ? demoData.scripts : realScripts;
 
@@ -110,10 +117,11 @@ export default function ScriptsPage() {
       setUploadOpen(false);
       setUploadFile(null);
       setUploadForm({ name: "", description: "", hardware_type: "hailo8" });
+      setEditingScript(null); // Te devuelve a la lista principal al terminar de subir
     },
   });
 
-  // Save from editor: download as file (PoC — no direct update API endpoint)
+  // Descarga local
   const saveFromEditor = () => {
     const ext = lang === "python" ? "py" : lang === "java" ? "java" : "cpp";
     const blob = new Blob([code], { type: "text/plain" });
@@ -124,6 +132,7 @@ export default function ScriptsPage() {
     a.click();
   };
 
+  // Cargar archivo local al editor
   const handleEditorFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -134,12 +143,24 @@ export default function ScriptsPage() {
   };
 
   const openNewScript = () => {
-    if (isDemo) {
-      setEditingScript({ name: "New Script" });
-      setCode(SCRIPT_TEMPLATE);
-    } else {
-      setUploadOpen(true);
-    }
+    setEditingScript({ name: "New Script", hardware_type: "hailo8" });
+    setCode(SCRIPT_TEMPLATE);
+  };
+
+  // Coge el código en memoria, crea un archivo virtual y abre el modal de confirmación
+  const handleSaveToPlatformClick = () => {
+    const ext = lang === "python" ? "py" : lang === "java" ? "java" : "cpp";
+    const baseName = editingScript.name === "New Script" ? "script" : editingScript.name;
+    const blob = new Blob([code], { type: "text/plain" });
+    const file = new File([blob], `${baseName}.${ext}`, { type: "text/plain" });
+
+    setUploadFile(file);
+    setUploadForm({
+      name: editingScript.name === "New Script" ? "" : `${editingScript.name}_v2`,
+      description: editingScript.description || "",
+      hardware_type: editingScript.hardware_type || "hailo8"
+    });
+    setUploadOpen(true);
   };
 
   // EDITOR VIEW
@@ -158,20 +179,23 @@ export default function ScriptsPage() {
           </div>
           <div className="flex gap-2 items-center">
             {!isDemo && (
-              <div className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800/50">
-                <Info size={12} /> Save downloads the file — upload via Scripts page
+              <div className="hidden md:flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800/50 mr-2">
+                <Info size={12} /> Save to Platform creates a new script version
               </div>
             )}
             <input type="file" ref={editorFileRef} className="hidden" accept=".py,.cpp,.java" onChange={handleEditorFileUpload} />
             <Button variant="outline" size="sm" onClick={() => editorFileRef.current?.click()}>
-              <Upload size={14} className="mr-2" /> Upload
+              <Upload size={14} className="mr-2" /> Load Local
             </Button>
             <Button variant="outline" size="sm" onClick={saveFromEditor}>
               <Download size={14} className="mr-2" /> Download
             </Button>
-            <Button size="sm" onClick={saveFromEditor}>
-              <Save size={14} className="mr-2" /> Save
-            </Button>
+            {/* Solo mostramos el guardado en plataforma si estamos en el modo real */}
+            {!isDemo && (
+              <Button size="sm" className="bg-orange-600 hover:bg-orange-700" onClick={handleSaveToPlatformClick}>
+                <Save size={14} className="mr-2" /> Save to Platform
+              </Button>
+            )}
           </div>
         </div>
 
@@ -180,7 +204,7 @@ export default function ScriptsPage() {
             <Editor height="100%" language={lang} theme="vs-dark" value={code} onChange={v => setCode(v || "")} />
           </div>
           {activeDocs.length > 0 && (
-            <div className="w-80 bg-gray-50 dark:bg-gray-950 p-6 overflow-y-auto">
+            <div className="w-80 bg-gray-50 dark:bg-gray-950 p-6 overflow-y-auto hidden lg:block">
               <div className="flex items-center gap-2 mb-6 text-orange-500 font-bold">
                 <BookOpen size={20} /> HAL API: {lang.toUpperCase()}
               </div>
@@ -215,9 +239,16 @@ export default function ScriptsPage() {
             Manage inference logic and HAL integration scripts.
           </p>
         </div>
-        <Button onClick={openNewScript} className="gap-2 shrink-0">
-          <Plus size={16} /> {isDemo ? "New Script" : "Upload Script"}
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          {!isDemo && (
+            <Button variant="outline" onClick={() => setUploadOpen(true)} className="gap-2 shrink-0 border-gray-200 dark:border-gray-800">
+              <Upload size={16} /> Upload File
+            </Button>
+          )}
+          <Button onClick={openNewScript} className="gap-2 shrink-0">
+            <Code2 size={16} /> {isDemo ? "New Script" : "Write Script"}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -227,7 +258,7 @@ export default function ScriptsPage() {
             <div className="text-center py-10 text-gray-500">Loading scripts...</div>
           ) : scripts.length === 0 ? (
             <Card className="border-dashed border-2 bg-transparent shadow-none opacity-60">
-              <div className="flex items-center justify-between p-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700">
                     <FileCode size={20} className="text-gray-400" />
@@ -240,9 +271,16 @@ export default function ScriptsPage() {
                     <p className="text-xs text-gray-400">No logic defined</p>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="gap-2" onClick={openNewScript}>
-                  <Plus size={14} /> {isDemo ? "Create First Script" : "Upload Script"}
-                </Button>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  {!isDemo && (
+                    <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto" onClick={() => setUploadOpen(true)}>
+                      <Upload size={14} /> Upload File
+                    </Button>
+                  )}
+                  <Button size="sm" className="gap-2 w-full sm:w-auto" onClick={openNewScript}>
+                    <Code2 size={14} /> {isDemo ? "Create First Script" : "Write Script"}
+                  </Button>
+                </div>
               </div>
             </Card>
           ) : (
@@ -311,7 +349,7 @@ export default function ScriptsPage() {
       </div>
 
       {/* Upload modal (real mode) */}
-      <Modal open={uploadOpen} onClose={() => { setUploadOpen(false); setUploadFile(null); }} title="Upload Script">
+      <Modal open={uploadOpen} onClose={() => { setUploadOpen(false); setUploadFile(null); }} title="Save Script">
         <form onSubmit={e => { e.preventDefault(); if (uploadFile) uploadMutation.mutate(); }} className="flex flex-col gap-5 pt-4">
           <Input
             label="Script name"
@@ -330,7 +368,7 @@ export default function ScriptsPage() {
             label="Target hardware"
             value={uploadForm.hardware_type}
             onChange={e => setUploadForm(f => ({ ...f, hardware_type: e.target.value }))}
-            options={HW_OPTIONS}
+            options={hwOptions}
           />
           <div
             className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 flex flex-col items-center cursor-pointer hover:border-orange-400 transition-colors"
@@ -340,10 +378,10 @@ export default function ScriptsPage() {
             <p className="text-sm text-gray-500">
               {uploadFile ? <span className="text-orange-500 font-medium">{uploadFile.name}</span> : "Click to upload .py file"}
             </p>
-            <input ref={uploadFileRef} type="file" accept=".py" className="hidden" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
+            <input ref={uploadFileRef} type="file" accept=".py,.cpp,.java" className="hidden" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
           </div>
           <Button type="submit" className="w-full" disabled={!uploadFile || uploadMutation.isPending} loading={uploadMutation.isPending}>
-            Upload Script
+            Upload to Platform
           </Button>
         </form>
       </Modal>

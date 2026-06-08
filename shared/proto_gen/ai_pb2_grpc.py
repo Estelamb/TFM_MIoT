@@ -79,25 +79,25 @@ class AIServiceStub(object):
                 request_serializer=ai__pb2.DeleteDatasetRequest.SerializeToString,
                 response_deserializer=ai__pb2.DeleteDatasetResponse.FromString,
                 _registered_method=True)
-        self.UploadDatasetVersion = channel.unary_unary(
-                '/aura.ai.v1.AIService/UploadDatasetVersion',
-                request_serializer=ai__pb2.UploadDatasetVersionRequest.SerializeToString,
-                response_deserializer=ai__pb2.DatasetVersionResponse.FromString,
+        self.SetDatasetFile = channel.unary_unary(
+                '/aura.ai.v1.AIService/SetDatasetFile',
+                request_serializer=ai__pb2.SetDatasetFileRequest.SerializeToString,
+                response_deserializer=ai__pb2.DatasetResponse.FromString,
                 _registered_method=True)
-        self.GetDatasetVersion = channel.unary_unary(
-                '/aura.ai.v1.AIService/GetDatasetVersion',
-                request_serializer=ai__pb2.GetDatasetVersionRequest.SerializeToString,
-                response_deserializer=ai__pb2.DatasetVersionResponse.FromString,
-                _registered_method=True)
-        self.ListDatasetVersions = channel.unary_unary(
-                '/aura.ai.v1.AIService/ListDatasetVersions',
-                request_serializer=ai__pb2.ListDatasetVersionsRequest.SerializeToString,
-                response_deserializer=ai__pb2.ListDatasetVersionsResponse.FromString,
-                _registered_method=True)
-        self.AssociateModelDatasetVersion = channel.unary_unary(
-                '/aura.ai.v1.AIService/AssociateModelDatasetVersion',
-                request_serializer=ai__pb2.AssociateModelDatasetVersionRequest.SerializeToString,
+        self.AssociateModelDataset = channel.unary_unary(
+                '/aura.ai.v1.AIService/AssociateModelDataset',
+                request_serializer=ai__pb2.AssociateModelDatasetRequest.SerializeToString,
                 response_deserializer=ai__pb2.ModelResponse.FromString,
+                _registered_method=True)
+        self.UpdateModel = channel.unary_unary(
+                '/aura.ai.v1.AIService/UpdateModel',
+                request_serializer=ai__pb2.UpdateModelRequest.SerializeToString,
+                response_deserializer=ai__pb2.ModelResponse.FromString,
+                _registered_method=True)
+        self.UpdateDataset = channel.unary_unary(
+                '/aura.ai.v1.AIService/UpdateDataset',
+                request_serializer=ai__pb2.UpdateDatasetRequest.SerializeToString,
+                response_deserializer=ai__pb2.DatasetResponse.FromString,
                 _registered_method=True)
 
 
@@ -158,25 +158,25 @@ class AIServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def UploadDatasetVersion(self, request, context):
+    def SetDatasetFile(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetDatasetVersion(self, request, context):
+    def AssociateModelDataset(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ListDatasetVersions(self, request, context):
+    def UpdateModel(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def AssociateModelDatasetVersion(self, request, context):
+    def UpdateDataset(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -230,25 +230,25 @@ def add_AIServiceServicer_to_server(servicer, server):
                     request_deserializer=ai__pb2.DeleteDatasetRequest.FromString,
                     response_serializer=ai__pb2.DeleteDatasetResponse.SerializeToString,
             ),
-            'UploadDatasetVersion': grpc.unary_unary_rpc_method_handler(
-                    servicer.UploadDatasetVersion,
-                    request_deserializer=ai__pb2.UploadDatasetVersionRequest.FromString,
-                    response_serializer=ai__pb2.DatasetVersionResponse.SerializeToString,
+            'SetDatasetFile': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetDatasetFile,
+                    request_deserializer=ai__pb2.SetDatasetFileRequest.FromString,
+                    response_serializer=ai__pb2.DatasetResponse.SerializeToString,
             ),
-            'GetDatasetVersion': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetDatasetVersion,
-                    request_deserializer=ai__pb2.GetDatasetVersionRequest.FromString,
-                    response_serializer=ai__pb2.DatasetVersionResponse.SerializeToString,
-            ),
-            'ListDatasetVersions': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListDatasetVersions,
-                    request_deserializer=ai__pb2.ListDatasetVersionsRequest.FromString,
-                    response_serializer=ai__pb2.ListDatasetVersionsResponse.SerializeToString,
-            ),
-            'AssociateModelDatasetVersion': grpc.unary_unary_rpc_method_handler(
-                    servicer.AssociateModelDatasetVersion,
-                    request_deserializer=ai__pb2.AssociateModelDatasetVersionRequest.FromString,
+            'AssociateModelDataset': grpc.unary_unary_rpc_method_handler(
+                    servicer.AssociateModelDataset,
+                    request_deserializer=ai__pb2.AssociateModelDatasetRequest.FromString,
                     response_serializer=ai__pb2.ModelResponse.SerializeToString,
+            ),
+            'UpdateModel': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateModel,
+                    request_deserializer=ai__pb2.UpdateModelRequest.FromString,
+                    response_serializer=ai__pb2.ModelResponse.SerializeToString,
+            ),
+            'UpdateDataset': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateDataset,
+                    request_deserializer=ai__pb2.UpdateDatasetRequest.FromString,
+                    response_serializer=ai__pb2.DatasetResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -505,7 +505,7 @@ class AIService(object):
             _registered_method=True)
 
     @staticmethod
-    def UploadDatasetVersion(request,
+    def SetDatasetFile(request,
             target,
             options=(),
             channel_credentials=None,
@@ -518,9 +518,9 @@ class AIService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/aura.ai.v1.AIService/UploadDatasetVersion',
-            ai__pb2.UploadDatasetVersionRequest.SerializeToString,
-            ai__pb2.DatasetVersionResponse.FromString,
+            '/aura.ai.v1.AIService/SetDatasetFile',
+            ai__pb2.SetDatasetFileRequest.SerializeToString,
+            ai__pb2.DatasetResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -532,7 +532,7 @@ class AIService(object):
             _registered_method=True)
 
     @staticmethod
-    def GetDatasetVersion(request,
+    def AssociateModelDataset(request,
             target,
             options=(),
             channel_credentials=None,
@@ -545,63 +545,63 @@ class AIService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/aura.ai.v1.AIService/GetDatasetVersion',
-            ai__pb2.GetDatasetVersionRequest.SerializeToString,
-            ai__pb2.DatasetVersionResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def ListDatasetVersions(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/aura.ai.v1.AIService/ListDatasetVersions',
-            ai__pb2.ListDatasetVersionsRequest.SerializeToString,
-            ai__pb2.ListDatasetVersionsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def AssociateModelDatasetVersion(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/aura.ai.v1.AIService/AssociateModelDatasetVersion',
-            ai__pb2.AssociateModelDatasetVersionRequest.SerializeToString,
+            '/aura.ai.v1.AIService/AssociateModelDataset',
+            ai__pb2.AssociateModelDatasetRequest.SerializeToString,
             ai__pb2.ModelResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateModel(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aura.ai.v1.AIService/UpdateModel',
+            ai__pb2.UpdateModelRequest.SerializeToString,
+            ai__pb2.ModelResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateDataset(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aura.ai.v1.AIService/UpdateDataset',
+            ai__pb2.UpdateDatasetRequest.SerializeToString,
+            ai__pb2.DatasetResponse.FromString,
             options,
             channel_credentials,
             insecure,

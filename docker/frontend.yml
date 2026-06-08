@@ -1,5 +1,6 @@
 # Run from project root: docker compose -f docker/frontend.yml up -d
 # Requiere que el api-gateway esté corriendo en localhost:8000
+name: aura
 networks:
   aura-net:
     driver: bridge

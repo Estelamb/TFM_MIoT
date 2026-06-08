@@ -1,5 +1,6 @@
 # Run from project root: docker compose -f docker/compilation-service.yml up -d
 # Requiere ai-service corriendo en localhost:50052 (o ajustar AI_SERVICE_GRPC)
+name: aura
 networks:
   aura-net:
     driver: bridge

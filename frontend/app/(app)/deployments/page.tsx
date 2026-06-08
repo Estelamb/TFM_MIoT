@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDeployments, getDevices, getModels, getScripts, createDeployment } from "@/lib/api";
+import { getDeployments, getDevices, getModels, getScripts, createDeployment, deleteDeployment } from "@/lib/api";
 import { useDataMode } from "@/hooks/useDataMode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/Badge";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { Modal } from "@/components/ui/Modal";
 import { HW_LABELS, fmtRelative } from "@/lib/utils";
-import { Rocket, Plus, Check, AlertTriangle } from "lucide-react";
+import { Rocket, Plus, Check, AlertTriangle, Trash2 } from "lucide-react";
 
 const STATUS_BADGE: Record<string, "accent" | "success" | "danger" | "muted" | "info"> = {
   running: "accent", sent: "info", pending: "muted", failed: "danger",
@@ -26,14 +26,14 @@ export default function DeploymentsPage() {
   const isDemo = mode === "demo";
 
   const { data: realDeployments = [], isLoading } = useQuery({ queryKey: ["deployments"], queryFn: getDeployments, refetchInterval: 5000 });
-  const { data: realDevices = [] }  = useQuery({ queryKey: ["devices"],  queryFn: getDevices });
-  const { data: realModels = [] }   = useQuery({ queryKey: ["models"],   queryFn: getModels });
-  const { data: realScripts = [] }  = useQuery({ queryKey: ["scripts"],  queryFn: getScripts });
+  const { data: realDevices = [] } = useQuery({ queryKey: ["devices"], queryFn: getDevices });
+  const { data: realModels = [] } = useQuery({ queryKey: ["models"], queryFn: getModels });
+  const { data: realScripts = [] } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
 
   const deployments = isDemo ? demoData.deployments : realDeployments;
-  const devices     = isDemo ? demoData.devices     : realDevices;
-  const models      = isDemo ? demoData.models      : realModels;
-  const scripts     = isDemo ? demoData.scripts     : realScripts;
+  const devices = isDemo ? demoData.devices : realDevices;
+  const models = isDemo ? demoData.models : realModels;
+  const scripts = isDemo ? demoData.scripts : realScripts;
 
   const [open, setOpen] = useState(false);
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
@@ -52,13 +52,18 @@ export default function DeploymentsPage() {
     onError: (e: any) => setDeployErr(e?.response?.data?.detail || "Deployment failed"),
   });
 
+  const cancelDeploymentMutation = useMutation({
+    mutationFn: (id: string) => deleteDeployment(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["deployments"] }),
+  });
+
   const handleDeploy = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedDeviceIds.length === 0) return;
     setDeployErr("");
     setDeployingCount(selectedDeviceIds.length);
     for (const device_id of selectedDeviceIds) {
-      await deployMutation.mutateAsync(device_id).catch(() => {});
+      await deployMutation.mutateAsync(device_id).catch(() => { });
     }
     qc.invalidateQueries({ queryKey: ["deployments"] });
     setOpen(false);
@@ -75,7 +80,7 @@ export default function DeploymentsPage() {
   };
 
   const getDeviceName = (id: string) => devices.find((d: any) => d.id === id)?.name || id.slice(0, 8);
-  const getModelName  = (id: string) => models.find((m: any) => m.id === id)?.name  || id.slice(0, 8);
+  const getModelName = (id: string) => models.find((m: any) => m.id === id)?.name || id.slice(0, 8);
   const getScriptName = (id: string) => scripts.find((s: any) => s.id === id)?.name || id.slice(0, 8);
 
   return (
@@ -142,9 +147,20 @@ export default function DeploymentsPage() {
                     )}
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                  <Badge variant={STATUS_VARIANT[d.status] || "default"}>{d.status}</Badge>
-                  <span className="text-[10px] text-gray-400">{fmtRelative(d.created_at)}</span>
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col items-end gap-1">
+                    <Badge variant={STATUS_VARIANT[d.status] || "default"}>{d.status}</Badge>
+                    <span className="text-[10px] text-gray-400">{fmtRelative(d.created_at)}</span>
+                  </div>
+                  {d.status === "pending" && (
+                    <button
+                      onClick={() => cancelDeploymentMutation.mutate(d.id)}
+                      className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                      title="Cancel Deployment"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
                 </div>
               </div>
             </Card>
@@ -171,11 +187,10 @@ export default function DeploymentsPage() {
                 devices.map((d: any) => (
                   <button
                     key={d.id} type="button" onClick={() => toggleDevice(d.id)}
-                    className={`flex items-center gap-2 p-2 rounded-md text-sm border text-left ${
-                      selectedDeviceIds.includes(d.id)
+                    className={`flex items-center gap-2 p-2 rounded-md text-sm border text-left ${selectedDeviceIds.includes(d.id)
                         ? "bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                         : "bg-gray-50 border-transparent dark:bg-gray-800"
-                    }`}
+                      }`}
                   >
                     {selectedDeviceIds.includes(d.id) && <Check size={14} />}
                     <div>
@@ -190,7 +205,7 @@ export default function DeploymentsPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Select
-              label="Model (compiled)"
+              label="Model"
               value={modelId}
               onChange={e => setModelId(e.target.value)}
               options={[

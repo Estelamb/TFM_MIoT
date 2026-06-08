@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+import redis.asyncio as aioredis
 from app.auth.jwt import verify_token
 from app.stubs import get_stub
 from shared.proto_gen import deployment_pb2
@@ -38,3 +39,15 @@ async def get_deployment(deployment_id: str, _=Depends(verify_token)):
     return {"id": d.id, "device_id": d.device_id, "model_id": d.model_id,
             "script_id": d.script_id, "status": d.status, "error_msg": d.error_msg,
             "sent_at": d.sent_at, "running_at": d.running_at, "created_at": d.created_at}
+
+
+@router.delete("/{deployment_id}", status_code=204)
+async def delete_deployment(deployment_id: str, _=Depends(verify_token)):
+    from app.config import get_settings
+    s_settings = get_settings()
+    try:
+        redis_client = aioredis.from_url(s_settings.redis_url)
+        await redis_client.set(f"cancel:deploy:{deployment_id}", "1", ex=300)
+        await redis_client.close()
+    except Exception:
+        pass

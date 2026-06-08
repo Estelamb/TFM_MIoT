@@ -220,3 +220,86 @@ Validación de payloads: listener usa .get(...) y no valida tipos fuertemente; p
 Relación con device-service: device_states es independiente; sin embargo, puedes mantener sincronización (p. ej. crear device en device-service cuando se vea por primera vez en monitoring) si lo quieres.
 
 ## Falta añadir coordenadas GPS en la telemetría, para poder mostrar la ubicación de los dispositivos en un mapa en el frontend. Por ahora solo se recoge CPU/RAM, pero la idea es que en el futuro se puedan añadir más métricas y datos contextuales.
+
+
+
+
+El entrenamiento y la compilación se ejecutan en el compilation-service y no en el ai-service por razones de diseño arquitectónico y de gestión de recursos:
+
+Aislamiento de Recursos (CPU/GPU) y Escalabilidad: El entrenamiento (PyTorch/YOLO) y la compilación (MCT, TensorRT, Hailo Compiler) son operaciones extremadamente pesadas. Si se ejecutaran en el ai-service, este podría quedarse sin memoria (OOM), consumir toda la CPU/GPU y congelar el API Gateway y el resto de la plataforma. Al separarlo en compilation-service, este servicio funciona como un worker asíncrono (utilizando Redis y arq) con colas de ejecución. El ai-service sigue siendo ligero y responde instantáneamente a las peticiones del usuario.
+
+Acceso a Hardware Específico (GPU/CUDA): Solo el compilation-service necesita estar desplegado con acceso directo a la tarjeta gráfica NVIDIA (usando nvidia-container-toolkit) y montar sockets como /var/run/docker.sock para levantar los compiladores de hardware en contenedores. El ai-service no requiere controladores CUDA ni hardware dedicado, por lo que puede escalar horizontalmente en cualquier máquina convencional.
+
+Independencia de Dependencias: El compilation-service contiene dependencias de gran volumen como torch, torchvision y compiladores específicos de hardware, haciendo que su imagen Docker sea muy grande. Mantener el ai-service libre de estas dependencias simplifica su mantenimiento y agiliza sus despliegues.
+
+5:40 PM
+Que es lo que hace ai-service y que es lo que hace compilation-service?
+5:41 PM
+Aquí tienes el detalle de responsabilidades de cada servicio dentro de la arquitectura de la plataforma:
+
+AI Service (ai-service)
+Es el servicio encargado de la gestión de datos, metadatos y el estado de los modelos y datasets de Inteligencia Artificial. Actúa como el cerebro administrativo:
+
+CRUD de Modelos y Datasets: Registra en la base de datos relacional (PostgreSQL) la información de todos los modelos (nombre, descripción, arquitectura base, épocas, tamaño de entrada) y de los conjuntos de datos subidos.
+Estado del Ciclo de Vida: Controla el estado del modelo (pending, training, ready, failed).
+Asociaciones: Gestiona la relación de qué dataset pertenece a qué modelo para ser utilizado en el entrenamiento.
+API de Metadatos: Proporciona los stubs gRPC para que el api-gateway y otros servicios consulten qué modelos están disponibles.
+Compilation Service (compilation-service)
+Es el servicio encargado de la ejecución física y de cómputo pesado. Funciona de forma asíncrona mediante trabajadores (workers) y una cola de Redis:
+
+Entrenamiento de Modelos (YOLO):
+Descarga el dataset empaquetado (.zip) desde el almacenamiento (MinIO).
+Extrae las imágenes y etiquetas.
+Ejecuta el script yolo_train.py en un subproceso del sistema.
+Transmite los logs de entrenamiento en tiempo real a Redis para que los puedas ver en el frontend.
+Sube el modelo resultante (best.pt) de vuelta a MinIO.
+Compilación a Hardware Edge:
+Adapta y optimiza los modelos (.pt) a formatos nativos de dispositivos específicos mediante compiladores:
+Hailo8/8L: Convierte a formato .hef.
+Raspberry Pi AI Cam (IMX500): Exporta a formato .imx (empaquetado con metadatos).
+Jetson Orin Nano: Compila a TensorRT .engine.
+Raspberry Pi Convencional: Exporta a TensorFlow Lite .tflite.
+Notificaciones: Al terminar o fallar un entrenamiento/compilación, llama por gRPC al ai-service para actualizar el estado del modelo en la base de datos.
+Rebuild container finished
+I will wait for docker compose up -d to finish building and starting all the services.
+
+docker compose up finished
+I will wait for the verification command to complete.
+
+Verify imports in container finished
+I will wait for the uninstall to finish.
+
+Uninstall package finished
+I will wait for the verification command to complete.
+
+Verify imports again finished
+I will wait for the force reinstall to complete.
+
+Reinstall package finished
+I have successfully implemented all fixes and verified the changes!
+
+Summary of Fixes
+Dataset Upload Status (pending -> no file -> ready):
+
+Root Cause: When you close the file upload picker, the browser window gains focus, which triggers a React Query refetch for the datasets. Since the database record is created immediately by UploadDataset but the file bytes take a few seconds to upload to MinIO before SetDatasetFile updates the record, the database transiently had a record with object_key = null. This caused the refetched list to display no file.
+Fix: In 
+
+page.tsx
+, we modified the list mapping logic. If there is an active upload in progress for a dataset name and the server returns the record with object_key = null, we maintain its UI status as pending (and keep action buttons disabled) until the upload request finishes and the final invalidation updates the status to ready.
+YOLO Training Dependency (ImportError):
+
+Root Cause: The slim Python base image of the compilation container lacks the GUI (X11/XCB) system dependencies required by standard opencv-python. When ultralytics attempted to import cv2, it crashed with ImportError: libxcb.so.1: cannot open shared object file.
+Fix: Added opencv-python-headless>=4.8.0 to 
+
+requirements.txt
+ before ultralytics, satisfying the OpenCV dependency without requiring GUI libraries. We rebuilt the container and verified that import ultralytics now loads successfully inside the compilation-service container.
+Bonus: Improved the ImportError blocks in both the 
+
+compilation compiler
+ and 
+
+local script
+ to print the actual traceback, preventing library import issues from being silently masked in the future.
+You can view the full details of the implementation and test verification in the 
+walkthrough.md
+.
