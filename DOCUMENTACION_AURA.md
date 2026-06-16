@@ -13,7 +13,7 @@ TFM_MIoT/
 ├── services/
 │   ├── api-gateway/            # Entrada HTTP y enrutado JWT
 │   ├── registry-service/       # Inventario de dispositivos, modelos y scripts (Postgres)
-│   ├── mlops-worker-service/   # Entrenamiento YOLO y compilación de modelos (Redis + arq)
+│   ├── mlops-service/          # Entrenamiento YOLO y compilación de modelos (Redis + arq)
 │   └── edge-connector-service/ # Despliegues OTA, telemetría y monitorización (MQTT + Mongo + Prometheus)
 ```
 
@@ -47,18 +47,18 @@ TFM_MIoT/
   * `GET /` $\rightarrow$ Lista todos los dispositivos (Llama a `ListDevices` en `registry-service:50051`).
   * `GET /{device_id}` $\rightarrow$ Recupera un dispositivo específico.
   * `DELETE /{device_id}` $\rightarrow$ Elimina el registro del dispositivo.
-  * `GET /hardware-types` $\rightarrow$ Lista plataformas soportadas por los compiladores instalados (Llama a `GetSupportedHardware` en `mlops-worker-service:50054`).
-  * `GET /sensors` $\rightarrow$ Lista sensores (Llama a `GetSupportedSensors` en `mlops-worker-service:50054`).
-  * `GET /actuators` $\rightarrow$ Lista actuadores (Llama a `GetSupportedActuators` en `mlops-worker-service:50054`).
+  * `GET /hardware-types` $\rightarrow$ Lista plataformas soportadas por los compiladores instalados (Llama a `GetSupportedHardware` en `mlops-service:50052`).
+  * `GET /sensors` $\rightarrow$ Lista sensores (Llama a `GetSupportedSensors` en `mlops-service:50052`).
+  * `GET /actuators` $\rightarrow$ Lista actuadores (Llama a `GetSupportedActuators` en `mlops-service:50052`).
 * **Modelos de IA (`/api/models`)**:
   * `GET /base-model-options` $\rightarrow$ Lista modelos base en MinIO (`base-models`).
   * `GET /base-models/{filename}/download` $\rightarrow$ URL de descarga firmada para modelos base.
-  * `POST /` $\rightarrow$ Sube metadatos y fichero de modelo a MinIO, y llama a `UploadModel` en `registry-service:50051`. Si `compile=true`, ejecuta asíncronamente `CompileModel` en `mlops-worker-service:50054`.
+  * `POST /` $\rightarrow$ Sube metadatos y fichero de modelo a MinIO, y llama a `UploadModel` en `registry-service:50051`. Si `compile=true`, ejecuta asíncronamente `CompileModel` en `mlops-service:50052`.
   * `GET /` $\rightarrow$ Lista modelos disponibles.
   * `GET /{model_id}` $\rightarrow$ Información del modelo e histórico de compilación.
   * `PUT /{model_id}` $\rightarrow$ Modifica metadatos del modelo.
   * `DELETE /{model_id}` $\rightarrow$ Cancela cualquier trabajo activo en Redis y borra el modelo.
-  * `POST /train` $\rightarrow$ Registra el modelo e inicia el entrenamiento YOLO llamando a `TrainModel` en `mlops-worker-service:50054`.
+  * `POST /train` $\rightarrow$ Registra el modelo e inicia el entrenamiento YOLO llamando a `TrainModel` en `mlops-service:50052`.
   * `GET /{model_id}/logs` $\rightarrow$ Endpoint SSE (Server-Sent Events) que lee la lista de logs de Redis (`train_logs:{model_id}_list`) y se suscribe al canal PubSub de Redis (`train_logs:{model_id}`) para enviar trazas de entrenamiento en tiempo real al navegador.
 * **Datasets (`/api/datasets`)**:
   * `POST /` $\rightarrow$ Registra metadatos en `registry-service:50051`.
@@ -67,10 +67,10 @@ TFM_MIoT/
   * `POST /` $\rightarrow$ Recibe script Python, lo sube a MinIO y registra metadatos en `registry-service:50051`.
   * `GET /` $\rightarrow$ Lista scripts.
 * **Despliegues (`/api/deployments`)**:
-  * `POST /` $\rightarrow$ Crea despliegue en base de datos de `edge-connector-service:50055`. Si el modelo ya está compilado para la arquitectura del dispositivo, genera URLs firmadas y publica por MQTT. Si no está compilado, encola un flujo de compilación automática en `mlops-worker-service` y posterior despliegue.
+  * `POST /` $\rightarrow$ Crea despliegue en base de datos de `edge-connector-service:50053`. Si el modelo ya está compilado para la arquitectura del dispositivo, genera URLs firmadas y publica por MQTT. Si no está compilado, encola un flujo de compilación automática en `mlops-service` y posterior despliegue.
 * **Monitorización (`/api/monitoring`)**:
-  * `GET /devices` $\rightarrow$ Obtiene último estado, consumo de CPU/RAM y modelo/script cargado en los dispositivos (Llama a `ListDeviceStates` en `edge-connector-service:50055`).
-  * `GET /devices/{device_id}/inference` $\rightarrow$ Devuelve las últimas predicciones JSON generadas por el dispositivo en campo (Llama a `GetInferenceResults` en `edge-connector-service:50055`).
+  * `GET /devices` $\rightarrow$ Obtiene último estado, consumo de CPU/RAM y modelo/script cargado en los dispositivos (Llama a `ListDeviceStates` en `edge-connector-service:50053`).
+  * `GET /devices/{device_id}/inference` $\rightarrow$ Devuelve las últimas predicciones JSON generadas por el dispositivo en campo (Llama a `GetInferenceResults` en `edge-connector-service:50053`).
 
 ---
 
@@ -131,11 +131,11 @@ Arranca un servidor gRPC asíncrono y expone simultáneamente tres servicios en 
 
 ---
 
-### 1.3. MLOps Worker Service (`mlops-worker-service`)
+### 1.3. MLOps Service (`mlops-service`)
 
-* **Directorio principal**: `services/mlops-worker-service/`
+* **Directorio principal**: `services/mlops-service/`
 * **Tecnología**: gRPC Server, arq Redis-based Task Queue, Redis PubSub.
-* **Puerto gRPC**: `50054`
+* **Puerto gRPC**: `50052`
 
 #### Interfaz gRPC (`shared/proto/compilation.proto`)
 Expone stubs para disparar entrenamientos y compilaciones, y recuperar el catálogo de hardware/periféricos:
@@ -176,10 +176,10 @@ El servicio no ejecuta compilaciones dentro del ciclo del servidor gRPC. En su l
 
 * **Directorio principal**: `services/edge-connector-service/`
 * **Tecnología**: gRPC Server, arq Redis-based Task Queue, MQTT Client (`aiomqtt`), MongoDB Driver (`motor`), Prometheus Client.
-* **Puertos**: `50055` (gRPC), `9100` (Prometheus metrics)
+* **Puertos**: `50053` (gRPC), `9100` (Prometheus metrics)
 
 #### Interfaz gRPC
-Hosts simultáneamente dos interfaces gRPC en el puerto `50055`:
+Hosts simultáneamente dos interfaces gRPC en el puerto `50053`:
 * **`DeploymentService`** (`grpc_handlers/deployment_handler.py`)
 * **`MonitoringService`** (`grpc_handlers/monitoring_handler.py`)
 
@@ -198,7 +198,7 @@ Un único cliente MQTT asíncrono gestiona todas las suscripciones a los disposi
 
 #### Orquestación Asíncrona (`worker.py`)
 * El proceso worker arq ejecuta `compile_and_deploy_job` para despliegues condicionales.
-* Lanza la compilación llamando a `mlops-worker-service:50054` y monitorea de forma no bloqueante a Redis en la clave `model_compile_done:{model_id}`.
+* Lanza la compilación llamando a `mlops-service:50052` y monitorea de forma no bloqueante a Redis en la clave `model_compile_done:{model_id}`.
 * Al finalizar con éxito, genera URLs firmadas y publica por MQTT el comando `deploy` al topic `device/{device_id}/commands`.
 
 ---
@@ -219,14 +219,14 @@ Para garantizar coherencia, rendimiento y escalabilidad, la arquitectura utiliza
   * `telemetry_history`: Histórico append-only del consumo de recursos locales (CPU, memoria).
 
 ### 2.3. Redis (Almacenamiento en Memoria y Colas)
-* **Objetivo**: Coordinación y colas asíncronas (`compilation_queue` y `deployment_queue`), logs PubSub de entrenamiento y flags de cancelación en tiempo real.
+* **Objetivo**: Coordinación y colas asíncronas (`mlops_queue` y `deployment_queue`), logs PubSub de entrenamiento y flags de cancelación en tiempo real.
 
 ---
 
 ## 3. Flujo Completo de un Despliegue con Compilación Automática
 
 ```
-Usuario      API Gateway    Registry Svc    Edge Connector    MLOps Worker     Redis       Edge Device
+Usuario      API Gateway    Registry Svc    Edge Connector    MLOps Service    Redis       Edge Device
   │               │              │                │                 │            │              │
   │── POST Deploy ─►              │                │                 │            │              │
   │               │── gRPC ─────►│                │                 │            │              │
@@ -306,3 +306,40 @@ Al arrancar el script de entrada `agent.py`:
 1. El **`DeviceManager`** lee la configuración de componentes e inicializa el hardware local llamando al método `initialize()`.
 2. Se conecta al Broker MQTT e inicia la suscripción al canal `device/{device_id}/commands`.
 3. Levanta el bucle de inferencia y telemetría de forma asíncrona coordinados por `asyncio.TaskGroup`.
+
+---
+
+## 5. Flujo de Registro de Recursos (Modelos, Datasets y Scripts)
+
+El registro de recursos en la plataforma AURA permite catalogar y preparar los artefactos necesarios para la inferencia y el entrenamiento en los dispositivos edge. El flujo principal se detalla a continuación tomando como ejemplo el registro de un modelo de IA (`.pt`):
+
+1. **Subida y Metadatos**: El operador utiliza el Frontend (Next.js) para seleccionar el fichero del modelo `.pt` e introducir la descripción y otros metadatos.
+2. **Carga en MinIO**: El API Gateway recibe el fichero de modelo mediante una petición HTTP POST multiparte y lo sube directamente al bucket `models` de MinIO bajo la ruta `models/{id}/model.pt`.
+3. **Registro en Base de Datos**: Tras confirmar la subida, el API Gateway realiza una llamada gRPC `RegisterModel` al Registry Service (`registry-service` puerto `50051`), el cual inserta los metadatos e identificadores de MinIO en la base de datos PostgreSQL en la tabla `models` con el estado inicial `"pending"`.
+4. **Respuesta**: El Registry Service responde al API Gateway y este devuelve un código HTTP `201 Created` al Frontend.
+
+### Registro Análogo de Datasets y Scripts
+El registro de datasets y de scripts de post-procesamiento se realiza de forma completamente **análoga**:
+* **Datasets**: Se sube un archivo comprimido `.zip` a MinIO (bucket `datasets`), y se guardan sus metadatos (tamaño, hash SHA-256) en PostgreSQL (`datasets` table) a través del Registry Service.
+* **Scripts**: El script de Python `.py` se valida estáticamente (mediante AST para comprobar la firma y evitar librerías no permitidas), se sube a MinIO (bucket `scripts`) y sus metadatos se guardan en PostgreSQL (`scripts` table) a través de `ScriptService`.
+
+---
+
+## 6. Flujo Conceptual de Reentrenamiento de Modelos
+
+> [!NOTE]
+> El flujo de reentrenamiento de modelos detallado a continuación es una **especificación conceptual** del ciclo de vida de MLOps en AURA. Actualmente, el proyecto no implementa físicamente el auto-reentrenamiento por deriva en la base de código del PoC, pero está diseñado para soportarlo siguiendo este flujo:
+
+1. **Disparador del Reentrenamiento (Trigger)**:
+   * **Manual**: Un operador decide reentrenar un modelo desde la interfaz de usuario seleccionando un nuevo dataset y ajustando hiperparámetros.
+   * **Automático (Detección de Deriva/Drift)**: El detector de deriva del API Gateway o un servicio externo de monitorización observa que la precisión del modelo en producción o la confianza media de las predicciones baja de un umbral establecido (analizando los datos en MongoDB `inference_results`).
+2. **Generación del Nuevo Registro**: El API Gateway invoca al Registry Service mediante gRPC (`CreateRetrainedModel`) para crear un nuevo registro de modelo con un enlace al modelo padre (`parent_id`) en PostgreSQL, marcando su estado como `"training"`.
+3. **Encolado en la Cola de MLOps**: Se envía una llamada gRPC `TriggerRetraining` al MLOps Service (puerto `50052`), el cual calcula una clave de idempotencia y encola la tarea `train_job` en la cola Redis `mlops_queue`.
+4. **Procesamiento Asíncrono (arq worker)**:
+   * El worker de MLOps descarga los pesos del modelo padre desde MinIO (`models/{parent_id}/model.pt`) para utilizarlos como pesos iniciales (transfer learning/fine-tuning).
+   * Descarga el nuevo dataset ZIP desde MinIO.
+   * Ejecuta el script de entrenamiento de YOLO pasando los pesos del modelo padre como base.
+   * Los logs de entrenamiento se transmiten en tiempo real a Redis PubSub y se guardan en la lista Redis para que el frontend los renderice.
+   * Tras la finalización exitosa, se suben los nuevos pesos resultantes (`best.pt`) a MinIO bajo `models/{new_model_id}/model.pt`.
+   * Se notifica al Registry Service vía gRPC, actualizando el estado del nuevo modelo a `"pending"` (listo para compilar).
+

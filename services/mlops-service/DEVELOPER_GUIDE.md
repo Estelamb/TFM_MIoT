@@ -30,11 +30,11 @@ The platform automatically detects hardware architectures placed in subdirectori
    Add any helper files (like pipeline configurations, calibrations, splits) directly inside your architecture's `compilation/` folder.
 
 4. **Environment / Dependencies**:
-   - If Python-based: add required python dependencies to `services/compilation-service/requirements.txt`.
+   - If Python-based: add required python dependencies to `services/mlops-service/requirements.txt`.
    - If Docker-based: add the Docker image to host runner, and set it as an env variable or default in `compiler.py`.
 
 5. **Deploy**:
-   Rebuild and restart the services using `docker compose up -d --build compilation-service`.
+   Rebuild and restart the services using `docker compose up -d --build mlops-service`.
    The gateway and frontend will automatically discover and display the new hardware option on the IoT Edge Devices registration page.
 
 ---
@@ -83,6 +83,5 @@ Peripherals are scanned dynamically at startup from the project root-level `./ha
    ```
 
 3. **Deploy**:
-   Rebuild and restart the services using `docker compose up -d --build mlops-worker-service`.
+   Rebuild and restart the services using `docker compose up -d --build mlops-service`.
    The gateway and frontend will automatically discover the component, load the friendly name from `LABEL` dynamically, and display it in the catalog page.
-

@@ -6,6 +6,7 @@ import {
   getDatasets, createDataset, deleteDataset,
   associateModelDataset, replaceDatasetFile,
   getModelDownloadUrl, getDatasetDownloadUrl,
+  getDatasetVersionDownloadUrl,
   getBaseModelOptions, trainModel,
   getBaseModelDownloadUrl,
   Dataset, Model,
@@ -65,6 +66,12 @@ const formatSize = (bytes: number | null | undefined) => {
   return `${mb.toFixed(2)} MB`;
 };
 
+const stripAnsi = (str: string) => {
+  return str
+    .replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqty=><]/g, '')
+    .replace(/\[\d+m/g, '');
+};
+
 export default function ModelsPage() {
   const { mode, demoData } = useDataMode();
   const isDemo = mode === "demo";
@@ -87,12 +94,15 @@ export default function ModelsPage() {
   const [selectedDatasetForManage, setSelectedDatasetForManage] = useState<Dataset | null>(null);
   const [editDatasetForm, setEditDatasetForm] = useState({ name: "", description: "" });
   const [replaceFile, setReplaceFile] = useState<File | null>(null);
+  const [newVersionName, setNewVersionName] = useState("");
+  const [newVersionDescription, setNewVersionDescription] = useState("");
   const replaceFileRef = useRef<HTMLInputElement>(null);
 
   // Associate Modal
   const [associateOpen, setAssociateOpen] = useState(false);
   const [selectedModelForAssociation, setSelectedModelForAssociation] = useState<Model | null>(null);
   const [associationDatasetId, setAssociationDatasetId] = useState("");
+  const [associationDatasetVersionId, setAssociationDatasetVersionId] = useState("");
 
   const handleDownload = async (
     e: React.MouseEvent,
@@ -177,7 +187,7 @@ export default function ModelsPage() {
   // --- UI State ---
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
-    name: "", description: "", dataset_id: "", base_model: "", epochs: "", input_size: "", batch_size: ""
+    name: "", description: "", dataset_id: "", dataset_version_id: "", base_model: "", epochs: "", input_size: "", batch_size: ""
   });
   const [file, setFile] = useState<File | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
@@ -193,6 +203,31 @@ export default function ModelsPage() {
     let active = true;
     const fetchLogs = async () => {
       if (!viewLogsOpen || !selectedModelForLogs) return;
+      if (isDemo) {
+        const mockLogLines = [
+          "Starting training run in Demo Mode...",
+          "PyTorch Version: 2.6.0 | CUDA Available: True | Device count: 1",
+          "Device name: NVIDIA GeForce RTX 3050 Ti Laptop GPU",
+          "Using base model: " + (selectedModelForLogs.base_architecture || "yolov8n.pt"),
+          "Loading dataset...",
+          "Dataset classes loaded successfully.",
+          "Epoch 1/20:  50%|██████████          | 50/100 [00:01<00:01, 48.20it/s, loss=0.875]",
+          "Epoch 1/20: 100%|████████████████████| 100/100 [00:02<00:00, 45.50it/s, loss=0.754, val_loss=0.612]",
+          "Epoch 5/20: 100%|████████████████████| 100/100 [00:02<00:00, 46.10it/s, loss=0.512, val_loss=0.431]",
+          "Epoch 10/20: 100%|████████████████████| 100/100 [00:02<00:00, 45.80it/s, loss=0.320, val_loss=0.285]",
+          "Epoch 15/20: 100%|████████████████████| 100/100 [00:02<00:00, 46.40it/s, loss=0.185, val_loss=0.170]",
+          "Epoch 20/20: 100%|████████████████████| 100/100 [00:02<00:00, 45.90it/s, loss=0.095, val_loss=0.091]",
+          "Training complete! Best weights saved to runs/train/weights/best.pt",
+          "Registering model.pt in base-models storage...",
+          "Model successfully compiled and ready.",
+        ];
+        for (let i = 0; i < mockLogLines.length; i++) {
+          if (!active) break;
+          await new Promise(resolve => setTimeout(resolve, 800));
+          setLogs(prev => [...prev, mockLogLines[i]]);
+        }
+        return;
+      }
       try {
         const token = localStorage.getItem("aura_token");
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/models/${selectedModelForLogs.id}/logs`, {
@@ -209,7 +244,7 @@ export default function ModelsPage() {
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split("\n");
           buffer = lines.pop() || "";
-          
+
           for (const line of lines) {
             if (line.startsWith("data: ")) {
               const data = line.slice(6);
@@ -225,7 +260,7 @@ export default function ModelsPage() {
         console.error("Error reading log stream", err);
       }
     };
-    
+
     if (viewLogsOpen) {
       setLogs([]); // clear on open
       fetchLogs();
@@ -241,16 +276,24 @@ export default function ModelsPage() {
 
   // Create Dataset Modal
   const [createDatasetOpen, setCreateDatasetOpen] = useState(false);
-  const [newDatasetForm, setNewDatasetForm] = useState({ name: "", description: "" });
+  const [newDatasetForm, setNewDatasetForm] = useState({ name: "", description: "", version: "", version_description: "" });
   const [newDatasetFile, setNewDatasetFile] = useState<File | null>(null);
   const newDatasetFileRef = useRef<HTMLInputElement>(null);
 
   // Training Form
   const [trainForm, setTrainForm] = useState({
-    name: "", description: "", dataset_id: "", base_model: "",
+    name: "", description: "", dataset_id: "", dataset_version_id: "", base_model: "",
     epochs: "20", input_size: "640x640", gpu_percent: "0.9", device: "0"
   });
   const [trainPocError, setTrainPocError] = useState("");
+
+  // Retraining Form & Modal State
+  const [retrainOpen, setRetrainOpen] = useState(false);
+  const [selectedModelForRetrain, setSelectedModelForRetrain] = useState<Model | null>(null);
+  const [retrainForm, setRetrainForm] = useState({
+    name: "", description: "", dataset_id: "", dataset_version_id: "",
+    epochs: "20", input_size: "640x640", gpu_percent: "0.9", device: "0"
+  });
 
   // --- Mutations ---
   const startTrainingMutation = useMutation({
@@ -258,6 +301,7 @@ export default function ModelsPage() {
       name: trainForm.name,
       description: trainForm.description,
       dataset_id: trainForm.dataset_id,
+      dataset_version_id: trainForm.dataset_version_id || undefined,
       base_model: trainForm.base_model,
       epochs: parseInt(trainForm.epochs) || 20,
       input_size: trainForm.input_size,
@@ -266,7 +310,30 @@ export default function ModelsPage() {
     }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["models"] });
-      setTrainForm({ name: "", description: "", dataset_id: "", base_model: "", epochs: "20", input_size: "640x640", gpu_percent: "0.9", device: "0" });
+      setTrainForm({ name: "", description: "", dataset_id: "", dataset_version_id: "", base_model: "", epochs: "20", input_size: "640x640", gpu_percent: "0.9", device: "0" });
+    }
+  });
+
+  const startRetrainingMutation = useMutation({
+    mutationFn: () => {
+      if (!selectedModelForRetrain) throw new Error("No model selected for retraining");
+      return trainModel({
+        name: retrainForm.name,
+        description: retrainForm.description,
+        dataset_id: retrainForm.dataset_id,
+        dataset_version_id: retrainForm.dataset_version_id || undefined,
+        base_model: selectedModelForRetrain.source_key || `${selectedModelForRetrain.id}/model.pt`,
+        epochs: parseInt(retrainForm.epochs) || 20,
+        input_size: retrainForm.input_size,
+        gpu_percent: parseFloat(retrainForm.gpu_percent) || 0.9,
+        device: retrainForm.device
+      });
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["models"] });
+      setRetrainOpen(false);
+      setSelectedModelForRetrain(null);
+      setRetrainForm({ name: "", description: "", dataset_id: "", dataset_version_id: "", epochs: "20", input_size: "640x640", gpu_percent: "0.9", device: "0" });
     }
   });
 
@@ -277,6 +344,7 @@ export default function ModelsPage() {
         id: tempId, name: form.name, description: form.description,
         compile_status: "pending", base_architecture: form.base_model,
         dataset_id: form.dataset_id,
+        dataset_version_id: form.dataset_version_id,
         epochs: form.epochs ? parseInt(form.epochs) : undefined,
         input_size: form.input_size,
         batch_size: form.batch_size ? parseInt(form.batch_size) : undefined,
@@ -290,12 +358,13 @@ export default function ModelsPage() {
       form.base_model || undefined,
       form.epochs ? parseInt(form.epochs) : undefined,
       form.input_size || undefined,
-      form.batch_size ? parseInt(form.batch_size) : undefined
+      form.batch_size ? parseInt(form.batch_size) : undefined,
+      form.dataset_version_id || undefined
     ),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["models"] });
       setOpen(false); setFile(null);
-      setForm({ name: "", description: "", dataset_id: "", base_model: "", epochs: "", input_size: "", batch_size: "" });
+      setForm({ name: "", description: "", dataset_id: "", dataset_version_id: "", base_model: "", epochs: "", input_size: "", batch_size: "" });
     },
     onSettled: (_, __, ___, context) => {
       if (context?.tempId) setPendingModels(prev => prev.filter(m => m.id !== context.tempId));
@@ -311,12 +380,12 @@ export default function ModelsPage() {
     onMutate: async (variables) => {
       setCreateDatasetOpen(false);
       setNewDatasetFile(null);
-      setNewDatasetForm({ name: "", description: "" });
+      setNewDatasetForm({ name: "", description: "", version: "", version_description: "" });
       const tempId = `temp-ds-${Date.now()}`;
       setPendingDatasets(prev => [...prev, { id: tempId, name: variables.name, description: variables.description, status: "pending", isPendingUpload: true }]);
       return { tempId };
     },
-    mutationFn: (body: { name: string; description: string; file?: File }) => createDataset(body),
+    mutationFn: (body: { name: string; description: string; file?: File; version?: string; version_description?: string }) => createDataset(body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["datasets"] });
     },
@@ -340,21 +409,24 @@ export default function ModelsPage() {
   });
 
   const replaceFileMutation = useMutation({
-    mutationFn: (args: { datasetId: string; file: File }) =>
-      replaceDatasetFile(args.datasetId, args.file),
+    mutationFn: (args: { datasetId: string; file: File; version?: string; description?: string }) =>
+      replaceDatasetFile(args.datasetId, args.file, args.version, args.description),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["datasets"] });
       setReplaceFile(null);
+      setNewVersionName("");
+      setNewVersionDescription("");
     }
   });
 
   const associateMutation = useMutation({
-    mutationFn: (args: { modelId: string; datasetId: string }) =>
-      associateModelDataset(args.modelId, args.datasetId),
+    mutationFn: (args: { modelId: string; datasetId: string; datasetVersionId?: string }) =>
+      associateModelDataset(args.modelId, args.datasetId, args.datasetVersionId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["models"] });
       setAssociateOpen(false);
       setAssociationDatasetId("");
+      setAssociationDatasetVersionId("");
     },
   });
 
@@ -385,7 +457,15 @@ export default function ModelsPage() {
     if (isDemo) return model.id === "mod-101" ? "Agriculture v1" : "No dataset associated";
     if (!model.dataset_id) return "No dataset associated";
     const ds = datasets.find((d: any) => d.id === model.dataset_id);
-    return ds ? ds.name : `Dataset: ${model.dataset_id.slice(0, 8)}...`;
+    if (!ds) return `Dataset: ${model.dataset_id.slice(0, 8)}...`;
+
+    if (model.dataset_version_id && ds.versions) {
+      const ver = ds.versions.find((v: any) => v.id === model.dataset_version_id);
+      if (ver) {
+        return `${ds.name} (${ver.version})`;
+      }
+    }
+    return ds.name;
   };
 
   const isUploadDisabled = !file || !form.base_model || upload.isPending;
@@ -416,7 +496,7 @@ export default function ModelsPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2 pb-1">
             Models &amp; Training
           </h1>
           <p className="text-gray-600 dark:text-gray-400">Manage AI models and training datasets.</p>
@@ -534,6 +614,7 @@ export default function ModelsPage() {
                           onClick={() => {
                             setSelectedModelForAssociation(m);
                             setAssociationDatasetId(m.dataset_id || "");
+                            setAssociationDatasetVersionId(m.dataset_version_id || "");
                             setAssociateOpen(true);
                           }}
                           disabled={m.isPendingUpload}
@@ -577,8 +658,21 @@ export default function ModelsPage() {
                         </Button>
                       )}
                       <Button
-                        variant="ghost" size="sm" className="gap-2 shrink-0"
-                        onClick={e => showTooltip(e, "Not Available in this PoC")}
+                        variant="ghost" size="sm" className="gap-2 shrink-0 text-pink-600 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300"
+                        onClick={() => {
+                          setSelectedModelForRetrain(m);
+                          setRetrainForm({
+                            name: `${m.name}-retrained`,
+                            description: m.description || "",
+                            dataset_id: m.dataset_id || "",
+                            dataset_version_id: m.dataset_version_id || "",
+                            epochs: m.epochs ? String(m.epochs) : "20",
+                            input_size: m.input_size || "640x640",
+                            gpu_percent: "0.9",
+                            device: "0"
+                          });
+                          setRetrainOpen(true);
+                        }}
                         disabled={m.isPendingUpload}
                       >
                         <RotateCcw size={14} /> Retrain
@@ -661,80 +755,100 @@ export default function ModelsPage() {
       {/* Training + Dataset section */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t border-gray-200 dark:border-gray-800">
 
-        <Card className="border-pink-200 dark:border-pink-900/30 p-6">
-          <CardTitle className="mb-4 flex items-center gap-2">
-            <Brain className="text-pink-500" size={20} /> New Training Job
-          </CardTitle>
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              setTrainPocError("Training is not available for this POC");
-            }}
-            className="space-y-4"
-          >
-            <Input
-              label="Model Name"
-              value={trainForm.name}
-              onChange={e => setTrainForm(f => ({ ...f, name: e.target.value }))}
-              placeholder="e.g. door-detector-trained"
-              required
-            />
-            <Select
-              label="Select Dataset"
-              value={trainForm.dataset_id}
-              onChange={e => setTrainForm(f => ({ ...f, dataset_id: e.target.value }))}
-              options={[
-                { value: "", label: "Select Dataset..." },
-                ...displayedDatasets.filter((d: any) => d.object_key).map((d: any) => ({ value: d.id, label: d.name }))
-              ]}
-              required
-            />
-            <Select
-              label="Base Model"
-              value={trainForm.base_model}
-              onChange={e => setTrainForm(f => ({ ...f, base_model: e.target.value }))}
-              options={[
-                { value: "", label: "Select Base Model" },
-                ...sortedBaseModelOptions.map(opt => ({ value: opt, label: opt }))
-              ]}
-              required
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <Input label="Epochs" type="number" min={1} value={trainForm.epochs}
-                onChange={e => setTrainForm(f => ({ ...f, epochs: e.target.value }))} required />
-              <Input label="Image Size" value={trainForm.input_size}
-                onChange={e => setTrainForm(f => ({ ...f, input_size: e.target.value }))}
-                placeholder="e.g. 640x640" required />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Input label="GPU RAM Fraction" type="number" step="0.05" min="0.1" max="1.0"
-                value={trainForm.gpu_percent}
-                onChange={e => setTrainForm(f => ({ ...f, gpu_percent: e.target.value }))} required />
-              <Select label="Training Device" value={trainForm.device}
-                onChange={e => setTrainForm(f => ({ ...f, device: e.target.value }))}
-                options={[{ value: "0", label: "NVIDIA GPU 0" }, { value: "cpu", label: "CPU" }]}
-                required />
-            </div>
-            {trainPocError && (
-              <div className="p-3 text-sm bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-lg animate-fade-in">
-                {trainPocError}
-              </div>
-            )}
-            {startTrainingMutation.isError && (
-              <div className="p-3 text-sm bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-lg animate-fade-in">
-                {(startTrainingMutation.error as any)?.response?.data?.detail || (startTrainingMutation.error as any)?.message || "Failed to start training"}
-              </div>
-            )}
-            <Button
-              type="submit"
-              className="w-full bg-pink-600 hover:bg-pink-700"
-              disabled={!trainForm.name.trim() || !trainForm.dataset_id || !trainForm.base_model || startTrainingMutation.isPending}
-              loading={startTrainingMutation.isPending}
+        <div id="new-training-job-card">
+          <Card className="border-pink-200 dark:border-pink-900/30 p-6">
+            <CardTitle className="mb-4 flex items-center gap-2">
+              <Brain className="text-pink-500" size={20} /> New Training Job
+            </CardTitle>
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                setTrainPocError("");
+                startTrainingMutation.mutate();
+              }}
+              className="space-y-4"
             >
-              Start Training
-            </Button>
-          </form>
-        </Card>
+              <Input
+                label="Model Name"
+                value={trainForm.name}
+                onChange={e => setTrainForm(f => ({ ...f, name: e.target.value }))}
+                placeholder="e.g. door-detector-trained"
+                required
+              />
+              <Select
+                label="Select Dataset"
+                value={trainForm.dataset_id}
+                onChange={e => setTrainForm(f => ({ ...f, dataset_id: e.target.value, dataset_version_id: "" }))}
+                options={[
+                  { value: "", label: "Select Dataset..." },
+                  ...displayedDatasets.filter((d: any) => d.object_key).map((d: any) => ({ value: d.id, label: d.name }))
+                ]}
+                required
+              />
+              {trainForm.dataset_id && (() => {
+                const selectedDs = displayedDatasets.find((d: any) => d.id === trainForm.dataset_id);
+                if (selectedDs && selectedDs.versions && selectedDs.versions.length > 0) {
+                  return (
+                    <Select
+                      label="Dataset Version"
+                      value={trainForm.dataset_version_id}
+                      onChange={e => setTrainForm(f => ({ ...f, dataset_version_id: e.target.value }))}
+                      options={[
+                        { value: "", label: "Latest Version (Default)" },
+                        ...selectedDs.versions.map((v: any) => ({ value: v.id, label: `${v.version} - ${v.description || 'No description'}` }))
+                      ]}
+                    />
+                  );
+                }
+                return null;
+              })()}
+              <Select
+                label="Base Model"
+                value={trainForm.base_model}
+                onChange={e => setTrainForm(f => ({ ...f, base_model: e.target.value }))}
+                options={[
+                  { value: "", label: "Select Base Model" },
+                  ...sortedBaseModelOptions.map(opt => ({ value: opt, label: opt }))
+                ]}
+                required
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <Input label="Epochs" type="number" min={1} value={trainForm.epochs}
+                  onChange={e => setTrainForm(f => ({ ...f, epochs: e.target.value }))} required />
+                <Input label="Image Size" value={trainForm.input_size}
+                  onChange={e => setTrainForm(f => ({ ...f, input_size: e.target.value }))}
+                  placeholder="e.g. 640x640" required />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Input label="GPU RAM Fraction" type="number" step="0.05" min="0.1" max="1.0"
+                  value={trainForm.gpu_percent}
+                  onChange={e => setTrainForm(f => ({ ...f, gpu_percent: e.target.value }))} required />
+                <Select label="Training Device" value={trainForm.device}
+                  onChange={e => setTrainForm(f => ({ ...f, device: e.target.value }))}
+                  options={[{ value: "0", label: "NVIDIA GPU 0" }, { value: "cpu", label: "CPU" }]}
+                  required />
+              </div>
+              {trainPocError && (
+                <div className="p-3 text-sm bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-lg animate-fade-in">
+                  {trainPocError}
+                </div>
+              )}
+              {startTrainingMutation.isError && (
+                <div className="p-3 text-sm bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-lg animate-fade-in">
+                  {(startTrainingMutation.error as any)?.response?.data?.detail || (startTrainingMutation.error as any)?.message || "Failed to start training"}
+                </div>
+              )}
+              <Button
+                type="submit"
+                className="w-full bg-pink-600 hover:bg-pink-700"
+                disabled={!trainForm.name.trim() || !trainForm.dataset_id || !trainForm.base_model || startTrainingMutation.isPending}
+                loading={startTrainingMutation.isPending}
+              >
+                Start Training
+              </Button>
+            </form>
+          </Card>
+        </div>
 
         <Card className="border-emerald-200 dark:border-emerald-900/30 p-6">
           <CardTitle className="mb-4 flex items-center gap-2">
@@ -803,6 +917,8 @@ export default function ModelsPage() {
                             onClick={() => {
                               setSelectedDatasetForManage(ds);
                               setEditDatasetForm({ name: ds.name, description: ds.description || "" });
+                              setNewVersionName("");
+                              setNewVersionDescription("");
                               setManageDatasetOpen(true);
                             }}
                             disabled={ds.isPendingUpload}
@@ -822,6 +938,34 @@ export default function ModelsPage() {
                       )}
                     </div>
                   </div>
+                  {/* Versions history log */}
+                  {ds.versions && ds.versions.length > 0 && (
+                    <div className="mt-2 pl-2 border-l-2 border-pink-500/40 space-y-1.5 max-h-[120px] overflow-y-auto">
+                      <span className="text-[10px] font-bold text-gray-400 block">VERSION HISTORY:</span>
+                      {ds.versions.map((v: any) => (
+                        <div key={v.id} className="flex items-center justify-between text-[10px] bg-white dark:bg-gray-950 px-2 py-1 rounded border border-gray-100 dark:border-gray-800 hover:border-pink-300 dark:hover:border-pink-900 transition-colors">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <Badge variant="muted" className="py-0.5 text-[8px] bg-pink-50 dark:bg-pink-950/20 text-pink-600 dark:text-pink-400 font-normal">
+                              {v.version}
+                            </Badge>
+                            <span className="text-gray-500 truncate" title={v.description}>{v.description || "No description"}</span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0 ml-2 text-gray-400 font-mono">
+                            <span>{v.metadata?.num_classes !== undefined ? `${v.metadata.num_classes} cls` : ""}</span>
+                            <span>{formatSize(v.size_bytes)}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => handleDownload(e, () => getDatasetVersionDownloadUrl(ds.id, v.id))}
+                              className="text-gray-400 hover:text-emerald-500 p-0.5 transition-colors"
+                              title="Download Version ZIP"
+                            >
+                              <Download size={10} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -846,15 +990,34 @@ export default function ModelsPage() {
             onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
             placeholder="Brief description..." />
           {!isDemo && (
-            <Select
-              label="Dataset (optional)"
-              value={form.dataset_id}
-              onChange={e => setForm(f => ({ ...f, dataset_id: e.target.value }))}
-              options={[
-                { value: "", label: "Select Dataset (optional)" },
-                ...datasets.map((d: any) => ({ value: d.id, label: d.name }))
-              ]}
-            />
+            <>
+              <Select
+                label="Dataset (optional)"
+                value={form.dataset_id}
+                onChange={e => setForm(f => ({ ...f, dataset_id: e.target.value, dataset_version_id: "" }))}
+                options={[
+                  { value: "", label: "Select Dataset (optional)" },
+                  ...datasets.map((d: any) => ({ value: d.id, label: d.name }))
+                ]}
+              />
+              {form.dataset_id && (() => {
+                const selectedDs = datasets.find((d: any) => d.id === form.dataset_id);
+                if (selectedDs && selectedDs.versions && selectedDs.versions.length > 0) {
+                  return (
+                    <Select
+                      label="Dataset Version (optional)"
+                      value={form.dataset_version_id}
+                      onChange={e => setForm(f => ({ ...f, dataset_version_id: e.target.value }))}
+                      options={[
+                        { value: "", label: "Latest Version (Default)" },
+                        ...selectedDs.versions.map((v: any) => ({ value: v.id, label: `${v.version} - ${v.description || 'No description'}` }))
+                      ]}
+                    />
+                  );
+                }
+                return null;
+              })()}
+            </>
           )}
           <div className="border-t border-gray-150 dark:border-gray-800 pt-4 space-y-4">
             <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -901,7 +1064,7 @@ export default function ModelsPage() {
       {/* Create Dataset Modal */}
       <Modal
         open={createDatasetOpen}
-        onClose={() => { setCreateDatasetOpen(false); setNewDatasetFile(null); setNewDatasetForm({ name: "", description: "" }); }}
+        onClose={() => { setCreateDatasetOpen(false); setNewDatasetFile(null); setNewDatasetForm({ name: "", description: "", version: "", version_description: "" }); }}
         title="Create Dataset"
       >
         <form
@@ -911,7 +1074,9 @@ export default function ModelsPage() {
               createDatasetMutation.mutate({
                 name: newDatasetForm.name,
                 description: newDatasetForm.description,
-                file: newDatasetFile || undefined
+                file: newDatasetFile || undefined,
+                version: newDatasetForm.version || undefined,
+                version_description: newDatasetForm.version_description || undefined,
               });
             }
           }}
@@ -926,9 +1091,23 @@ export default function ModelsPage() {
 
           <div className="border-t border-gray-200 dark:border-gray-800 pt-4 flex flex-col gap-4">
             <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-              Dataset File (optional)
+              Dataset File &amp; Version (optional)
             </h4>
             <ZipHint />
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Initial Version Name"
+                value={newDatasetForm.version}
+                onChange={e => setNewDatasetForm(f => ({ ...f, version: e.target.value }))}
+                placeholder="e.g. v1 (auto-generated if empty)"
+              />
+              <Input
+                label="Version Description"
+                value={newDatasetForm.version_description}
+                onChange={e => setNewDatasetForm(f => ({ ...f, version_description: e.target.value }))}
+                placeholder="e.g. Initial capture"
+              />
+            </div>
             <div
               className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 flex flex-col items-center cursor-pointer hover:border-pink-400 transition-colors"
               onClick={() => newDatasetFileRef.current?.click()}
@@ -1024,15 +1203,34 @@ export default function ModelsPage() {
             onSubmit={e => {
               e.preventDefault();
               if (selectedDatasetForManage && replaceFile) {
-                replaceFileMutation.mutate({ datasetId: selectedDatasetForManage.id, file: replaceFile });
+                replaceFileMutation.mutate({
+                  datasetId: selectedDatasetForManage.id,
+                  file: replaceFile,
+                  version: newVersionName,
+                  description: newVersionDescription,
+                });
               }
             }}
             className="border-t border-gray-200 dark:border-gray-800 pt-4 flex flex-col gap-4"
           >
             <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-              {selectedDatasetForManage?.object_key ? "Replace Dataset File" : "Upload Dataset File"}
+              {selectedDatasetForManage?.object_key ? "Upload New Dataset Version" : "Upload Dataset File (v1)"}
             </h3>
             <ZipHint />
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Version Name (optional)"
+                value={newVersionName}
+                onChange={e => setNewVersionName(e.target.value)}
+                placeholder="e.g. v2, v1.1.0 (auto-generated if empty)"
+              />
+              <Input
+                label="Version Description (optional)"
+                value={newVersionDescription}
+                onChange={e => setNewVersionDescription(e.target.value)}
+                placeholder="e.g. Added winter classes"
+              />
+            </div>
             <div
               className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 flex flex-col items-center cursor-pointer hover:border-pink-400 transition-colors"
               onClick={() => replaceFileRef.current?.click()}
@@ -1056,7 +1254,7 @@ export default function ModelsPage() {
               disabled={!replaceFile || replaceFileMutation.isPending}
               loading={replaceFileMutation.isPending}
             >
-              {selectedDatasetForManage?.object_key ? "Replace File" : "Upload File"}
+              Upload New Version
             </Button>
           </form>
         </div>
@@ -1065,14 +1263,18 @@ export default function ModelsPage() {
       {/* Associate Dataset Modal */}
       <Modal
         open={associateOpen}
-        onClose={() => { setAssociateOpen(false); setSelectedModelForAssociation(null); setAssociationDatasetId(""); }}
+        onClose={() => { setAssociateOpen(false); setSelectedModelForAssociation(null); setAssociationDatasetId(""); setAssociationDatasetVersionId(""); }}
         title={`Associate Dataset: ${selectedModelForAssociation?.name || ""}`}
       >
         <form
           onSubmit={e => {
             e.preventDefault();
             if (selectedModelForAssociation && associationDatasetId) {
-              associateMutation.mutate({ modelId: selectedModelForAssociation.id, datasetId: associationDatasetId });
+              associateMutation.mutate({
+                modelId: selectedModelForAssociation.id,
+                datasetId: associationDatasetId,
+                datasetVersionId: associationDatasetVersionId || undefined
+              });
             }
           }}
           className="flex flex-col gap-4 pt-4"
@@ -1080,13 +1282,33 @@ export default function ModelsPage() {
           <Select
             label="Dataset"
             value={associationDatasetId}
-            onChange={e => setAssociationDatasetId(e.target.value)}
+            onChange={e => {
+              setAssociationDatasetId(e.target.value);
+              setAssociationDatasetVersionId("");
+            }}
             options={[
               { value: "", label: "Select Dataset..." },
               ...datasets.map((d: any) => ({ value: d.id, label: d.name }))
             ]}
             required
           />
+          {associationDatasetId && (() => {
+            const selectedDs = datasets.find((d: any) => d.id === associationDatasetId);
+            if (selectedDs && selectedDs.versions && selectedDs.versions.length > 0) {
+              return (
+                <Select
+                  label="Dataset Version"
+                  value={associationDatasetVersionId}
+                  onChange={e => setAssociationDatasetVersionId(e.target.value)}
+                  options={[
+                    { value: "", label: "Latest Version (Default)" },
+                    ...selectedDs.versions.map((v: any) => ({ value: v.id, label: `${v.version} - ${v.description || 'No description'}` }))
+                  ]}
+                />
+              );
+            }
+            return null;
+          })()}
           {associateMutation.isError && (
             <div className="p-3 text-sm bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-lg animate-fade-in">
               Failed to associate: {(associateMutation.error as any)?.response?.data?.detail || (associateMutation.error as any)?.message || "An error occurred"}
@@ -1159,11 +1381,117 @@ export default function ModelsPage() {
         </form>
       </Modal>
 
+      {/* Retrain Model Modal */}
+      <Modal
+        open={retrainOpen}
+        onClose={() => { setRetrainOpen(false); setSelectedModelForRetrain(null); }}
+        title={`Retrain Model: ${selectedModelForRetrain?.name || ""}`}
+      >
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            if (selectedModelForRetrain && retrainForm.name.trim() && retrainForm.dataset_id) {
+              startRetrainingMutation.mutate();
+            }
+          }}
+          className="flex flex-col gap-5 pt-4"
+        >
+          <Input 
+            label="Model Name" 
+            value={retrainForm.name}
+            onChange={e => setRetrainForm(f => ({ ...f, name: e.target.value }))} 
+            required 
+          />
+          <Input 
+            label="Description (optional)" 
+            value={retrainForm.description}
+            onChange={e => setRetrainForm(f => ({ ...f, description: e.target.value }))} 
+          />
+          <Select
+            label="Select Dataset"
+            value={retrainForm.dataset_id}
+            onChange={e => setRetrainForm(f => ({ ...f, dataset_id: e.target.value, dataset_version_id: "" }))}
+            options={[
+              { value: "", label: "Select Dataset..." },
+              ...displayedDatasets.filter((d: any) => d.object_key).map((d: any) => ({ value: d.id, label: d.name }))
+            ]}
+            required
+          />
+          {retrainForm.dataset_id && (() => {
+            const selectedDs = displayedDatasets.find((d: any) => d.id === retrainForm.dataset_id);
+            if (selectedDs && selectedDs.versions && selectedDs.versions.length > 0) {
+              return (
+                <Select
+                  label="Dataset Version"
+                  value={retrainForm.dataset_version_id}
+                  onChange={e => setRetrainForm(f => ({ ...f, dataset_version_id: e.target.value }))}
+                  options={[
+                    { value: "", label: "Latest Version (Default)" },
+                    ...selectedDs.versions.map((v: any) => ({ value: v.id, label: `${v.version} - ${v.description || 'No description'}` }))
+                  ]}
+                />
+              );
+            }
+            return null;
+          })()}
+          <div className="grid grid-cols-2 gap-4">
+            <Input 
+              label="Epochs" 
+              type="number" 
+              min={1} 
+              value={retrainForm.epochs}
+              onChange={e => setRetrainForm(f => ({ ...f, epochs: e.target.value }))} 
+              required 
+            />
+            <Input 
+              label="Image Size" 
+              value={retrainForm.input_size}
+              onChange={e => setRetrainForm(f => ({ ...f, input_size: e.target.value }))} 
+              placeholder="e.g. 640x640" 
+              required 
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Input 
+              label="GPU RAM Fraction" 
+              type="number" 
+              step="0.05" 
+              min="0.1" 
+              max="1.0"
+              value={retrainForm.gpu_percent}
+              onChange={e => setRetrainForm(f => ({ ...f, gpu_percent: e.target.value }))} 
+              required 
+            />
+            <Select 
+              label="Training Device" 
+              value={retrainForm.device}
+              onChange={e => setRetrainForm(f => ({ ...f, device: e.target.value }))}
+              options={[{ value: "0", label: "NVIDIA GPU 0" }, { value: "cpu", label: "CPU" }]}
+              required 
+            />
+          </div>
+          {startRetrainingMutation.isError && (
+            <div className="p-3 text-sm bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-lg animate-fade-in">
+              Failed to start retraining: {(startRetrainingMutation.error as any)?.response?.data?.detail || startRetrainingMutation.error?.message || "An error occurred"}
+            </div>
+          )}
+          <Button 
+            type="submit" 
+            className="w-full mt-2 bg-pink-600 hover:bg-pink-700 text-white font-medium shadow-md shadow-pink-500/10 hover:shadow-pink-500/20 transition-all duration-200"
+            disabled={!retrainForm.name.trim() || !retrainForm.dataset_id || startRetrainingMutation.isPending}
+            loading={startRetrainingMutation.isPending}
+          >
+            Start Retraining
+          </Button>
+        </form>
+      </Modal>
+
       {/* View Logs Modal */}
       <Modal
         open={viewLogsOpen}
         onClose={() => { setViewLogsOpen(false); setSelectedModelForLogs(null); }}
         title={`Training Logs: ${selectedModelForLogs?.name || ""}`}
+        size="xl"
       >
         <div className="pt-4">
           <div className="bg-gray-950 rounded-lg p-4 font-mono text-xs text-gray-300 h-[60vh] overflow-y-auto whitespace-pre-wrap flex flex-col gap-1 border border-gray-800 shadow-inner">
@@ -1175,7 +1503,7 @@ export default function ModelsPage() {
             ) : (
               logs.map((log, i) => (
                 <div key={i} className={`${log.toLowerCase().includes('error') ? 'text-red-400' : log.toLowerCase().includes('warning') ? 'text-yellow-400' : ''}`}>
-                  {log}
+                  {stripAnsi(log)}
                 </div>
               ))
             )}

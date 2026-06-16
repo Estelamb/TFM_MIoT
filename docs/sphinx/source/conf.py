@@ -11,7 +11,7 @@ for svc in [
     "services/device-service",
     "services/ai-service",
     "services/script-service",
-    "services/compilation-service",
+    "services/mlops-service",
     "services/deployment-service",
     "services/monitoring-service",
     "edge-runtime",
@@ -44,7 +44,7 @@ autoapi_dirs              = [
     os.path.join(_root, "services/device-service/app"),
     os.path.join(_root, "services/ai-service/app"),
     os.path.join(_root, "services/script-service/app"),
-    os.path.join(_root, "services/compilation-service/app"),
+    os.path.join(_root, "services/mlops-service/app"),
     os.path.join(_root, "services/deployment-service/app"),
     os.path.join(_root, "services/monitoring-service/app"),
 ]

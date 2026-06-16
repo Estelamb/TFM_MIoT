@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS devices (
     description     TEXT,
     status          TEXT NOT NULL DEFAULT 'offline',  -- online | offline
     last_seen_at    TIMESTAMPTZ,
+    others          TEXT[] NOT NULL DEFAULT '{}',
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -26,19 +27,6 @@ CREATE TABLE IF NOT EXISTS datasets (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS dataset_versions (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    dataset_id      UUID NOT NULL REFERENCES datasets(id) ON DELETE CASCADE,
-    version         TEXT NOT NULL,
-    description     TEXT,
-    object_key      TEXT NOT NULL,  -- MinIO: datasets/<dataset_id>/<version>/<file>
-    sha256          TEXT NOT NULL,
-    size_bytes      BIGINT NOT NULL,
-    meta_info       JSON,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE(dataset_id, version)
-);
-
 CREATE TABLE IF NOT EXISTS models (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            TEXT NOT NULL,
@@ -51,7 +39,6 @@ CREATE TABLE IF NOT EXISTS models (
     compile_status  TEXT NOT NULL DEFAULT 'pending',  -- pending | compiling | ready | failed
     compile_error   TEXT,
     dataset_id      UUID REFERENCES datasets(id) ON DELETE SET NULL,
-    dataset_version_id UUID REFERENCES dataset_versions(id) ON DELETE SET NULL,
     base_architecture TEXT,
     epochs          INT,
     input_size      TEXT,
@@ -66,7 +53,7 @@ CREATE TABLE IF NOT EXISTS scripts (
     description     TEXT,
     script_key      TEXT NOT NULL,       -- MinIO: scripts/<id>/script.py
     script_sha256   TEXT NOT NULL,
-    hardware_type   TEXT NOT NULL,       -- para qué hardware está pensado
+    language        TEXT NOT NULL,       -- python | c++ | java
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -86,5 +73,3 @@ CREATE TABLE IF NOT EXISTS deployments (
 CREATE INDEX IF NOT EXISTS idx_deployments_device ON deployments(device_id);
 CREATE INDEX IF NOT EXISTS idx_deployments_status ON deployments(status);
 CREATE INDEX IF NOT EXISTS idx_models_compile_status ON models(compile_status);
-CREATE INDEX IF NOT EXISTS idx_dataset_versions_dataset ON dataset_versions(dataset_id);
-CREATE INDEX IF NOT EXISTS idx_models_dataset_version ON models(dataset_version_id);

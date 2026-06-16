@@ -6,7 +6,7 @@ from app.repositories.scripts import ScriptRepository
 def _to_proto(sc) -> script_pb2.ScriptResponse:
     return script_pb2.ScriptResponse(
         id=sc.id, name=sc.name, description=sc.description or "",
-        hardware_type=sc.hardware_type, script_key=sc.script_key,
+        language=sc.language, script_key=sc.script_key,
         script_sha256=sc.script_sha256, created_at=sc.created_at.isoformat(),
     )
 
@@ -16,7 +16,8 @@ class ScriptServiceHandler(script_pb2_grpc.ScriptServiceServicer):
     async def UploadScript(self, req, ctx):
         async with self._sf() as s:
             sc = await ScriptRepository(s).create(req.name, req.description or None,
-                                                   req.hardware_type, req.script_key, req.script_sha256)
+                                                   req.language,
+                                                   req.script_key, req.script_sha256)
             return _to_proto(sc)
 
     async def GetScript(self, req, ctx):

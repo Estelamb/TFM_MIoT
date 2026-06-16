@@ -5,9 +5,9 @@ from app.models.orm import Script
 class ScriptRepository:
     def __init__(self, s: AsyncSession): self.s = s
 
-    async def create(self, name: str, description: str | None, hardware_type: str,
+    async def create(self, name: str, description: str | None, language: str,
                      script_key: str, script_sha256: str) -> Script:
-        sc = Script(name=name, description=description, hardware_type=hardware_type,
+        sc = Script(name=name, description=description, language=language,
                     script_key=script_key, script_sha256=script_sha256)
         self.s.add(sc); await self.s.commit(); await self.s.refresh(sc); return sc
 

@@ -6,8 +6,8 @@ from app.models.orm import Device
 class DeviceRepository:
     def __init__(self, s: AsyncSession): self.s = s
 
-    async def create(self, name: str, hardware_type: str, description: str | None, sensors: list[str], actuators: list[str]) -> Device:
-        d = Device(name=name, hardware_type=hardware_type, description=description, sensors=sensors, actuators=actuators)
+    async def create(self, name: str, hardware_type: str, description: str | None, sensors: list[str], actuators: list[str], others: list[str]) -> Device:
+        d = Device(name=name, hardware_type=hardware_type, description=description, sensors=sensors, actuators=actuators, others=others)
         self.s.add(d); await self.s.commit(); await self.s.refresh(d); return d
 
     async def get(self, id: str) -> Device | None:

@@ -8,9 +8,9 @@ class Settings(BaseSettings):
     device_service_grpc: str = "device-service:50051"
     ai_service_grpc: str = "ai-service:50052"
     script_service_grpc: str = "script-service:50053"
-    compilation_service_grpc: str = "compilation-service:50054"
-    deployment_service_grpc: str = "deployment-service:50055"
-    monitoring_service_grpc: str = "monitoring-service:50056"
+    compilation_service_grpc: str = "mlops-service:50052"
+    deployment_service_grpc: str = "edge-connector-service:50053"
+    monitoring_service_grpc: str = "edge-connector-service:50053"
     # MinIO (el gateway sube ficheros directamente)
     minio_endpoint: str = "minio:9000"
     minio_access_key: str = "aura"

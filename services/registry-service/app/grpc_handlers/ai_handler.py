@@ -35,6 +35,7 @@ def _to_proto(m) -> ai_pb2.ModelResponse:
         epochs=m.epochs or 0,
         input_size=m.input_size or "",
         batch_size=m.batch_size or 0,
+        dataset_version_id=m.dataset_version_id or "",
     )
 
 
@@ -45,6 +46,28 @@ def _dataset_to_proto(d) -> ai_pb2.DatasetResponse:
             metadata_str = json.dumps(d.meta_info)
         except Exception:
             pass
+
+    versions_proto = []
+    if hasattr(d, "versions") and d.versions:
+        for v in d.versions:
+            v_meta_str = ""
+            if v.meta_info:
+                try:
+                    v_meta_str = json.dumps(v.meta_info)
+                except Exception:
+                    pass
+            versions_proto.append(ai_pb2.DatasetVersionResponse(
+                id=v.id,
+                dataset_id=v.dataset_id,
+                version=v.version,
+                description=v.description or "",
+                object_key=v.object_key,
+                sha256=v.sha256,
+                size_bytes=v.size_bytes,
+                metadata=v_meta_str,
+                created_at=v.created_at.isoformat(),
+            ))
+
     return ai_pb2.DatasetResponse(
         id=d.id,
         name=d.name,
@@ -54,6 +77,7 @@ def _dataset_to_proto(d) -> ai_pb2.DatasetResponse:
         sha256=d.sha256 or "",
         size_bytes=d.size_bytes or 0,
         metadata=metadata_str,
+        versions=versions_proto,
     )
 
 
@@ -70,20 +94,21 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
         if not base_arch.endswith(".pt"):
             base_arch += ".pt"
 
-        from shared.utils.minio import get_minio
-        from app.config import get_settings
-        s = get_settings()
-        minio = get_minio()
-        try:
-            objects = await minio.list_objects(s.minio_bucket_base_models)
-            allowed = {obj.object_name for obj in objects}
-        except Exception:
-            allowed = ALLOWED_BASE_MODELS
+        if "/" not in base_arch:
+            from shared.utils.minio import get_minio
+            from app.config import get_settings
+            s = get_settings()
+            minio = get_minio()
+            try:
+                objects = await minio.list_objects(s.minio_bucket_base_models)
+                allowed = {obj.object_name for obj in objects}
+            except Exception:
+                allowed = ALLOWED_BASE_MODELS
 
-        if base_arch not in allowed:
-            await ctx.abort(grpc.StatusCode.INVALID_ARGUMENT,
-                            f"base_architecture '{base_arch}' is not in the allowed list")
-            return
+            if base_arch not in allowed:
+                await ctx.abort(grpc.StatusCode.INVALID_ARGUMENT,
+                                f"base_architecture '{base_arch}' is not in the allowed list")
+                return
 
         async with self._sf() as s:
             try:
@@ -97,6 +122,7 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                     epochs=req.epochs or None,
                     input_size=req.input_size or None,
                     batch_size=req.batch_size or None,
+                    dataset_version_id=req.dataset_version_id or None,
                 )
             except ValueError as e:
                 await ctx.abort(grpc.StatusCode.NOT_FOUND, str(e))
@@ -177,6 +203,8 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 req.sha256,
                 req.size_bytes,
                 meta_info=metadata_dict,
+                version=req.version or None,
+                description=req.description or None,
             )
             if not d:
                 await ctx.abort(grpc.StatusCode.NOT_FOUND, "Dataset not found")
@@ -187,7 +215,7 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
         async with self._sf() as s:
             try:
                 m = await ModelRepository(s).associate_dataset(
-                    req.model_id, req.dataset_id
+                    req.model_id, req.dataset_id, req.dataset_version_id or None
                 )
             except ValueError as e:
                 await ctx.abort(grpc.StatusCode.NOT_FOUND, str(e))

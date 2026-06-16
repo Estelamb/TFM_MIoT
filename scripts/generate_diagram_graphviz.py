@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+def get_project_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+DOT_CODE = """digraph G {
+    // General Graph Styling
+    graph [
+        pad="0.4",
+        nodesep="0.4",
+        ranksep="0.4",
+        bgcolor="#f8fafc",
+        label="AURA PLATFORM - DATABASE ER DIAGRAM",
+        labelloc="t",
+        fontname="Segoe UI,Arial,sans-serif",
+        fontsize="14",
+        fontcolor="#0f172a",
+        rankdir=TB,
+        splines=ortho
+    ];
+    
+    // Default Node & Edge Styling
+    node [
+        shape=plain,
+        fontname="Segoe UI,Arial,sans-serif",
+        fontsize="10",
+        fontcolor="#1e293b"
+    ];
+    
+    edge [
+        color="#6366f1",
+        penwidth=2,
+        arrowsize=0.8,
+        fontname="Segoe UI,Arial,sans-serif",
+        fontsize="8",
+        fontcolor="#64748b"
+    ];
+
+    // --- MAIN HORIZONTAL ROWS ---
+    { rank=same; models; datasets; scripts; }
+
+    // --- THREE COLUMN VERTICAL CLUSTERS ---
+    subgraph cluster_col1 {
+        style=invis;
+        models;
+    }
+    
+    subgraph cluster_col2 {
+        style=invis;
+        datasets;
+        devices;
+        datasets -> devices [style=invis];
+    }
+    
+    subgraph cluster_col3 {
+        style=invis;
+        scripts;
+        deployments;
+        scripts -> deployments [style=invis];
+    }
+
+    // --- ENTITY: datasets ---
+    datasets [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="#ffffff" color="#cbd5e1" style="rounded">
+        <tr><td bgcolor="#d97706" align="center" colspan="3"><font color="#ffffff"><b>datasets (Data Catalog)</b></font></td></tr>
+        <tr><td port="id" align="left">🔑 <b>id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>PK</b></td></tr>
+        <tr><td align="left">🏷️ name</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📝 description</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📁 object_key</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">🔒 sha256</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">💾 size_bytes</td><td align="left">bigint</td><td align="center"></td></tr>
+        <tr><td align="left">ℹ️ meta_info</td><td align="left">json</td><td align="center"></td></tr>
+        <tr><td align="left">📅 created_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+    </table>>];
+
+    // --- ENTITY: models ---
+    models [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="#ffffff" color="#cbd5e1" style="rounded">
+        <tr><td bgcolor="#4f46e5" align="center" colspan="3"><font color="#ffffff"><b>models (AI Models)</b></font></td></tr>
+        <tr><td port="id" align="left">🔑 <b>id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>PK</b></td></tr>
+        <tr><td align="left">🏷️ name</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📝 description</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📁 source_key</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">🔒 source_sha256</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📁 compiled_key</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">🔒 compiled_sha256</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">⚙️ hardware_type</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">⚡ compile_status</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">❌ compile_error</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td port="dataset_id" align="left">🔗 <b>dataset_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
+        <tr><td align="left">🧠 base_architecture</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">🔄 epochs</td><td align="left">integer</td><td align="center"></td></tr>
+        <tr><td align="left">📐 input_size</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📦 batch_size</td><td align="left">integer</td><td align="center"></td></tr>
+        <tr><td align="left">📅 created_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+    </table>>];
+
+    // --- ENTITY: deployments ---
+    deployments [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="#ffffff" color="#cbd5e1" style="rounded">
+        <tr><td bgcolor="#059669" align="center" colspan="3"><font color="#ffffff"><b>deployments (Orchestration)</b></font></td></tr>
+        <tr><td port="id" align="left">🔑 <b>id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>PK</b></td></tr>
+        <tr><td port="device_id" align="left">🔗 <b>device_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
+        <tr><td port="model_id" align="left">🔗 <b>model_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
+        <tr><td port="script_id" align="left">🔗 <b>script_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
+        <tr><td align="left">⚡ status</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📤 sent_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+        <tr><td align="left">🚀 running_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+        <tr><td align="left">❌ error_msg</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📅 created_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+    </table>>];
+
+    // --- ENTITY: devices ---
+    devices [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="#ffffff" color="#cbd5e1" style="rounded">
+        <tr><td bgcolor="#0284c7" align="center" colspan="3"><font color="#ffffff"><b>devices (IoT Edge Nodes)</b></font></td></tr>
+        <tr><td port="id" align="left">🔑 <b>id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>PK</b></td></tr>
+        <tr><td align="left">🏷️ name</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">⚙️ hardware_type</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📝 description</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">🟢 status</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📡 sensors</td><td align="left">text[]</td><td align="center"></td></tr>
+        <tr><td align="left">🔌 actuators</td><td align="left">text[]</td><td align="center"></td></tr>
+        <tr><td align="left">📂 others</td><td align="left">text[]</td><td align="center"></td></tr>
+        <tr><td align="left">🕒 last_seen_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+        <tr><td align="left">📅 created_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+    </table>>];
+
+    // --- ENTITY: scripts ---
+    scripts [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="#ffffff" color="#cbd5e1" style="rounded">
+        <tr><td bgcolor="#7c3aed" align="center" colspan="3"><font color="#ffffff"><b>scripts</b></font></td></tr>
+        <tr><td port="id" align="left">🔑 <b>id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>PK</b></td></tr>
+        <tr><td align="left">🏷️ name</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📝 description</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📁 script_key</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">🔒 script_sha256</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">🌐 language</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📅 created_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+    </table>>];
+
+    // --- ALIGNMENT CONSTRAINTS ---
+    // Force horizontal layout order in Row 1: models (left), datasets (middle), scripts (right)
+    models -> datasets [style=invis];
+    datasets -> scripts [style=invis];
+
+    // Relationships/Edges (connecting Table-to-Table to prevent lines from crossing through HTML tables)
+    datasets -> models [xlabel="used by", style=dashed, color="#d97706"];
+    models -> deployments [xlabel="deployed", color="#4f46e5"];
+    devices -> deployments [xlabel="target", color="#0284c7"];
+    scripts -> deployments [xlabel="executed by", color="#7c3aed"];
+}
+"""
+
+def main():
+    root = get_project_root()
+    docs_dir = root / "docs"
+    docs_dir.mkdir(parents=True, exist_ok=True)
+    
+    dot_file = docs_dir / "model_diagram_premium.dot"
+    png_file = docs_dir / "model_diagram_premium.png"
+    svg_file = docs_dir / "model_diagram_premium.svg"
+    
+    print(f"Escribiendo código Graphviz DOT en: {dot_file.resolve()}")
+    with open(dot_file, "w", encoding="utf-8") as f:
+        f.write(DOT_CODE)
+        
+    # Attempt to compile using local graphviz command line 'dot'
+    try:
+        print("Intentando compilar diagrama con Graphviz local ('dot')...")
+        # Generate SVG
+        subprocess.run(["dot", "-Tsvg", str(dot_file), "-o", str(svg_file)], check=True)
+        print(f"¡Éxito! Diagrama SVG generado en: {svg_file.resolve()}")
+        # Generate PNG
+        subprocess.run(["dot", "-Tpng", str(dot_file), "-o", str(png_file)], check=True)
+        print(f"¡Éxito! Diagrama PNG generado en: {png_file.resolve()}")
+    except (subprocess.SubprocessError, FileNotFoundError):
+        print("\n[!] AVISO: El comando 'dot' de Graphviz no está disponible en tu sistema local.")
+        print("Para generar el PNG o SVG automáticamente, instala Graphviz y añádelo al PATH de Windows.")
+        print("Also you can copy 'docs/model_diagram_premium.dot' contents into Graphviz Online.")
+
+if __name__ == "__main__":
+    main()

@@ -73,6 +73,8 @@ async def compile_and_deploy_job(
                 logger.info(f"Model {model_id} is already {model.compile_status} for {hardware_type}. Skipping CompileModel.")
 
         if not skip_compile:
+            # Delete old redis key before triggering compilation to prevent reading obsolete "ready" state
+            await redis.delete(f"model_compile_done:{model_id}")
             # 2. Call compilation service to trigger build
             try:
                 comp_res = await ctx["comp_stub"].CompileModel(compilation_pb2.CompileModelRequest(

@@ -98,7 +98,7 @@ export default function ScriptsPage() {
 
   // Upload modal state (real mode only)
   const [uploadOpen, setUploadOpen] = useState(false);
-  const [uploadForm, setUploadForm] = useState({ name: "", description: "", hardware_type: "hailo8" });
+  const [uploadForm, setUploadForm] = useState({ name: "", description: "", language: "python" });
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const uploadFileRef = useRef<HTMLInputElement>(null);
 
@@ -111,12 +111,12 @@ export default function ScriptsPage() {
 
   const uploadMutation = useMutation({
     mutationFn: () =>
-      uploadScript(uploadForm.name, uploadForm.description, uploadForm.hardware_type, uploadFile!),
+      uploadScript(uploadForm.name, uploadForm.description, uploadFile!, uploadForm.language),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["scripts"] });
       setUploadOpen(false);
       setUploadFile(null);
-      setUploadForm({ name: "", description: "", hardware_type: "hailo8" });
+      setUploadForm({ name: "", description: "", language: "python" });
       setEditingScript(null); // Te devuelve a la lista principal al terminar de subir
     },
   });
@@ -158,9 +158,22 @@ export default function ScriptsPage() {
     setUploadForm({
       name: editingScript.name === "New Script" ? "" : `${editingScript.name}_v2`,
       description: editingScript.description || "",
-      hardware_type: editingScript.hardware_type || "hailo8"
+      language: lang
     });
     setUploadOpen(true);
+  };
+
+  // Auto-detect language from extension
+  const handleUploadFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setUploadFile(file);
+    if (file) {
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      let detectedLang = "python";
+      if (ext === "cpp" || ext === "cc" || ext === "h" || ext === "hpp") detectedLang = "cpp";
+      else if (ext === "java") detectedLang = "java";
+      setUploadForm(f => ({ ...f, language: detectedLang }));
+    }
   };
 
   // EDITOR VIEW
@@ -289,8 +302,10 @@ export default function ScriptsPage() {
                 <div className="flex items-center gap-4">
                   <FileCode className="text-orange-500" />
                   <div>
-                    <p className="font-bold">{s.name}</p>
-                    <p className="text-xs text-gray-500">{HW_LABELS[s.hardware_type] || s.hardware_type}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold">{s.name}</p>
+                      <Badge variant="muted" className="capitalize text-[10px] py-0 px-1.5">{s.language || "python"}</Badge>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -365,10 +380,14 @@ export default function ScriptsPage() {
             placeholder="Brief description..."
           />
           <Select
-            label="Target hardware"
-            value={uploadForm.hardware_type}
-            onChange={e => setUploadForm(f => ({ ...f, hardware_type: e.target.value }))}
-            options={hwOptions}
+            label="Script language"
+            value={uploadForm.language}
+            onChange={e => setUploadForm(f => ({ ...f, language: e.target.value }))}
+            options={[
+              { value: "python", label: "Python" },
+              { value: "cpp", label: "C++" },
+              { value: "java", label: "Java" }
+            ]}
           />
           <div
             className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 flex flex-col items-center cursor-pointer hover:border-orange-400 transition-colors"
@@ -376,9 +395,9 @@ export default function ScriptsPage() {
           >
             <Upload size={28} className="text-gray-400 mb-2" />
             <p className="text-sm text-gray-500">
-              {uploadFile ? <span className="text-orange-500 font-medium">{uploadFile.name}</span> : "Click to upload .py file"}
+              {uploadFile ? <span className="text-orange-500 font-medium">{uploadFile.name}</span> : "Click to upload script file"}
             </p>
-            <input ref={uploadFileRef} type="file" accept=".py,.cpp,.java" className="hidden" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
+            <input ref={uploadFileRef} type="file" accept=".py,.cpp,.java" className="hidden" onChange={handleUploadFileChange} />
           </div>
           <Button type="submit" className="w-full" disabled={!uploadFile || uploadMutation.isPending} loading={uploadMutation.isPending}>
             Upload to Platform

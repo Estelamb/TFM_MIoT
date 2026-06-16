@@ -10,17 +10,18 @@ router = APIRouter(prefix="/api/scripts", tags=["scripts"])
 @router.post("", status_code=201)
 async def upload_script(
     name: str = Form(...), description: str = Form(""),
-    hardware_type: str = Form(...),
+    language: str = Form("python"),
     file: UploadFile = File(...), _=Depends(verify_token),
 ):
     data = await file.read()
     script_id = str(uuid.uuid4())
-    script_key = f"{script_id}/script.py"
+    original_ext = file.filename.split('.')[-1] if file.filename and '.' in file.filename else "py"
+    script_key = f"{script_id}/script.{original_ext}"
     sha = await upload_bytes("scripts", script_key, data)
     sc = await get_stub("script").UploadScript(script_pb2.UploadScriptRequest(
-        name=name, description=description, hardware_type=hardware_type,
+        name=name, description=description, language=language,
         script_key=script_key, script_sha256=sha))
-    return {"id": sc.id, "name": sc.name, "hardware_type": sc.hardware_type, "created_at": sc.created_at}
+    return {"id": sc.id, "name": sc.name, "language": sc.language, "created_at": sc.created_at}
 
 @router.get("")
 async def list_scripts(_=Depends(verify_token)):
@@ -44,7 +45,7 @@ async def list_scripts(_=Depends(verify_token)):
             "id": s.id,
             "name": s.name,
             "description": s.description,
-            "hardware_type": s.hardware_type,
+            "language": s.language,
             "script_sha256": s.script_sha256,
             "created_at": s.created_at,
             "content": content
@@ -72,7 +73,7 @@ async def get_script(script_id: str, _=Depends(verify_token)):
         "id": s.id,
         "name": s.name,
         "description": s.description,
-        "hardware_type": s.hardware_type,
+        "language": s.language,
         "script_sha256": s.script_sha256,
         "created_at": s.created_at,
         "content": content

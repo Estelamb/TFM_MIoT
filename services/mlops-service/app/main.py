@@ -16,7 +16,7 @@ from arq import Worker
 
 async def main():
     s = get_settings()
-    configure_logging("mlops-worker-service", s.log_level)
+    configure_logging("mlops-service", s.log_level)
 
     handler = CompilationServiceHandler(
         s.ai_service_grpc, s.minio_bucket_models, s.minio_bucket_compiled, s.redis_url)

@@ -19,12 +19,9 @@ Edge AI deployment platform for IoT devices. Upload a trained YOLOv8 model, comp
 | Service | Port | Stack | Responsibility |
 |---|---|---|---|
 | `api-gateway` | 8000 (HTTP) | FastAPI + JWT | Single entry point for the frontend. Proxies to gRPC services. |
-| `device-service` | 50051 (gRPC) | Python + PostgreSQL | CRUD for edge devices. |
-| `ai-service` | 50052 (gRPC) | Python + PostgreSQL + MinIO | Manages uploaded models (.pt) and tracks compilation status. |
-| `script-service` | 50053 (gRPC) | Python + PostgreSQL + MinIO | Manages inference scripts (.py). |
-| `compilation-service` | 50054 (gRPC) | Python + Docker socket | Compiles .pt models to hardware-specific formats. Non-blocking. |
-| `deployment-service` | 50055 (gRPC) | Python + PostgreSQL + MQTT | Orchestrates deployments. Publishes commands to MQTT and listens for ack/fail events. |
-| `monitoring-service` | 50056 (gRPC) + 9100 (Prometheus) | Python + MongoDB + MQTT | Receives telemetry and inference results from edge devices over MQTT. Exposes Prometheus metrics. |
+| `registry-service` | 50051 (gRPC) | Python + PostgreSQL + MinIO | Metadata registry for devices, datasets, models, and scripts. |
+| `mlops-service` | 50052 (gRPC) | Python + Docker socket | Handles model training and compilation asynchronously. |
+| `edge-connector-service` | 50053 (gRPC) + 9100 (Prometheus) | Python + PostgreSQL + MQTT + MongoDB | Telemetry ingest, inference logging, and OTA deployment. |
 | `frontend` | 3000 (HTTP) | Next.js 15 + Tailwind | Dashboard UI. |
 
 ---
@@ -38,7 +35,7 @@ aura/
 │   ├── device-service.yml
 │   ├── ai-service.yml
 │   ├── script-service.yml
-│   ├── compilation-service.yml
+│   ├── mlops-service.yml
 │   ├── deployment-service.yml
 │   ├── monitoring-service.yml
 │   ├── api-gateway.yml
@@ -60,7 +57,7 @@ aura/
 │   ├── device-service/
 │   ├── ai-service/
 │   ├── script-service/
-│   ├── compilation-service/
+│   ├── mlops-service/
 │   ├── deployment-service/
 │   └── monitoring-service/
 │
@@ -131,7 +128,7 @@ scripts    — inference scripts (.py)
 1. User uploads .pt model
    └─▶ api-gateway saves to MinIO (models bucket)
    └─▶ ai-service registers model in PostgreSQL (compile_status = pending)
-   └─▶ compilation-service.CompileModel() called [non-blocking, returns immediately]
+   └─▶ mlops-service.CompileModel() called [non-blocking, returns immediately]
        └─▶ background task: export ONNX → Hailo Docker / MCT Python pipeline
        └─▶ uploads compiled artifact to MinIO (compiled bucket)
        └─▶ notifies ai-service: UpdateModelCompiled (compile_status = ready)
@@ -168,9 +165,9 @@ scripts    — inference scripts (.py)
 
 ---
 
-## Compilation service
+## MLOps service
 
-The compilation service contains a pluggable registry of compilers:
+The MLOps service contains a pluggable registry of compilers:
 
 ```python
 COMPILER_REGISTRY = {

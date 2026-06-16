@@ -87,7 +87,7 @@ export default function DeploymentsPage() {
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-fade-in px-4 sm:px-6 lg:px-12 py-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2 pb-1">
             Deployments
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -188,8 +188,8 @@ export default function DeploymentsPage() {
                   <button
                     key={d.id} type="button" onClick={() => toggleDevice(d.id)}
                     className={`flex items-center gap-2 p-2 rounded-md text-sm border text-left ${selectedDeviceIds.includes(d.id)
-                        ? "bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                        : "bg-gray-50 border-transparent dark:bg-gray-800"
+                      ? "bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                      : "bg-gray-50 border-transparent dark:bg-gray-800"
                       }`}
                   >
                     {selectedDeviceIds.includes(d.id) && <Check size={14} />}

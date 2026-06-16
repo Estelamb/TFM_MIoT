@@ -32,27 +32,27 @@ export default function DashboardPage() {
   const { mode, demoData } = useDataMode();
   const isDemo = mode === "demo";
 
-  const { data: realDevices = [] }     = useQuery({ queryKey: ["devices"],     queryFn: getDevices });
-  const { data: realModels = [] }      = useQuery({ queryKey: ["models"],      queryFn: getModels });
-  const { data: realScripts = [] }     = useQuery({ queryKey: ["scripts"],     queryFn: getScripts });
+  const { data: realDevices = [] } = useQuery({ queryKey: ["devices"], queryFn: getDevices });
+  const { data: realModels = [] } = useQuery({ queryKey: ["models"], queryFn: getModels });
+  const { data: realScripts = [] } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
   const { data: realDeployments = [] } = useQuery({ queryKey: ["deployments"], queryFn: getDeployments });
-  const { data: realStates = [] }      = useQuery({ queryKey: ["monitoring"],  queryFn: getMonitoringStates, refetchInterval: 5000 });
+  const { data: realStates = [] } = useQuery({ queryKey: ["monitoring"], queryFn: getMonitoringStates, refetchInterval: 5000 });
 
-  const devices     = isDemo ? demoData.devices     : realDevices;
-  const models      = isDemo ? demoData.models      : realModels;
-  const scripts     = isDemo ? demoData.scripts     : realScripts;
+  const devices = isDemo ? demoData.devices : realDevices;
+  const models = isDemo ? demoData.models : realModels;
+  const scripts = isDemo ? demoData.scripts : realScripts;
   const deployments = isDemo ? demoData.deployments : realDeployments;
-  const states      = isDemo ? demoData.monitoringStates : realStates;
+  const states = isDemo ? demoData.monitoringStates : realStates;
 
-  const online  = devices.filter((d: any) => d.status === "online").length;
+  const online = devices.filter((d: any) => d.status === "online").length;
   const running = deployments.filter((d: any) => d.status === "running").length;
-  const failed  = deployments.filter((d: any) => d.status === "failed").length;
+  const failed = deployments.filter((d: any) => d.status === "failed").length;
 
   return (
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-fade-in px-4 sm:px-6 lg:px-12 py-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2 pb-1">
             Dashboard Overview
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -63,18 +63,18 @@ export default function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Devices"     value={devices.length}     icon={Cpu}    href="/devices"     iconColor="text-blue-500" />
-        <StatCard label="Models"      value={models.length}      icon={Brain}  href="/models"      iconColor="text-pink-500" />
-        <StatCard label="Scripts"     value={scripts.length}     icon={Code2}  href="/scripts"     iconColor="text-orange-500" />
+        <StatCard label="Devices" value={devices.length} icon={Cpu} href="/devices" iconColor="text-blue-500" />
+        <StatCard label="Models" value={models.length} icon={Brain} href="/models" iconColor="text-pink-500" />
+        <StatCard label="Scripts" value={scripts.length} icon={Code2} href="/scripts" iconColor="text-orange-500" />
         <StatCard label="Deployments" value={deployments.length} icon={Rocket} href="/deployments" iconColor="text-emerald-500" />
       </div>
 
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Online devices",       value: `${online} / ${devices.length}`, status: "online",  color: "text-emerald-600 dark:text-emerald-400" },
-          { label: "Running deployments",  value: running,                          status: "running", color: "text-blue-600 dark:text-blue-400" },
-          { label: "Failed deployments",   value: failed,                           status: failed > 0 ? "failed" : "ready", color: failed > 0 ? "text-red-600 dark:text-red-400" : "text-gray-500" },
+          { label: "Online devices", value: `${online} / ${devices.length}`, status: "online", color: "text-emerald-600 dark:text-emerald-400" },
+          { label: "Running deployments", value: running, status: "running", color: "text-blue-600 dark:text-blue-400" },
+          { label: "Failed deployments", value: failed, status: failed > 0 ? "failed" : "ready", color: failed > 0 ? "text-red-600 dark:text-red-400" : "text-gray-500" },
         ].map((item, i) => (
           <div key={i} className="p-5 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm">
             <div className="flex items-center gap-2 mb-2">

@@ -24,29 +24,29 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x64\x65vice.proto\x12\x0e\x61ura.device.v1\"s\n\x13\x43reateDeviceRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x15\n\rhardware_type\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0f\n\x07sensors\x18\x04 \x03(\t\x12\x11\n\tactuators\x18\x05 \x03(\t\"\x1e\n\x10GetDeviceRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\x14\n\x12ListDevicesRequest\"!\n\x13\x44\x65leteDeviceRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\'\n\x14\x44\x65leteDeviceResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\"7\n\x19UpdateDeviceStatusRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\"\xb4\x01\n\x0e\x44\x65viceResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x15\n\rhardware_type\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x14\n\x0clast_seen_at\x18\x06 \x01(\t\x12\x12\n\ncreated_at\x18\x07 \x01(\t\x12\x0f\n\x07sensors\x18\x08 \x03(\t\x12\x11\n\tactuators\x18\t \x03(\t\"F\n\x13ListDevicesResponse\x12/\n\x07\x64\x65vices\x18\x01 \x03(\x0b\x32\x1e.aura.device.v1.DeviceResponse2\xc7\x03\n\rDeviceService\x12S\n\x0c\x43reateDevice\x12#.aura.device.v1.CreateDeviceRequest\x1a\x1e.aura.device.v1.DeviceResponse\x12M\n\tGetDevice\x12 .aura.device.v1.GetDeviceRequest\x1a\x1e.aura.device.v1.DeviceResponse\x12V\n\x0bListDevices\x12\".aura.device.v1.ListDevicesRequest\x1a#.aura.device.v1.ListDevicesResponse\x12Y\n\x0c\x44\x65leteDevice\x12#.aura.device.v1.DeleteDeviceRequest\x1a$.aura.device.v1.DeleteDeviceResponse\x12_\n\x12UpdateDeviceStatus\x12).aura.device.v1.UpdateDeviceStatusRequest\x1a\x1e.aura.device.v1.DeviceResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x64\x65vice.proto\x12\x0e\x61ura.device.v1\"\x83\x01\n\x13\x43reateDeviceRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x15\n\rhardware_type\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0f\n\x07sensors\x18\x04 \x03(\t\x12\x11\n\tactuators\x18\x05 \x03(\t\x12\x0e\n\x06others\x18\x06 \x03(\t\"\x1e\n\x10GetDeviceRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\x14\n\x12ListDevicesRequest\"!\n\x13\x44\x65leteDeviceRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\'\n\x14\x44\x65leteDeviceResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\"7\n\x19UpdateDeviceStatusRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\"\xc4\x01\n\x0e\x44\x65viceResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x15\n\rhardware_type\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x14\n\x0clast_seen_at\x18\x06 \x01(\t\x12\x12\n\ncreated_at\x18\x07 \x01(\t\x12\x0f\n\x07sensors\x18\x08 \x03(\t\x12\x11\n\tactuators\x18\t \x03(\t\x12\x0e\n\x06others\x18\n \x03(\t\"F\n\x13ListDevicesResponse\x12/\n\x07\x64\x65vices\x18\x01 \x03(\x0b\x32\x1e.aura.device.v1.DeviceResponse2\xc7\x03\n\rDeviceService\x12S\n\x0c\x43reateDevice\x12#.aura.device.v1.CreateDeviceRequest\x1a\x1e.aura.device.v1.DeviceResponse\x12M\n\tGetDevice\x12 .aura.device.v1.GetDeviceRequest\x1a\x1e.aura.device.v1.DeviceResponse\x12V\n\x0bListDevices\x12\".aura.device.v1.ListDevicesRequest\x1a#.aura.device.v1.ListDevicesResponse\x12Y\n\x0c\x44\x65leteDevice\x12#.aura.device.v1.DeleteDeviceRequest\x1a$.aura.device.v1.DeleteDeviceResponse\x12_\n\x12UpdateDeviceStatus\x12).aura.device.v1.UpdateDeviceStatusRequest\x1a\x1e.aura.device.v1.DeviceResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'device_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_CREATEDEVICEREQUEST']._serialized_start=32
-  _globals['_CREATEDEVICEREQUEST']._serialized_end=147
-  _globals['_GETDEVICEREQUEST']._serialized_start=149
-  _globals['_GETDEVICEREQUEST']._serialized_end=179
-  _globals['_LISTDEVICESREQUEST']._serialized_start=181
-  _globals['_LISTDEVICESREQUEST']._serialized_end=201
-  _globals['_DELETEDEVICEREQUEST']._serialized_start=203
-  _globals['_DELETEDEVICEREQUEST']._serialized_end=236
-  _globals['_DELETEDEVICERESPONSE']._serialized_start=238
-  _globals['_DELETEDEVICERESPONSE']._serialized_end=277
-  _globals['_UPDATEDEVICESTATUSREQUEST']._serialized_start=279
-  _globals['_UPDATEDEVICESTATUSREQUEST']._serialized_end=334
-  _globals['_DEVICERESPONSE']._serialized_start=337
-  _globals['_DEVICERESPONSE']._serialized_end=517
-  _globals['_LISTDEVICESRESPONSE']._serialized_start=519
-  _globals['_LISTDEVICESRESPONSE']._serialized_end=589
-  _globals['_DEVICESERVICE']._serialized_start=592
-  _globals['_DEVICESERVICE']._serialized_end=1047
+  _globals['_CREATEDEVICEREQUEST']._serialized_start=33
+  _globals['_CREATEDEVICEREQUEST']._serialized_end=164
+  _globals['_GETDEVICEREQUEST']._serialized_start=166
+  _globals['_GETDEVICEREQUEST']._serialized_end=196
+  _globals['_LISTDEVICESREQUEST']._serialized_start=198
+  _globals['_LISTDEVICESREQUEST']._serialized_end=218
+  _globals['_DELETEDEVICEREQUEST']._serialized_start=220
+  _globals['_DELETEDEVICEREQUEST']._serialized_end=253
+  _globals['_DELETEDEVICERESPONSE']._serialized_start=255
+  _globals['_DELETEDEVICERESPONSE']._serialized_end=294
+  _globals['_UPDATEDEVICESTATUSREQUEST']._serialized_start=296
+  _globals['_UPDATEDEVICESTATUSREQUEST']._serialized_end=351
+  _globals['_DEVICERESPONSE']._serialized_start=354
+  _globals['_DEVICERESPONSE']._serialized_end=550
+  _globals['_LISTDEVICESRESPONSE']._serialized_start=552
+  _globals['_LISTDEVICESRESPONSE']._serialized_end=622
+  _globals['_DEVICESERVICE']._serialized_start=625
+  _globals['_DEVICESERVICE']._serialized_end=1080
 # @@protoc_insertion_point(module_scope)

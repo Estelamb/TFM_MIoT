@@ -11,7 +11,7 @@ service ScriptService {
 message UploadScriptRequest {
   string name = 1;
   string description = 2;
-  string hardware_type = 3;
+  string language = 3;
   string script_key = 4;
   string script_sha256 = 5;
 }
@@ -23,7 +23,7 @@ message ScriptResponse {
   string id = 1;
   string name = 2;
   string description = 3;
-  string hardware_type = 4;
+  string language = 4;
   string script_key = 5;
   string script_sha256 = 6;
   string created_at = 7;

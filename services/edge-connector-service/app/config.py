@@ -13,9 +13,9 @@ class Settings(BaseSettings):
     mqtt_port: int = 1883
     ai_service_grpc: str = "registry-service:50051"
     script_service_grpc: str = "registry-service:50051"
-    compilation_service_grpc: str = "mlops-worker-service:50054"
+    compilation_service_grpc: str = "mlops-service:50052"
     download_url_expiry_seconds: int = 3600
-    grpc_port: int = 50055
+    grpc_port: int = 50053
     log_level: str = "DEBUG"
     redis_url: str = "redis://localhost:6379"
     mongo_uri: str = "mongodb://aura:aura_dev@localhost:27017/aura?authSource=admin"

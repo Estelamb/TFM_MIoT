@@ -25,7 +25,7 @@ cd docs && make html
 
 ## Adding a new compiler
 
-1. Create `services/compilation-service/app/compilers/<hw>.py`
+1. Create `services/mlops-service/app/compilers/<hw>.py`
 2. Implement `CompilerBase.compile()`
 3. Register in `COMPILER_REGISTRY` inside `compilation_handler.py`
 

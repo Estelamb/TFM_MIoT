@@ -27,12 +27,22 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <aside className={cn(
-      "fixed left-0 top-0 z-50 h-screen transition-all duration-300",
+      "fixed left-0 top-0 h-screen transition-all duration-300",
+      "z-30", // BAJADO de z-50 a z-30 para que los modales y popups queden por encima
       "flex flex-col",
       "bg-white dark:bg-gray-950",
       "border-r border-slate-200/60 dark:border-gray-800/50",
       collapsed ? "w-20" : "w-56"
     )}>
+
+      {/* --- EL BORDE EXPANSOR DE FLECHA HORIZONTAL --- */}
+      <div
+        onClick={onToggle}
+        className="absolute top-0 -right-2 w-4 h-full cursor-ew-resize z-50 flex items-center justify-center group/edge"
+      >
+        <div className="w-1 h-12 rounded-full bg-blue-500/50 opacity-0 group-hover/edge:opacity-100 transition-opacity" />
+      </div>
+      {/* ---------------------------------------------- */}
 
       {/* Header */}
       <div className={cn(
@@ -45,7 +55,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             onClick={(e) => { e.stopPropagation(); onToggle(); }}
             className="relative group w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
           >
-            {/* Collapsed Logo - Using relative + fill to match Login behavior */}
+            {/* Collapsed Logo */}
             <div className="absolute inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity duration-200">
               <div className="relative w-7 h-7 bg-transparent">
                 <Image
@@ -71,7 +81,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         ) : (
           <>
             <div className="flex items-center gap-3 cursor-default">
-              {/* Expanded Logo - Using relative + fill to match Login behavior */}
+              {/* Expanded Logo */}
               <div className="relative w-8 h-8 flex-shrink-0 bg-transparent">
                 <Image
                   src="/logo.png"

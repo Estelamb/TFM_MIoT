@@ -14,6 +14,8 @@ def _to_proto(d) -> device_pb2.DeviceResponse:
         res.sensors.extend(d.sensors)
     if hasattr(d, 'actuators') and d.actuators:
         res.actuators.extend(d.actuators)
+    if hasattr(d, 'others') and d.others:
+        res.others.extend(d.others)
     return res
 
 class DeviceServiceHandler(device_pb2_grpc.DeviceServiceServicer):
@@ -23,7 +25,7 @@ class DeviceServiceHandler(device_pb2_grpc.DeviceServiceServicer):
         async with self._sf() as s:
             d = await DeviceRepository(s).create(
                 req.name, req.hardware_type, req.description or None,
-                list(req.sensors), list(req.actuators)
+                list(req.sensors), list(req.actuators), list(req.others)
             )
             return _to_proto(d)
 

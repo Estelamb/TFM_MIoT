@@ -43,6 +43,7 @@ message UploadModelRequest {
   int32 epochs = 7;
   string input_size = 8;
   int32 batch_size = 9;
+  string dataset_version_id = 10;
 }
 message GetModelRequest    { string id = 1; }
 message ListModelsRequest  {}
@@ -75,6 +76,7 @@ message ModelResponse {
   int32 epochs = 15;
   string input_size = 16;
   int32 batch_size = 17;
+  string dataset_version_id = 18;
 }
 message ListModelsResponse { repeated ModelResponse models = 1; }
 
@@ -86,6 +88,19 @@ message GetDatasetRequest { string id = 1; }
 message ListDatasetsRequest {}
 message DeleteDatasetRequest { string id = 1; }
 message DeleteDatasetResponse { bool success = 1; }
+
+message DatasetVersionResponse {
+  string id = 1;
+  string dataset_id = 2;
+  string version = 3;
+  string description = 4;
+  string object_key = 5;
+  string sha256 = 6;
+  int64 size_bytes = 7;
+  string metadata = 8;
+  string created_at = 9;
+}
+
 message DatasetResponse {
   string id = 1;
   string name = 2;
@@ -95,6 +110,7 @@ message DatasetResponse {
   string sha256 = 6;
   int64 size_bytes = 7;
   string metadata = 8;
+  repeated DatasetVersionResponse versions = 9;
 }
 message ListDatasetsResponse { repeated DatasetResponse datasets = 1; }
 
@@ -104,9 +120,13 @@ message SetDatasetFileRequest {
   string sha256 = 3;
   int64 size_bytes = 4;
   string metadata = 5;
+  string version = 6;
+  string description = 7;
 }
 
 message AssociateModelDatasetRequest {
   string model_id = 1;
   string dataset_id = 2;
+  string dataset_version_id = 3;
 }
+

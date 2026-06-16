@@ -17,7 +17,7 @@ Endpoints principales
 
 POST /auth/token desde frontend/app/(auth)/login/page.tsx/login/page.tsx#L1) → main.py:1 → devuelve JWT.
 GET /api/devices, POST /api/devices, DELETE /api/devices/:id → devices.py:1 → servicio device-service.
-GET /api/models, POST /api/models, DELETE /api/models/:id → router de models del gateway → ai-service y compilation-service.
+GET /api/models, POST /api/models, DELETE /api/models/:id → router de models del gateway → ai-service y mlops-service.
 GET /api/scripts, POST /api/scripts, DELETE /api/scripts/:id → router de scripts del gateway → script-service.
 GET /api/deployments, POST /api/deployments → router de deployments del gateway → deployment-service.
 GET /api/monitoring/devices, GET /api/monitoring/devices/:id, GET /api/monitoring/devices/:id/inference → monitoring.py:1 → monitoring-service.
@@ -65,7 +65,7 @@ Escalabilidad: es un servicio ligero (solo CRUD + DB); escala según necesidades
 
 AI-service es el servicio que lleva el catálogo de modelos y sus artefactos. No recibe peticiones directas del frontend; el flujo normal es frontend → api-gateway → ai-service. Lo puedes ver en models.py:1, donde el gateway llama al stub gRPC de AI-service.
 
-Su entrada está en main.py:1. Al arrancar hace tres cosas importantes: crea las tablas del modelo en PostgreSQL, inicializa MinIO para guardar ficheros y levanta un servidor gRPC en el puerto 50052. O sea, AI-service es básicamente el backend de persistencia y metadatos para los modelos.
+Su entrada está en main.py:1. Al arrancar hace tres cosas importantes: crea las tablas del modelo en PostgreSQL, inicializa MinIO para guardar ficheros y levanta un servidor gRPC en el puerto 50051 (consolidado bajo registry-service). O sea, AI-service es básicamente el backend de persistencia y metadatos para los modelos.
 
 Lo que guarda de cada modelo está definido en orm.py:1. Ahí se ve que un modelo tiene nombre, descripción, la key del fichero original en MinIO, su SHA256, y después campos para el artefacto compilado, el tipo de hardware y el estado de compilación. El repositorio de acceso a datos en models.py:1 hace las operaciones CRUD y también actualiza el resultado de la compilación.
 
@@ -81,7 +81,7 @@ En una frase: AI-service es el registro central de modelos. Guarda metadatos, co
 
 # Script-Service
 
-script-service es el servicio que gestiona los scripts de inferencia de la plataforma. No ejecuta los scripts; los registra, los lista, los borra y guarda su metadato en PostgreSQL mientras el fichero real se almacena en MinIO. La entrada del servicio está en main.py:1, donde arranca el gRPC en el puerto 50053, crea las tablas de scripts y configura el bucket de MinIO llamado scripts.
+script-service es el servicio que gestiona los scripts de inferencia de la plataforma. No ejecuta los scripts; los registra, los lista, los borra y guarda su metadato en PostgreSQL mientras el fichero real se almacena en MinIO. La entrada del servicio está en main.py:1, donde arranca el gRPC en el puerto 50051 (consolidado bajo registry-service), crea las tablas de scripts y configura el bucket de MinIO llamado scripts.
 
 El flujo real es este: el frontend sube un fichero .py al gateway, el gateway lo manda primero a MinIO y luego llama al script-service con la key y el SHA256 del archivo. Eso se ve en scripts.py:1. El servicio no recibe el binario completo; recibe solo metadata y referencias al objeto guardado.
 
@@ -97,11 +97,11 @@ En una frase: script-service es el catálogo de scripts de inferencia. El gatewa
 
 ## Falta añadir que se puedan escribir en el IDE y las librerias propias de AURA. Por ahora solo se pueden subir como archivos .py, pero la idea es que en el futuro se pueda escribir directamente en el frontend con autocompletado y validación, para mejorar la experiencia de usuario.
 
-# Compilation-Service
+# MLOps-Service
 
-compilation-service es el servicio que toma un modelo ya subido y lo convierte al formato de hardware objetivo. No compila desde el frontend directamente: el flujo normal es frontend → models.py:1 → main.py:1. El gateway sube primero el .pt a MinIO, registra el modelo en ai-service, y luego dispara la compilación si compile=true.
+mlops-service es el servicio que toma un modelo ya subido y lo convierte al formato de hardware objetivo. No compila desde el frontend directamente: el flujo normal es frontend → models.py:1 → main.py:1. El gateway sube primero el .pt a MinIO, registra el modelo en ai-service, y luego dispara la compilación si compile=true.
 
-La entrada del servicio está en main.py:1. Ahí arranca un gRPC server en el puerto 50054 y crea un CompilationServiceHandler. Ese handler es el que decide qué compilador usar según hardware_type, mediante un registro interno en compilation_handler.py:1.
+La entrada del servicio está en main.py:1. Ahí arranca un gRPC server en el puerto 50052 y crea un CompilationServiceHandler. Ese handler es el que decide qué compilador usar según hardware_type, mediante un registro interno en compilation_handler.py:1.
 
 El contrato gRPC está en compilation.proto:1. Solo expone dos operaciones:
 
@@ -125,7 +125,7 @@ rpi
 jetson_orin_nano
 El proceso general es: descargar el .pt desde MinIO, compilarlo para el hardware objetivo, subir el artefacto compilado a MinIO y devolver un CompilationResult con la key y el hash. La base común de esa interfaz está en base.py:1.
 
-En resumen: compilation-service no guarda modelos ni scripts; orquesta la transformación del modelo para un hardware concreto y publica el resultado. ai-service guarda el estado, y compilation-service hace el trabajo pesado.
+En resumen: mlops-service no guarda modelos ni scripts; orquesta la transformación del modelo para un hardware concreto y publica el resultado. ai-service guarda el estado, y mlops-service hace el trabajo pesado.
 
 ## Falta hacer que compilation sea en deployment si no está compilado ya. No se ejecuta cuando se añade el modelo. Se ejecuta cuando se despliega en un hardware específico.
 
@@ -167,7 +167,7 @@ MinIO: para almacenar/servir artefactos compilados y scripts (presigned URLs). I
 Postgres: almacena la tabla Deployment, referencias a Device/Model/Script. ORM en orm.py.
 MQTT broker (mosquitto): medio para enviar comandos a dispositivos y recibir ack/fail. Host/puerto provistos por la configuración.
 API Gateway / Frontend: la UI solicita un despliegue al api-gateway, que invoca el stub gRPC del deployment-service. (El gateway traduce HTTP→gRPC).
-Otros servicios: no se hacen llamadas gRPC a ai/script/compilation desde aquí; el servicio asume que las referencias a modelo/script están en la BD y que los artefactos compilados están en MinIO (gestionados por ai-service / compilation-service / script-service).
+Otros servicios: no se hacen llamadas gRPC a ai/script/compilation desde aquí; el servicio asume que las referencias a modelo/script están en la BD y que los artefactos compilados están en MinIO (gestionados por ai-service / mlops-service / script-service).
 Puntos clave y recomendaciones:
 
 Idempotencia/estado: el servicio crea un registro antes de enviar el comando y luego marca estados; revisar si hace falta protección contra re-envíos duplicados desde UI.
@@ -186,7 +186,7 @@ simular el agent: suscribirse a device/{id}/commands, descargar los URLs, y publ
 
 Qué hace (resumen):
 
-Recoge telemetría e inferencia publicada por dispositivos edge vía MQTT, almacena estado actual y resultados de inferencia en MongoDB, y expone un servicio gRPC para leer ese estado desde la UI/otros servicios. Además exporta métricas Prometheus. Arranca en main.py:1-40.
+Recoge telemetría e inferencia publicada por dispositivos edge vía MQTT, almacena estado actual y resultados de inferencia en MongoDB, y expone un servicio gRPC para leer ese estado desde la UI/otros servicios. Además exporta métricas Prometheus. Arranca en main.py:1-40 en el puerto 50053 (consolidado bajo edge-connector-service).
 Entradas (MQTT):
 
 device/{device_id}/telemetry → payload JSON con campos como cpu_percent, ram_percent, ram_used_mb, active_model_id, active_script_id, active_deployment_id. Procesado en listener.py:1-120.
@@ -210,7 +210,7 @@ Tres Gauges por device: aura_device_cpu_percent, aura_device_ram_percent, aura_d
 Dependencias y arranque:
 
 Conecta a MongoDB (motor.motor_asyncio.AsyncIOMotorClient) y crea un repo_factory que devuelve MonitoringRepository.
-Lanza servidor gRPC (p. ej. puerto 50056) y un listener MQTT en background. Ver main.py:1-40.
+Lanza servidor gRPC en el puerto 50053 (consolidado bajo edge-connector-service) y un listener MQTT en background. Ver main.py:1-40.
 Consideraciones operativas y recomendaciones:
 
 TTL en inference_results puede ser útil si no quieres que la colección crezca indefinidamente (añadir índice TTL en Mongo si procede).
@@ -224,16 +224,16 @@ Relación con device-service: device_states es independiente; sin embargo, puede
 
 
 
-El entrenamiento y la compilación se ejecutan en el compilation-service y no en el ai-service por razones de diseño arquitectónico y de gestión de recursos:
+El entrenamiento y la compilación se ejecutan en el mlops-service y no en el ai-service por razones de diseño arquitectónico y de gestión de recursos:
 
-Aislamiento de Recursos (CPU/GPU) y Escalabilidad: El entrenamiento (PyTorch/YOLO) y la compilación (MCT, TensorRT, Hailo Compiler) son operaciones extremadamente pesadas. Si se ejecutaran en el ai-service, este podría quedarse sin memoria (OOM), consumir toda la CPU/GPU y congelar el API Gateway y el resto de la plataforma. Al separarlo en compilation-service, este servicio funciona como un worker asíncrono (utilizando Redis y arq) con colas de ejecución. El ai-service sigue siendo ligero y responde instantáneamente a las peticiones del usuario.
+Aislamiento de Recursos (CPU/GPU) y Escalabilidad: El entrenamiento (PyTorch/YOLO) y la compilación (MCT, TensorRT, Hailo Compiler) son operaciones extremadamente pesadas. Si se ejecutaran en el ai-service, este podría quedarse sin memoria (OOM), consumir toda la CPU/GPU y congelar el API Gateway y el resto de la plataforma. Al separarlo en mlops-service, este servicio funciona como un worker asíncrono (utilizando Redis y arq) con colas de ejecución. El ai-service sigue siendo ligero y responde instantáneamente a las peticiones del usuario.
 
-Acceso a Hardware Específico (GPU/CUDA): Solo el compilation-service necesita estar desplegado con acceso directo a la tarjeta gráfica NVIDIA (usando nvidia-container-toolkit) y montar sockets como /var/run/docker.sock para levantar los compiladores de hardware en contenedores. El ai-service no requiere controladores CUDA ni hardware dedicado, por lo que puede escalar horizontalmente en cualquier máquina convencional.
+Acceso a Hardware Específico (GPU/CUDA): Solo el mlops-service necesita estar desplegado con acceso directo a la tarjeta gráfica NVIDIA (usando nvidia-container-toolkit) y montar sockets como /var/run/docker.sock para levantar los compiladores de hardware en contenedores. El ai-service no requiere controladores CUDA ni hardware dedicado, por lo que puede escalar horizontalmente en cualquier máquina convencional.
 
-Independencia de Dependencias: El compilation-service contiene dependencias de gran volumen como torch, torchvision y compiladores específicos de hardware, haciendo que su imagen Docker sea muy grande. Mantener el ai-service libre de estas dependencias simplifica su mantenimiento y agiliza sus despliegues.
+Independencia de Dependencias: El mlops-service contiene dependencias de gran volumen como torch, torchvision y compiladores específicos de hardware, haciendo que su imagen Docker sea muy grande. Mantener el ai-service libre de estas dependencias simplifica su mantenimiento y agiliza sus despliegues.
 
 5:40 PM
-Que es lo que hace ai-service y que es lo que hace compilation-service?
+Que es lo que hace ai-service y que es lo que hace mlops-service?
 5:41 PM
 Aquí tienes el detalle de responsabilidades de cada servicio dentro de la arquitectura de la plataforma:
 
@@ -244,7 +244,7 @@ CRUD de Modelos y Datasets: Registra en la base de datos relacional (PostgreSQL)
 Estado del Ciclo de Vida: Controla el estado del modelo (pending, training, ready, failed).
 Asociaciones: Gestiona la relación de qué dataset pertenece a qué modelo para ser utilizado en el entrenamiento.
 API de Metadatos: Proporciona los stubs gRPC para que el api-gateway y otros servicios consulten qué modelos están disponibles.
-Compilation Service (compilation-service)
+MLOps Service (mlops-service)
 Es el servicio encargado de la ejecución física y de cómputo pesado. Funciona de forma asíncrona mediante trabajadores (workers) y una cola de Redis:
 
 Entrenamiento de Modelos (YOLO):
@@ -292,7 +292,7 @@ Root Cause: The slim Python base image of the compilation container lacks the GU
 Fix: Added opencv-python-headless>=4.8.0 to 
 
 requirements.txt
- before ultralytics, satisfying the OpenCV dependency without requiring GUI libraries. We rebuilt the container and verified that import ultralytics now loads successfully inside the compilation-service container.
+ before ultralytics, satisfying the OpenCV dependency without requiring GUI libraries. We rebuilt the container and verified that import ultralytics now loads successfully inside the mlops-service container.
 Bonus: Improved the ImportError blocks in both the 
 
 compilation compiler

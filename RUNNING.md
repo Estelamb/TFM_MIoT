@@ -6,7 +6,7 @@
 
 - Docker Engine ≥ 24 with Docker Compose v2
 - 8 GB RAM minimum for the full stack
-- Ports available: `3000`, `8000`, `1883`, `5432`, `9000`, `9001`, `27017`, `50051–50056`, `9100`
+- Ports available: `3000`, `8000`, `1883`, `5432`, `9000`, `9001`, `27017`, `50051–50053`, `9100`
 
 ---
 
@@ -142,12 +142,9 @@ docker compose down -v
 | MinIO S3 API | HTTP | 9000 | |
 | MinIO Console | HTTP | 9001 | |
 | MQTT (anonymous) | TCP | 1883 | No TLS in PoC |
-| device-service | gRPC | 50051 | Internal |
-| ai-service | gRPC | 50052 | Internal |
-| script-service | gRPC | 50053 | Internal |
-| compilation-service | gRPC | 50054 | Internal |
-| deployment-service | gRPC | 50055 | Internal |
-| monitoring-service | gRPC | 50056 | Internal |
+| registry-service | gRPC | 50051 | Internal |
+| mlops-service | gRPC | 50052 | Internal |
+| edge-connector-service | gRPC | 50053 | Internal |
 | Prometheus metrics | HTTP | 9100 | monitoring-service |
 | PostgreSQL | TCP | 5432 | |
 | MongoDB | TCP | 27017 | |

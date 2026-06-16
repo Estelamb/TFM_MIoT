@@ -91,7 +91,8 @@ export const useDataMode = create<DataStore>((set) => ({
         architecture: ['Hailo 8 M.2'],
         sensors: ['RPi Camera Module 3'],
         actuators: ['Relay Module 5V'],
-        nodes: ['Node-Cluster-01']
+        nodes: ['Node-Cluster-01'],
+        others: ['Custom heatsink', 'DIN Rail Mount']
       },
       { 
         id: 'dev-002', 
@@ -102,7 +103,8 @@ export const useDataMode = create<DataStore>((set) => ({
         architecture: ['Jetson Orin Nano'],
         sensors: ['Stereo Vision Cam'],
         actuators: [],
-        nodes: []
+        nodes: [],
+        others: ['High-gain WiFi antenna']
       }
     ],
     models: [
@@ -133,7 +135,7 @@ export const useDataMode = create<DataStore>((set) => ({
       {
         id: 'scr-201',
         name: 'conveyor_belt_infer.py',
-        hardware_type: 'hailo8',
+        language: 'python',
         created_at: new Date().toISOString(),
         content: "import aura\n\ndef run():\n    frame = aura.capture()\n    results = aura.process(frame)\n    if results.has_defect:\n        aura.actuate('relay', True)"
       }

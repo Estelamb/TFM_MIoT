@@ -206,9 +206,19 @@ def main():
             return
 
     # 3. Model Initialization Phase
-    model = YOLO(args.init_model)
+    init_model = args.init_model
+    if not os.path.exists(init_model):
+        basename = os.path.basename(init_model)
+        if basename.lower().startswith("yolov10"):
+            init_model = "yolo10" + basename[7:]
+        elif basename.lower().startswith("yolov11"):
+            init_model = "yolo11" + basename[7:]
+    
+    print(f"Loading model: {init_model}")
+    model = YOLO(init_model)
     image_h, image_w = map(int, args.image_size.split('x'))
-    image_size = [image_h, image_w]
+    # YOLO training expects a single integer for imgsz
+    image_size = max(image_h, image_w)
     print(f"Image Size: {image_size}")
 
     # Define the main project directory for saving results
@@ -217,6 +227,7 @@ def main():
     # 4. Execution Phase (Train or Validate)
     if not args.val_model:
         print(f"Starting training with config: {active_config} on device: {device}")
+        print("[INFO] Epoch progress will be logged at the end of each epoch. Please wait...")
         _ = model.train(data=active_config, 
                         epochs=args.epochs, 
                         imgsz=image_size, 

@@ -25,24 +25,24 @@ export default function MonitoringPage() {
   const stats = isDemo
     ? demoData.monitoring
     : {
-        activeNodes:  `${states.filter((s: any) => s.status === "online").length} / ${states.length || 0}`,
-        avgLatency:   states.length > 0 ? "— ms" : "0 ms",
-        alerts:       states.filter((s: any) => s.cpu_percent > 90).length,
-        cpuLoad:      states.length > 0
-          ? Math.round(states.reduce((acc: number, s: any) => acc + s.cpu_percent, 0) / states.length)
-          : 0,
-        memory:       states.length > 0
-          ? Math.round(states.reduce((acc: number, s: any) => acc + s.ram_percent, 0) / states.length)
-          : 0,
-        bandwidth:    0,
-        storage:      0,
-      };
+      activeNodes: `${states.filter((s: any) => s.status === "online").length} / ${states.length || 0}`,
+      avgLatency: states.length > 0 ? "— ms" : "0 ms",
+      alerts: states.filter((s: any) => s.cpu_percent > 90).length,
+      cpuLoad: states.length > 0
+        ? Math.round(states.reduce((acc: number, s: any) => acc + s.cpu_percent, 0) / states.length)
+        : 0,
+      memory: states.length > 0
+        ? Math.round(states.reduce((acc: number, s: any) => acc + s.ram_percent, 0) / states.length)
+        : 0,
+      bandwidth: 0,
+      storage: 0,
+    };
 
   return (
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-fade-in px-4 sm:px-6 lg:px-12 py-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2 pb-1">
             Device Set Monitoring
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -108,7 +108,7 @@ export default function MonitoringPage() {
             </CardHeader>
             <div className="space-y-6 mt-4">
               <StatBar label="Aggregated CPU Load" value={stats.cpuLoad} color="blue-500" unit="%" />
-              <StatBar label="Global Memory Usage"  value={stats.memory}  color="orange-500" unit="%" />
+              <StatBar label="Global Memory Usage" value={stats.memory} color="orange-500" unit="%" />
               {(stats.bandwidth > 0 || isDemo) && (
                 <StatBar label="Network Bandwidth" value={stats.bandwidth} color="emerald-500" unit="%" />
               )}

@@ -36,6 +36,7 @@ async def main():
         # Safeguards for dynamically added columns in older dev databases
         await conn.execute(text("ALTER TABLE devices ADD COLUMN IF NOT EXISTS sensors TEXT[] NOT NULL DEFAULT '{}';"))
         await conn.execute(text("ALTER TABLE devices ADD COLUMN IF NOT EXISTS actuators TEXT[] NOT NULL DEFAULT '{}';"))
+        await conn.execute(text("ALTER TABLE models ADD COLUMN IF NOT EXISTS dataset_version_id UUID REFERENCES dataset_versions(id) ON DELETE SET NULL;"))
     
     sf = build_session_factory(engine)
 

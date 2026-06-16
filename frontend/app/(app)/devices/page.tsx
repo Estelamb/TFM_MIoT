@@ -122,6 +122,7 @@ export default function DevicesPage() {
         description: deviceForm.architecture_id || undefined,
         sensors: deviceForm.selected_sensors,
         actuators: deviceForm.selected_actuators,
+        others: deviceForm.selected_nodes,
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["devices"] });
@@ -184,7 +185,7 @@ export default function DevicesPage() {
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-fade-in px-4 sm:px-6 lg:px-12 py-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 mb-2 pb-1">
             Infrastructure Manager
           </h1>
           <p className="text-gray-600 dark:text-gray-400">

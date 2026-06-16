@@ -15,6 +15,7 @@ message CreateDeviceRequest {
   string description = 3;
   repeated string sensors = 4;
   repeated string actuators = 5;
+  repeated string others = 6;
 }
 message GetDeviceRequest    { string id = 1; }
 message ListDevicesRequest  {}
@@ -34,5 +35,6 @@ message DeviceResponse {
   string created_at = 7;
   repeated string sensors = 8;
   repeated string actuators = 9;
+  repeated string others = 10;
 }
 message ListDevicesResponse { repeated DeviceResponse devices = 1; }

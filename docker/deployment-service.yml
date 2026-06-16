@@ -61,7 +61,7 @@ services:
       AI_SERVICE_GRPC: ${AI_SERVICE_GRPC:-host.docker.internal:50052}
       SCRIPT_SERVICE_GRPC: ${SCRIPT_SERVICE_GRPC:-host.docker.internal:50053}
       LOG_LEVEL: DEBUG
-    ports: ["50055:50055"]
+    ports: ["50053:50053"]
     networks: [aura-net]
     volumes: [../services/deployment-service/app:/app/app, ./shared:/app/shared]
     extra_hosts:

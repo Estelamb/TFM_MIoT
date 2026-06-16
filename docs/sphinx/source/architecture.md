@@ -8,12 +8,9 @@ Frontend (Next.js :3000)
     ▼
 API Gateway (:8000)
     │ gRPC
-    ├─▶ device-service      (:50051)  PostgreSQL
-    ├─▶ ai-service          (:50052)  PostgreSQL + MinIO
-    ├─▶ script-service      (:50053)  PostgreSQL + MinIO
-    ├─▶ compilation-service (:50054)  MinIO + Docker socket
-    ├─▶ deployment-service  (:50055)  PostgreSQL + MinIO + MQTT
-    └─▶ monitoring-service  (:50056)  MongoDB + MQTT + Prometheus
+    ├─▶ registry-service       (:50051)  PostgreSQL + MinIO
+    ├─▶ mlops-service          (:50052)  MinIO + Docker socket
+    └─▶ edge-connector-service (:50053)  PostgreSQL + MongoDB + MinIO + MQTT + Prometheus
 ```
 
 ## MQTT topics

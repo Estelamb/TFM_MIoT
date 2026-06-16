@@ -67,7 +67,7 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
 
     async def _get_pool(self):
         if self._redis_pool is None:
-            self._redis_pool = await create_pool(self._redis_settings, default_queue_name="compilation_queue")
+            self._redis_pool = await create_pool(self._redis_settings, default_queue_name="mlops_queue")
         return self._redis_pool
 
     async def CompileModel(self, req, ctx):

@@ -69,6 +69,7 @@ async def upload_model(
     name: str = Form(...), description: str = Form(""),
     hardware_type: str = Form(""), compile: bool = Form(False),
     dataset_id: str = Form(""),
+    dataset_version_id: str = Form(""),
     base_architecture: str = Form(...),
     epochs: int = Form(None),
     input_size: str = Form(None),
@@ -82,18 +83,19 @@ async def upload_model(
     if not base_architecture.endswith(".pt"):
         base_architecture += ".pt"
 
-    from shared.utils.minio import get_minio
-    from app.config import get_settings
-    s = get_settings()
-    minio = get_minio()
-    try:
-        objects = await minio.list_objects(s.minio_bucket_base_models)
-        allowed = {obj.object_name for obj in objects}
-    except Exception:
-        allowed = ALLOWED_BASE_MODELS
+    if "/" not in base_architecture:
+        from shared.utils.minio import get_minio
+        from app.config import get_settings
+        s = get_settings()
+        minio = get_minio()
+        try:
+            objects = await minio.list_objects(s.minio_bucket_base_models)
+            allowed = {obj.object_name for obj in objects}
+        except Exception:
+            allowed = ALLOWED_BASE_MODELS
 
-    if base_architecture not in allowed:
-        raise HTTPException(400, f"base_architecture '{base_architecture}' is not in the allowed list")
+        if base_architecture not in allowed:
+            raise HTTPException(400, f"base_architecture '{base_architecture}' is not in the allowed list")
 
     if epochs is not None and epochs <= 0:
         raise HTTPException(400, "epochs must be a positive integer")
@@ -124,19 +126,29 @@ async def upload_model(
         epochs=epochs or 0,
         input_size=input_size or "",
         batch_size=batch_size or 0,
+        dataset_version_id=dataset_version_id or "",
     ))
 
     if compile and hardware_type:
         if not m.dataset_id:
             raise HTTPException(400, "dataset_id is required when compile=true")
         d = await ai_stub.GetDataset(ai_pb2.GetDatasetRequest(id=m.dataset_id))
+        
+        # Determine dataset key to compile against
+        dataset_key = d.object_key
+        if m.dataset_version_id:
+            for v in d.versions:
+                if v.id == m.dataset_version_id:
+                    dataset_key = v.object_key
+                    break
+
         comp_stub = get_stub("compilation")
         await comp_stub.CompileModel(compilation_pb2.CompileModelRequest(
             model_id=m.id,
             source_key=source_key,
             hardware_type=hardware_type,
             dataset_id=d.id,
-            dataset_key=d.object_key,
+            dataset_key=dataset_key,
             base_architecture=m.base_architecture,
             input_size=m.input_size,
         ))
@@ -168,7 +180,7 @@ async def get_model(model_id: str, _=Depends(verify_token)):
 
 
 @router.post("/{model_id}/dataset/{dataset_id}")
-async def associate_model_dataset(model_id: str, dataset_id: str, _=Depends(verify_token)):
+async def associate_model_dataset(model_id: str, dataset_id: str, dataset_version_id: str = None, _=Depends(verify_token)):
     import re
     uuid_re = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.IGNORECASE)
     if not uuid_re.match(dataset_id):
@@ -180,6 +192,7 @@ async def associate_model_dataset(model_id: str, dataset_id: str, _=Depends(veri
             ai_pb2.AssociateModelDatasetRequest(
                 model_id=model_id,
                 dataset_id=dataset_id,
+                dataset_version_id=dataset_version_id or "",
             )
         )
     except Exception as e:
@@ -190,6 +203,7 @@ async def associate_model_dataset(model_id: str, dataset_id: str, _=Depends(veri
     return {
         "id": m.id,
         "dataset_id": m.dataset_id,
+        "dataset_version_id": m.dataset_version_id or None,
         "compile_status": m.compile_status,
     }
 
@@ -286,6 +300,7 @@ class TrainModelRequestSchema(BaseModel):
     name: str
     description: str = ""
     dataset_id: str
+    dataset_version_id: str = None
     base_model: str
     epochs: int = 20
     input_size: str = "640x640"
@@ -300,13 +315,32 @@ async def train_model(req: TrainModelRequestSchema, _=Depends(verify_token)):
     ai_stub = get_stub("ai")
     comp_stub = get_stub("compilation")
 
-    # 1. Fetch the dataset from AI Service to get the object_key
+    # 1. Fetch the dataset from AI Service to get the object_key and versions
     try:
         d = await ai_stub.GetDataset(ai_pb2.GetDatasetRequest(id=req.dataset_id))
     except Exception as e:
         raise HTTPException(404, f"Dataset not found: {e}")
 
-    if not d.object_key:
+    # Determine dataset key and version ID
+    dataset_key = d.object_key
+    selected_version_id = req.dataset_version_id
+
+    if selected_version_id:
+        version_found = False
+        for v in d.versions:
+            if v.id == selected_version_id:
+                dataset_key = v.object_key
+                version_found = True
+                break
+        if not version_found:
+            raise HTTPException(400, f"Selected dataset version {selected_version_id} not found in this dataset.")
+    else:
+        # Default to latest version if versions exist
+        if d.versions:
+            dataset_key = d.versions[0].object_key
+            selected_version_id = d.versions[0].id
+
+    if not dataset_key:
         raise HTTPException(400, "Dataset has no file uploaded. Please upload a ZIP file to the dataset first.")
 
     # 2. Register the model record in AI Service
@@ -317,6 +351,7 @@ async def train_model(req: TrainModelRequestSchema, _=Depends(verify_token)):
             source_key=f"training/{req.name}_placeholder",
             source_sha256="",
             dataset_id=req.dataset_id,
+            dataset_version_id=selected_version_id or "",
             base_architecture=req.base_model,
             epochs=req.epochs,
             input_size=req.input_size,
@@ -331,7 +366,7 @@ async def train_model(req: TrainModelRequestSchema, _=Depends(verify_token)):
             model_id=m.id,
             name=req.name,
             dataset_id=req.dataset_id,
-            dataset_key=d.object_key,
+            dataset_key=dataset_key,
             base_architecture=req.base_model,
             epochs=req.epochs,
             input_size=req.input_size,
@@ -383,18 +418,19 @@ async def update_model(model_id: str, req: UpdateModelRequestSchema, _=Depends(v
         if not base_arch_formatted.endswith(".pt"):
             base_arch_formatted += ".pt"
 
-        from shared.utils.minio import get_minio
-        from app.config import get_settings
-        s = get_settings()
-        minio = get_minio()
-        try:
-            objects = await minio.list_objects(s.minio_bucket_base_models)
-            allowed = {obj.object_name for obj in objects}
-        except Exception:
-            allowed = ALLOWED_BASE_MODELS
+        if "/" not in base_arch_formatted:
+            from shared.utils.minio import get_minio
+            from app.config import get_settings
+            s = get_settings()
+            minio = get_minio()
+            try:
+                objects = await minio.list_objects(s.minio_bucket_base_models)
+                allowed = {obj.object_name for obj in objects}
+            except Exception:
+                allowed = ALLOWED_BASE_MODELS
 
-        if base_arch_formatted not in allowed:
-            raise HTTPException(400, f"base_architecture '{base_arch_formatted}' is not in the allowed list")
+            if base_arch_formatted not in allowed:
+                raise HTTPException(400, f"base_architecture '{base_arch_formatted}' is not in the allowed list")
 
     try:
         m = await get_stub("ai").UpdateModel(ai_pb2.UpdateModelRequest(
@@ -418,6 +454,7 @@ def _model_resp(m) -> dict:
         "description": m.description,
         "hardware_type": m.hardware_type,
         "dataset_id": m.dataset_id or None,
+        "dataset_version_id": m.dataset_version_id or None,
         "compile_status": m.compile_status,
         "compile_error": m.compile_error or None,
         "created_at": m.created_at,
@@ -425,4 +462,5 @@ def _model_resp(m) -> dict:
         "epochs": m.epochs or None,
         "input_size": m.input_size or None,
         "batch_size": m.batch_size or None,
+        "source_key": m.source_key or "",
     }

@@ -65,6 +65,7 @@ export interface Device {
   description?: string; status: "online" | "offline"; last_seen_at?: string; created_at: string;
   sensors?: string[];
   actuators?: string[];
+  others?: string[];
 }
 
 export const getDevices = async (): Promise<Device[]> => {
@@ -78,6 +79,7 @@ export const createDevice = (body: {
   description?: string;
   sensors: string[];
   actuators: string[];
+  others?: string[];
 }) =>
   api.post<Device>("/api/devices", body).then(r => r.data);
 
@@ -90,10 +92,12 @@ export interface Model {
   id: string; name: string; description?: string; hardware_type?: string;
   compile_status: CompileStatus; compile_error?: string; created_at: string;
   dataset_id?: string;
+  dataset_version_id?: string;
   base_architecture?: string;
   epochs?: number;
   input_size?: string;
   batch_size?: number;
+  source_key?: string;
 }
 
 export const getModels = async (): Promise<Model[]> => {
@@ -118,7 +122,7 @@ export const deleteModel = async (id: string) => {
 export async function uploadModel(
   name: string, description: string, file: File, dataset_id?: string,
   base_architecture?: string, epochs?: number, input_size?: string,
-  batch_size?: number
+  batch_size?: number, dataset_version_id?: string
 ): Promise<Model> {
   if (useDataMode.getState().mode === "demo") {
     const newModel: Model = {
@@ -128,6 +132,7 @@ export async function uploadModel(
       compile_status: "ready",
       created_at: new Date().toISOString(),
       dataset_id: dataset_id,
+      dataset_version_id: dataset_version_id,
       base_architecture: base_architecture || "yolov8n.pt",
       epochs: epochs,
       input_size: input_size,
@@ -146,6 +151,7 @@ export async function uploadModel(
   fd.append("name", name); fd.append("description", description);
   fd.append("compile", "false");
   if (dataset_id) fd.append("dataset_id", dataset_id);
+  if (dataset_version_id) fd.append("dataset_version_id", dataset_version_id);
   if (base_architecture) fd.append("base_architecture", base_architecture);
   if (epochs) fd.append("epochs", epochs.toString());
   if (input_size) fd.append("input_size", input_size);
@@ -158,6 +164,7 @@ export interface TrainModelRequest {
   name: string;
   description?: string;
   dataset_id: string;
+  dataset_version_id?: string;
   base_model?: string;
   epochs?: number;
   input_size?: string;
@@ -240,6 +247,18 @@ export const getBaseModelDownloadUrl = async (filename: string): Promise<{ url: 
 };
 
 // ── Datasets ──────────────────────────────────────────────────────────────────
+export interface DatasetVersion {
+  id: string;
+  dataset_id: string;
+  version: string;
+  description?: string;
+  object_key: string;
+  sha256: string;
+  size_bytes: number;
+  metadata?: { num_classes?: number; [key: string]: any } | null;
+  created_at: string;
+}
+
 export interface Dataset {
   id: string;
   name: string;
@@ -249,6 +268,7 @@ export interface Dataset {
   sha256?: string | null;
   size_bytes?: number | null;
   metadata?: { num_classes?: number; [key: string]: any } | null;
+  versions?: DatasetVersion[];
 }
 
 export const getDatasets = async (): Promise<Dataset[]> => {
@@ -271,6 +291,8 @@ export const createDataset = async (body: {
   name: string;
   description?: string;
   file?: File;
+  version?: string;
+  version_description?: string;
 }) => {
   if (useDataMode.getState().mode === "demo") {
     const currentDatasets = useDataMode.getState().demoData.datasets;
@@ -291,21 +313,35 @@ export const createDataset = async (body: {
   fd.append("name", body.name);
   if (body.description) fd.append("description", body.description);
   if (body.file) fd.append("file", body.file);
+  if (body.version) fd.append("version", body.version);
+  if (body.version_description) fd.append("version_description", body.version_description);
   return api.post<Dataset>("/api/datasets", fd).then(r => r.data);
 };
 
-export const replaceDatasetFile = async (datasetId: string, file: File): Promise<Dataset> => {
+export const replaceDatasetFile = async (
+  datasetId: string,
+  file: File,
+  version?: string,
+  versionDescription?: string
+): Promise<Dataset> => {
   if (useDataMode.getState().mode === "demo") {
     return { id: datasetId, name: "Demo", created_at: new Date().toISOString() };
   }
   const fd = new FormData();
   fd.append("file", file);
+  if (version) fd.append("version", version);
+  if (versionDescription) fd.append("version_description", versionDescription);
   return api.put<Dataset>(`/api/datasets/${datasetId}/file`, fd).then(r => r.data);
 };
 
 export const getDatasetDownloadUrl = async (datasetId: string): Promise<{ url: string }> => {
   if (useDataMode.getState().mode === "demo") return { url: "#" };
   return api.get<{ url: string }>(`/api/datasets/${datasetId}/download`).then(r => r.data);
+};
+
+export const getDatasetVersionDownloadUrl = async (datasetId: string, versionId: string): Promise<{ url: string }> => {
+  if (useDataMode.getState().mode === "demo") return { url: "#" };
+  return api.get<{ url: string }>(`/api/datasets/${datasetId}/versions/${versionId}/download`).then(r => r.data);
 };
 
 export const deleteDataset = async (id: string) => {
@@ -328,13 +364,19 @@ export const deleteDataset = async (id: string) => {
   return api.delete(`/api/datasets/${id}`);
 };
 
-export const associateModelDataset = (modelId: string, datasetId: string) =>
-  api.post<Model>(`/api/models/${modelId}/dataset/${datasetId}`).then(r => r.data);
+export const associateModelDataset = (modelId: string, datasetId: string, datasetVersionId?: string) => {
+  let url = `/api/models/${modelId}/dataset/${datasetId}`;
+  if (datasetVersionId) {
+    url += `?dataset_version_id=${datasetVersionId}`;
+  }
+  return api.post<Model>(url).then(r => r.data);
+};
 
 // ── Scripts ───────────────────────────────────────────────────────────────────
 export interface Script {
   id: string; name: string; description?: string;
-  hardware_type: string; script_sha256?: string; created_at: string; content?: string;
+  language: string;
+  script_sha256?: string; created_at: string; content?: string;
 }
 
 export const getScripts = async (): Promise<Script[]> => {
@@ -345,11 +387,12 @@ export const getScripts = async (): Promise<Script[]> => {
 export const deleteScript = (id: string) => api.delete(`/api/scripts/${id}`);
 
 export async function uploadScript(
-  name: string, description: string, hardware_type: string, file: File
+  name: string, description: string, file: File, language: string
 ): Promise<Script> {
   const fd = new FormData();
   fd.append("name", name); fd.append("description", description);
-  fd.append("hardware_type", hardware_type); fd.append("file", file);
+  fd.append("file", file);
+  fd.append("language", language);
   return api.post<Script>("/api/scripts", fd).then(r => r.data);
 }
 

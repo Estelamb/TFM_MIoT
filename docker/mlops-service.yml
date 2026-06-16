@@ -1,4 +1,4 @@
-# Run from project root: docker compose -f docker/compilation-service.yml up -d
+# Run from project root: docker compose -f docker/mlops-service.yml up -d
 # Requiere ai-service corriendo en localhost:50052 (o ajustar AI_SERVICE_GRPC)
 name: aura
 networks:
@@ -17,9 +17,9 @@ services:
     volumes: [minio-data:/data]
     ports: ["9000:9000", "9001:9001"]
     networks: [aura-net]
-  compilation-service:
-    build: { context: .., dockerfile: services/compilation-service/Dockerfile }
-    container_name: aura-compilation-service
+  mlops-service:
+    build: { context: .., dockerfile: services/mlops-service/Dockerfile }
+    container_name: aura-mlops-service
     environment:
       MINIO_ENDPOINT: minio:9000
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-aura}
@@ -30,10 +30,10 @@ services:
       AI_SERVICE_GRPC: ${AI_SERVICE_GRPC:-host.docker.internal:50052}
       HAILO_DOCKER_IMAGE: ${HAILO_DOCKER_IMAGE:-hailo_ai_sw_suite:latest}
       LOG_LEVEL: DEBUG
-    ports: ["50054:50054"]
+    ports: ["50052:50052"]
     networks: [aura-net]
     volumes:
-      - ../services/compilation-service/app:/app/app
+      - ../services/mlops-service/app:/app/app
       - ./shared:/app/shared
       - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts:

@@ -18,6 +18,7 @@ class Device(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     sensors: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, server_default='{}')
     actuators: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, server_default='{}')
+    others: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, server_default='{}')
 
 class Dataset(Base):
     __tablename__ = "datasets"
@@ -31,6 +32,25 @@ class Dataset(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     models: Mapped[list["Model"]] = relationship(back_populates="dataset")
+    versions: Mapped[list["DatasetVersion"]] = relationship(
+        back_populates="dataset", cascade="all, delete-orphan", order_by="DatasetVersion.created_at.desc()"
+    )
+
+class DatasetVersion(Base):
+    __tablename__ = "dataset_versions"
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    dataset_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), ForeignKey("datasets.id", ondelete="CASCADE"), nullable=False
+    )
+    version: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    object_key: Mapped[str] = mapped_column(Text, nullable=False)
+    sha256: Mapped[str] = mapped_column(String, nullable=False)
+    size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    meta_info: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    dataset: Mapped["Dataset"] = relationship(back_populates="versions")
 
 class Model(Base):
     __tablename__ = "models"
@@ -47,6 +67,9 @@ class Model(Base):
     dataset_id: Mapped[str | None] = mapped_column(
         UUID(as_uuid=False), ForeignKey("datasets.id", ondelete="SET NULL"), nullable=True
     )
+    dataset_version_id: Mapped[str | None] = mapped_column(
+        UUID(as_uuid=False), ForeignKey("dataset_versions.id", ondelete="SET NULL"), nullable=True
+    )
     base_architecture: Mapped[str | None] = mapped_column(String, nullable=True)
     epochs: Mapped[int | None] = mapped_column(nullable=True)
     input_size: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -60,7 +83,7 @@ class Script(Base):
     id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
     name: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    hardware_type: Mapped[str] = mapped_column(String, nullable=False)
+    language: Mapped[str] = mapped_column(String, nullable=False)
     script_key: Mapped[str] = mapped_column(Text, nullable=False)
     script_sha256: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

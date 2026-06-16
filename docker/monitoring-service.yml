@@ -35,6 +35,6 @@ services:
       MQTT_PORT: 1883
       PROMETHEUS_PORT: 9100
       LOG_LEVEL: DEBUG
-    ports: ["50056:50056", "9100:9100"]
+    ports: ["50053:50053", "9100:9100"]
     networks: [aura-net]
     volumes: [../services/monitoring-service/app:/app/app, ./shared:/app/shared]

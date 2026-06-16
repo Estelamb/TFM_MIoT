@@ -56,6 +56,8 @@ async def create_dataset(
     name: str = Form(...),
     description: str = Form(""),
     file: UploadFile = File(None),
+    version: str = Form(""),
+    version_description: str = Form(""),
     _=Depends(verify_token),
 ):
     """Create a new dataset, optionally uploading a ZIP file immediately."""
@@ -82,6 +84,8 @@ async def create_dataset(
                 sha256=sha,
                 size_bytes=len(file_bytes),
                 metadata=json.dumps({"num_classes": num_classes}),
+                version=version,
+                description=version_description,
             )
         )
 
@@ -109,9 +113,11 @@ async def delete_dataset(dataset_id: str, _=Depends(verify_token)):
 async def replace_dataset_file(
     dataset_id: str,
     file: UploadFile = File(...),
+    version: str = Form(""),
+    version_description: str = Form(""),
     _=Depends(verify_token),
 ):
-    """Replace the ZIP file of an existing dataset."""
+    """Replace the ZIP file of an existing dataset (submits a new version)."""
     data = await file.read()
     is_valid, err_msg, num_classes = validate_dataset_zip(data)
     if not is_valid:
@@ -127,6 +133,8 @@ async def replace_dataset_file(
             sha256=sha,
             size_bytes=len(data),
             metadata=json.dumps({"num_classes": num_classes}),
+            version=version,
+            description=version_description,
         )
     )
     return _dataset_resp(d)
@@ -147,6 +155,31 @@ async def download_dataset(dataset_id: str, _=Depends(verify_token)):
     except Exception:
         raise HTTPException(404, "Dataset file not found in storage.")
     url = await presigned_url("datasets", d.object_key)
+    return {"url": url}
+
+
+@router.get("/{dataset_id}/versions/{version_id}/download")
+async def download_dataset_version(dataset_id: str, version_id: str, _=Depends(verify_token)):
+    """Get a presigned download URL for a specific dataset version ZIP."""
+    d = await get_stub("ai").GetDataset(ai_pb2.GetDatasetRequest(id=dataset_id))
+    version_key = None
+    for v in d.versions:
+        if v.id == version_id:
+            version_key = v.object_key
+            break
+
+    if not version_key:
+        raise HTTPException(404, "This dataset version does not exist or has no file.")
+
+    try:
+        from shared.utils.minio import get_minio
+        from app.config import get_settings
+        s_cfg = get_settings()
+        minio = get_minio()
+        await minio.stat_object(s_cfg.minio_bucket_datasets, version_key)
+    except Exception:
+        raise HTTPException(404, "Dataset version file not found in storage.")
+    url = await presigned_url("datasets", version_key)
     return {"url": url}
 
 
@@ -172,6 +205,26 @@ async def update_dataset(dataset_id: str, req: UpdateDatasetRequestSchema, _=Dep
 
 
 def _dataset_resp(d) -> dict:
+    versions_list = []
+    if d.versions:
+        for v in d.versions:
+            v_meta = None
+            if v.metadata:
+                try:
+                    v_meta = json.loads(v.metadata)
+                except Exception:
+                    pass
+            versions_list.append({
+                "id": v.id,
+                "dataset_id": v.dataset_id,
+                "version": v.version,
+                "description": v.description or "",
+                "object_key": v.object_key,
+                "sha256": v.sha256,
+                "size_bytes": v.size_bytes,
+                "metadata": v_meta,
+                "created_at": v.created_at,
+            })
     return {
         "id": d.id,
         "name": d.name,
@@ -181,4 +234,5 @@ def _dataset_resp(d) -> dict:
         "sha256": d.sha256 or None,
         "size_bytes": d.size_bytes or None,
         "metadata": json.loads(d.metadata) if d.metadata else None,
+        "versions": versions_list,
     }

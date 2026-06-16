@@ -100,13 +100,26 @@ async def train_job(
             raise asyncio.CancelledError()
 
         # 3. Resolve base model
-        base_model_path = os.path.join(tmpdir, base_architecture)
+        base_model_path = os.path.join(tmpdir, "base_model.pt")
         try:
-            logger.info(f"[train_job] Checking base-models bucket for {base_architecture}...")
-            await minio.fget_object("base-models", base_architecture, base_model_path)
-            logger.info(f"[train_job] Downloaded base model {base_architecture} from MinIO.")
+            if "/" in base_architecture:
+                logger.info(f"[train_job] Checking models bucket for custom weights: {base_architecture}...")
+                await minio.fget_object("models", base_architecture, base_model_path)
+                logger.info(f"[train_job] Downloaded custom base weights {base_architecture} from MinIO models bucket.")
+            else:
+                logger.info(f"[train_job] Checking base-models bucket for {base_architecture}...")
+                await minio.fget_object("base-models", base_architecture, base_model_path)
+                # If the downloaded file is a 0-byte placeholder, ignore it and let YOLO auto-download
+                if os.path.exists(base_model_path) and os.path.getsize(base_model_path) == 0:
+                    logger.info(f"[train_job] Base model {base_architecture} in MinIO is a 0-byte placeholder. Ignoring.")
+                    try:
+                        os.remove(base_model_path)
+                    except Exception:
+                        pass
+                    raise FileNotFoundError("Placeholder 0-byte model file")
+                logger.info(f"[train_job] Downloaded base model {base_architecture} from MinIO.")
         except Exception as e:
-            logger.info(f"[train_job] Base model {base_architecture} not in MinIO: {e}. YOLO will auto-download.")
+            logger.info(f"[train_job] Base model {base_architecture} not in MinIO or is placeholder: {e}. YOLO will auto-download.")
             base_model_path = base_architecture
 
         if redis and await redis.exists(cancel_key):
@@ -132,7 +145,8 @@ async def train_job(
             *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,  # Merge stderr into stdout
-            cwd="/app"
+            cwd="/app",
+            limit=1024 * 1024 * 10  # 10 MB buffer limit to handle long YOLO output lines/progress bars
         )
         
         cancellation_task = None
@@ -239,7 +253,7 @@ async def train_job(
         logger.info(f"[train_job] Model {model_id} training complete and registered successfully.")
         
         if redis:
-            await redis.set(f"model_compile_done:{model_id}", "ready", ex=86400)
+            await redis.set(f"model_train_done:{model_id}", "ready", ex=86400)
 
     except asyncio.CancelledError:
         logger.info(f"Training job {model_id} was cancelled by user.")
@@ -248,13 +262,13 @@ async def train_job(
         except Exception:
             pass
         if redis:
-            await redis.set(f"model_compile_done:{model_id}", "failed:Training cancelled by user", ex=86400)
+            await redis.set(f"model_train_done:{model_id}", "failed:Training cancelled by user", ex=86400)
             await redis.delete(cancel_key)
     except Exception as e:
         logger.exception(f"[train_job] Training error for model {model_id}")
         await _notify_compilation(ctx, model_id, "failed", "", "", "", str(e))
         if redis:
-            await redis.set(f"model_compile_done:{model_id}", f"failed:{str(e)}", ex=86400)
+            await redis.set(f"model_train_done:{model_id}", f"failed:{str(e)}", ex=86400)
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
 
@@ -277,6 +291,7 @@ async def compile_job(
     cancel_key = f"cancel:compile:{model_id}"
     if redis:
         await redis.delete(cancel_key)
+        await redis.delete(f"model_compile_done:{model_id}")
 
     compiler = ctx["compiler_registry"].get(hardware_type)
     if compiler is None:
@@ -348,7 +363,7 @@ async def compile_job(
 class WorkerSettings:
     functions = [train_job, compile_job]
     redis_settings = RedisSettings.from_dsn(os.environ.get("REDIS_URL", "redis://localhost:6379"))
-    queue_name = "compilation_queue"
+    queue_name = "mlops_queue"
     max_jobs = 1          # one heavy GPU/CPU job at a time per worker
     job_timeout = 7200    # 2 hours max per job
     keep_result = 3600    # keep result in Redis for 1 hour

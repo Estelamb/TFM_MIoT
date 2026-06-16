@@ -7,5 +7,5 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install -r /tmp/req.txt
 COPY shared/ /app/shared/
 COPY services/edge-connector-service/app/ /app/app/
 ENV PYTHONPATH=/app PYTHONUNBUFFERED=1
-EXPOSE 50055
+EXPOSE 50053
 CMD ["python", "app/main.py"]

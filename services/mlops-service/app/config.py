@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     minio_bucket_models: str = "models"
     minio_bucket_compiled: str = "compiled"
     ai_service_grpc: str = "registry-service:50051"
-    grpc_port: int = 50054
+    grpc_port: int = 50052
     docker_socket: str = "unix:///var/run/docker.sock"
     log_level: str = "DEBUG"
     redis_url: str = "redis://localhost:6379"
