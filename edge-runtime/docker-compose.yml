@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  edge-agent:
+    build:
+      context: ..
+      dockerfile: edge-runtime/Dockerfile
+    container_name: aura-edge-agent
+    restart: unless-stopped
+    environment:
+      - AURA_DEVICE_ID=dev-device-001
+      - AURA_MQTT_HOST=192.168.1.100  # Reemplaza con la IP del servidor de AURA
+      - AURA_MQTT_PORT=1883
+      - AURA_HARDWARE_TYPE=rpi
+      - AURA_TELEMETRY_INTERVAL=10
+      - AURA_INFERENCE_INTERVAL=0.1
+      - AURA_LOG_LEVEL=INFO
+      - AURA_WORK_DIR=/tmp/aura
+    devices:
+      # Monta la cámara de la Raspberry Pi (USB o módulo de cámara CSI)
+      - "/dev/video0:/dev/video0"
+    volumes:
+      - edge-agent-data:/tmp/aura
+      # Opcional: Montar la configuración local desde el host para modificarla sin reconstruir
+      - ./config:/app/config:ro
+
+volumes:
+  edge-agent-data:

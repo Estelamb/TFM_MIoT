@@ -11,7 +11,9 @@ RUN pip install --no-cache-dir \
     httpx==0.27.2 \
     numpy \
     psutil==6.0.0 \
-    pyyaml>=6.0
+    pyyaml>=6.0 \
+    opencv-python-headless \
+    onnxruntime
 
 # ── Application source ───────────────────────────────────────────────────────
 COPY edge-runtime/aura_hw/   /app/aura_hw/
