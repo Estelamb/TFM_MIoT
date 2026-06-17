@@ -1,35 +1,35 @@
 # Tutorial: Raspberry Pi 5 + Hailo-8L
 
-*(Este tutorial será redactado por el usuario. Espacio reservado para la guía de integración de Raspberry Pi 5 con el módulo Hailo-8L).*
+*(This tutorial will be completed by the user. Placeholder reserved for the integration guide of Raspberry Pi 5 with the Hailo-8L module).*
 
-## Introducción al hardware Hailo-8L
+## Introduction to Hailo-8L Hardware
 
-El procesador de aprendizaje profundo Hailo-8L (M.2 Key B+M / M.2 Key M) ofrece hasta 13 TOPS. Es la versión optimizada en consumo y coste de la NPU Hailo, comúnmente vendida con el kit Raspberry Pi AI Kit.
+The Hailo-8L deep learning processor delivers up to 13 TOPS. It is a cost-effective, low-power version of the Hailo NPU, commonly sold with the official Raspberry Pi AI Kit.
 
-## Requisitos de Hardware y Conexión
+## Hardware Requirements and Connection
 
 * Raspberry Pi 5.
-* Raspberry Pi AI Kit (incluye el módulo Hailo-8L montado sobre el HAT PCIe oficial y el disipador).
-* Cable plano PCIe flexible para Raspberry Pi 5.
+* Raspberry Pi AI Kit (includes the Hailo-8L module pre-mounted on the official PCIe HAT and cooling).
+* Flexible PCIe ribbon cable for Raspberry Pi 5.
 
-## Configuración y Controladores
+## Configuration and Drivers
 
-Instrucciones para activar la NPU Hailo-8L en Raspberry Pi OS:
+Steps to activate the Hailo-8L NPU on Raspberry Pi OS:
 
-1. Ejecutar la actualización completa del firmware y sistema:
+1. Perform a full system and firmware upgrade:
    ```bash
    sudo apt update && sudo apt full-upgrade -y
    ```
-2. Instalar el driver oficial de Hailo y dependencias:
+2. Install the official Hailo PCIe driver and utilities:
    ```bash
    sudo apt install hailort-pcie-driver-dkms hailort-cli
    ```
-3. Reiniciar la placa para cargar los drivers de kernel.
-4. Identificar la NPU:
+3. Reboot the board to load kernel modules.
+4. Verify NPU detection:
    ```bash
    hailortcli fw-control identify
    ```
 
-## Compilación y Ejecución en AURA
+## Compilation and Execution in AURA
 
-Detalles sobre cómo compilar archivos `.hef` específicos para la arquitectura Hailo-8L y cómo configurar el runtime en la plataforma.
+Details on how to compile `.hef` files optimized for the Hailo-8L architecture and how to run them in AURA.

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Tutorial: Raspberry Pi 5 + Hailo-8L" href="hailo8l.html"><link rel="prev" title="Hardware Tutorials" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Tutorial: Raspberry Pi 5 + Hailo-8 - AURA Platform</title>
@@ -199,59 +199,66 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">General</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../introduccion.html">Introducción al Proyecto AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutoriales</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../run_platform.html">Cómo Ejecutar la Plataforma AURA y el Agente de Edge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../use_platform.html">Cómo Usar la Interfaz y Realizar Despliegues en AURA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Tutoriales de Hardware</a></li>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imx500.html">Tutorial: Raspberry Pi 5 + AI Camera (IMX500)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - TFLite)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jetson_orin.html">Tutorial: NVIDIA Jetson Orin Nano</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Estructura del Código</span></p>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../code_explanation.html">Explicación del Código por Carpetas y Archivos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code_explanation.html">Codebase Structure and Explanation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/app/actuators/index.html">app.actuators</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/auth/jwt/index.html">app.auth.jwt</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/compilers/base/index.html">app.compilers.base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/compilers/yolo_train/index.html">app.compilers.yolo_train</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/app/config/index.html">app.config</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/grpc_handlers/compilation_handler/index.html">app.grpc_handlers.compilation_handler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/grpc_handlers/deployment_handler/index.html">app.grpc_handlers.deployment_handler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/grpc_handlers/monitoring_handler/index.html">app.grpc_handlers.monitoring_handler</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/app/main/index.html">app.main</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/models/mongo/index.html">app.models.mongo</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/models/orm/index.html">app.models.orm</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/mqtt/listener/index.html">app.mqtt.listener</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/repositories/compilation/index.html">app.repositories.compilation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/repositories/deployments/index.html">app.repositories.deployments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/repositories/monitoring/index.html">app.repositories.monitoring</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/routers/datasets/index.html">app.routers.datasets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/routers/deployments/index.html">app.routers.deployments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/routers/devices/index.html">app.routers.devices</a></li>
@@ -267,7 +274,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../autoapi/orm/index.html">orm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../autoapi/main/index.html">main</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/utils/database/index.html">utils.database</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/utils/grpc_server/index.html">utils.grpc_server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/utils/logging/index.html">utils.logging</a></li>
@@ -276,11 +283,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../autoapi/config/index.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../autoapi/models/index.html">models</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/aura_hw/backends/base/index.html">aura_hw.backends.base</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/base/index.html">aura_hw.backends.devices.actuator.base</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/buzzer/index.html">aura_hw.backends.devices.actuator.buzzer</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/led/index.html">aura_hw.backends.devices.actuator.led</a></li>
@@ -289,12 +296,12 @@
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/base/index.html">aura_hw.backends.devices.base</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/camera/base/index.html">aura_hw.backends.devices.camera.base</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/camera/general/index.html">aura_hw.backends.devices.camera.general</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/base/index.html">aura_hw.backends.devices.sensor.base</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/distance/index.html">aura_hw.backends.devices.sensor.distance</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/general/index.html">aura_hw.backends.devices.sensor.general</a></li>
@@ -304,7 +311,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../autoapi/aura_hw/backends/inference/base/index.html">aura_hw.backends.inference.base</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../autoapi/aura_hw/backends/inference/general/index.html">aura_hw.backends.inference.general</a></li>
 </ul>
@@ -319,7 +326,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../autoapi/devices/index.html">devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../autoapi/scripts/index.html">scripts</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/transport/base/index.html">transport.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/transport/mqtt/index.html">transport.mqtt</a></li>
 </ul>
@@ -334,7 +341,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../edge_runtime.html">Edge Runtime</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Desarrollo</span></p>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
@@ -382,51 +389,51 @@
         <article role="main" id="furo-main-content">
           <section id="tutorial-raspberry-pi-5-hailo-8">
 <h1>Tutorial: Raspberry Pi 5 + Hailo-8<a class="headerlink" href="#tutorial-raspberry-pi-5-hailo-8" title="Link to this heading">¶</a></h1>
-<p><em>(Este tutorial será redactado por el usuario. Espacio reservado para la guía de integración de Raspberry Pi 5 con el módulo Hailo-8).</em></p>
-<section id="introduccion-al-hardware-hailo-8">
-<h2>Introducción al hardware Hailo-8<a class="headerlink" href="#introduccion-al-hardware-hailo-8" title="Link to this heading">¶</a></h2>
-<p>El procesador de aprendizaje profundo (NPU) Hailo-8 ofrece hasta 26 TOPS para tareas de inteligencia artificial en el borde. En esta sección puedes describir cómo se conecta y se comporta el dispositivo en la plataforma AURA.</p>
+<p><em>(This tutorial will be completed by the user. Placeholder reserved for the integration guide of Raspberry Pi 5 with the Hailo-8 module).</em></p>
+<section id="introduction-to-hailo-8-hardware">
+<h2>Introduction to Hailo-8 Hardware<a class="headerlink" href="#introduction-to-hailo-8-hardware" title="Link to this heading">¶</a></h2>
+<p>The Hailo-8 Deep Learning Processor (NPU) delivers up to 26 TOPS of compute power for AI tasks at the edge. Describe here how it connects and behaves within the AURA platform.</p>
 </section>
-<section id="requisitos-de-hardware-y-conexion">
-<h2>Requisitos de Hardware y Conexión<a class="headerlink" href="#requisitos-de-hardware-y-conexion" title="Link to this heading">¶</a></h2>
+<section id="hardware-requirements-and-connection">
+<h2>Hardware Requirements and Connection<a class="headerlink" href="#hardware-requirements-and-connection" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Raspberry Pi 5 con fuente de alimentación adecuada.</p></li>
-<li><p>Shield PCIe (como el de Pineberry Pi, Raspberry Pi original u otros fabricantes).</p></li>
-<li><p>Módulo Hailo-8 M.2 Key M.</p></li>
-<li><p>Disipador de calor y ventilador (altamente recomendado).</p></li>
+<li><p>Raspberry Pi 5 with a suitable power supply.</p></li>
+<li><p>PCIe Shield (e.g., Pineberry Pi HAT, official Raspberry Pi HAT, or other manufacturers).</p></li>
+<li><p>Hailo-8 M.2 Key M module.</p></li>
+<li><p>Heat sink and active cooling fan (highly recommended).</p></li>
 </ul>
 </section>
-<section id="configuracion-del-sistema-operativo-y-controladores">
-<h2>Configuración del Sistema Operativo y Controladores<a class="headerlink" href="#configuracion-del-sistema-operativo-y-controladores" title="Link to this heading">¶</a></h2>
-<p>Instrucciones paso a paso para configurar la Raspberry Pi 5 para habilitar la interfaz PCIe y detectar la NPU:</p>
+<section id="os-configuration-and-drivers">
+<h2>OS Configuration and Drivers<a class="headerlink" href="#os-configuration-and-drivers" title="Link to this heading">¶</a></h2>
+<p>Step-by-step instructions to enable PCIe and detect the NPU:</p>
 <ol class="arabic">
-<li><p>Modificar <code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt</span></code>:</p>
+<li><p>Modify <code class="docutils literal notranslate"><span class="pre">/boot/firmware/config.txt</span></code>:</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="na">dtparam</span><span class="o">=</span><span class="s">pciex1</span>
-<span class="c1"># Habilitar velocidad Gen 3 si es soportado</span>
+<span class="c1"># Enable Gen 3 speed if supported</span>
 <span class="na">dtparam</span><span class="o">=</span><span class="s">pciex1_gen=3</span>
 </pre></div>
 </div>
 </li>
-<li><p>Instalar el driver de kernel y las utilidades <code class="docutils literal notranslate"><span class="pre">hailortcli</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Comandos de instalación del firmware y dkms...</span>
+<li><p>Install the kernel driver and the <code class="docutils literal notranslate"><span class="pre">hailortcli</span></code> tool:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Commands to install firmware and dkms...</span>
 </pre></div>
 </div>
 </li>
-<li><p>Comprobar la detección del hardware:</p>
+<li><p>Check hardware detection:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>hailortcli<span class="w"> </span>fw-control<span class="w"> </span>identify
 </pre></div>
 </div>
 </li>
 </ol>
 </section>
-<section id="compilacion-de-modelos-para-hailo-8">
-<h2>Compilación de Modelos para Hailo-8<a class="headerlink" href="#compilacion-de-modelos-para-hailo-8" title="Link to this heading">¶</a></h2>
-<p>Pasos para compilar modelos desde la interfaz de AURA o usando la CLI de Hailo Software Suite (DFG) para generar archivos <code class="docutils literal notranslate"><span class="pre">.hef</span></code>.</p>
+<section id="model-compilation-for-hailo-8">
+<h2>Model Compilation for Hailo-8<a class="headerlink" href="#model-compilation-for-hailo-8" title="Link to this heading">¶</a></h2>
+<p>Steps to compile models using the AURA MLOps service or locally using the Hailo Software Suite (DFG) to generate <code class="docutils literal notranslate"><span class="pre">.hef</span></code> files.</p>
 </section>
-<section id="script-de-inferencia-en-aura">
-<h2>Script de Inferencia en AURA<a class="headerlink" href="#script-de-inferencia-en-aura" title="Link to this heading">¶</a></h2>
-<p>Ejemplo de script que consume el backend Hailo-8:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Introduce aquí el ejemplo de código de inferencia adaptado para Hailo-8</span>
+<section id="inference-script-example-in-aura">
+<h2>Inference Script Example in AURA<a class="headerlink" href="#inference-script-example-in-aura" title="Link to this heading">¶</a></h2>
+<p>Example script for Hailo-8:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Place here your custom inference Python code adapted for Hailo-8</span>
 </pre></div>
 </div>
 </section>
@@ -437,8 +444,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="hailo8l.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Tutorial: Raspberry Pi 5 + Hailo-8L</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Hardware Tutorials</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -470,11 +495,11 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Tutorial: Raspberry Pi 5 + Hailo-8</a><ul>
-<li><a class="reference internal" href="#introduccion-al-hardware-hailo-8">Introducción al hardware Hailo-8</a></li>
-<li><a class="reference internal" href="#requisitos-de-hardware-y-conexion">Requisitos de Hardware y Conexión</a></li>
-<li><a class="reference internal" href="#configuracion-del-sistema-operativo-y-controladores">Configuración del Sistema Operativo y Controladores</a></li>
-<li><a class="reference internal" href="#compilacion-de-modelos-para-hailo-8">Compilación de Modelos para Hailo-8</a></li>
-<li><a class="reference internal" href="#script-de-inferencia-en-aura">Script de Inferencia en AURA</a></li>
+<li><a class="reference internal" href="#introduction-to-hailo-8-hardware">Introduction to Hailo-8 Hardware</a></li>
+<li><a class="reference internal" href="#hardware-requirements-and-connection">Hardware Requirements and Connection</a></li>
+<li><a class="reference internal" href="#os-configuration-and-drivers">OS Configuration and Drivers</a></li>
+<li><a class="reference internal" href="#model-compilation-for-hailo-8">Model Compilation for Hailo-8</a></li>
+<li><a class="reference internal" href="#inference-script-example-in-aura">Inference Script Example in AURA</a></li>
 </ul>
 </li>
 </ul>

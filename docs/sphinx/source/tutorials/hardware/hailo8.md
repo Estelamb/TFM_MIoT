@@ -1,45 +1,45 @@
 # Tutorial: Raspberry Pi 5 + Hailo-8
 
-*(Este tutorial será redactado por el usuario. Espacio reservado para la guía de integración de Raspberry Pi 5 con el módulo Hailo-8).*
+*(This tutorial will be completed by the user. Placeholder reserved for the integration guide of Raspberry Pi 5 with the Hailo-8 module).*
 
-## Introducción al hardware Hailo-8
+## Introduction to Hailo-8 Hardware
 
-El procesador de aprendizaje profundo (NPU) Hailo-8 ofrece hasta 26 TOPS para tareas de inteligencia artificial en el borde. En esta sección puedes describir cómo se conecta y se comporta el dispositivo en la plataforma AURA.
+The Hailo-8 Deep Learning Processor (NPU) delivers up to 26 TOPS of compute power for AI tasks at the edge. Describe here how it connects and behaves within the AURA platform.
 
-## Requisitos de Hardware y Conexión
+## Hardware Requirements and Connection
 
-* Raspberry Pi 5 con fuente de alimentación adecuada.
-* Shield PCIe (como el de Pineberry Pi, Raspberry Pi original u otros fabricantes).
-* Módulo Hailo-8 M.2 Key M.
-* Disipador de calor y ventilador (altamente recomendado).
+* Raspberry Pi 5 with a suitable power supply.
+* PCIe Shield (e.g., Pineberry Pi HAT, official Raspberry Pi HAT, or other manufacturers).
+* Hailo-8 M.2 Key M module.
+* Heat sink and active cooling fan (highly recommended).
 
-## Configuración del Sistema Operativo y Controladores
+## OS Configuration and Drivers
 
-Instrucciones paso a paso para configurar la Raspberry Pi 5 para habilitar la interfaz PCIe y detectar la NPU:
+Step-by-step instructions to enable PCIe and detect the NPU:
 
-1. Modificar `/boot/firmware/config.txt`:
+1. Modify `/boot/firmware/config.txt`:
    ```ini
    dtparam=pciex1
-   # Habilitar velocidad Gen 3 si es soportado
+   # Enable Gen 3 speed if supported
    dtparam=pciex1_gen=3
    ```
-2. Instalar el driver de kernel y las utilidades `hailortcli`:
+2. Install the kernel driver and the `hailortcli` tool:
    ```bash
-   # Comandos de instalación del firmware y dkms...
+   # Commands to install firmware and dkms...
    ```
-3. Comprobar la detección del hardware:
+3. Check hardware detection:
    ```bash
    hailortcli fw-control identify
    ```
 
-## Compilación de Modelos para Hailo-8
+## Model Compilation for Hailo-8
 
-Pasos para compilar modelos desde la interfaz de AURA o usando la CLI de Hailo Software Suite (DFG) para generar archivos `.hef`.
+Steps to compile models using the AURA MLOps service or locally using the Hailo Software Suite (DFG) to generate `.hef` files.
 
-## Script de Inferencia en AURA
+## Inference Script Example in AURA
 
-Ejemplo de script que consume el backend Hailo-8:
+Example script for Hailo-8:
 
 ```python
-# Introduce aquí el ejemplo de código de inferencia adaptado para Hailo-8
+# Place here your custom inference Python code adapted for Hailo-8
 ```

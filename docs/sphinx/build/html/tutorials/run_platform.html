@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Cómo Usar la Interfaz y Realizar Despliegues en AURA" href="use_platform.html"><link rel="prev" title="Quick Start" href="../quickstart.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="How to Use the Interface and Deploy Models in AURA" href="use_platform.html"><link rel="prev" title="Quick Start" href="../quickstart.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Cómo Ejecutar la Plataforma AURA y el Agente de Edge - AURA Platform</title>
+        <title>How to Run AURA Platform and Edge Agent - AURA Platform</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
@@ -199,59 +199,66 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">General</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introduccion.html">Introducción al Proyecto AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutoriales</span></p>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Cómo Ejecutar la Plataforma AURA y el Agente de Edge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="use_platform.html">Cómo Usar la Interfaz y Realizar Despliegues en AURA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hardware/index.html">Tutoriales de Hardware</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">How to Run AURA Platform and Edge Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware/imx500.html">Tutorial: Raspberry Pi 5 + AI Camera (IMX500)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware/rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - TFLite)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware/jetson_orin.html">Tutorial: NVIDIA Jetson Orin Nano</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Estructura del Código</span></p>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../code_explanation.html">Explicación del Código por Carpetas y Archivos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code_explanation.html">Codebase Structure and Explanation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/app/actuators/index.html">app.actuators</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/auth/jwt/index.html">app.auth.jwt</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/compilers/base/index.html">app.compilers.base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/compilers/yolo_train/index.html">app.compilers.yolo_train</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/app/config/index.html">app.config</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/grpc_handlers/compilation_handler/index.html">app.grpc_handlers.compilation_handler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/grpc_handlers/deployment_handler/index.html">app.grpc_handlers.deployment_handler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/grpc_handlers/monitoring_handler/index.html">app.grpc_handlers.monitoring_handler</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/app/main/index.html">app.main</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/models/mongo/index.html">app.models.mongo</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/models/orm/index.html">app.models.orm</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/mqtt/listener/index.html">app.mqtt.listener</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/repositories/compilation/index.html">app.repositories.compilation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/repositories/deployments/index.html">app.repositories.deployments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/repositories/monitoring/index.html">app.repositories.monitoring</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/routers/datasets/index.html">app.routers.datasets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/routers/deployments/index.html">app.routers.deployments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/app/routers/devices/index.html">app.routers.devices</a></li>
@@ -267,7 +274,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../autoapi/orm/index.html">orm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autoapi/main/index.html">main</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/utils/database/index.html">utils.database</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/utils/grpc_server/index.html">utils.grpc_server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/utils/logging/index.html">utils.logging</a></li>
@@ -276,11 +283,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../autoapi/config/index.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autoapi/models/index.html">models</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/aura_hw/backends/base/index.html">aura_hw.backends.base</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/actuator/base/index.html">aura_hw.backends.devices.actuator.base</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/actuator/buzzer/index.html">aura_hw.backends.devices.actuator.buzzer</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/actuator/led/index.html">aura_hw.backends.devices.actuator.led</a></li>
@@ -289,12 +296,12 @@
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/base/index.html">aura_hw.backends.devices.base</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/camera/base/index.html">aura_hw.backends.devices.camera.base</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/camera/general/index.html">aura_hw.backends.devices.camera.general</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/sensor/base/index.html">aura_hw.backends.devices.sensor.base</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/sensor/distance/index.html">aura_hw.backends.devices.sensor.distance</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../autoapi/aura_hw/backends/devices/sensor/general/index.html">aura_hw.backends.devices.sensor.general</a></li>
@@ -304,7 +311,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../autoapi/aura_hw/backends/inference/base/index.html">aura_hw.backends.inference.base</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../autoapi/aura_hw/backends/inference/general/index.html">aura_hw.backends.inference.general</a></li>
 </ul>
@@ -319,7 +326,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../autoapi/devices/index.html">devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autoapi/scripts/index.html">scripts</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/transport/base/index.html">transport.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/transport/mqtt/index.html">transport.mqtt</a></li>
 </ul>
@@ -334,7 +341,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../edge_runtime.html">Edge Runtime</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Desarrollo</span></p>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
@@ -380,94 +387,94 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="como-ejecutar-la-plataforma-aura-y-el-agente-de-edge">
-<h1>Cómo Ejecutar la Plataforma AURA y el Agente de Edge<a class="headerlink" href="#como-ejecutar-la-plataforma-aura-y-el-agente-de-edge" title="Link to this heading">¶</a></h1>
-<p>Esta guía proporciona un paso a paso detallado para poner en marcha tanto la infraestructura central de servicios (Backend, Frontend y Base de Datos) como el agente local que corre en el hardware perimetral.</p>
+          <section id="how-to-run-aura-platform-and-edge-agent">
+<h1>How to Run AURA Platform and Edge Agent<a class="headerlink" href="#how-to-run-aura-platform-and-edge-agent" title="Link to this heading">¶</a></h1>
+<p>This guide provides a detailed, step-by-step walkthrough to set up and run both the core server services (Backend, Frontend, and Databases) and the local agent running on the perimetral hardware.</p>
 <hr class="docutils" />
-<section id="requisitos-previos">
-<h2>1. Requisitos Previos<a class="headerlink" href="#requisitos-previos" title="Link to this heading">¶</a></h2>
-<p>Antes de comenzar la instalación, asegúrate de contar con los siguientes elementos en tu sistema host o servidor:</p>
+<section id="prerequisites">
+<h2>1. Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<p>Before starting the installation, ensure your host system or server meets the following requirements:</p>
 <ul class="simple">
-<li><p><strong>Docker Engine</strong> (versión 24 o superior) junto con <strong>Docker Compose v2</strong>.</p></li>
-<li><p>Un mínimo de <strong>8 GB de RAM</strong> disponibles (se recomienda 16 GB si se están compilando múltiples modelos pesados de forma simultánea).</p></li>
-<li><p>Los siguientes puertos de red libres en el host:</p>
+<li><p><strong>Docker Engine</strong> (version 24 or higher) with <strong>Docker Compose v2</strong>.</p></li>
+<li><p>Minimum of <strong>8 GB RAM</strong> (16 GB recommended if compiling heavy models concurrently).</p></li>
+<li><p>The following network ports must be free:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">3000</span></code> (Frontend en Next.js)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">8000</span></code> (API Gateway / Docs Swagger)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">1883</span></code> (Broker MQTT Mosquitto)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">3000</span></code> (Next.js Frontend)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">8000</span></code> (API Gateway / Swagger Docs)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1883</span></code> (Mosquitto MQTT Broker)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">5432</span></code> (PostgreSQL)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">9000</span></code> y <code class="docutils literal notranslate"><span class="pre">9001</span></code> (Servidor de almacenamiento MinIO S3 y Consola de administración)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">9000</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">9001</span></code> (MinIO S3 Storage server &amp; Admin console)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">27017</span></code> (MongoDB)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">50051–50053</span></code> (Puertos gRPC internos para comunicación entre servicios)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">9100</span></code> (Exportador de métricas para Prometheus)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">50051–50053</span></code> (Internal gRPC ports for service-to-service communication)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">9100</span></code> (Prometheus metrics exporter)</p></li>
 </ul>
 </li>
 </ul>
 </section>
 <hr class="docutils" />
-<section id="configurar-el-entorno-del-servidor">
-<h2>2. Configurar el Entorno del Servidor<a class="headerlink" href="#configurar-el-entorno-del-servidor" title="Link to this heading">¶</a></h2>
-<p>AURA utiliza variables de entorno declaradas en un archivo <code class="docutils literal notranslate"><span class="pre">.env</span></code> en la raíz del proyecto para inicializar las contraseñas, secretos y URIs de conexión.</p>
+<section id="setting-up-the-server-environment">
+<h2>2. Setting Up the Server Environment<a class="headerlink" href="#setting-up-the-server-environment" title="Link to this heading">¶</a></h2>
+<p>AURA uses environment variables declared in a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file in the project root to initialize passwords, secrets, and connection URIs.</p>
 <ol class="arabic">
-<li><p>Duplica la plantilla de variables de entorno de ejemplo:</p>
+<li><p>Duplicate the example environment variables template:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>.env.example<span class="w"> </span>.env
 </pre></div>
 </div>
 </li>
-<li><p>Genera una clave secreta segura para JWT e introdúcela en el archivo <code class="docutils literal notranslate"><span class="pre">.env</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generar clave aleatoria</span>
+<li><p>Generate a secure secret key for JWT signing and paste it into the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate a random hex key</span>
 openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span>
 </pre></div>
 </div>
-<p>Abre el archivo <code class="docutils literal notranslate"><span class="pre">.env</span></code> y busca la línea <code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code>. Reemplaza su valor por la clave aleatoria que acabas de generar.</p>
+<p>Open the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file, locate the <code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code> variable, and replace its default value with the generated hex key.</p>
 </li>
 </ol>
 <blockquote>
 <div><p>[!NOTE]
-Para el desarrollo en local, los valores por defecto configurados en <code class="docutils literal notranslate"><span class="pre">.env.example</span></code> funcionan directamente sin necesidad de modificaciones adicionales.</p>
+For local development, the defaults configured in <code class="docutils literal notranslate"><span class="pre">.env.example</span></code> work out of the box without any further modifications.</p>
 </div></blockquote>
 </section>
 <hr class="docutils" />
-<section id="levantar-los-servicios-de-la-plataforma">
-<h2>3. Levantar los Servicios de la Plataforma<a class="headerlink" href="#levantar-los-servicios-de-la-plataforma" title="Link to this heading">¶</a></h2>
-<p>Para compilar las imágenes e iniciar la plataforma completa en segundo plano (modo detached), ejecuta el siguiente comando en la raíz del proyecto:</p>
+<section id="starting-the-platform-services">
+<h2>3. Starting the Platform Services<a class="headerlink" href="#starting-the-platform-services" title="Link to this heading">¶</a></h2>
+<p>To compile the local Docker images and start the full platform stack in the background (detached mode), execute the following command in the project root:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>Nota</strong>: La primera ejecución puede demorar entre <strong>3 y 5 minutos</strong> debido a que Docker debe descargar las imágenes base y compilar los contenedores locales de cada microservicio.</p></li>
+<li><p><strong>Note</strong>: The first startup can take between <strong>3 to 5 minutes</strong> since Docker has to download base images and compile containers for each microservice.</p></li>
 </ul>
-<p>Una vez que termine la ejecución, comprueba que todos los servicios estén levantados y saludables:</p>
+<p>Once the command finishes, check the health of all containers:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>ps
 </pre></div>
 </div>
-<p>Deberías ver una salida en la que los contenedores <code class="docutils literal notranslate"><span class="pre">api-gateway</span></code>, <code class="docutils literal notranslate"><span class="pre">registry-service</span></code>, <code class="docutils literal notranslate"><span class="pre">mlops-service</span></code>, <code class="docutils literal notranslate"><span class="pre">edge-connector-service</span></code>, <code class="docutils literal notranslate"><span class="pre">postgres</span></code>, <code class="docutils literal notranslate"><span class="pre">mongodb</span></code>, <code class="docutils literal notranslate"><span class="pre">mosquitto</span></code>, <code class="docutils literal notranslate"><span class="pre">minio</span></code> y <code class="docutils literal notranslate"><span class="pre">frontend</span></code> se muestren con el estado <code class="docutils literal notranslate"><span class="pre">Up</span></code> o <code class="docutils literal notranslate"><span class="pre">Running</span></code>.</p>
-<section id="direcciones-de-acceso-utiles">
-<h3>Direcciones de Acceso Útiles<a class="headerlink" href="#direcciones-de-acceso-utiles" title="Link to this heading">¶</a></h3>
+<p>You should see all containers (<code class="docutils literal notranslate"><span class="pre">api-gateway</span></code>, <code class="docutils literal notranslate"><span class="pre">registry-service</span></code>, <code class="docutils literal notranslate"><span class="pre">mlops-service</span></code>, <code class="docutils literal notranslate"><span class="pre">edge-connector-service</span></code>, <code class="docutils literal notranslate"><span class="pre">postgres</span></code>, <code class="docutils literal notranslate"><span class="pre">mongodb</span></code>, <code class="docutils literal notranslate"><span class="pre">mosquitto</span></code>, <code class="docutils literal notranslate"><span class="pre">minio</span></code>, and <code class="docutils literal notranslate"><span class="pre">frontend</span></code>) listed in the <code class="docutils literal notranslate"><span class="pre">Up</span></code> or <code class="docutils literal notranslate"><span class="pre">Running</span></code> state.</p>
+<section id="useful-access-urls">
+<h3>Useful Access URLs<a class="headerlink" href="#useful-access-urls" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Servicio</p></th>
-<th class="head"><p>URL / Dirección</p></th>
-<th class="head"><p>Credenciales por Defecto</p></th>
+<tr class="row-odd"><th class="head"><p>Service</p></th>
+<th class="head"><p>URL / Host</p></th>
+<th class="head"><p>Default Credentials</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>Consola Frontend</strong></p></td>
+<tr class="row-even"><td><p><strong>Web Console</strong></p></td>
 <td><p><a class="reference external" href="http://localhost:3000">http://localhost:3000</a></p></td>
-<td><p>Usuario: <code class="docutils literal notranslate"><span class="pre">admin</span></code> / Contraseña: <code class="docutils literal notranslate"><span class="pre">aura2026</span></code></p></td>
+<td><p>Username: <code class="docutils literal notranslate"><span class="pre">admin</span></code> / Password: <code class="docutils literal notranslate"><span class="pre">aura2026</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>API Docs (Swagger)</strong></p></td>
 <td><p><a class="reference external" href="http://localhost:8000/docs">http://localhost:8000/docs</a></p></td>
-<td><p>Requiere inicio de sesión previo en el endpoint <code class="docutils literal notranslate"><span class="pre">/auth/token</span></code></p></td>
+<td><p>Requires logging in first at the <code class="docutils literal notranslate"><span class="pre">/auth/token</span></code> endpoint</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Consola MinIO</strong></p></td>
+<tr class="row-even"><td><p><strong>MinIO Console</strong></p></td>
 <td><p><a class="reference external" href="http://localhost:9001">http://localhost:9001</a></p></td>
-<td><p>Usuario: <code class="docutils literal notranslate"><span class="pre">aura</span></code> / Contraseña: <code class="docutils literal notranslate"><span class="pre">aura_dev</span></code></p></td>
+<td><p>Username: <code class="docutils literal notranslate"><span class="pre">aura</span></code> / Password: <code class="docutils literal notranslate"><span class="pre">aura_dev</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Métricas Prometheus</strong></p></td>
+<tr class="row-odd"><td><p><strong>Prometheus Metrics</strong></p></td>
 <td><p><a class="reference external" href="http://localhost:9100/metrics">http://localhost:9100/metrics</a></p></td>
-<td><p>Acceso anónimo</p></td>
+<td><p>Anonymous access</p></td>
 </tr>
 </tbody>
 </table>
@@ -475,45 +482,45 @@ Para el desarrollo en local, los valores por defecto configurados en <code class
 </section>
 </section>
 <hr class="docutils" />
-<section id="resolucion-de-problemas-y-visualizacion-de-logs">
-<h2>4. Resolución de Problemas y Visualización de Logs<a class="headerlink" href="#resolucion-de-problemas-y-visualizacion-de-logs" title="Link to this heading">¶</a></h2>
-<p>Si alguno de los servicios falla o no arranca correctamente, puedes inspeccionar los logs en tiempo real:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ver los logs combinados de todos los contenedores en tiempo real</span>
+<section id="troubleshooting-and-logs">
+<h2>4. Troubleshooting and Logs<a class="headerlink" href="#troubleshooting-and-logs" title="Link to this heading">¶</a></h2>
+<p>If any service fails or behaves unexpectedly, inspect the logs in real time:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># View combined logs of all containers</span>
 docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>-f
 
-<span class="c1"># Filtrar los logs únicamente para un servicio concreto (ej. API Gateway)</span>
+<span class="c1"># Filter logs for a specific service (e.g., API Gateway)</span>
 docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>api-gateway
 
-<span class="c1"># Filtrar logs para el conector de edge</span>
+<span class="c1"># Filter logs for the edge-connector-service</span>
 docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>edge-connector-service
 </pre></div>
 </div>
 </section>
 <hr class="docutils" />
-<section id="ejecutar-el-agente-de-edge-en-un-dispositivo-fisico">
-<h2>5. Ejecutar el Agente de Edge en un Dispositivo Físico<a class="headerlink" href="#ejecutar-el-agente-de-edge-en-un-dispositivo-fisico" title="Link to this heading">¶</a></h2>
-<p>El agente de edge es el encargado de comunicarse con AURA Platform para recibir instrucciones de despliegue y reportar telemetría. Debe ejecutarse en el dispositivo físico de destino (por ejemplo, una Raspberry Pi 5).</p>
-<section id="copiar-los-archivos-al-dispositivo-perimetral">
-<h3>1. Copiar los archivos al dispositivo perimetral<a class="headerlink" href="#copiar-los-archivos-al-dispositivo-perimetral" title="Link to this heading">¶</a></h3>
-<p>Transfiere la carpeta <code class="docutils literal notranslate"><span class="pre">edge-runtime/</span></code> de la plataforma AURA al almacenamiento local de tu dispositivo edge (mediante <code class="docutils literal notranslate"><span class="pre">scp</span></code>, <code class="docutils literal notranslate"><span class="pre">rsync</span></code> o clonando el repositorio directamente en el dispositivo).</p>
+<section id="running-the-edge-agent-on-a-physical-device">
+<h2>5. Running the Edge Agent on a Physical Device<a class="headerlink" href="#running-the-edge-agent-on-a-physical-device" title="Link to this heading">¶</a></h2>
+<p>The edge agent runs on the target physical hardware (e.g., Raspberry Pi 5). It connects to the AURA Platform via MQTT to receive deployment commands and report device telemetry.</p>
+<section id="copy-runtime-files-to-the-edge-device">
+<h3>1. Copy runtime files to the edge device<a class="headerlink" href="#copy-runtime-files-to-the-edge-device" title="Link to this heading">¶</a></h3>
+<p>Transfer the <code class="docutils literal notranslate"><span class="pre">edge-runtime/</span></code> folder from the project to the local storage of your edge device (using <code class="docutils literal notranslate"><span class="pre">scp</span></code>, <code class="docutils literal notranslate"><span class="pre">rsync</span></code>, or cloning the repository directly on the device).</p>
 </section>
-<section id="instalar-dependencias-en-el-dispositivo">
-<h3>2. Instalar dependencias en el dispositivo<a class="headerlink" href="#instalar-dependencias-en-el-dispositivo" title="Link to this heading">¶</a></h3>
-<p>El agente de edge requiere de Python 3.10 o superior. Instala las dependencias necesarias:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Navegar a la carpeta del runtime</span>
+<section id="install-dependencies-on-the-device">
+<h3>2. Install dependencies on the device<a class="headerlink" href="#install-dependencies-on-the-device" title="Link to this heading">¶</a></h3>
+<p>The edge agent requires Python 3.10 or higher. Navigate to the runtime folder and install dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Navigate to the runtime folder</span>
 <span class="nb">cd</span><span class="w"> </span>edge-runtime
 
-<span class="c1"># Instalar librerías requeridas</span>
+<span class="c1"># Install required Python packages</span>
 pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>Importante</strong>: Si planeas usar aceleradores específicos como Hailo-8, asegúrate de que el SDK y el controlador del fabricante (ej. HailoRT) estén instalados en el sistema operativo del dispositivo perimetral antes de arrancar el agente.</p></li>
+<li><p><strong>Important</strong>: If you plan to use accelerators such as the Hailo-8, make sure that the hardware vendor SDK and kernel drivers (e.g., HailoRT) are installed on the device operating system before starting the agent.</p></li>
 </ul>
 </section>
-<section id="iniciar-el-agente-con-variables-de-entorno">
-<h3>3. Iniciar el Agente con Variables de Entorno<a class="headerlink" href="#iniciar-el-agente-con-variables-de-entorno" title="Link to this heading">¶</a></h3>
-<p>Inicia el script de arranque <code class="docutils literal notranslate"><span class="pre">agent.py</span></code> proporcionando las variables del entorno mediante la consola:</p>
+<section id="run-the-agent-with-environment-variables">
+<h3>3. Run the Agent with Environment Variables<a class="headerlink" href="#run-the-agent-with-environment-variables" title="Link to this heading">¶</a></h3>
+<p>Start the agent script <code class="docutils literal notranslate"><span class="pre">agent.py</span></code> by providing the connection variables in the terminal:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">AURA_DEVICE_ID</span><span class="o">=</span>my-raspberry-01<span class="w"> </span><span class="se">\</span>
 <span class="nv">AURA_MQTT_HOST</span><span class="o">=</span><span class="m">192</span>.168.1.50<span class="w"> </span><span class="se">\</span>
 <span class="nv">AURA_MQTT_PORT</span><span class="o">=</span><span class="m">1883</span><span class="w"> </span><span class="se">\</span>
@@ -522,41 +529,41 @@ pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </s
 python<span class="w"> </span>agent.py
 </pre></div>
 </div>
-<section id="parametros-de-configuracion-del-agente">
-<h4>Parámetros de Configuración del Agente<a class="headerlink" href="#parametros-de-configuracion-del-agente" title="Link to this heading">¶</a></h4>
+<section id="agent-configuration-parameters">
+<h4>Agent Configuration Parameters<a class="headerlink" href="#agent-configuration-parameters" title="Link to this heading">¶</a></h4>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Variable</p></th>
-<th class="head"><p>Valor por Defecto</p></th>
-<th class="head"><p>Descripción</p></th>
+<th class="head"><p>Default Value</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AURA_DEVICE_ID</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">dev-device-001</span></code></p></td>
-<td><p>El identificador único del dispositivo. Debe coincidir exactamente con el ID que registres en la consola web de AURA.</p></td>
+<td><p>Unique device identifier. Must exactly match the Device ID registered in the AURA web console.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AURA_MQTT_HOST</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">localhost</span></code></p></td>
-<td><p>La dirección IP o nombre DNS donde se ejecuta el broker MQTT de la plataforma.</p></td>
+<td><p>IP address or domain name where the platform’s MQTT broker is running.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AURA_MQTT_PORT</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1883</span></code></p></td>
-<td><p>Puerto de escucha del broker MQTT (usualmente <code class="docutils literal notranslate"><span class="pre">1883</span></code>).</p></td>
+<td><p>MQTT broker port (usually <code class="docutils literal notranslate"><span class="pre">1883</span></code>).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AURA_HARDWARE_TYPE</span></code></p></td>
-<td><p><em>Auto-detectado</em></p></td>
-<td><p>Sobrescribe la detección automática del hardware perimetral. Valores válidos: <code class="docutils literal notranslate"><span class="pre">hailo8</span></code>, <code class="docutils literal notranslate"><span class="pre">hailo8l</span></code>, <code class="docutils literal notranslate"><span class="pre">imx500</span></code>, <code class="docutils literal notranslate"><span class="pre">rpi</span></code> (CPU), <code class="docutils literal notranslate"><span class="pre">jetson_orin_nano</span></code>.</p></td>
+<td><p><em>Auto-detected</em></p></td>
+<td><p>Overrides automatic hardware detection. Valid values: <code class="docutils literal notranslate"><span class="pre">hailo8</span></code>, <code class="docutils literal notranslate"><span class="pre">hailo8l</span></code>, <code class="docutils literal notranslate"><span class="pre">imx500</span></code>, <code class="docutils literal notranslate"><span class="pre">rpi</span></code> (CPU), <code class="docutils literal notranslate"><span class="pre">jetson_orin_nano</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AURA_TELEMETRY_INTERVAL</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
-<td><p>Frecuencia en segundos con la que el agente envía telemetría de CPU y RAM a la nube.</p></td>
+<td><p>Frequency in seconds at which the agent sends CPU/RAM telemetry messages.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>El agente buscará establecer una conexión con la plataforma. Al tener éxito, el dispositivo se mostrará como <strong>Conectado (Online)</strong> en la interfaz de usuario de AURA.</p>
+<p>The agent will establish a connection with the broker. Upon success, the device state will change to <strong>Online</strong> in the AURA web dashboard.</p>
 </section>
 </section>
 </section>
@@ -572,7 +579,7 @@ python<span class="w"> </span>agent.py
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Cómo Usar la Interfaz y Realizar Despliegues en AURA</div>
+                <div class="title">How to Use the Interface and Deploy Models in AURA</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -617,19 +624,19 @@ python<span class="w"> </span>agent.py
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Cómo Ejecutar la Plataforma AURA y el Agente de Edge</a><ul>
-<li><a class="reference internal" href="#requisitos-previos">1. Requisitos Previos</a></li>
-<li><a class="reference internal" href="#configurar-el-entorno-del-servidor">2. Configurar el Entorno del Servidor</a></li>
-<li><a class="reference internal" href="#levantar-los-servicios-de-la-plataforma">3. Levantar los Servicios de la Plataforma</a><ul>
-<li><a class="reference internal" href="#direcciones-de-acceso-utiles">Direcciones de Acceso Útiles</a></li>
+<li><a class="reference internal" href="#">How to Run AURA Platform and Edge Agent</a><ul>
+<li><a class="reference internal" href="#prerequisites">1. Prerequisites</a></li>
+<li><a class="reference internal" href="#setting-up-the-server-environment">2. Setting Up the Server Environment</a></li>
+<li><a class="reference internal" href="#starting-the-platform-services">3. Starting the Platform Services</a><ul>
+<li><a class="reference internal" href="#useful-access-urls">Useful Access URLs</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#resolucion-de-problemas-y-visualizacion-de-logs">4. Resolución de Problemas y Visualización de Logs</a></li>
-<li><a class="reference internal" href="#ejecutar-el-agente-de-edge-en-un-dispositivo-fisico">5. Ejecutar el Agente de Edge en un Dispositivo Físico</a><ul>
-<li><a class="reference internal" href="#copiar-los-archivos-al-dispositivo-perimetral">1. Copiar los archivos al dispositivo perimetral</a></li>
-<li><a class="reference internal" href="#instalar-dependencias-en-el-dispositivo">2. Instalar dependencias en el dispositivo</a></li>
-<li><a class="reference internal" href="#iniciar-el-agente-con-variables-de-entorno">3. Iniciar el Agente con Variables de Entorno</a><ul>
-<li><a class="reference internal" href="#parametros-de-configuracion-del-agente">Parámetros de Configuración del Agente</a></li>
+<li><a class="reference internal" href="#troubleshooting-and-logs">4. Troubleshooting and Logs</a></li>
+<li><a class="reference internal" href="#running-the-edge-agent-on-a-physical-device">5. Running the Edge Agent on a Physical Device</a><ul>
+<li><a class="reference internal" href="#copy-runtime-files-to-the-edge-device">1. Copy runtime files to the edge device</a></li>
+<li><a class="reference internal" href="#install-dependencies-on-the-device">2. Install dependencies on the device</a></li>
+<li><a class="reference internal" href="#run-the-agent-with-environment-variables">3. Run the Agent with Environment Variables</a><ul>
+<li><a class="reference internal" href="#agent-configuration-parameters">Agent Configuration Parameters</a></li>
 </ul>
 </li>
 </ul>

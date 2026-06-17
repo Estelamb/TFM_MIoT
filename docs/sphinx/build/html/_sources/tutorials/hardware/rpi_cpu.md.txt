@@ -1,25 +1,25 @@
 # Tutorial: Raspberry Pi 5 (CPU - TFLite)
 
-*(Este tutorial será redactado por el usuario. Espacio reservado para la guía de ejecución de inferencia en CPU de Raspberry Pi usando TFLite).*
+*(This tutorial will be completed by the user. Placeholder reserved for the CPU execution guide on Raspberry Pi using TensorFlow Lite).*
 
-## Introducción a la inferencia en CPU
+## Introduction to CPU Inference
 
-Cuando no se dispone de un chip coprocesador acelerador de red (NPU/TPU), AURA puede hacer uso de la CPU del dispositivo corriendo modelos en formato TensorFlow Lite (`.tflite`). Si bien el rendimiento es inferior comparado con las NPUs dedicada, es ideal para pruebas, depuración y modelos ligeros.
+When no hardware accelerator (NPU/TPU) is available on the edge device, AURA can process models on the host CPU using TensorFlow Lite (`.tflite` format). Performance will be lower, but it is ideal for debugging and lightweight models.
 
-## Requisitos de Software
+## Software Requirements
 
-* Tener instalado Python 3.10+ en la Raspberry Pi.
-* Instalar el runtime de TensorFlow Lite:
+* Python 3.10+ installed on the Raspberry Pi.
+* TensorFlow Lite Runtime library:
   ```bash
   pip install tflite-runtime
   ```
 
-## Uso del backend en AURA
+## Using the CPU Backend in AURA
 
-El runtime de `aura_hw` detecta automáticamente que no hay aceleradores y conmuta por defecto al backend CPU. Para configurar manualmente esta opción, define la variable de entorno:
+The `aura_hw` runtime automatically falls back to CPU when no accelerators are detected. To force it manually, set:
 
 ```bash
 AURA_HARDWARE_TYPE=rpi
 ```
 
-Añade aquí los detalles del flujo de trabajo y benchmarks de rendimiento que consideres pertinentes.
+Add your specific notes and benchmarks in this section.

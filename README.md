@@ -32,15 +32,9 @@ Edge AI deployment platform for IoT devices. Upload a trained YOLOv8 model, comp
 aura/
 ├── docker-compose.yml              # Full stack
 ├── docker/                         # Per-service debug composes
-│   ├── device-service.yml
-│   ├── ai-service.yml
-│   ├── script-service.yml
-│   ├── mlops-service.yml
-│   ├── deployment-service.yml
-│   ├── monitoring-service.yml
 │   ├── api-gateway.yml
 │   ├── frontend.yml
-│   └── edge-agent.yml
+│   └── mlops-service.yml
 │
 ├── infra/
 │   ├── mosquitto/mosquitto.conf    # MQTT broker config (anonymous, port 1883)
@@ -53,26 +47,24 @@ aura/
 │   └── utils/                      # Shared: database, MinIO, logging, gRPC server helper
 │
 ├── services/
-│   ├── api-gateway/
-│   ├── device-service/
-│   ├── ai-service/
-│   ├── script-service/
-│   ├── mlops-service/
-│   ├── deployment-service/
-│   └── monitoring-service/
+│   ├── api-gateway/                # API Gateway microservice (FastAPI REST to gRPC)
+│   ├── registry-service/           # Devices, models, and scripts metadata registry
+│   ├── mlops-service/              # Model compilation orchestrator
+│   └── edge-connector-service/     # Telemetry ingest and OTA deployment broker
 │
 ├── edge-runtime/
 │   ├── agent.py                    # Edge agent: subscribes to MQTT commands
 │   ├── aura_hw/                    # Hardware abstraction library
 │   │   ├── detect.py               # Auto-detects hardware type
 │   │   ├── runtime.py              # Public API: load_model(), execute_inference()
-│   │   └── backends/               # One backend per hardware target
-│   │       ├── hailo.py            # Hailo-8 / 8L via HailoRT SDK
-│   │       ├── rpi_ai_cam.py       # Sony IMX500 via picamera2
-│   │       ├── rpi_tflite.py       # RPi CPU via TFLite Runtime
-│   │       └── jetson.py           # Jetson Orin via TensorRT (stub)
-│   └── scripts/
-│       └── template.py             # User script template
+│   │   └── backends/               # Hardware target backends
+│   │       ├── devices/            # Hardware-specific devices (actuators, cameras, sensors)
+│   │       └── inference/          # Inference processing engine backends
+│   └── pal/                        # Platform Abstraction Layer (communication client)
+│
+├── docs/                           # Documentation folder (Sphinx & TypeDoc)
+│   ├── sphinx/                     # Sphinx python documentation source and configs
+│   └── typedoc/                    # TypeDoc configuration for TS frontend
 │
 └── frontend/
     ├── app/                        # Next.js App Router
@@ -84,10 +76,9 @@ aura/
     │       ├── scripts/            # Script upload
     │       ├── deployments/        # Create and track deployments
     │       └── monitoring/         # Per-device telemetry + inference results
-    ├── components/ui/              # Badge, Button, Card, Modal, StatBar, etc.
-    └── lib/
-        ├── api.ts                  # Typed API client (axios)
-        └── utils.ts                # cn(), fmtDate(), HW_LABELS, STATUS_COLORS
+    ├── components/                 # React components
+    ├── hooks/                      # Custom React hooks (WS sub, query etc.)
+    └── lib/                        # Axios clients & layout helpers
 ```
 
 ---
@@ -105,7 +96,7 @@ scripts       — inference scripts (script_key, script_sha256, hardware_type)
 deployments   — links device + model + script (status: pending → sent → running | failed)
 ```
 
-**MongoDB collections (monitoring-service):**
+**MongoDB collections (edge-connector-service):**
 
 ```
 device_states      — current state per device (upsert on each telemetry message)
@@ -127,14 +118,14 @@ scripts    — inference scripts (.py)
 ```
 1. User uploads .pt model
    └─▶ api-gateway saves to MinIO (models bucket)
-   └─▶ ai-service registers model in PostgreSQL (compile_status = pending)
+   └─▶ registry-service registers model in PostgreSQL (compile_status = pending)
    └─▶ mlops-service.CompileModel() called [non-blocking, returns immediately]
        └─▶ background task: export ONNX → Hailo Docker / MCT Python pipeline
        └─▶ uploads compiled artifact to MinIO (compiled bucket)
-       └─▶ notifies ai-service: UpdateModelCompiled (compile_status = ready)
+       └─▶ notifies registry-service: UpdateModelCompiled (compile_status = ready)
 
 2. User creates deployment (device + model + script)
-   └─▶ deployment-service generates presigned MinIO URLs (1h TTL)
+   └─▶ edge-connector-service generates presigned MinIO URLs (1h TTL)
    └─▶ publishes to MQTT: device/{id}/commands
        { "command": "deploy", "model_url", "model_sha256", "script_url", "script_sha256" }
    └─▶ marks deployment status = sent
@@ -144,12 +135,12 @@ scripts    — inference scripts (.py)
    └─▶ downloads script, verifies SHA-256
    └─▶ calls aura_hw.load_model() → hardware-specific backend
    └─▶ publishes: device/{id}/events { "event": "deploy_ack" }
-   └─▶ deployment-service listener updates status = running
+   └─▶ edge-connector-service listener updates status = running
 
 4. Edge agent runs continuously
    └─▶ publishes telemetry every N seconds: device/{id}/telemetry
    └─▶ publishes inference results: device/{id}/inference
-   └─▶ monitoring-service stores both in MongoDB + updates Prometheus gauges
+   └─▶ edge-connector-service stores both in MongoDB + updates Prometheus gauges
 ```
 
 ---
@@ -183,7 +174,7 @@ COMPILER_REGISTRY = {
 
 **AI Camera pipeline** (`compilers/aicam.py`): download `.pt` → generate calibration images → `model.export(format="imx")` via Ultralytics (MCT + imx500-converter) → upload `packerOut.zip` to MinIO.
 
-`CompileModel` RPC returns immediately with `status=compiling`. Compilation runs as a background `asyncio.create_task()` and notifies `ai-service` on completion via `UpdateModelCompiled`.
+`CompileModel` RPC returns immediately with `status=compiling`. Compilation runs as a background `asyncio.create_task()` and notifies `registry-service` on completion via `UpdateModelCompiled`.
 
 ---
 

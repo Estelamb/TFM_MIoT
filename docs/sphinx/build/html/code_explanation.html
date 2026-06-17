@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API Reference" href="autoapi/index.html"><link rel="prev" title="Tutoriales de Hardware" href="tutorials/hardware/index.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="API Reference" href="autoapi/index.html"><link rel="prev" title="Tutorial: NVIDIA Jetson Orin Nano" href="tutorials/hardware/jetson_orin.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Explicación del Código por Carpetas y Archivos - AURA Platform</title>
+        <title>Codebase Structure and Explanation - AURA Platform</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
@@ -199,59 +199,66 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">General</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduccion.html">Introducción al Proyecto AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Tutoriales</span></p>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/run_platform.html">Cómo Ejecutar la Plataforma AURA y el Agente de Edge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/use_platform.html">Cómo Usar la Interfaz y Realizar Despliegues en AURA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/hardware/index.html">Tutoriales de Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/imx500.html">Tutorial: Raspberry Pi 5 + AI Camera (IMX500)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - TFLite)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/jetson_orin.html">Tutorial: NVIDIA Jetson Orin Nano</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Estructura del Código</span></p>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Explicación del Código por Carpetas y Archivos</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Codebase Structure and Explanation</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/app/actuators/index.html">app.actuators</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/auth/jwt/index.html">app.auth.jwt</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/compilers/base/index.html">app.compilers.base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/compilers/yolo_train/index.html">app.compilers.yolo_train</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/app/config/index.html">app.config</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/compilation_handler/index.html">app.grpc_handlers.compilation_handler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/deployment_handler/index.html">app.grpc_handlers.deployment_handler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/monitoring_handler/index.html">app.grpc_handlers.monitoring_handler</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/app/main/index.html">app.main</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/models/mongo/index.html">app.models.mongo</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/models/orm/index.html">app.models.orm</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/mqtt/listener/index.html">app.mqtt.listener</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/compilation/index.html">app.repositories.compilation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/deployments/index.html">app.repositories.deployments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/monitoring/index.html">app.repositories.monitoring</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/datasets/index.html">app.routers.datasets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/deployments/index.html">app.routers.deployments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/devices/index.html">app.routers.devices</a></li>
@@ -267,7 +274,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="autoapi/orm/index.html">orm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoapi/main/index.html">main</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/utils/database/index.html">utils.database</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/utils/grpc_server/index.html">utils.grpc_server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/utils/logging/index.html">utils.logging</a></li>
@@ -276,11 +283,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="autoapi/config/index.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoapi/models/index.html">models</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/aura_hw/backends/base/index.html">aura_hw.backends.base</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/base/index.html">aura_hw.backends.devices.actuator.base</a></li>
 <li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html">aura_hw.backends.devices.actuator.buzzer</a></li>
 <li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/led/index.html">aura_hw.backends.devices.actuator.led</a></li>
@@ -289,12 +296,12 @@
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/devices/base/index.html">aura_hw.backends.devices.base</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/base/index.html">aura_hw.backends.devices.camera.base</a></li>
 <li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/general/index.html">aura_hw.backends.devices.camera.general</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/base/index.html">aura_hw.backends.devices.sensor.base</a></li>
 <li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/distance/index.html">aura_hw.backends.devices.sensor.distance</a></li>
 <li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/general/index.html">aura_hw.backends.devices.sensor.general</a></li>
@@ -304,7 +311,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/inference/base/index.html">aura_hw.backends.inference.base</a></li>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/inference/general/index.html">aura_hw.backends.inference.general</a></li>
 </ul>
@@ -319,7 +326,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="autoapi/devices/index.html">devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autoapi/scripts/index.html">scripts</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/transport/base/index.html">transport.base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/transport/mqtt/index.html">transport.mqtt</a></li>
 </ul>
@@ -334,7 +341,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="edge_runtime.html">Edge Runtime</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Desarrollo</span></p>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
@@ -380,158 +387,148 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="explicacion-del-codigo-por-carpetas-y-archivos">
-<h1>Explicación del Código por Carpetas y Archivos<a class="headerlink" href="#explicacion-del-codigo-por-carpetas-y-archivos" title="Link to this heading">¶</a></h1>
-<p>Esta sección proporciona una radiografía detallada de la base de código de <strong>AURA Platform</strong>. Aquí se detalla la función de cada directorio, módulo y archivo clave para guiar a los desarrolladores a través del proyecto.</p>
+          <section id="codebase-structure-and-explanation">
+<h1>Codebase Structure and Explanation<a class="headerlink" href="#codebase-structure-and-explanation" title="Link to this heading">¶</a></h1>
+<p>This section provides a detailed walk-through of the <strong>AURA Platform</strong> codebase structure. It highlights the main directories, microservices, files, and classes to help developers navigate the project.</p>
 <hr class="docutils" />
-<section id="estructura-general-del-proyecto">
-<h2>Estructura General del Proyecto<a class="headerlink" href="#estructura-general-del-proyecto" title="Link to this heading">¶</a></h2>
-<p>El repositorio está organizado como una arquitectura de microservicios con un runtime de edge independiente en Python, compartiendo código común a través de una carpeta compartida (<code class="docutils literal notranslate"><span class="pre">shared</span></code>).</p>
+<section id="high-level-repository-layout">
+<h2>High-Level Repository Layout<a class="headerlink" href="#high-level-repository-layout" title="Link to this heading">¶</a></h2>
+<p>AURA is architected as a set of loosely coupled microservices communicating via <strong>gRPC</strong> internally, with an independent Python <strong>Edge Agent</strong> and a Next.js frontend web dashboard.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>TFM_MIoT/
-├── .env.example                # Plantilla de variables de entorno globales
-├── docker-compose.yml          # Orquestación de contenedores del backend e infraestructura
-├── README.md                   # Resumen del proyecto y comandos rápidos
-├── RUNNING.md                  # Manual detallado de despliegue
-├── data/                       # Volúmenes persistentes de bases de datos locales (ignorado en git)
-├── docker/                     # Configuraciones y entrypoints específicos de Docker
-├── docs/                       # Documentación del proyecto (Sphinx y TypeDoc)
-├── services/                   # Microservicios del backend (gRPC/REST/MQTT)
-├── edge-runtime/               # Agente Python que corre en el dispositivo físico
-├── frontend/                   # Interfaz de usuario Next.js 15 (App Router)
-├── shared/                     # Librerías comunes y stubs gRPC autogenerados
-├── hardware/                   # Módulos físicos y utilidades de hardware
-└── scripts/                    # Scripts de utilidad para desarrollo y tests
+├── .env.example                # Global template for environment variables
+├── docker-compose.yml          # Container orchestration file for server stack &amp; infra
+├── README.md                   # Project overview and introduction
+├── RUNNING.md                  # Comprehensive platform execution guide
+├── DEVELOPER_GUIDE.md          # Guide for adding new compilers and hardware architectures
+├── data/                       # Local volume mounts for databases (git-ignored)
+├── docker/                     # Per-service compose files and setup configurations
+├── docs/                       # Project documentation (Sphinx &amp; TypeDoc configurations)
+├── services/                   # Server backend microservices (gRPC/REST/MQTT listeners)
+├── edge-runtime/               # Python-based agent code running on edge devices
+├── frontend/                   # Next.js 15 frontend application (App Router)
+├── shared/                     # Shared modules, utility code, and generated gRPC stubs
+└── hardware/                   # Custom hardware definitions, peripherals, and templates
 </pre></div>
 </div>
 </section>
 <hr class="docutils" />
-<section id="servicios-del-servidor-services">
-<h2>1. Servicios del Servidor (<code class="docutils literal notranslate"><span class="pre">services/</span></code>)<a class="headerlink" href="#servicios-del-servidor-services" title="Link to this heading">¶</a></h2>
-<p>Contiene los microservicios que componen la infraestructura central. Se comunican internamente mediante <strong>gRPC</strong> y externamente a través del <strong>API Gateway</strong> mediante <strong>HTTP REST</strong>.</p>
+<section id="backend-microservices-services">
+<h2>1. Backend Microservices (<code class="docutils literal notranslate"><span class="pre">services/</span></code>)<a class="headerlink" href="#backend-microservices-services" title="Link to this heading">¶</a></h2>
+<p>The server-side system runs separate backend microservices interacting via gRPC, exposed to the web frontend through the API Gateway.</p>
 <section id="services-api-gateway">
 <h3><code class="docutils literal notranslate"><span class="pre">services/api-gateway/</span></code><a class="headerlink" href="#services-api-gateway" title="Link to this heading">¶</a></h3>
-<p>Centraliza los accesos de la interfaz web y valida las credenciales.</p>
+<p>Acts as the single REST entry point. Resolves authentication and proxies requests to internal gRPC endpoints.</p>
 <ul class="simple">
-<li><p>[api-gateway/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/main.py): Inicializa la aplicación FastAPI, configura el middleware de CORS y monta los enrutadores REST.</p></li>
-<li><p>[api-gateway/app/config.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/config.py): Carga y valida las configuraciones del Gateway (JWT, host de gRPC, puertos).</p></li>
-<li><p>[api-gateway/app/stubs.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/stubs.py): Inicializa y cachea los canales de comunicación gRPC hacia los microservicios internos.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/auth/</span></code></strong>: Contiene la lógica para la gestión de tokens JWT y hashing de contraseñas.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/routers/</span></code></strong>: Enrutadores FastAPI individuales que mapean endpoints REST a llamadas gRPC:</p>
+<li><p>[api-gateway/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/main.py): Initializes the FastAPI application, mounts CORS middlewares, and binds REST routers.</p></li>
+<li><p>[api-gateway/app/config.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/config.py): Validates configurations (JWT secrets, internal gRPC host mappings).</p></li>
+<li><p>[api-gateway/app/stubs.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/stubs.py): Caches active gRPC channels to communicate with backends.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/auth/</span></code></strong>: Contains utility functions to sign/decode JWT tokens and hash credentials.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/routers/</span></code></strong>: Exposes REST paths by calling internal gRPC channels:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">deployments.py</span></code>: Gestión del ciclo de vida de los despliegues (OTA).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">devices.py</span></code>: Registro, listado y estado de dispositivos edge.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">models.py</span></code>: Carga y gestión de archivos de modelos <code class="docutils literal notranslate"><span class="pre">.pt</span></code> y metadatos de optimización.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scripts.py</span></code>: Gestión de scripts de inferencia en Python.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">monitoring.py</span></code>: Endpoint de telemetría y WebSocket para datos en vivo.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deployments.py</span></code>: Manages the lifecycle of deployments and releases.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">devices.py</span></code>: Manages device metadata and connection states.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">models.py</span></code>: Handles model uploads and compilation triggers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts.py</span></code>: Manages inference script files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">monitoring.py</span></code>: Implements real-time telemetry WebSocket endpoints.</p></li>
 </ul>
 </li>
 </ul>
 </section>
 <section id="services-registry-service">
 <h3><code class="docutils literal notranslate"><span class="pre">services/registry-service/</span></code><a class="headerlink" href="#services-registry-service" title="Link to this heading">¶</a></h3>
-<p>Servicio de catálogo de datos de la plataforma. Gestiona la persistencia de dispositivos, modelos y scripts.</p>
+<p>Acts as the metadata catalog. Persists data about registered hardware, uploaded model assets, and scripts.</p>
 <ul class="simple">
-<li><p>[registry-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/registry-service/app/main.py): Levanta el servidor gRPC del servicio en el puerto <code class="docutils literal notranslate"><span class="pre">50051</span></code>.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/grpc_handlers/</span></code></strong>: Controladores que procesan las peticiones RPC entrantes de modelos, scripts y dispositivos.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/repositories/</span></code></strong>: Implementaciones del patrón Repository para interactuar con la base de datos PostgreSQL utilizando SQLAlchemy.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/models/</span></code></strong>: Esquemas de base de datos relacionales (declaración de tablas PostgreSQL mediante SQLAlchemy).</p></li>
+<li><p>[registry-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/registry-service/app/main.py): Sets up and runs the gRPC server on port <code class="docutils literal notranslate"><span class="pre">50051</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/grpc_handlers/</span></code></strong>: Handles RPC calls to fetch/modify devices, models, and scripts.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/repositories/</span></code></strong>: Implements Repository patterns using SQLAlchemy to perform PostgreSQL operations.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/models/</span></code></strong>: SQL schemas mapped via SQLAlchemy ORM classes.</p></li>
 </ul>
 </section>
 <section id="services-mlops-service">
 <h3><code class="docutils literal notranslate"><span class="pre">services/mlops-service/</span></code><a class="headerlink" href="#services-mlops-service" title="Link to this heading">¶</a></h3>
-<p>Gestiona la compilación de modelos de aprendizaje automático hacia formatos específicos de hardware.</p>
+<p>Runs asynchronous compilation and optimization pipelines using isolated Docker runtimes.</p>
 <ul class="simple">
-<li><p>[mlops-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/mlops-service/app/main.py): Levanta el servidor gRPC del servicio en el puerto <code class="docutils literal notranslate"><span class="pre">50052</span></code>.</p></li>
-<li><p>[mlops-service/app/worker.py](file:///c:/Users/Estela/TFM_MIoT/services/mlops-service/app/worker.py): Ejecuta tareas asíncronas de compilación e interactúa con el socket de Docker para instanciar contenedores de compilación aislados.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/compilers/</span></code></strong>: Abstracciones de compilación para los diferentes backends (Hailo, TensorRT, TFLite).</p></li>
+<li><p>[mlops-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/mlops-service/app/main.py): Listens for gRPC compilation requests on port <code class="docutils literal notranslate"><span class="pre">50052</span></code>.</p></li>
+<li><p>[mlops-service/app/worker.py](file:///c:/Users/Estela/TFM_MIoT/services/mlops-service/app/worker.py): Manages compilation tasks and spawns local Docker container compilations using the Docker socket.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/compilers/</span></code></strong>: Contains compiler implementations (Hailo, TensorRT, TFLite).</p></li>
 </ul>
 </section>
 <section id="services-edge-connector-service">
 <h3><code class="docutils literal notranslate"><span class="pre">services/edge-connector-service/</span></code><a class="headerlink" href="#services-edge-connector-service" title="Link to this heading">¶</a></h3>
-<p>El puente de comunicación entre la plataforma y los dispositivos perimetrales.</p>
+<p>Connects the cloud services to the physical hardware devices.</p>
 <ul class="simple">
-<li><p>[edge-connector-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/edge-connector-service/app/main.py): Inicializa el servidor gRPC en el puerto <code class="docutils literal notranslate"><span class="pre">50053</span></code>.</p></li>
-<li><p>[edge-connector-service/app/worker.py](file:///c:/Users/Estela/TFM_MIoT/services/edge-connector-service/app/worker.py): Escucha eventos procedentes del Broker MQTT (telemetría, logs de inferencia) y los persiste asíncronamente en MongoDB y Prometheus.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/mqtt/</span></code></strong>: Clientes de mensajería MQTT para subscripción a topics y publicación de comandos.</p></li>
+<li><p>[edge-connector-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/edge-connector-service/app/main.py): Initializes the service on port <code class="docutils literal notranslate"><span class="pre">50053</span></code>.</p></li>
+<li><p>[edge-connector-service/app/worker.py](file:///c:/Users/Estela/TFM_MIoT/services/edge-connector-service/app/worker.py): Listens to incoming MQTT metrics and telemetry, persisting them in MongoDB and Prometheus.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/mqtt/</span></code></strong>: MQTT client configuration and subscription loops.</p></li>
 </ul>
 </section>
 </section>
 <hr class="docutils" />
-<section id="runtime-de-edge-edge-runtime">
-<h2>2. Runtime de Edge (<code class="docutils literal notranslate"><span class="pre">edge-runtime/</span></code>)<a class="headerlink" href="#runtime-de-edge-edge-runtime" title="Link to this heading">¶</a></h2>
-<p>Código diseñado para ejecutarse localmente en el dispositivo de hardware (ej. Raspberry Pi 5).</p>
+<section id="edge-agent-edge-runtime">
+<h2>2. Edge Agent (<code class="docutils literal notranslate"><span class="pre">edge-runtime/</span></code>)<a class="headerlink" href="#edge-agent-edge-runtime" title="Link to this heading">¶</a></h2>
+<p>Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).</p>
 <ul class="simple">
-<li><p>[edge-runtime/agent.py](file:///c:/Users/Estela/TFM_MIoT/edge-runtime/agent.py): El bucle principal del agente. Conecta al broker MQTT, reporta telemetría del sistema periódicamente y procesa las órdenes de despliegue entrantes (descarga de MinIO, validación de hashes, actualización del script de inferencia).</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">edge-runtime/pal/</span></code></strong>: Capa de Abstracción de Plataforma (Platform Abstraction Layer):</p>
+<li><p>[edge-runtime/agent.py](file:///c:/Users/Estela/TFM_MIoT/edge-runtime/agent.py): The edge agent entry point. Establishes the MQTT client connection, sends system metrics, downloads compiled model artifacts, verifies hashes, and starts the active inference loop.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">edge-runtime/pal/</span></code></strong>: Platform Abstraction Layer:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">comm_client.py</span></code>: Maneja el socket MQTT cliente local y el ciclo de vida de la conexión física.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comm_client.py</span></code>: Handles MQTT socket client interfaces and telemetry message publishing.</p></li>
 </ul>
 </li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">edge-runtime/aura_hw/</span></code></strong>: El núcleo de abstracción del hardware local:</p>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">edge-runtime/aura_hw/</span></code></strong>: Hardware abstraction library:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">detect.py</span></code>: Módulo que comprueba la presencia de aceleradores de hardware en el sistema operativo mediante llamadas a nivel de sistema.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">device_manager.py</span></code>: Inicializa e interactúa de manera directa con las cámaras de video e interfaces del dispositivo.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">loader.py</span></code>: Realiza la carga dinámica en memoria de los scripts Python de inferencia que el usuario subió remotamente a la plataforma.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">runtime.py</span></code>: Orquesta la inferencia llamando al backend detectado.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">aura_hw/backends/</span></code></strong>: Contiene implementaciones de bajo nivel para las diferentes arquitecturas de aceleración (Hailo-8, IMX500, CPU/TFLite, Jetson Nano).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">detect.py</span></code>: Automatically runs hardware inspection commands to check which NPUs are attached.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">device_manager.py</span></code>: Controls low-level sensor interfaces, camera devices, and active actuators.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">loader.py</span></code>: Loads the user-submitted Python inference script dynamically into the Python runtime.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">runtime.py</span></code>: Coordinates model execution with the detected backend accelerator.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">aura_hw/backends/</span></code></strong>: Specific backends for each compiler output target (Hailo, IMX500, CPU/TFLite, Jetson).</p></li>
 </ul>
 </li>
 </ul>
 </section>
 <hr class="docutils" />
-<section id="interfaz-de-usuario-frontend">
-<h2>3. Interfaz de Usuario (<code class="docutils literal notranslate"><span class="pre">frontend/</span></code>)<a class="headerlink" href="#interfaz-de-usuario-frontend" title="Link to this heading">¶</a></h2>
-<p>Aplicación moderna e interactiva construida en <strong>Next.js 15</strong> (TypeScript + Tailwind CSS).</p>
+<section id="frontend-web-dashboard-frontend">
+<h2>3. Frontend Web Dashboard (<code class="docutils literal notranslate"><span class="pre">frontend/</span></code>)<a class="headerlink" href="#frontend-web-dashboard-frontend" title="Link to this heading">¶</a></h2>
+<p>Built using <strong>Next.js 15</strong> (TypeScript, Tailwind CSS, TanStack Query).</p>
 <ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">frontend/app/</span></code></strong>: Estructura del Next.js App Router:</p>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">frontend/app/</span></code></strong>: App Router page components:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">layout.tsx</span></code> y <code class="docutils literal notranslate"><span class="pre">page.tsx</span></code>: Estructura principal y dashboard de bienvenida.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/deployments/</span></code></strong>: Página de creación y monitorización de despliegues activos.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/devices/</span></code></strong>: Vista de dispositivos registrados y su estado de conexión.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/models/</span></code></strong>: Formulario de carga y visor de modelos.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/scripts/</span></code></strong>: Repositorio de scripts de ejecución.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/monitoring/</span></code></strong>: Dashboard gráfico que consume WebSockets para mostrar CPU, RAM y streams de inferencia en vivo.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layout.tsx</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">page.tsx</span></code>: Welcome dashboard and main navigation.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/devices/</span></code></strong>: Displays registered edge devices and live connections.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/models/</span></code></strong>: Manages model uploads and monitors active compilations.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/scripts/</span></code></strong>: Repository for inference Python scripts.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/deployments/</span></code></strong>: Form to configure and deploy assets OTA.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">(app)/monitoring/</span></code></strong>: Graphic charts powered by WebSockets to monitor resources and inference frames in real time.</p></li>
 </ul>
 </li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">frontend/components/</span></code></strong>: Componentes UI altamente reutilizables (gráficas de telemetría, modales de formulario, tarjetas de estado, terminales de log).</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">frontend/hooks/</span></code></strong>: React hooks personalizados para suscripciones a WebSockets y peticiones de datos de la API.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">frontend/lib/</span></code></strong>: Helpers y clientes HTTP de Axios para interactuar de forma tipada con el <code class="docutils literal notranslate"><span class="pre">api-gateway</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">frontend/components/</span></code></strong>: Modular UI elements (resource charts, modal windows, table views).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">frontend/hooks/</span></code></strong>: Custom React hooks handling state updates and WebSocket bindings.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">frontend/lib/</span></code></strong>: Axios client utility functions.</p></li>
 </ul>
 </section>
 <hr class="docutils" />
-<section id="biblioteca-compartida-shared">
-<h2>4. Biblioteca Compartida (<code class="docutils literal notranslate"><span class="pre">shared/</span></code>)<a class="headerlink" href="#biblioteca-compartida-shared" title="Link to this heading">¶</a></h2>
-<p>Módulos comunes empaquetados para que puedan ser importados tanto por los microservicios del backend como por el runtime perimetral.</p>
+<section id="shared-modules-shared">
+<h2>4. Shared Modules (<code class="docutils literal notranslate"><span class="pre">shared/</span></code>)<a class="headerlink" href="#shared-modules-shared" title="Link to this heading">¶</a></h2>
+<p>Common modules imported by both backend microservices and edge runtimes.</p>
 <ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/proto/</span></code></strong>: Archivos de definición de interfaz gRPC (<code class="docutils literal notranslate"><span class="pre">.proto</span></code>).</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/proto_gen/</span></code></strong>: Código Python autogenerado a partir de los archivos proto mediante <code class="docutils literal notranslate"><span class="pre">grpcio-tools</span></code>.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/transport/</span></code></strong>: Envoltorios y clientes genéricos para el protocolo de red (por ejemplo, abstracciones de conexión MQTT seguras).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/proto/</span></code></strong>: Standard Protocol Buffer definitions (<code class="docutils literal notranslate"><span class="pre">.proto</span></code>).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/proto_gen/</span></code></strong>: Auto-generated gRPC code generated using <code class="docutils literal notranslate"><span class="pre">grpcio-tools</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/transport/</span></code></strong>: Common network wrappers (e.g., helper clients for secure MQTT connections).</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/utils/</span></code></strong>:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">database.py</span></code>: Utilidades para arrancar sesiones SQLAlchemy y pools de bases de datos.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">minio.py</span></code>: Cliente y métodos de ayuda para interactuar con el almacenamiento en la nube MinIO S3 (creación de buckets, generación de URLs prefirmadas de descarga, carga de binarios).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">logging.py</span></code>: Configuración de formato y niveles de logs unificados para todo el sistema.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">database.py</span></code>: PostgreSQL connection utilities and session decorators.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minio.py</span></code>: Helper class for MinIO S3 object storage (bucket operations, pre-signed URL creation).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.py</span></code>: Centralized logging formatters.</p></li>
 </ul>
 </li>
 </ul>
 </section>
 <hr class="docutils" />
-<section id="hardware-y-utilidades-hardware-scripts">
-<h2>5. Hardware y Utilidades (<code class="docutils literal notranslate"><span class="pre">hardware/</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">scripts/</span></code>)<a class="headerlink" href="#hardware-y-utilidades-hardware-scripts" title="Link to this heading">¶</a></h2>
-<p>Módulos complementarios y de simulación.</p>
+<section id="physical-hardware-integration-hardware">
+<h2>5. Physical Hardware Integration (<code class="docutils literal notranslate"><span class="pre">hardware/</span></code>)<a class="headerlink" href="#physical-hardware-integration-hardware" title="Link to this heading">¶</a></h2>
+<p>Additional hardware modules:</p>
 <ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">hardware/</span></code></strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">sensors/</span></code> y <code class="docutils literal notranslate"><span class="pre">actuators/</span></code>: Interfaces de simulación para pruebas en local del agente sin hardware real conectado.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hw_arch/</span></code>: Plantillas de compilación y optimizadores específicos para plataformas Raspberry Pi.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">utils.py</span></code>: Lecturas de bajo nivel del hardware (temperaturas de SOC, voltajes, etc.).</p></li>
-</ul>
-</li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">scripts/</span></code></strong>:</p>
-<ul>
-<li><p>Scripts en Bash y Python para pruebas unitarias de gRPC, simuladores de telemetría masiva y scripts de limpieza de bases de datos.</p></li>
-</ul>
-</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">hardware/sensors/</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">hardware/actuators/</span></code></strong>: Simulators and physical libraries to run checks on temperature sensors, buzzer circuits, and LED modules.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">hardware/hw_arch/</span></code></strong>: Hardware compiler configurations and calibration utilities.</p></li>
 </ul>
 </section>
 </section>
@@ -550,14 +547,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="tutorials/hardware/index.html">
+          <a class="prev-page" href="tutorials/hardware/jetson_orin.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Tutoriales de Hardware</div>
+                <div class="title">Tutorial: NVIDIA Jetson Orin Nano</div>
                 
               </div>
             </a>
@@ -591,19 +588,19 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Explicación del Código por Carpetas y Archivos</a><ul>
-<li><a class="reference internal" href="#estructura-general-del-proyecto">Estructura General del Proyecto</a></li>
-<li><a class="reference internal" href="#servicios-del-servidor-services">1. Servicios del Servidor (<code class="docutils literal notranslate"><span class="pre">services/</span></code>)</a><ul>
+<li><a class="reference internal" href="#">Codebase Structure and Explanation</a><ul>
+<li><a class="reference internal" href="#high-level-repository-layout">High-Level Repository Layout</a></li>
+<li><a class="reference internal" href="#backend-microservices-services">1. Backend Microservices (<code class="docutils literal notranslate"><span class="pre">services/</span></code>)</a><ul>
 <li><a class="reference internal" href="#services-api-gateway"><code class="docutils literal notranslate"><span class="pre">services/api-gateway/</span></code></a></li>
 <li><a class="reference internal" href="#services-registry-service"><code class="docutils literal notranslate"><span class="pre">services/registry-service/</span></code></a></li>
 <li><a class="reference internal" href="#services-mlops-service"><code class="docutils literal notranslate"><span class="pre">services/mlops-service/</span></code></a></li>
 <li><a class="reference internal" href="#services-edge-connector-service"><code class="docutils literal notranslate"><span class="pre">services/edge-connector-service/</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#runtime-de-edge-edge-runtime">2. Runtime de Edge (<code class="docutils literal notranslate"><span class="pre">edge-runtime/</span></code>)</a></li>
-<li><a class="reference internal" href="#interfaz-de-usuario-frontend">3. Interfaz de Usuario (<code class="docutils literal notranslate"><span class="pre">frontend/</span></code>)</a></li>
-<li><a class="reference internal" href="#biblioteca-compartida-shared">4. Biblioteca Compartida (<code class="docutils literal notranslate"><span class="pre">shared/</span></code>)</a></li>
-<li><a class="reference internal" href="#hardware-y-utilidades-hardware-scripts">5. Hardware y Utilidades (<code class="docutils literal notranslate"><span class="pre">hardware/</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">scripts/</span></code>)</a></li>
+<li><a class="reference internal" href="#edge-agent-edge-runtime">2. Edge Agent (<code class="docutils literal notranslate"><span class="pre">edge-runtime/</span></code>)</a></li>
+<li><a class="reference internal" href="#frontend-web-dashboard-frontend">3. Frontend Web Dashboard (<code class="docutils literal notranslate"><span class="pre">frontend/</span></code>)</a></li>
+<li><a class="reference internal" href="#shared-modules-shared">4. Shared Modules (<code class="docutils literal notranslate"><span class="pre">shared/</span></code>)</a></li>
+<li><a class="reference internal" href="#physical-hardware-integration-hardware">5. Physical Hardware Integration (<code class="docutils literal notranslate"><span class="pre">hardware/</span></code>)</a></li>
 </ul>
 </li>
 </ul>

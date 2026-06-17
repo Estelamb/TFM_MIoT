@@ -1,116 +1,116 @@
-# Cómo Ejecutar la Plataforma AURA y el Agente de Edge
+# How to Run AURA Platform and Edge Agent
 
-Esta guía proporciona un paso a paso detallado para poner en marcha tanto la infraestructura central de servicios (Backend, Frontend y Base de Datos) como el agente local que corre en el hardware perimetral.
+This guide provides a detailed, step-by-step walkthrough to set up and run both the core server services (Backend, Frontend, and Databases) and the local agent running on the perimetral hardware.
 
 ---
 
-## 1. Requisitos Previos
+## 1. Prerequisites
 
-Antes de comenzar la instalación, asegúrate de contar con los siguientes elementos en tu sistema host o servidor:
+Before starting the installation, ensure your host system or server meets the following requirements:
 
-* **Docker Engine** (versión 24 o superior) junto con **Docker Compose v2**.
-* Un mínimo de **8 GB de RAM** disponibles (se recomienda 16 GB si se están compilando múltiples modelos pesados de forma simultánea).
-* Los siguientes puertos de red libres en el host:
-  * `3000` (Frontend en Next.js)
-  * `8000` (API Gateway / Docs Swagger)
-  * `1883` (Broker MQTT Mosquitto)
+* **Docker Engine** (version 24 or higher) with **Docker Compose v2**.
+* Minimum of **8 GB RAM** (16 GB recommended if compiling heavy models concurrently).
+* The following network ports must be free:
+  * `3000` (Next.js Frontend)
+  * `8000` (API Gateway / Swagger Docs)
+  * `1883` (Mosquitto MQTT Broker)
   * `5432` (PostgreSQL)
-  * `9000` y `9001` (Servidor de almacenamiento MinIO S3 y Consola de administración)
+  * `9000` & `9001` (MinIO S3 Storage server & Admin console)
   * `27017` (MongoDB)
-  * `50051–50053` (Puertos gRPC internos para comunicación entre servicios)
-  * `9100` (Exportador de métricas para Prometheus)
+  * `50051–50053` (Internal gRPC ports for service-to-service communication)
+  * `9100` (Prometheus metrics exporter)
 
 ---
 
-## 2. Configurar el Entorno del Servidor
+## 2. Setting Up the Server Environment
 
-AURA utiliza variables de entorno declaradas en un archivo `.env` en la raíz del proyecto para inicializar las contraseñas, secretos y URIs de conexión.
+AURA uses environment variables declared in a `.env` file in the project root to initialize passwords, secrets, and connection URIs.
 
-1. Duplica la plantilla de variables de entorno de ejemplo:
+1. Duplicate the example environment variables template:
    ```bash
    cp .env.example .env
    ```
 
-2. Genera una clave secreta segura para JWT e introdúcela en el archivo `.env`:
+2. Generate a secure secret key for JWT signing and paste it into the `.env` file:
    ```bash
-   # Generar clave aleatoria
+   # Generate a random hex key
    openssl rand -hex 32
    ```
-   Abre el archivo `.env` y busca la línea `SECRET_KEY`. Reemplaza su valor por la clave aleatoria que acabas de generar.
+   Open the `.env` file, locate the `SECRET_KEY` variable, and replace its default value with the generated hex key.
 
 > [!NOTE]
-> Para el desarrollo en local, los valores por defecto configurados en `.env.example` funcionan directamente sin necesidad de modificaciones adicionales.
+> For local development, the defaults configured in `.env.example` work out of the box without any further modifications.
 
 ---
 
-## 3. Levantar los Servicios de la Plataforma
+## 3. Starting the Platform Services
 
-Para compilar las imágenes e iniciar la plataforma completa en segundo plano (modo detached), ejecuta el siguiente comando en la raíz del proyecto:
+To compile the local Docker images and start the full platform stack in the background (detached mode), execute the following command in the project root:
 
 ```bash
 docker compose up -d
 ```
 
-* **Nota**: La primera ejecución puede demorar entre **3 y 5 minutos** debido a que Docker debe descargar las imágenes base y compilar los contenedores locales de cada microservicio.
+* **Note**: The first startup can take between **3 to 5 minutes** since Docker has to download base images and compile containers for each microservice.
 
-Una vez que termine la ejecución, comprueba que todos los servicios estén levantados y saludables:
+Once the command finishes, check the health of all containers:
 
 ```bash
 docker compose ps
 ```
 
-Deberías ver una salida en la que los contenedores `api-gateway`, `registry-service`, `mlops-service`, `edge-connector-service`, `postgres`, `mongodb`, `mosquitto`, `minio` y `frontend` se muestren con el estado `Up` o `Running`.
+You should see all containers (`api-gateway`, `registry-service`, `mlops-service`, `edge-connector-service`, `postgres`, `mongodb`, `mosquitto`, `minio`, and `frontend`) listed in the `Up` or `Running` state.
 
-### Direcciones de Acceso Útiles
+### Useful Access URLs
 
-| Servicio | URL / Dirección | Credenciales por Defecto |
+| Service | URL / Host | Default Credentials |
 |---|---|---|
-| **Consola Frontend** | [http://localhost:3000](http://localhost:3000) | Usuario: `admin` / Contraseña: `aura2026` |
-| **API Docs (Swagger)** | [http://localhost:8000/docs](http://localhost:8000/docs) | Requiere inicio de sesión previo en el endpoint `/auth/token` |
-| **Consola MinIO** | [http://localhost:9001](http://localhost:9001) | Usuario: `aura` / Contraseña: `aura_dev` |
-| **Métricas Prometheus** | [http://localhost:9100/metrics](http://localhost:9100/metrics) | Acceso anónimo |
+| **Web Console** | [http://localhost:3000](http://localhost:3000) | Username: `admin` / Password: `aura2026` |
+| **API Docs (Swagger)** | [http://localhost:8000/docs](http://localhost:8000/docs) | Requires logging in first at the `/auth/token` endpoint |
+| **MinIO Console** | [http://localhost:9001](http://localhost:9001) | Username: `aura` / Password: `aura_dev` |
+| **Prometheus Metrics** | [http://localhost:9100/metrics](http://localhost:9100/metrics) | Anonymous access |
 
 ---
 
-## 4. Resolución de Problemas y Visualización de Logs
+## 4. Troubleshooting and Logs
 
-Si alguno de los servicios falla o no arranca correctamente, puedes inspeccionar los logs en tiempo real:
+If any service fails or behaves unexpectedly, inspect the logs in real time:
 
 ```bash
-# Ver los logs combinados de todos los contenedores en tiempo real
+# View combined logs of all containers
 docker compose logs -f
 
-# Filtrar los logs únicamente para un servicio concreto (ej. API Gateway)
+# Filter logs for a specific service (e.g., API Gateway)
 docker compose logs -f api-gateway
 
-# Filtrar logs para el conector de edge
+# Filter logs for the edge-connector-service
 docker compose logs -f edge-connector-service
 ```
 
 ---
 
-## 5. Ejecutar el Agente de Edge en un Dispositivo Físico
+## 5. Running the Edge Agent on a Physical Device
 
-El agente de edge es el encargado de comunicarse con AURA Platform para recibir instrucciones de despliegue y reportar telemetría. Debe ejecutarse en el dispositivo físico de destino (por ejemplo, una Raspberry Pi 5).
+The edge agent runs on the target physical hardware (e.g., Raspberry Pi 5). It connects to the AURA Platform via MQTT to receive deployment commands and report device telemetry.
 
-### 1. Copiar los archivos al dispositivo perimetral
-Transfiere la carpeta `edge-runtime/` de la plataforma AURA al almacenamiento local de tu dispositivo edge (mediante `scp`, `rsync` o clonando el repositorio directamente en el dispositivo).
+### 1. Copy runtime files to the edge device
+Transfer the `edge-runtime/` folder from the project to the local storage of your edge device (using `scp`, `rsync`, or cloning the repository directly on the device).
 
-### 2. Instalar dependencias en el dispositivo
-El agente de edge requiere de Python 3.10 o superior. Instala las dependencias necesarias:
+### 2. Install dependencies on the device
+The edge agent requires Python 3.10 or higher. Navigate to the runtime folder and install dependencies:
 
 ```bash
-# Navegar a la carpeta del runtime
+# Navigate to the runtime folder
 cd edge-runtime
 
-# Instalar librerías requeridas
+# Install required Python packages
 pip install -r requirements.txt
 ```
 
-* **Importante**: Si planeas usar aceleradores específicos como Hailo-8, asegúrate de que el SDK y el controlador del fabricante (ej. HailoRT) estén instalados en el sistema operativo del dispositivo perimetral antes de arrancar el agente.
+* **Important**: If you plan to use accelerators such as the Hailo-8, make sure that the hardware vendor SDK and kernel drivers (e.g., HailoRT) are installed on the device operating system before starting the agent.
 
-### 3. Iniciar el Agente con Variables de Entorno
-Inicia el script de arranque `agent.py` proporcionando las variables del entorno mediante la consola:
+### 3. Run the Agent with Environment Variables
+Start the agent script `agent.py` by providing the connection variables in the terminal:
 
 ```bash
 AURA_DEVICE_ID=my-raspberry-01 \
@@ -121,14 +121,14 @@ AURA_TELEMETRY_INTERVAL=10 \
 python agent.py
 ```
 
-#### Parámetros de Configuración del Agente
+#### Agent Configuration Parameters
 
-| Variable | Valor por Defecto | Descripción |
+| Variable | Default Value | Description |
 |---|---|---|
-| `AURA_DEVICE_ID` | `dev-device-001` | El identificador único del dispositivo. Debe coincidir exactamente con el ID que registres en la consola web de AURA. |
-| `AURA_MQTT_HOST` | `localhost` | La dirección IP o nombre DNS donde se ejecuta el broker MQTT de la plataforma. |
-| `AURA_MQTT_PORT` | `1883` | Puerto de escucha del broker MQTT (usualmente `1883`). |
-| `AURA_HARDWARE_TYPE` | *Auto-detectado* | Sobrescribe la detección automática del hardware perimetral. Valores válidos: `hailo8`, `hailo8l`, `imx500`, `rpi` (CPU), `jetson_orin_nano`. |
-| `AURA_TELEMETRY_INTERVAL` | `10` | Frecuencia en segundos con la que el agente envía telemetría de CPU y RAM a la nube. |
+| `AURA_DEVICE_ID` | `dev-device-001` | Unique device identifier. Must exactly match the Device ID registered in the AURA web console. |
+| `AURA_MQTT_HOST` | `localhost` | IP address or domain name where the platform's MQTT broker is running. |
+| `AURA_MQTT_PORT` | `1883` | MQTT broker port (usually `1883`). |
+| `AURA_HARDWARE_TYPE` | *Auto-detected* | Overrides automatic hardware detection. Valid values: `hailo8`, `hailo8l`, `imx500`, `rpi` (CPU), `jetson_orin_nano`. |
+| `AURA_TELEMETRY_INTERVAL` | `10` | Frequency in seconds at which the agent sends CPU/RAM telemetry messages. |
 
-El agente buscará establecer una conexión con la plataforma. Al tener éxito, el dispositivo se mostrará como **Conectado (Online)** en la interfaz de usuario de AURA.
+The agent will establish a connection with the broker. Upon success, the device state will change to **Online** in the AURA web dashboard.

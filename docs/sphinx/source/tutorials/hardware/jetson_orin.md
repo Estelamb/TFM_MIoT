@@ -1,24 +1,24 @@
 # Tutorial: NVIDIA Jetson Orin Nano
 
-*(Este tutorial será redactado por el usuario. Espacio reservado para la guía de integración y ejecución de inferencia en NVIDIA Jetson Orin Nano usando TensorRT).*
+*(This tutorial will be completed by the user. Placeholder reserved for the integration guide of NVIDIA Jetson Orin Nano using TensorRT).*
 
-## Introducción a NVIDIA Jetson Orin Nano
+## Introduction to NVIDIA Jetson Orin Nano
 
-La plataforma NVIDIA Jetson Orin Nano cuenta con una GPU basada en la arquitectura NVIDIA Ampere y aceleradores de aprendizaje profundo que ofrecen hasta 40 TOPS de rendimiento de IA. Permite ejecutar modelos complejos en formatos optimizados mediante TensorRT (`.engine`).
+NVIDIA Jetson Orin Nano features an NVIDIA Ampere architecture GPU and deep learning accelerators delivering up to 40 TOPS of AI performance. It runs complex models optimized in TensorRT (`.engine` format).
 
-## Requisitos de Hardware y Entorno
+## Hardware and OS Setup
 
-* NVIDIA Jetson Orin Nano Developer Kit (o módulo equivalente en placa portadora).
-* Tarjeta microSD o unidad SSD NVMe con **JetPack 6.0** o superior instalado.
-* Python 3.10+ y la biblioteca `tensorrt` instalada a través de JetPack.
+* NVIDIA Jetson Orin Nano Developer Kit.
+* MicroSD card or NVMe SSD with **JetPack 6.0** or higher installed.
+* Python 3.10+ and the `tensorrt` Python package.
 
-## Detección y Configuración
+## Detection and Configuration
 
-AURA detecta la plataforma leyendo la release del sistema y la presencia del archivo `/etc/nv_tegra_release`.
+AURA detects the platform by reading `/etc/nv_tegra_release`.
 
-Puedes forzar el backend configurando la variable de entorno:
+To force the backend manually, configure:
 ```bash
 AURA_HARDWARE_TYPE=jetson_orin_nano
 ```
 
-Escribe en esta sección las guías detalladas para compilar y desplegar modelos en formato TensorRT `.engine` desde el backend de AURA.
+Write in this section the detailed guides to compile and deploy TensorRT `.engine` models from the AURA backend.

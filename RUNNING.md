@@ -50,7 +50,7 @@ First run takes 3–5 minutes to build all images. This starts the core platform
 docker compose ps
 docker compose logs -f                  # all services
 docker compose logs -f api-gateway      # single service
-docker compose logs -f monitoring-service
+docker compose logs -f edge-connector-service
 ```
 
 ---
@@ -145,6 +145,6 @@ docker compose down -v
 | registry-service | gRPC | 50051 | Internal |
 | mlops-service | gRPC | 50052 | Internal |
 | edge-connector-service | gRPC | 50053 | Internal |
-| Prometheus metrics | HTTP | 9100 | monitoring-service |
+| Prometheus metrics | HTTP | 9100 | edge-connector-service |
 | PostgreSQL | TCP | 5432 | |
 | MongoDB | TCP | 27017 | |

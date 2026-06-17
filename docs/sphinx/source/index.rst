@@ -7,14 +7,14 @@ Edge AI deployment platform for IoT devices.
    :maxdepth: 2
    :caption: General
 
-   introduccion
+   introduction
    architecture
    overview
    quickstart
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutoriales
+   :caption: Tutorials
 
    tutorials/run_platform
    tutorials/use_platform
@@ -22,7 +22,7 @@ Edge AI deployment platform for IoT devices.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Estructura del Código
+   :caption: Code Explanation
 
    code_explanation
 
@@ -40,7 +40,7 @@ Edge AI deployment platform for IoT devices.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Desarrollo
+   :caption: Development
 
    contributing
    changelog
