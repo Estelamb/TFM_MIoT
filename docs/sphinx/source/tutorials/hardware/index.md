@@ -1,0 +1,16 @@
+# Tutoriales de Hardware
+
+Esta sección recopila las guías paso a paso para la configuración, compilación de modelos y ejecución de inferencias utilizando diferentes aceleradores de hardware y dispositivos compatibles con **AURA Platform**.
+
+Selecciona el hardware que estás utilizando para acceder a su respectivo tutorial:
+
+* [Raspberry Pi 5 + Acelerador Hailo-8](hailo8)
+* [Raspberry Pi 5 + Acelerador Hailo-8L](hailo8l)
+* [Raspberry Pi 5 + AI Camera (IMX500)](imx500)
+* [Raspberry Pi 5 (Inferencia en CPU vía TFLite)](rpi_cpu)
+* [NVIDIA Jetson Orin Nano](jetson_orin)
+
+---
+
+> [!TIP]
+> Si estás desarrollando un backend de hardware personalizado no listado aquí, consulta la sección de [Explicación del Código](../../code_explanation) para aprender cómo extender el módulo `aura_hw` y agregar un nuevo backend de inferencia.

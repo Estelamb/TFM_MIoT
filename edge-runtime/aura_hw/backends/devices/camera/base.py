@@ -4,11 +4,8 @@ Abstract base class for all AURA camera backends.
 A camera backend manages a single image sensor: it opens the device,
 captures frames as ``numpy.ndarray`` (BGR, HWC), and reports its state.
 
-Concrete subclasses
--------------------
-* :class:`~aura_hw.backends.devices.camera.opencv.OpenCVCameraBackend`
-* :class:`~aura_hw.backends.devices.camera.libcamera.LibcameraBackend`
-* :class:`~aura_hw.backends.devices.camera.imx500.IMX500CameraBackend`
+Camera drivers are loaded dynamically from the ``hardware/`` directory
+via :class:`~aura_hw.backends.devices.camera.general.GeneralCameraBackend`.
 """
 from __future__ import annotations
 

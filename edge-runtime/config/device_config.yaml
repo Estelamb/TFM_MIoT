@@ -5,7 +5,7 @@
 # Env vars always take precedence over this file.
 
 # ── Identity ──────────────────────────────────────────────────────────────────
-device_id: dev-device-001           # env: AURA_DEVICE_ID
+device_id: IoT-Edge-Device-01           # env: AURA_DEVICE_ID
 
 # ── MQTT Broker ───────────────────────────────────────────────────────────────
 mqtt_host: localhost                 # env: AURA_MQTT_HOST
@@ -13,8 +13,7 @@ mqtt_port: 1883                      # env: AURA_MQTT_PORT
 mqtt_reconnect_interval_s: 5        # seconds to wait before reconnecting
 
 # ── Hardware ──────────────────────────────────────────────────────────────────
-# Possible values: auto | hailo8 | hailo8l | rpi | rpi_ai_cam | jetson_orin_nano | simulated
-# "auto" probes the system at startup.
+# Possible values: hailo8 | hailo8l | rpi | rpi_ai_cam | jetson_orin_nano | simulated
 # env: AURA_HARDWARE_TYPE
 hardware_type: auto
 
@@ -29,3 +28,8 @@ config_dir: /app/config              # directory containing this file and compon
 # ── Logging ───────────────────────────────────────────────────────────────────
 # Possible values: DEBUG | INFO | WARNING | ERROR | CRITICAL
 log_level: INFO                      # env: AURA_LOG_LEVEL
+
+# ── Location (GPS) ────────────────────────────────────────────────────────────
+# Format: [longitude, latitude]
+coordinates: [-3.628806299685091, 40.38993349011386]      # env: AURA_COORDINATES (JSON array style)
+

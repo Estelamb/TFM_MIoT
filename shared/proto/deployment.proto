@@ -12,6 +12,7 @@ message CreateDeploymentRequest {
   string device_id = 1;
   string model_id = 2;
   string script_id = 3;
+  string name = 4;
 }
 message GetDeploymentRequest { string id = 1; }
 message ListDeploymentsRequest {}
@@ -26,5 +27,6 @@ message DeploymentResponse {
   string running_at = 7;
   string error_msg = 8;
   string created_at = 9;
+  string name = 10;
 }
 message ListDeploymentsResponse { repeated DeploymentResponse deployments = 1; }

@@ -13,6 +13,7 @@ import {
   updateModel, updateDataset
 } from "@/lib/api";
 import { useDataMode } from "@/hooks/useDataMode";
+import { HW_LABELS } from "@/lib/utils";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
@@ -26,12 +27,13 @@ import {
 const STATUS_CONFIG = {
   ready: { icon: CheckCircle, color: "text-emerald-500", badge: "success" as const },
   training: { icon: Loader2, color: "text-pink-500 animate-spin", badge: "warning" as const },
+  compiling: { icon: Loader2, color: "text-amber-500 animate-spin", badge: "warning" as const },
   failed: { icon: XCircle, color: "text-red-500", badge: "danger" as const },
   pending: { icon: Clock, color: "text-gray-400", badge: "muted" as const },
 };
 
 const normalizeStatus = (status: string) => {
-  if (status === "ready" || status === "training" || status === "failed" || status === "pending") {
+  if (status === "ready" || status === "training" || status === "failed" || status === "pending" || status === "compiling") {
     return status;
   }
   return "pending";
@@ -568,6 +570,27 @@ export default function ModelsPage() {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-base font-bold text-gray-900 dark:text-white">{m.name}</span>
                           <Badge variant={cfg.badge}>{normalizedStatus}</Badge>
+                          {m.hardware_type ? (
+                            normalizedStatus === "compiling" ? (
+                              <Badge variant="warning" className="bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/30 animate-pulse">
+                                Compiling: {HW_LABELS[m.hardware_type] || m.hardware_type}
+                              </Badge>
+                            ) : normalizedStatus === "failed" ? (
+                              <Badge variant="danger" className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900/30">
+                                Compile Failed: {HW_LABELS[m.hardware_type] || m.hardware_type}
+                              </Badge>
+                            ) : (
+                              <Badge variant="success" className="bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30">
+                                Compiled: {HW_LABELS[m.hardware_type] || m.hardware_type}
+                              </Badge>
+                            )
+                          ) : (
+                            normalizedStatus === "ready" && (
+                              <Badge variant="muted" className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-100 dark:border-gray-700">
+                                Uncompiled (Source)
+                              </Badge>
+                            )
+                          )}
                         </div>
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500 mt-1">
                           {(m.base_architecture || m.base_model) && (
@@ -1494,7 +1517,7 @@ export default function ModelsPage() {
         size="xl"
       >
         <div className="pt-4">
-          <div className="bg-gray-950 rounded-lg p-4 font-mono text-xs text-gray-300 h-[60vh] overflow-y-auto whitespace-pre-wrap flex flex-col gap-1 border border-gray-800 shadow-inner">
+          <div className="bg-gray-950 rounded-lg p-4 font-mono text-xs text-gray-300 h-[70vh] overflow-y-auto whitespace-pre-wrap flex flex-col gap-1 border border-gray-800 shadow-inner">
             {logs.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-gray-500 gap-3">
                 <Loader2 className="animate-spin" size={24} />

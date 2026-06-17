@@ -83,6 +83,16 @@ async def main() -> None:
     work_dir           = Path(_cfg("AURA_WORK_DIR",     "work_dir",                   "/tmp/aura",      file_cfg))
     log_level          = _cfg("AURA_LOG_LEVEL",         "log_level",                  "INFO",           file_cfg)
     primary_camera_id  = _cfg("AURA_PRIMARY_CAMERA",    "primary_camera_id",          "camera_0",       file_cfg)
+    coordinates_raw    = _cfg("AURA_COORDINATES",       "coordinates",                "[-3.7038, 40.4168]", file_cfg)
+
+    # Parse coordinates
+    import json
+    try:
+        coordinates = json.loads(coordinates_raw) if isinstance(coordinates_raw, str) else coordinates_raw
+        if not isinstance(coordinates, list) or len(coordinates) != 2:
+            coordinates = [-3.7038, 40.4168]
+    except Exception:
+        coordinates = [-3.7038, 40.4168]
 
     _setup_logging(log_level)
     logger = logging.getLogger(__name__)
@@ -121,12 +131,14 @@ async def main() -> None:
         telemetry_interval_s=telemetry_interval,
         start_time=start_time,
         primary_camera_id=primary_camera_id,
+        coordinates=coordinates,
     )
 
     ota = OTAHandler(
         work_dir=work_dir,
         on_event=comm.publish_event,
         on_deploy_success=orchestrator.apply_deployment,
+        device_manager=device_manager,
     )
 
     # ── Register MQTT command handlers ────────────────────────────────────

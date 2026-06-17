@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS deployments (
     device_id       UUID NOT NULL REFERENCES devices(id) ON DELETE CASCADE,
     model_id        UUID NOT NULL REFERENCES models(id) ON DELETE CASCADE,
     script_id       UUID NOT NULL REFERENCES scripts(id) ON DELETE CASCADE,
+    name            TEXT,
     status          TEXT NOT NULL DEFAULT 'pending',  -- pending | sent | running | failed
     sent_at         TIMESTAMPTZ,
     running_at      TIMESTAMPTZ,

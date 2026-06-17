@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getMonitoringStates } from "@/lib/api";
+import { getMonitoringStates, getDevices } from "@/lib/api";
 import { useDataMode } from "@/hooks/useDataMode";
 import { EdgeMap } from "@/components/monitoring/EdgeMap";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -20,6 +20,12 @@ export default function MonitoringPage() {
   const { mode, demoData } = useDataMode();
   const isDemo = mode === "demo";
 
+  const { data: realDevices = [] } = useQuery({
+    queryKey: ["devices"],
+    queryFn: getDevices,
+  });
+
+  const devices = isDemo ? demoData.devices : realDevices;
   const states = isDemo ? demoData.monitoringStates : realStates;
 
   const stats = isDemo
@@ -130,8 +136,8 @@ export default function MonitoringPage() {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5">
                         <StatusDot status={s.status} />
-                        <span className="text-xs font-mono font-bold text-gray-700 dark:text-gray-300 truncate max-w-[100px]">
-                          {s.device_id}
+                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300 truncate max-w-[120px]" title={s.device_id}>
+                          {devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
                         </span>
                       </div>
                       <div className="flex items-center gap-1 text-xs text-gray-400">

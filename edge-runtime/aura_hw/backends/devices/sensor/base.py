@@ -5,9 +5,8 @@ A sensor backend wraps a physical measurement device (temperature,
 humidity, pressure, air quality, etc.) and exposes a uniform
 :meth:`measure` API on top of the :class:`DeviceBackend` lifecycle.
 
-Concrete subclasses
--------------------
-* :class:`~aura_hw.backends.devices.sensor.bme280.BME280Backend`
+Sensor drivers are loaded dynamically from the ``hardware/`` directory
+via :class:`~aura_hw.backends.devices.sensor.general.GeneralSensorBackend`.
 """
 from __future__ import annotations
 

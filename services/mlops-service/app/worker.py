@@ -14,6 +14,7 @@ import os
 import sys
 import logging
 import asyncio
+import re
 import tempfile
 import zipfile
 import shutil
@@ -128,6 +129,7 @@ async def train_job(
         # 4. Invoke yolo_train script via subprocess
         cmd = [
             sys.executable,
+            "-u",  # Force unbuffered stdout so logs stream in real-time
             "-m", "app.compilers.yolo_train",
             "--data_dir", extract_dir,
             "--init_model", base_model_path,
@@ -140,12 +142,17 @@ async def train_job(
 
         logger.info(f"[train_job] Executing training command: {' '.join(cmd)}")
         
+        # Force unbuffered output so training logs stream in real-time
+        sub_env = os.environ.copy()
+        sub_env["PYTHONUNBUFFERED"] = "1"
+
         # Execute subprocess
         process = await asyncio.create_subprocess_exec(
             *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,  # Merge stderr into stdout
             cwd="/app",
+            env=sub_env,
             limit=1024 * 1024 * 10  # 10 MB buffer limit to handle long YOLO output lines/progress bars
         )
         
@@ -163,32 +170,85 @@ async def train_job(
             await redis.delete(redis_list) # Clear old logs for this model
 
         output_buffer = []
+        raw_buffer = b""
         try:
             while True:
-                line = await process.stdout.readline()
-                if not line:
+                chunk = await process.stdout.read(8192)
+                if not chunk:
                     break
-                
-                try:
-                    line_str = line.decode('utf-8').rstrip('\r\n')
-                except UnicodeDecodeError:
-                    line_str = line.decode('utf-8', errors='replace').rstrip('\r\n')
-                
-                output_buffer.append(line_str)
-                
-                # Publish to Redis
-                if redis:
+
+                raw_buffer += chunk
+
+                # Split on \r and \n to capture tqdm progress updates (which use \r)
+                lines_raw = []
+                while raw_buffer:
+                    r_pos = raw_buffer.find(b'\r')
+                    n_pos = raw_buffer.find(b'\n')
+
+                    if r_pos == -1 and n_pos == -1:
+                        break  # No complete line yet, keep buffering
+
+                    # Find the earliest separator
+                    if r_pos == -1:
+                        pos = n_pos
+                    elif n_pos == -1:
+                        pos = r_pos
+                    else:
+                        pos = min(r_pos, n_pos)
+
+                    line_bytes = raw_buffer[:pos]
+                    # Handle \r\n as a single separator
+                    if pos + 1 < len(raw_buffer) and raw_buffer[pos:pos+2] == b'\r\n':
+                        raw_buffer = raw_buffer[pos+2:]
+                    else:
+                        raw_buffer = raw_buffer[pos+1:]
+
+                    if line_bytes.strip():
+                        lines_raw.append(line_bytes)
+
+                for line_bytes in lines_raw:
                     try:
-                        # Add to list for history (capped at 5000 lines)
-                        await redis.rpush(redis_list, line_str)
-                        await redis.ltrim(redis_list, -5000, -1)
-                        # Set expiration for the list
-                        await redis.expire(redis_list, 86400) # 24 hours
-                        # Publish to channel for real-time subscribers
-                        await redis.publish(redis_channel, line_str)
-                    except Exception as e:
-                        logger.warning(f"Failed to publish log to redis: {e}")
-                        
+                        line_str = line_bytes.decode('utf-8').strip()
+                    except UnicodeDecodeError:
+                        line_str = line_bytes.decode('utf-8', errors='replace').strip()
+
+                    if not line_str:
+                        continue
+
+                    output_buffer.append(line_str)
+
+                    # Filter tqdm progress: only publish every 5%
+                    progress_match = re.search(r'(\d+)%\|', line_str)
+                    if progress_match:
+                        pct = int(progress_match.group(1))
+                        if pct % 5 != 0:
+                            continue  # Skip intermediate progress updates
+
+                    # Publish to Redis
+                    if redis:
+                        try:
+                            await redis.rpush(redis_list, line_str)
+                            await redis.ltrim(redis_list, -5000, -1)
+                            await redis.expire(redis_list, 86400)
+                            await redis.publish(redis_channel, line_str)
+                        except Exception as e:
+                            logger.warning(f"Failed to publish log to redis: {e}")
+
+            # Flush any remaining bytes in buffer
+            if raw_buffer.strip():
+                try:
+                    line_str = raw_buffer.decode('utf-8', errors='replace').strip()
+                except Exception:
+                    line_str = str(raw_buffer)
+                if line_str:
+                    output_buffer.append(line_str)
+                    if redis:
+                        try:
+                            await redis.rpush(redis_list, line_str)
+                            await redis.publish(redis_channel, line_str)
+                        except Exception:
+                            pass
+
             await process.wait()
         finally:
             if cancellation_task:
@@ -238,13 +298,13 @@ async def train_job(
         if redis and await redis.exists(cancel_key):
             raise asyncio.CancelledError()
 
-        # 7. Notify AI service to mark model as pending (ready for compile) and update source details
+        # 7. Notify AI service to mark model as ready (uploaded to platform) and update source details
         await ctx["ai_stub"].UpdateModelCompiled(ai_pb2.UpdateModelCompiledRequest(
             id=model_id,
             compiled_key="",
             compiled_sha256="",
             hardware_type="",
-            compile_status="pending",
+            compile_status="ready",
             compile_error="",
             source_key=model_key,
             source_sha256=sha

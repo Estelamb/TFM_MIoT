@@ -11,12 +11,12 @@
 #   params   — driver-specific parameters
 #
 # ┌──────────────┬──────────────┬────────────────────────────────────────────┐
-# │ type         │ driver       │ Backend class                               │
+# │ type         │ driver       │ Backend class                              │
 # ├──────────────┼──────────────┼────────────────────────────────────────────┤
-# │ camera       │ opencv       │ OpenCVCameraBackend (USB/CSI/RTSP/file)     │
-# │ camera       │ libcamera    │ LibcameraBackend (RPi CSI native)           │
-# │ camera       │ imx500       │ IMX500CameraBackend (Sony AI Camera frames) │
-# │ sensor       │ bme280       │ BME280Backend (I2C temp/humidity/pressure)  │
+# │ camera       │ opencv       │ OpenCVCameraBackend (USB/CSI/RTSP/file)    │
+# │ camera       │ libcamera    │ LibcameraBackend (RPi CSI native)          │
+# │ camera       │ imx500       │ IMX500CameraBackend (Sony AI Camera frames)│
+# │ sensor       │ bme280       │ BME280Backend (I2C temp/humidity/pressure) │
 # └──────────────┴──────────────┴────────────────────────────────────────────┘
 
 components:

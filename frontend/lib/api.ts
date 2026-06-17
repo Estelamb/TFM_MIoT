@@ -396,13 +396,33 @@ export async function uploadScript(
   return api.post<Script>("/api/scripts", fd).then(r => r.data);
 }
 
+export interface LibraryEntry {
+  name: string;
+  desc: string;
+  type: "method" | "function";
+}
+
+export interface LibraryGroup {
+  category: string;
+  subcategory: string;
+  import_path: string;
+  api: LibraryEntry[];
+}
+
+export const getLibraries = async (): Promise<LibraryGroup[]> => {
+  if (useDataMode.getState().mode === "demo") {
+    return [];  // Demo mode uses hardcoded halDocs
+  }
+  return api.get<{ libraries: LibraryGroup[] }>("/api/scripts/libraries").then(r => r.data.libraries);
+};
+
 // ── Deployments ───────────────────────────────────────────────────────────────
 export type DeployStatus = "pending" | "sent" | "running" | "failed";
 
 export interface Deployment {
   id: string; device_id: string; model_id: string; script_id: string;
   status: DeployStatus; sent_at?: string; running_at?: string;
-  error_msg?: string; created_at: string;
+  error_msg?: string; created_at: string; name?: string;
 }
 
 export const getDeployments = async (): Promise<Deployment[]> => {
@@ -412,12 +432,13 @@ export const getDeployments = async (): Promise<Deployment[]> => {
 
 // Backend expects { device_id, model_id, script_id } (singular device_id)
 // The page handles multi-device by calling this once per device
-export const createDeployment = (body: { device_ids: string[]; model_id: string; script_id: string }) => {
+export const createDeployment = (body: { device_ids: string[]; model_id: string; script_id: string; name?: string }) => {
   const device_id = body.device_ids[0];
   return api.post<Deployment>("/api/deployments", {
     device_id,
     model_id: body.model_id,
     script_id: body.script_id,
+    name: body.name,
   }).then(r => r.data);
 };
 

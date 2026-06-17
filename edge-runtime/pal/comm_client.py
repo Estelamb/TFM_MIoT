@@ -114,13 +114,28 @@ class CommunicationClient:
         This coroutine runs indefinitely, reconnecting on errors.
         It must be launched as an :func:`asyncio.create_task`.
         """
+        import json
         while True:
             try:
+                will = aiomqtt.Will(
+                    topic=f"device/{self._device_id}/status",
+                    payload=json.dumps({"status": "offline"}),
+                    qos=1,
+                    retain=True
+                )
                 async with aiomqtt.Client(
-                    hostname=self._host, port=self._port
+                    hostname=self._host, port=self._port, will=will
                 ) as client:
                     self._client = client
                     await client.subscribe(self.topic_commands)
+                    
+                    # Publish online status immediately on connection
+                    await client.publish(
+                        f"device/{self._device_id}/status",
+                        json.dumps({"status": "online"}),
+                        retain=True
+                    )
+                    
                     logger.info(
                         f"MQTT connected — subscribed to {self.topic_commands}"
                     )

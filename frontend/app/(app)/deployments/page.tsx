@@ -5,12 +5,12 @@ import { getDeployments, getDevices, getModels, getScripts, createDeployment, de
 import { useDataMode } from "@/hooks/useDataMode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Select } from "@/components/ui/Input";
+import { Input, Select } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { Modal } from "@/components/ui/Modal";
 import { HW_LABELS, fmtRelative } from "@/lib/utils";
-import { Rocket, Plus, Check, AlertTriangle, Trash2 } from "lucide-react";
+import { Rocket, Plus, Check, AlertTriangle, Trash2, Edit } from "lucide-react";
 
 const STATUS_BADGE: Record<string, "accent" | "success" | "danger" | "muted" | "info"> = {
   running: "accent", sent: "info", pending: "muted", failed: "danger",
@@ -39,16 +39,25 @@ export default function DeploymentsPage() {
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
   const [modelId, setModelId] = useState("");
   const [scriptId, setScriptId] = useState("");
+  const [name, setName] = useState("");
   const [deployErr, setDeployErr] = useState("");
   const [deployingCount, setDeployingCount] = useState(0);
 
   const readyModels = models.filter((m: any) => m.compile_status === "ready");
 
+  const handleEdit = (d: any) => {
+    setSelectedDeviceIds([d.device_id]);
+    setModelId(d.model_id);
+    setScriptId(d.script_id);
+    setName(d.name || "");
+    setOpen(true);
+  };
+
   // Backend accepts one deployment at a time (device_id singular)
   // We create one per selected device sequentially
   const deployMutation = useMutation({
     mutationFn: (device_id: string) =>
-      createDeployment({ device_ids: [device_id], model_id: modelId, script_id: scriptId }),
+      createDeployment({ device_ids: [device_id], model_id: modelId, script_id: scriptId, name }),
     onError: (e: any) => setDeployErr(e?.response?.data?.detail || "Deployment failed"),
   });
 
@@ -70,6 +79,7 @@ export default function DeploymentsPage() {
     setSelectedDeviceIds([]);
     setModelId("");
     setScriptId("");
+    setName("");
     setDeployingCount(0);
   };
 
@@ -130,10 +140,12 @@ export default function DeploymentsPage() {
                   <StatusDot status={d.status} />
                   <div>
                     <p className="font-bold text-gray-900 dark:text-white">
-                      {getDeviceName(d.device_id)}
+                      {d.name || `Deployment ${d.id.slice(0, 8)}`}
                     </p>
                     <p className="text-xs text-gray-500 mt-0.5">
-                      <span className="font-mono">{d.id.slice(0, 8)}…</span>
+                      <span className="font-semibold text-blue-600 dark:text-blue-400">{getDeviceName(d.device_id)}</span>
+                      {" · "}
+                      <span className="font-mono text-gray-400">{d.id.slice(0, 8)}…</span>
                       {" · "}
                       <span>{getModelName(d.model_id)}</span>
                       {" · "}
@@ -152,15 +164,22 @@ export default function DeploymentsPage() {
                     <Badge variant={STATUS_VARIANT[d.status] || "default"}>{d.status}</Badge>
                     <span className="text-[10px] text-gray-400">{fmtRelative(d.created_at)}</span>
                   </div>
-                  {d.status === "pending" && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleEdit(d)}
+                      className="p-2 text-gray-400 hover:text-blue-500 transition-colors"
+                      title="Modify / Edit Deployment"
+                    >
+                      <Edit size={16} />
+                    </button>
                     <button
                       onClick={() => cancelDeploymentMutation.mutate(d.id)}
                       className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                      title="Cancel Deployment"
+                      title="Delete Deployment"
                     >
                       <Trash2 size={16} />
                     </button>
-                  )}
+                  </div>
                 </div>
               </div>
             </Card>
@@ -168,8 +187,14 @@ export default function DeploymentsPage() {
         )}
       </div>
 
-      <Modal open={open} onClose={() => { setOpen(false); setDeployErr(""); }} title="New Deployment" size="lg">
+      <Modal open={open} onClose={() => { setOpen(false); setDeployErr(""); setName(""); }} title="New Deployment" size="lg">
         <form onSubmit={handleDeploy} className="flex flex-col gap-6 pt-4">
+          <Input
+            label="Deployment Name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="e.g. Temperature Monitoring v1"
+          />
           {deployErr && (
             <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
               {deployErr}

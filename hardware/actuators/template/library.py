@@ -1,45 +1,44 @@
 """
-AURA Actuator Library: Template Actuator
-=========================================
-Copy this directory to add a new actuator peripheral under:
-hardware/actuators/<category>/<actuator_name>/
-
-Each actuator library must contain a class with:
-1. An __init__ method accepting configuration parameters.
-2. An initialize() method to set up physical connection/pins.
-3. A write_value(value) method executing the action/state change.
+AURA Generic Actuator Library: Template Category
+================================================
 """
+from hardware.utils import get_active_driver, load_specific_driver
 
-LABEL = "Template Actuator"
-
-class TemplateActuatorLibrary:
+class TemplateActuator:
     def __init__(self, **kwargs):
-        """
-        Initializes the actuator driver with the parameters defined in components_config.yaml.
-        Example configuration:
-          params:
-            pin: 12
-            frequency: 50
-        """
-        self.params = kwargs
+        driver, params = get_active_driver("template")
+        if driver == "template":
+            driver = "dummy_actuator"
+        merged_params = {**params, **kwargs}
+        driver_cls = load_specific_driver("actuators", "template", driver)
+        try:
+            self._delegate = driver_cls(**merged_params)
+        except TypeError:
+            self._delegate = driver_cls()
 
     def initialize(self) -> bool:
-        """
-        Set up the connection to the physical actuator.
-        Should perform hardware setup, initialize PWM channels, configure GPIO direction, etc.
-
-        Returns:
-            bool: True if connection succeeded and actuator is ready, False otherwise.
-        """
-        # TODO: Implement connection/initialization logic
+        if hasattr(self._delegate, "initialize"):
+            return self._delegate.initialize()
         return True
 
     def write_value(self, value) -> None:
-        """
-        Set or trigger the actuator state/action.
+        if hasattr(self._delegate, "write_value"):
+            self._delegate.write_value(value)
+        else:
+            raise AttributeError("Template driver has no write_value method")
 
-        Args:
-            value: The command/state value (e.g. angle float for servo, RGB tuple for LED, bool for relay).
-        """
-        # TODO: Implement output control/write logic
-        pass
+# Module-level convenience functions using a default global instance
+_default_actuator = None
+
+def _get_default_actuator():
+    global _default_actuator
+    if _default_actuator is None:
+        _default_actuator = TemplateActuator()
+        _default_actuator.initialize()
+    return _default_actuator
+
+def initialize() -> bool:
+    return _get_default_actuator().initialize()
+
+def write_value(value) -> None:
+    _get_default_actuator().write_value(value)

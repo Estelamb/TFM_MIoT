@@ -24,21 +24,17 @@ class GeneralSensorBackend(SensorBackend):
         return self._driver
 
     def open(self, params: dict) -> None:
-        if self._driver == "bme280":
-            from aura_hw.backends.devices.sensor.bme280 import BME280Backend
-            self._delegate = BME280Backend(self.component_id)
+        # All sensor drivers are loaded dynamically from hardware/sensors/sensor/<driver>/library.py
+        logger.info(f"[GeneralSensorBackend] Dynamically loading sensor driver '{self._driver}'")
+        cls = load_component_class("sensors", "sensor", self._driver)
+        self._delegate = cls()
+
+        if hasattr(self._delegate, "initialize"):
+            success = self._delegate.initialize()
+            if not success:
+                raise OSError(f"Failed to initialize sensor driver '{self._driver}'")
+        elif hasattr(self._delegate, "open"):
             self._delegate.open(params)
-        else:
-            logger.info(f"[GeneralSensorBackend] Dynamically loading custom generic sensor driver '{self._driver}'")
-            cls = load_component_class("sensors", "sensor", self._driver)
-            self._delegate = cls()
-            
-            if hasattr(self._delegate, "initialize"):
-                success = self._delegate.initialize()
-                if not success:
-                    raise OSError(f"Failed to initialize custom generic sensor driver '{self._driver}'")
-            elif hasattr(self._delegate, "open"):
-                self._delegate.open(params)
 
         self._is_open = True
 

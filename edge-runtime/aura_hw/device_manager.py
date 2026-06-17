@@ -4,20 +4,9 @@ AURA Device Manager
 Reads ``components_config.yaml``, instantiates the correct device
 backend for each enabled component, and manages their lifecycle.
 
-Supported component types and drivers
---------------------------------------
-
-+-------------------+----------------+----------------------------------------+
-| ``type``          | ``driver``     | Backend class                          |
-+===================+================+========================================+
-| ``camera``        | ``opencv``     | :class:`OpenCVCameraBackend`           |
-+-------------------+----------------+----------------------------------------+
-| ``camera``        | ``libcamera``  | :class:`LibcameraBackend`              |
-+-------------------+----------------+----------------------------------------+
-| ``camera``        | ``imx500``     | :class:`IMX500CameraBackend`           |
-+-------------------+----------------+----------------------------------------+
-| ``sensor``        | ``bme280``     | :class:`BME280Backend`                 |
-+-------------------+----------------+----------------------------------------+
+All device backends are loaded dynamically from the ``hardware/``
+directory, which is populated via OTA when the device connects to
+the AURA platform.
 
 Usage
 -----
@@ -44,43 +33,11 @@ import yaml
 
 from aura_hw.backends.devices.base import DeviceBackend
 
-if TYPE_CHECKING:
-    from aura_hw.backends.devices.camera.base import CameraBackend
-    from aura_hw.backends.devices.sensor.base import SensorBackend
-
 logger = logging.getLogger(__name__)
 
 
-# ── Driver registry ──────────────────────────────────────────────────────────
-# Maps (type, driver) → factory callable.  Lazy imports keep SDK dependencies
-# optional — only the drivers actually used are imported.
-
-def _make_opencv(cid: str) -> "CameraBackend":
-    from aura_hw.backends.devices.camera.opencv import OpenCVCameraBackend
-    return OpenCVCameraBackend(cid)
-
-def _make_libcamera(cid: str) -> "CameraBackend":
-    from aura_hw.backends.devices.camera.libcamera import LibcameraBackend
-    return LibcameraBackend(cid)
-
-def _make_imx500(cid: str) -> "CameraBackend":
-    from aura_hw.backends.devices.camera.imx500 import IMX500CameraBackend
-    return IMX500CameraBackend(cid)
-
-def _make_bme280(cid: str) -> "SensorBackend":
-    from aura_hw.backends.devices.sensor.bme280 import BME280Backend
-    return BME280Backend(cid)
-
-
-_DRIVER_REGISTRY: dict[tuple[str, str], callable] = {
-    ("camera", "opencv"):     _make_opencv,
-    ("camera", "libcamera"):  _make_libcamera,
-    ("camera", "imx500"):     _make_imx500,
-    ("sensor", "bme280"):     _make_bme280,
-}
-
-
-# ── General dynamic factories ───────────────────────────────────────────────
+# ── Dynamic factories ────────────────────────────────────────────────────────
+# All backends are loaded dynamically from hardware/<category>/<driver>/library.py.
 
 def _make_camera(cid: str, driver: str) -> DeviceBackend:
     from aura_hw.backends.devices.camera.general import GeneralCameraBackend
@@ -118,6 +75,19 @@ def _make_relay(cid: str, driver: str) -> DeviceBackend:
     from aura_hw.backends.devices.actuator.relay import GeneralRelayActuator
     return GeneralRelayActuator(cid, driver)
 
+
+# Maps device type → dynamic factory
+_TYPE_FACTORIES: dict[str, callable] = {
+    "camera": _make_camera,
+    "sensor": _make_sensor,
+    "temperature": _make_temperature,
+    "distance": _make_distance,
+    "imu": _make_imu,
+    "led": _make_led,
+    "buzzer": _make_buzzer,
+    "servo": _make_servo,
+    "relay": _make_relay,
+}
 
 
 class DeviceManager:
@@ -238,33 +208,17 @@ class DeviceManager:
             driver       = entry.get("driver", "")
             params       = entry.get("params", {})
 
-            factory = _DRIVER_REGISTRY.get((device_type, driver))
-            if factory is None:
-                type_factories = {
-                    "camera": _make_camera,
-                    "sensor": _make_sensor,
-                    "temperature": _make_temperature,
-                    "distance": _make_distance,
-                    "imu": _make_imu,
-                    "led": _make_led,
-                    "buzzer": _make_buzzer,
-                    "servo": _make_servo,
-                    "relay": _make_relay,
-                }
-                type_factory = type_factories.get(device_type)
-                if type_factory:
-                    factory = lambda cid, dt=device_type, dr=driver: type_factory(cid, dr)
-
-            if factory is None:
+            type_factory = _TYPE_FACTORIES.get(device_type)
+            if type_factory is None:
                 logger.warning(
-                    f"[DeviceManager] No backend registered for "
+                    f"[DeviceManager] No backend factory for "
                     f"type='{device_type}' driver='{driver}' "
                     f"(component: {component_id}). Skipping."
                 )
                 continue
 
             try:
-                backend = factory(component_id)
+                backend = type_factory(component_id, driver)
                 self._devices[component_id] = backend
                 self._component_params[component_id] = params
                 logger.debug(
@@ -276,3 +230,4 @@ class DeviceManager:
                     f"[DeviceManager] Failed to instantiate backend for "
                     f"{component_id}: {exc}"
                 )
+

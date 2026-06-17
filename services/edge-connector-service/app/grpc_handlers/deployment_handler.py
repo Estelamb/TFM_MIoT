@@ -26,6 +26,7 @@ def _to_proto(d) -> deployment_pb2.DeploymentResponse:
         running_at=d.running_at.isoformat() if d.running_at else "",
         error_msg=d.error_msg or "",
         created_at=d.created_at.isoformat(),
+        name=d.name or "",
     )
 
 class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
@@ -59,7 +60,7 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
             # Check if model is already compiled for the device's target hardware architecture
             if model.hardware_type == device.hardware_type and model.compile_status == "ready":
                 # Already compiled! Deploy immediately
-                dep = await repo.create(req.device_id, req.model_id, req.script_id)
+                dep = await repo.create(req.device_id, req.model_id, req.script_id, name=req.name)
                 model_url = await presigned_url("compiled", model.compiled_key)
                 script_url = await presigned_url("scripts", script.script_key)
 
@@ -92,7 +93,7 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                     return
 
                 # Create the deployment in pending state
-                dep = await repo.create(req.device_id, req.model_id, req.script_id)
+                dep = await repo.create(req.device_id, req.model_id, req.script_id, name=req.name)
 
                 # Spawn background task to trigger compilation and wait
                 pool = await self._get_pool()

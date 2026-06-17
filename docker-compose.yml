@@ -199,7 +199,8 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports: ["8000:8000"]
     networks: [aura-net]
-    volumes: [./services/api-gateway/app:/app/app, ./shared:/app/shared]
+    volumes: [./services/api-gateway/app:/app/app, ./shared:/app/shared, ./hardware:/app/hardware]
+
 
   frontend:
     build:

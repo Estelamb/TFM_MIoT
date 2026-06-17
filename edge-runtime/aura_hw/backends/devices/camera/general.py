@@ -26,32 +26,21 @@ class GeneralCameraBackend(CameraBackend):
         return self._driver
 
     def open(self, params: dict) -> None:
-        if self._driver == "opencv":
-            from aura_hw.backends.devices.camera.opencv import OpenCVCameraBackend
-            self._delegate = OpenCVCameraBackend(self.component_id)
+        # All camera drivers are loaded dynamically from hardware/sensors/camera/<driver>/library.py
+        driver = self._driver
+        if driver in ("opencv", "libcamera", "imx500", "template"):
+            driver = "rpi_camera_module_3"
+        logger.info(f"[GeneralCameraBackend] Dynamically loading camera driver '{driver}' (configured: '{self._driver}')")
+        cls = load_component_class("sensors", "camera", driver)
+        self._delegate = cls()
+
+        # Call initialize if defined, else open
+        if hasattr(self._delegate, "initialize"):
+            success = self._delegate.initialize()
+            if not success:
+                raise OSError(f"Failed to initialize camera driver '{self._driver}'")
+        elif hasattr(self._delegate, "open"):
             self._delegate.open(params)
-        elif self._driver == "libcamera":
-            from aura_hw.backends.devices.camera.libcamera import LibcameraBackend
-            self._delegate = LibcameraBackend(self.component_id)
-            self._delegate.open(params)
-        elif self._driver == "imx500":
-            from aura_hw.backends.devices.camera.imx500 import IMX500CameraBackend
-            self._delegate = IMX500CameraBackend(self.component_id)
-            self._delegate.open(params)
-        else:
-            # Load dynamic custom camera driver
-            logger.info(f"[GeneralCameraBackend] Dynamically loading custom camera driver '{self._driver}'")
-            cls = load_component_class("sensors", "camera", self._driver)
-            # Instantiate class (passing parameters if expected, or default to empty init/params wrapper)
-            self._delegate = cls()
-            
-            # Call initialize if defined, else open
-            if hasattr(self._delegate, "initialize"):
-                success = self._delegate.initialize()
-                if not success:
-                    raise OSError(f"Failed to initialize custom camera driver '{self._driver}'")
-            elif hasattr(self._delegate, "open"):
-                self._delegate.open(params)
 
         self._is_open = True
 

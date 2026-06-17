@@ -39,6 +39,7 @@ class Deployment(Base):
     device_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("devices.id", ondelete="CASCADE"), nullable=False)
     model_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("models.id", ondelete="CASCADE"), nullable=False)
     script_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("scripts.id", ondelete="CASCADE"), nullable=False)
+    name: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(String, nullable=False, default="pending")
     sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     running_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

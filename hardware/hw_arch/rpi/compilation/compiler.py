@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 LABEL = "RPi (CPU)"
 
 class RPiCPUCompiler(CompilerBase):
-    EXECUTION_STRATEGY = "python"
-    DOCKER_IMAGE = ""
+    EXECUTION_STRATEGY = "docker"
+    DOCKER_IMAGE = "ultralytics/ultralytics:latest"
     OUTPUT_FORMAT = ".onnx"
     SUPPORTED_HARDWARE = ["rpi"]
 
@@ -46,32 +46,155 @@ class RPiCPUCompiler(CompilerBase):
         with tempfile.TemporaryDirectory() as tmpdir:
             # 1. Download source model (.pt) from MinIO
             pt_path = os.path.join(tmpdir, "model.pt")
+            onnx_path = os.path.join(tmpdir, "model.onnx")
             minio = get_minio()
             try:
                 await minio.fget_object(self._bucket_models, source_key, pt_path)
             except Exception as e:
+                logger.error(f"[RPiCPU] Failed to download source model: {e}")
                 return CompilationResult(success=False, error=f"Failed to download source model: {e}")
 
-            # 2. Run graph compilation/export to ONNX in a thread executor
+            container_name = f"compile_{model_id}"
             try:
-                onnx_tmp_path = await asyncio.to_thread(self._export_onnx, pt_path, img_size)
+                # 2. Run the container in detached sleep mode
+                run_cmd = [
+                    "docker", "run", "-d",
+                    "--name", container_name,
+                    "--entrypoint", "sleep",
+                    self.DOCKER_IMAGE,
+                    "3600"
+                ]
+                logger.info(f"[RPiCPU] Creating Docker container: {' '.join(run_cmd)}")
+                proc = await asyncio.create_subprocess_exec(
+                    *run_cmd,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                stdout, stderr = await proc.communicate()
+                if proc.returncode != 0:
+                    err_msg = stderr.decode().strip()
+                    logger.error(f"[RPiCPU] Failed to run Docker container: {err_msg}")
+                    return CompilationResult(success=False, error=f"Failed to start compiler container: {err_msg}")
+
+                # 3. Copy the .pt file inside
+                cp_in_cmd = ["docker", "cp", pt_path, f"{container_name}:/tmp/model.pt"]
+                logger.info(f"[RPiCPU] Copying weights to container: {' '.join(cp_in_cmd)}")
+                proc = await asyncio.create_subprocess_exec(
+                    *cp_in_cmd,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                stdout, stderr = await proc.communicate()
+                if proc.returncode != 0:
+                    err_msg = stderr.decode().strip()
+                    logger.error(f"[RPiCPU] Failed to copy weights to container: {err_msg}")
+                    return CompilationResult(success=False, error=f"Failed to copy weights to container: {err_msg}")
+
+                # 4. Execute compilation
+                # Execute python export script inside the container
+                exec_cmd = [
+                    "docker", "exec", container_name,
+                    "python3", "-c",
+                    f"from ultralytics import YOLO; model = YOLO('/tmp/model.pt'); model.export(format='onnx', imgsz={img_size}, batch=1, nms=True, opset=12)"
+                ]
+                logger.info(f"[RPiCPU] Executing ONNX export in container: {' '.join(exec_cmd)}")
+
+                redis = getattr(self, "redis_client", None)
+                cancel_key = f"cancel:compile:{model_id}"
+                if redis and await redis.exists(cancel_key):
+                    raise asyncio.CancelledError()
+
+                proc = await asyncio.create_subprocess_exec(
+                    *exec_cmd,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+
+                cancellation_task = None
+                if redis:
+                    async def check_cancel():
+                        try:
+                            while True:
+                                if await redis.exists(cancel_key):
+                                    logger.info(f"[RPiCPU] Cancellation requested. Stopping compile container...")
+                                    try:
+                                        proc.terminate()
+                                        await asyncio.sleep(1)
+                                        proc.kill()
+                                    except ProcessLookupError:
+                                        pass
+                                    break
+                                await asyncio.sleep(2)
+                        except asyncio.CancelledError:
+                            pass
+                    cancellation_task = asyncio.create_task(check_cancel())
+
+                try:
+                    stdout, stderr = await proc.communicate()
+                finally:
+                    if cancellation_task:
+                        cancellation_task.cancel()
+                        try:
+                            await cancellation_task
+                        except asyncio.CancelledError:
+                            pass
+
+                if redis and await redis.exists(cancel_key):
+                    raise asyncio.CancelledError()
+
+                if proc.returncode != 0:
+                    err_msg = stderr.decode().strip()
+                    logger.error(f"[RPiCPU] ONNX export failed inside container: {err_msg}\nStdout: {stdout.decode()}")
+                    return CompilationResult(success=False, error=f"ONNX export failed: {err_msg}")
+
+                # 5. Copy the compiled ONNX model back to host
+                cp_out_cmd = ["docker", "cp", f"{container_name}:/tmp/model.onnx", onnx_path]
+                logger.info(f"[RPiCPU] Copying compiled model back: {' '.join(cp_out_cmd)}")
+                proc = await asyncio.create_subprocess_exec(
+                    *cp_out_cmd,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                stdout, stderr = await proc.communicate()
+                if proc.returncode != 0:
+                    err_msg = stderr.decode().strip()
+                    logger.error(f"[RPiCPU] Failed to copy compiled model from container: {err_msg}")
+                    return CompilationResult(success=False, error=f"Failed to retrieve compiled model: {err_msg}")
+
+            except asyncio.CancelledError:
+                logger.warning(f"[RPiCPU] Compilation job for model {model_id} was cancelled.")
+                raise
             except Exception as e:
-                return CompilationResult(success=False, error=f"ONNX export failed: {e}")
+                logger.exception(f"[RPiCPU] Unexpected error during docker compilation: {e}")
+                return CompilationResult(success=False, error=f"Docker compilation error: {e}")
+            finally:
+                # 6. Clean up container
+                logger.info(f"[RPiCPU] Cleaning up Docker container {container_name}...")
+                cleanup_cmd = ["docker", "rm", "-f", container_name]
+                try:
+                    cleanup_proc = await asyncio.create_subprocess_exec(
+                        *cleanup_cmd,
+                        stdout=asyncio.subprocess.DEVNULL,
+                        stderr=asyncio.subprocess.DEVNULL
+                    )
+                    await cleanup_proc.wait()
+                except Exception as e:
+                    logger.warning(f"[RPiCPU] Failed to clean up container: {e}")
 
-            if not os.path.exists(onnx_tmp_path):
-                return CompilationResult(success=False, error="ONNX export completed but output file not found")
+            # 7. Read compiled ONNX bytes and upload to MinIO
+            if not os.path.exists(onnx_path):
+                return CompilationResult(success=False, error="ONNX model file not found on host after copy")
 
-            # 3. Read compiled ONNX bytes and upload to MinIO
             try:
-                with open(onnx_tmp_path, "rb") as f:
+                with open(onnx_path, "rb") as f:
                     onnx_data = f.read()
-                
+
                 sha = hashlib.sha256(onnx_data).hexdigest()
                 compiled_key = f"{model_id}/model.onnx"
-                
+
                 logger.info(f"[RPiCPU] Uploading compiled model to MinIO: {compiled_key}...")
                 await upload_bytes("compiled", compiled_key, onnx_data)
-                
+
                 logger.info(f"[RPiCPU] Compilation successful -> {compiled_key}")
                 return CompilationResult(
                     success=True,
@@ -79,29 +202,5 @@ class RPiCPUCompiler(CompilerBase):
                     compiled_sha256=sha
                 )
             except Exception as e:
-                return CompilationResult(success=False, error=f"Failed to process or upload compiled model: {e}")
-
-    def _export_onnx(self, pt_path: str, img_size: int) -> str:
-        from ultralytics import YOLO
-        
-        logger.info(f"[RPiCPU] Loading PyTorch model from {pt_path}...")
-        model = YOLO(pt_path)
-        
-        logger.info(f"[RPiCPU] Exporting model to ONNX with imgsz={img_size}, nms=True, opset=12...")
-        # Parameters matching the RPi CPU guidelines:
-        # - format: "onnx"
-        # - batch: 1 (edge streaming)
-        # - imgsz: img_size
-        # - nms: True (critical for CPU optimization)
-        # - opset: 12 (stable operations matching runtime)
-        # - half: False (FP32 accuracy)
-        exported_path = model.export(
-            format="onnx",
-            imgsz=img_size,
-            batch=1,
-            nms=True,
-            opset=12,
-            half=False
-        )
-        return str(exported_path)
-
+                logger.exception(f"[RPiCPU] Failed to upload compiled model to MinIO: {e}")
+                return CompilationResult(success=False, error=f"Upload failed: {e}")

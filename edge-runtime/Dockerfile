@@ -6,21 +6,24 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
+# ── PAL-only dependencies (no hardware-specific packages) ────────────────────
 RUN pip install --no-cache-dir \
     aiomqtt==2.3.0 \
     httpx==0.27.2 \
     numpy \
     psutil==6.0.0 \
-    pyyaml>=6.0 \
-    opencv-python-headless \
-    onnxruntime
+    pyyaml>=6.0
 
-# ── Application source ───────────────────────────────────────────────────────
+# ── Application source (PAL + dynamic loading framework) ─────────────────────
 COPY edge-runtime/aura_hw/   /app/aura_hw/
 COPY edge-runtime/pal/       /app/pal/
-COPY edge-runtime/scripts/   /app/scripts/
 COPY edge-runtime/config/    /app/config/
 COPY edge-runtime/agent.py   /app/agent.py
+
+# ── Hardware backend directory (empty at build time) ─────────────────────────
+# Populated at runtime via OTA (update_libraries command) when the device
+# connects to the AURA platform.
+RUN mkdir -p /app/hardware
 
 # ── Runtime environment ──────────────────────────────────────────────────────
 ENV PYTHONPATH=/app \

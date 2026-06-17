@@ -5,6 +5,8 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useDataMode } from "@/hooks/useDataMode";
 import { useTheme } from "next-themes";
+import { useQuery } from "@tanstack/react-query";
+import { getDevices } from "@/lib/api";
 import { MapPin, Server, Activity, AlertTriangle } from "lucide-react";
 
 interface EdgeMapProps {
@@ -47,6 +49,12 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
   const [activeNode, setActiveNode] = useState<any | null>(null);
   const [markers, setMarkers] = useState<any[]>([]);
 
+  const { data: devices = [] } = useQuery({
+    queryKey: ["devices"],
+    queryFn: getDevices,
+    enabled: !isDemo,
+  });
+
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
 
@@ -68,17 +76,20 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
     } else {
       const realMarkers = states
         .filter(s => s.coordinates && s.coordinates.length === 2)
-        .map(s => ({
-          id: s.device_id,
-          name: s.device_id,
-          status: s.status,
-          coordinates: [s.coordinates[1], s.coordinates[0]], 
-          cpu: s.cpu_percent,
-          ram: s.ram_percent
-        }));
+        .map(s => {
+          const device = devices.find((d: any) => d.id === s.device_id);
+          return {
+            id: s.device_id,
+            name: device ? device.name : s.device_id,
+            status: s.status,
+            coordinates: [s.coordinates[1], s.coordinates[0]], 
+            cpu: s.cpu_percent,
+            ram: s.ram_percent
+          };
+        });
       setMarkers(realMarkers);
     }
-  }, [states, isDemo, demoData.monitoringStates]);
+  }, [states, isDemo, demoData.monitoringStates, devices]);
 
   if (markers.length === 0 && !isDemo) {
     return (

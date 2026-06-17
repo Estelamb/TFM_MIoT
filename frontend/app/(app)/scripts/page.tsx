@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { getScripts, deleteScript, uploadScript, getHardwareTypes } from "@/lib/api";
+import { getScripts, deleteScript, uploadScript, getHardwareTypes, getLibraries, LibraryGroup } from "@/lib/api";
 import { useDataMode } from "@/hooks/useDataMode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -12,7 +12,7 @@ import { Modal } from "@/components/ui/Modal";
 import { HW_LABELS } from "@/lib/utils";
 import {
   Code2, Plus, Trash2, FileCode, ArrowLeft, Save,
-  Loader2, Upload, Download, BookOpen, Info,
+  Loader2, Upload, Download, BookOpen, Info, Package,
 } from "lucide-react";
 
 const Editor = dynamic(() => import("@monaco-editor/react"), {
@@ -30,28 +30,34 @@ const SCRIPT_TEMPLATE = `"""
 AURA Edge Script Template
 =========================
 Implement pre_inference() and post_inference().
-The runtime calls run(raw_input) automatically.
+Demonstrates importing the generic camera library and inference runtime.
 """
-from aura_hw import execute_inference
+from __future__ import annotations
 import numpy as np
+from aura_hw import execute_inference
+from hardware.sensors.camera.library import take_photo
+
+# Example template library imports:
+# from hardware.sensors.template.library import read_value
+# from hardware.actuators.template.library import write_value
 
 INPUT_WIDTH  = 640
 INPUT_HEIGHT = 640
 CONF_THRESHOLD = 0.5
-CLASSES = ["person", "car", "dog"]  # adjust to your labels
+CLASSES = ["person", "car", "dog"]  # Adjust to your labels
 
 
-def pre_inference(raw_input):
-    """Preprocess raw input → numpy tensor ready for the model."""
+def pre_inference(raw_input) -> np.ndarray:
+    """Preprocess raw input (RGB frame) -> numpy tensor ready for the model."""
     import cv2
     img = cv2.resize(raw_input, (INPUT_WIDTH, INPUT_HEIGHT))
     img = img.astype(np.float32) / 255.0
-    img = np.transpose(img, (2, 0, 1))   # HWC → CHW
-    return np.expand_dims(img, axis=0)   # → NCHW
+    img = np.transpose(img, (2, 0, 1))   # HWC -> CHW
+    return np.expand_dims(img, axis=0)   # -> NCHW
 
 
-def post_inference(raw_output):
-    """Postprocess model output → list of detection dicts."""
+def post_inference(raw_output) -> list[dict]:
+    """Postprocess model output -> list of detection dicts."""
     detections = []
     outputs = list(raw_output.values())[0] if isinstance(raw_output, dict) else raw_output
     if outputs is None or len(outputs) == 0:
@@ -71,10 +77,30 @@ def post_inference(raw_output):
     return detections
 
 
-# ── DO NOT MODIFY ─────────────────────────────────────────────────────────────
-def run(raw_input):
-    return post_inference(execute_inference(pre_inference(raw_input)))
+def run(raw_input=None) -> list[dict]:
+    """
+    Main entrypoint called by the runtime.
+    Captures a frame from the generic camera library if raw_input is not passed.
+    """
+    frame = raw_input if raw_input is not None else take_photo()
+    
+    # Run pre-inference on the frame
+    model_input = pre_inference(frame)
+    
+    # Perform inference using the generic inference function
+    model_output = execute_inference(model_input)
+    
+    # Parse results in post-inference
+    return post_inference(model_output)
 `;
+
+// Category display labels and icons
+const CATEGORY_LABELS: Record<string, string> = {
+  sensors: "📡 Sensors",
+  actuators: "⚙️ Actuators",
+  others: "🔧 Others",
+  hw_arch: "🧠 Inference",
+};
 
 export default function ScriptsPage() {
   const { mode, demoData } = useDataMode();
@@ -90,6 +116,13 @@ export default function ScriptsPage() {
 
   const { data: realScripts = [], isLoading } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
   const scripts = isDemo ? demoData.scripts : realScripts;
+
+  // Fetch dynamic hardware libraries (real mode)
+  const { data: hwLibraries = [] } = useQuery<LibraryGroup[]>({
+    queryKey: ["libraries"],
+    queryFn: getLibraries,
+    enabled: !isDemo,
+  });
 
   const [editingScript, setEditingScript] = useState<any | null>(null);
   const [code, setCode] = useState("");
@@ -179,6 +212,8 @@ export default function ScriptsPage() {
   // EDITOR VIEW
   if (editingScript) {
     const activeDocs = demoData.halDocs[lang] || [];
+    const showDemoDocs = isDemo && activeDocs.length > 0;
+    const showRealDocs = !isDemo && hwLibraries.length > 0;
     return (
       <div className="h-[calc(100vh-80px)] flex flex-col animate-fade-in">
         <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-800 bg-white/50 dark:bg-gray-950/50 backdrop-blur-md">
@@ -216,21 +251,49 @@ export default function ScriptsPage() {
           <div className="flex-1 border-r dark:border-gray-800">
             <Editor height="100%" language={lang} theme="vs-dark" value={code} onChange={v => setCode(v || "")} />
           </div>
-          {activeDocs.length > 0 && (
+          {(showDemoDocs || showRealDocs) && (
             <div className="w-80 bg-gray-50 dark:bg-gray-950 p-6 overflow-y-auto hidden lg:block">
               <div className="flex items-center gap-2 mb-6 text-orange-500 font-bold">
-                <BookOpen size={20} /> HAL API: {lang.toUpperCase()}
+                <BookOpen size={20} /> {isDemo ? `HAL API: ${lang.toUpperCase()}` : "Hardware Libraries"}
               </div>
-              <div className="space-y-6">
-                {activeDocs.map((fn: any, i: number) => (
-                  <div key={i} className="space-y-1">
-                    <code className="text-sm font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded">
-                      {fn.name}
-                    </code>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{fn.desc}</p>
-                  </div>
-                ))}
-              </div>
+              {isDemo ? (
+                <div className="space-y-6">
+                  {activeDocs.map((fn: any, i: number) => (
+                    <div key={i} className="space-y-1">
+                      <code className="text-sm font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded">
+                        {fn.name}
+                      </code>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{fn.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  {hwLibraries.map((lib, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Package size={14} className="text-orange-400" />
+                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                          {CATEGORY_LABELS[lib.category] || lib.category} / {lib.subcategory}
+                        </span>
+                      </div>
+                      <code className="block text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded break-all">
+                        from {lib.import_path} import ...
+                      </code>
+                      {lib.api.map((fn, j) => (
+                        <div key={j} className="space-y-0.5 pl-2 border-l-2 border-gray-200 dark:border-gray-700">
+                          <code className="text-xs font-mono text-blue-600 dark:text-blue-400">
+                            {fn.name}
+                          </code>
+                          {fn.desc && (
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">{fn.desc}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -327,36 +390,73 @@ export default function ScriptsPage() {
           )}
         </div>
 
-        {/* HAL Documentation */}
+        {/* HAL Documentation / Hardware Libraries */}
         <div className="lg:col-span-1">
           <Card className="p-6 sticky top-8 border-t-4 border-t-orange-500">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold flex items-center gap-2 text-gray-900 dark:text-white">
-                <BookOpen size={18} className="text-orange-500" /> HAL API
+                <BookOpen size={18} className="text-orange-500" />
+                {isDemo ? "HAL API" : "Hardware Libraries"}
               </h2>
             </div>
-            <div className="mb-6">
-              <Select
-                label="Language Reference"
-                value={refLang}
-                onChange={e => setRefLang(e.target.value)}
-                options={[{ value: "python", label: "Python" }, { value: "cpp", label: "C++" }, { value: "java", label: "Java" }]}
-              />
-            </div>
+            {isDemo && (
+              <div className="mb-6">
+                <Select
+                  label="Language Reference"
+                  value={refLang}
+                  onChange={e => setRefLang(e.target.value)}
+                  options={[{ value: "python", label: "Python" }, { value: "cpp", label: "C++" }, { value: "java", label: "Java" }]}
+                />
+              </div>
+            )}
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-              {mainViewDocs.length === 0 ? (
-                <p className="text-sm text-gray-500 italic">
-                  {isDemo
-                    ? "No documentation available for this language."
-                    : "HAL documentation not available in Real Mode yet. Switch to Demo Mode to preview."}
-                </p>
+              {isDemo ? (
+                /* Demo mode: show hardcoded halDocs */
+                mainViewDocs.length === 0 ? (
+                  <p className="text-sm text-gray-500 italic">
+                    No documentation available for this language.
+                  </p>
+                ) : (
+                  mainViewDocs.map((fn: any, i: number) => (
+                    <div key={i} className="space-y-1 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-800">
+                      <code className="text-xs font-mono text-blue-600 dark:text-blue-400">{fn.name}</code>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mt-1">{fn.desc}</p>
+                    </div>
+                  ))
+                )
               ) : (
-                mainViewDocs.map((fn: any, i: number) => (
-                  <div key={i} className="space-y-1 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-800">
-                    <code className="text-xs font-mono text-blue-600 dark:text-blue-400">{fn.name}</code>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mt-1">{fn.desc}</p>
-                  </div>
-                ))
+                /* Real mode: show dynamic hardware libraries */
+                hwLibraries.length === 0 ? (
+                  <p className="text-sm text-gray-500 italic">
+                    No hardware libraries found. Libraries are scanned from the hardware/ directory.
+                  </p>
+                ) : (
+                  hwLibraries.map((lib, i) => (
+                    <div key={i} className="space-y-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-800">
+                      <div className="flex items-center gap-2">
+                        <Package size={14} className="text-orange-400 shrink-0" />
+                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                          {CATEGORY_LABELS[lib.category] || lib.category} / {lib.subcategory}
+                        </span>
+                      </div>
+                      <code className="block text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1.5 rounded break-all">
+                        from {lib.import_path} import ...
+                      </code>
+                      <div className="space-y-2 mt-1">
+                        {lib.api.map((fn, j) => (
+                          <div key={j} className="pl-2 border-l-2 border-gray-200 dark:border-gray-700">
+                            <code className="text-xs font-mono text-blue-600 dark:text-blue-400">
+                              {fn.name}
+                            </code>
+                            {fn.desc && (
+                              <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed mt-0.5">{fn.desc}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )
               )}
             </div>
           </Card>

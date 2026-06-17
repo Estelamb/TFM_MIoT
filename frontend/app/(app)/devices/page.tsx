@@ -89,6 +89,7 @@ export default function DevicesPage() {
   const { data: realDevices = [], isLoading } = useQuery({
     queryKey: ["devices"],
     queryFn: getDevices,
+    refetchInterval: 5000,
   });
 
   const devices = isDemo ? demoData.devices : realDevices;

@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     mqtt_port: int = 1883
     ai_service_grpc: str = "registry-service:50051"
     script_service_grpc: str = "registry-service:50051"
+    device_service_grpc: str = "registry-service:50051"
     compilation_service_grpc: str = "mlops-service:50052"
     download_url_expiry_seconds: int = 3600
     grpc_port: int = 50053

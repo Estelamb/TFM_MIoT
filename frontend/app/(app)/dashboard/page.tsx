@@ -32,7 +32,7 @@ export default function DashboardPage() {
   const { mode, demoData } = useDataMode();
   const isDemo = mode === "demo";
 
-  const { data: realDevices = [] } = useQuery({ queryKey: ["devices"], queryFn: getDevices });
+  const { data: realDevices = [] } = useQuery({ queryKey: ["devices"], queryFn: getDevices, refetchInterval: 5000 });
   const { data: realModels = [] } = useQuery({ queryKey: ["models"], queryFn: getModels });
   const { data: realScripts = [] } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
   const { data: realDeployments = [] } = useQuery({ queryKey: ["deployments"], queryFn: getDeployments });
@@ -106,7 +106,9 @@ export default function DashboardPage() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <StatusDot status={s.status} />
-                      <span className="text-sm font-bold text-gray-900 dark:text-white font-mono">{s.device_id}</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white font-mono" title={s.device_id}>
+                        {devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
+                      </span>
                     </div>
                     <span className="text-xs text-gray-500">{fmtRelative(s.last_seen_at)}</span>
                   </div>

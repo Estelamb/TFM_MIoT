@@ -3,7 +3,7 @@ from app.repositories.monitoring import MonitoringRepository
 from shared.proto_gen import monitoring_pb2, monitoring_pb2_grpc
 
 def _state_to_proto(s: dict) -> monitoring_pb2.DeviceStateResponse:
-    return monitoring_pb2.DeviceStateResponse(
+    res = monitoring_pb2.DeviceStateResponse(
         device_id=s.get("device_id", ""),
         status=s.get("status", "offline"),
         active_model_id=s.get("active_model_id", ""),
@@ -14,6 +14,9 @@ def _state_to_proto(s: dict) -> monitoring_pb2.DeviceStateResponse:
         ram_used_mb=float(s.get("ram_used_mb", 0.0)),
         last_seen_at=s.get("last_seen_at", ""),
     )
+    if "coordinates" in s and s["coordinates"]:
+        res.coordinates.extend(s["coordinates"])
+    return res
 
 class MonitoringServiceHandler(monitoring_pb2_grpc.MonitoringServiceServicer):
     def __init__(self, repo_factory): self._repo_factory = repo_factory

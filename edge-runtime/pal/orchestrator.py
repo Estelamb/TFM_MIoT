@@ -86,6 +86,7 @@ class Orchestrator:
         telemetry_interval_s: float = 10.0,
         start_time: float | None = None,
         primary_camera_id: str = "camera_0",
+        coordinates: list[float] | None = None,
     ) -> None:
         self._comm = comm_client
         self._device_manager = device_manager
@@ -94,6 +95,7 @@ class Orchestrator:
         self._telemetry_interval = telemetry_interval_s
         self._start_time = start_time or time.monotonic()
         self._primary_camera_id = primary_camera_id
+        self._coordinates = coordinates
 
         # ── Deployment state ──────────────────────────────────────────────
         self._active_deployment_id: str = ""
@@ -224,6 +226,7 @@ class Orchestrator:
             "active_model_id": self._active_model_id,
             "active_script_id": self._active_script_id,
             "libraries_hash": get_libraries_hash(),
+            "coordinates": self._coordinates,
         }
 
         # Temperature sensors (not available on all platforms)

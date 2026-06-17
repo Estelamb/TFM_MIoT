@@ -119,6 +119,7 @@ class EdgeConnectorMQTTListener:
                     await client.subscribe("device/+/events")
                     await client.subscribe("device/+/telemetry")
                     await client.subscribe("device/+/inference")
+                    await client.subscribe("device/+/status")
                     async for msg in client.messages:
                         await self._handle(msg)
             except aiomqtt.MqttError as e:
@@ -141,6 +142,8 @@ class EdgeConnectorMQTTListener:
             await self._handle_inference(device_id, payload)
         elif topic.endswith("/events"):
             await self._handle_event(payload)
+        elif topic.endswith("/status"):
+            await self._handle_status(device_id, payload)
 
     async def _handle_telemetry(self, device_id: str, payload: dict):
         # 1. Update the current state and append historical stats in MongoDB
@@ -153,7 +156,23 @@ class EdgeConnectorMQTTListener:
             "active_model_id": payload.get("active_model_id", ""),
             "active_script_id": payload.get("active_script_id", ""),
             "active_deployment_id": payload.get("active_deployment_id", ""),
+            "coordinates": payload.get("coordinates", []),
         })
+
+        # Update device status to online in PostgreSQL (via registry-service gRPC)
+        try:
+            from shared.proto_gen import device_pb2, device_pb2_grpc
+            from app.config import get_settings
+            import grpc
+            s_cfg = get_settings()
+            target_grpc = getattr(s_cfg, "device_service_grpc", s_cfg.ai_service_grpc)
+            async with grpc.aio.insecure_channel(target_grpc) as channel:
+                stub = device_pb2_grpc.DeviceServiceStub(channel)
+                await stub.UpdateDeviceStatus(
+                    device_pb2.UpdateDeviceStatusRequest(id=device_id, status="online")
+                )
+        except Exception as e:
+            logger.error(f"Failed to update device status in registry for '{device_id}': {e}")
 
         # 2. Update Prometheus metrics
         CPU_GAUGE.labels(device_id=device_id).set(payload.get("cpu_percent", 0.0))
@@ -217,3 +236,28 @@ class EdgeConnectorMQTTListener:
             elif event == "deploy_failed":
                 await repo.mark_failed(dep, payload.get("error", "unknown"))
                 logger.warning(f"Deployment {dep_id} → failed")
+
+    async def _handle_status(self, device_id: str, payload: dict):
+        status = payload.get("status", "offline")
+        logger.info(f"Device '{device_id}' status update received: {status}")
+        
+        # 1. Update MongoDB status
+        mongo_repo = self._mongo_repo_factory()
+        await mongo_repo.upsert_device_state(device_id, {
+            "status": status
+        })
+        
+        # 2. Update PostgreSQL status
+        try:
+            from shared.proto_gen import device_pb2, device_pb2_grpc
+            from app.config import get_settings
+            import grpc
+            s_cfg = get_settings()
+            target_grpc = getattr(s_cfg, "device_service_grpc", s_cfg.ai_service_grpc)
+            async with grpc.aio.insecure_channel(target_grpc) as channel:
+                stub = device_pb2_grpc.DeviceServiceStub(channel)
+                await stub.UpdateDeviceStatus(
+                    device_pb2.UpdateDeviceStatusRequest(id=device_id, status=status)
+                )
+        except Exception as e:
+            logger.error(f"Failed to update device status in registry for '{device_id}': {e}")

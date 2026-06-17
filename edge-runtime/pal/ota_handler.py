@@ -25,7 +25,7 @@ import importlib.util
 import logging
 import types
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Any
 
 import httpx
 
@@ -55,11 +55,13 @@ class OTAHandler:
         work_dir: Path,
         on_event: Callable,
         on_deploy_success: Callable,
+        device_manager: Any = None,
     ) -> None:
         self._work_dir = work_dir
         self._work_dir.mkdir(parents=True, exist_ok=True)
         self._on_event = on_event
         self._on_deploy_success = on_deploy_success
+        self._device_manager = device_manager
 
         # Paths for the active artefacts on disk
         self._model_path = work_dir / "model"
@@ -168,6 +170,11 @@ class OTAHandler:
             with zipfile.ZipFile(temp_zip, "r") as zip_ref:
                 zip_ref.extractall(hw_dir)
 
+            # Re-open any device backends that were closed or failed at startup
+            if self._device_manager:
+                logger.info("Re-opening device backends after library update...")
+                self._device_manager.open_all()
+
             # 3. Notify success
             await self._on_event("update_libraries_ack", libraries_sha256=lib_sha)
             logger.info("OTA dynamic hardware libraries update completed successfully")
@@ -187,10 +194,20 @@ class OTAHandler:
     @staticmethod
     async def _download(url: str, dest: Path) -> None:
         """Stream-download *url* to *dest* using chunked I/O."""
+        import os
+        headers = {}
+        if os.path.exists("/.dockerenv") or os.environ.get("AURA_MQTT_HOST") == "mosquitto":
+            if "http://localhost:9000" in url:
+                headers["Host"] = "localhost:9000"
+                url = url.replace("http://localhost:9000", "http://minio:9000")
+            elif "http://127.0.0.1:9000" in url:
+                headers["Host"] = "127.0.0.1:9000"
+                url = url.replace("http://127.0.0.1:9000", "http://minio:9000")
+
         async with httpx.AsyncClient(
             timeout=120.0, follow_redirects=True
         ) as http:
-            async with http.stream("GET", url) as response:
+            async with http.stream("GET", url, headers=headers) as response:
                 response.raise_for_status()
                 with open(dest, "wb") as fh:
                     async for chunk in response.aiter_bytes(65_536):

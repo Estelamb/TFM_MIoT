@@ -1,49 +1,44 @@
 """
-AURA Sensor Library: Template Sensor
-=====================================
-Copy this directory to add a new sensor peripheral under:
-hardware/sensors/<category>/<sensor_name>/
-
-Each sensor library must contain a class with:
-1. An __init__ method accepting configuration parameters.
-2. An initialize() method to set up physical connection/pins.
-3. A read_value() method returning the measured value.
+AURA Generic Sensor Library: Template Category
+==============================================
 """
+from hardware.utils import get_active_driver, load_specific_driver
 
-LABEL = "Template Sensor"
-
-class TemplateSensorLibrary:
+class TemplateSensor:
     def __init__(self, **kwargs):
-        """
-        Initializes the sensor driver with the parameters defined in components_config.yaml.
-        Example configuration:
-          params:
-            pin: 4
-            address: 0x68
-        """
-        self.params = kwargs
+        driver, params = get_active_driver("template")
+        # Fallback to dummy_sensor if default driver is specified
+        if driver == "template":
+            driver = "dummy_sensor"
+        merged_params = {**params, **kwargs}
+        driver_cls = load_specific_driver("sensors", "template", driver)
+        try:
+            self._delegate = driver_cls(**merged_params)
+        except TypeError:
+            self._delegate = driver_cls()
 
     def initialize(self) -> bool:
-        """
-        Set up the connection to the physical sensor.
-        Should perform hardware setup, verify I2C address, initialize GPIO, etc.
-
-        Returns:
-            bool: True if connection succeeded and sensor is ready, False otherwise.
-        """
-        # TODO: Implement connection/initialization logic
+        if hasattr(self._delegate, "initialize"):
+            return self._delegate.initialize()
         return True
 
-    def read_value(self) -> Any:
-        """
-        Read the latest value from the physical sensor.
+    def read_value(self):
+        if hasattr(self._delegate, "read_value"):
+            return self._delegate.read_value()
+        raise AttributeError("Template driver has no read_value method")
 
-        Returns:
-            The read value. Depending on the sensor type:
-            * camera -> np.ndarray (BGR frame)
-            * temperature -> dict (e.g. {"temperature_celsius": 25.0})
-            * distance -> float (e.g. 120.5)
-            * imu -> dict (e.g. {"accel": [x, y, z], "gyro": [x, y, z]})
-        """
-        # TODO: Implement read logic
-        return {}
+# Module-level convenience functions using a default global instance
+_default_sensor = None
+
+def _get_default_sensor():
+    global _default_sensor
+    if _default_sensor is None:
+        _default_sensor = TemplateSensor()
+        _default_sensor.initialize()
+    return _default_sensor
+
+def initialize() -> bool:
+    return _get_default_sensor().initialize()
+
+def read_value():
+    return _get_default_sensor().read_value()

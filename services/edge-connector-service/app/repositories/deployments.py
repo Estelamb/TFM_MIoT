@@ -6,8 +6,8 @@ from app.models.orm import Deployment, DeviceRef, ModelRef, ScriptRef
 class DeploymentRepository:
     def __init__(self, s: AsyncSession): self.s = s
 
-    async def create(self, device_id: str, model_id: str, script_id: str) -> Deployment:
-        d = Deployment(device_id=device_id, model_id=model_id, script_id=script_id)
+    async def create(self, device_id: str, model_id: str, script_id: str, name: str | None = None) -> Deployment:
+        d = Deployment(device_id=device_id, model_id=model_id, script_id=script_id, name=name)
         self.s.add(d); await self.s.commit(); await self.s.refresh(d); return d
 
     async def get(self, id: str) -> Deployment | None:
