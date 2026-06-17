@@ -1,0 +1,55 @@
+aura_hw.backends.devices.actuator.base
+======================================
+
+.. py:module:: aura_hw.backends.devices.actuator.base
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   aura_hw.backends.devices.actuator.base.ActuatorBackend
+
+
+Module Contents
+---------------
+
+.. py:class:: ActuatorBackend(component_id: str)
+
+   Bases: :py:obj:`aura_hw.backends.devices.base.DeviceBackend`
+
+
+   Specialised device backend for actuator peripherals.
+
+   Adds the :meth:`write` method, which sets the state/action of the actuator.
+
+
+   .. py:property:: device_type
+      :type: str
+
+
+      Device category string.
+
+      :returns: One of ``"camera"``, ``"sensor"``, ``"gpio"``.
+
+
+   .. py:method:: write(value: Any) -> None
+      :abstractmethod:
+
+
+      Set or trigger the actuator state/action.
+
+      :param value: The state/command value (e.g. RGB color tuple for LED, bool for relay/buzzer).
+
+      :raises RuntimeError: If the actuator is not open.
+      :raises IOError: If writing to the actuator fails.
+
+
+
+   .. py:method:: read() -> Any
+
+      Satisfies the DeviceBackend contract.
+
+
+

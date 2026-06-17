@@ -1,0 +1,97 @@
+aura_hw.backends.inference.general
+==================================
+
+.. py:module:: aura_hw.backends.inference.general
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   aura_hw.backends.inference.general.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   aura_hw.backends.inference.general.GeneralInferenceBackend
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:class:: GeneralInferenceBackend(hardware_type: str)
+
+   Bases: :py:obj:`aura_hw.backends.inference.base.InferenceBackend`
+
+
+   General Inference backend/wrapper.
+   Dynamically loads custom inference runtime from hardware/hw_arch/<hw>/inference/library.py.
+
+
+   .. py:property:: hardware_type
+      :type: str
+
+
+      Canonical hardware identifier for this backend.
+
+      :returns: One of ``"hailo8"``, ``"hailo8l"``, ``"rpi_ai_cam"``,
+                ``"rpi"``, ``"jetson_orin_nano"``.
+
+
+   .. py:method:: load(model_path: str) -> None
+
+      Load a compiled model file into the accelerator.
+
+      :param model_path: Absolute path to the compiled model.
+                         Expected format depends on the backend
+                         (``.hef`` for Hailo, ``.tflite`` for RPi CPU,
+                         ``packerOut.zip`` for IMX500).
+
+      :raises RuntimeError: If the required SDK is not installed.
+      :raises FileNotFoundError: If ``model_path`` does not exist.
+
+
+
+   .. py:method:: infer(inputs: Any) -> Any
+
+      Execute a single inference pass.
+
+      :param inputs: Input tensor(s). Pass ``None`` for sensor-driven
+                     backends (e.g. IMX500) where the hardware captures
+                     input internally, or when the frame is already
+                     pre-loaded into the accelerator pipeline.
+
+      :returns: Raw model outputs. Structure varies by backend.
+
+
+
+   .. py:method:: unload() -> None
+
+      Release the model and free all accelerator resources.
+
+
+
+   .. py:method:: device_info() -> dict
+
+      Return a dict describing the accelerator connected to this backend.
+
+      Subclasses should override this to report accelerator model,
+      firmware version, SDK version, etc.
+
+      :returns:
+
+                * ``hardware_type`` — matches :attr:`hardware_type`.
+                * ``accelerator``   — accelerator model string.
+                * ``sdk``           — SDK / runtime package name.
+                * ``sdk_version``   — version string.
+                * ``firmware``      — firmware version, if available.
+      :rtype: A dict with hardware-specific metadata. Common keys
+
+
+

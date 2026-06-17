@@ -1,0 +1,111 @@
+app.routers.devices
+===================
+
+.. py:module:: app.routers.devices
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   app.routers.devices.router
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   app.routers.devices.DeviceCreate
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   app.routers.devices.create_device
+   app.routers.devices.list_devices
+   app.routers.devices.get_hardware_types
+   app.routers.devices.get_sensors
+   app.routers.devices.get_actuators
+   app.routers.devices.get_all_labels
+   app.routers.devices.get_device
+   app.routers.devices.delete_device
+
+
+Module Contents
+---------------
+
+.. py:data:: router
+
+.. py:class:: DeviceCreate
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   .. py:attribute:: name
+      :type:  str
+
+
+   .. py:attribute:: hardware_type
+      :type:  str
+
+
+   .. py:attribute:: description
+      :type:  str
+      :value: ''
+
+
+
+   .. py:attribute:: sensors
+      :type:  list[str]
+      :value: []
+
+
+
+   .. py:attribute:: actuators
+      :type:  list[str]
+      :value: []
+
+
+
+   .. py:attribute:: others
+      :type:  list[str]
+      :value: []
+
+
+
+.. py:function:: create_device(body: DeviceCreate, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: list_devices(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: get_hardware_types(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: get_sensors(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: get_actuators(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: get_all_labels(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: get_device(device_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: delete_device(device_id: str, _=Depends(verify_token))
+   :async:
+
+

@@ -1,0 +1,38 @@
+transport
+=========
+
+.. py:module:: transport
+
+.. autoapi-nested-parse::
+
+   Capa de transporte abstracta.
+   Implementada sobre MQTT. Diseñada para ser intercambiable (WebSocket, AMQP, etc.)
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/transport/base/index
+   /autoapi/transport/mqtt/index
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   transport.init_transport
+   transport.get_transport
+
+
+Package Contents
+----------------
+
+.. py:function:: init_transport(t: shared.transport.base.TransportBase) -> None
+
+.. py:function:: get_transport() -> shared.transport.base.TransportBase
+

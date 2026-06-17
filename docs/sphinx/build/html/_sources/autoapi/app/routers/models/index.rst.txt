@@ -1,0 +1,190 @@
+app.routers.models
+==================
+
+.. py:module:: app.routers.models
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   app.routers.models.router
+   app.routers.models.ALLOWED_BASE_MODELS
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   app.routers.models.TrainModelRequestSchema
+   app.routers.models.UpdateModelRequestSchema
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   app.routers.models.get_base_model_options
+   app.routers.models.download_base_model
+   app.routers.models.upload_model
+   app.routers.models.list_models
+   app.routers.models.get_model
+   app.routers.models.associate_model_dataset
+   app.routers.models.delete_model
+   app.routers.models.download_model_source
+   app.routers.models.download_model_compiled
+   app.routers.models.stream_model_logs
+   app.routers.models.train_model
+   app.routers.models.update_model
+
+
+Module Contents
+---------------
+
+.. py:data:: router
+
+.. py:data:: ALLOWED_BASE_MODELS
+
+.. py:function:: get_base_model_options(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: download_base_model(filename: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: upload_model(name: str = Form(...), description: str = Form(''), hardware_type: str = Form(''), compile: bool = Form(False), dataset_id: str = Form(''), dataset_version_id: str = Form(''), base_architecture: str = Form(...), epochs: int = Form(None), input_size: str = Form(None), batch_size: int = Form(None), file: fastapi.UploadFile = File(...), _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: list_models(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: get_model(model_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: associate_model_dataset(model_id: str, dataset_id: str, dataset_version_id: str = None, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: delete_model(model_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: download_model_source(model_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: download_model_compiled(model_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: stream_model_logs(model_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:class:: TrainModelRequestSchema
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   .. py:attribute:: name
+      :type:  str
+
+
+   .. py:attribute:: description
+      :type:  str
+      :value: ''
+
+
+
+   .. py:attribute:: dataset_id
+      :type:  str
+
+
+   .. py:attribute:: dataset_version_id
+      :type:  str
+      :value: None
+
+
+
+   .. py:attribute:: base_model
+      :type:  str
+
+
+   .. py:attribute:: epochs
+      :type:  int
+      :value: 20
+
+
+
+   .. py:attribute:: input_size
+      :type:  str
+      :value: '640x640'
+
+
+
+   .. py:attribute:: gpu_percent
+      :type:  float
+      :value: 0.9
+
+
+
+   .. py:attribute:: device
+      :type:  str
+      :value: '0'
+
+
+
+.. py:function:: train_model(req: TrainModelRequestSchema, _=Depends(verify_token))
+   :async:
+
+
+.. py:class:: UpdateModelRequestSchema
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   .. py:attribute:: name
+      :type:  str
+
+
+   .. py:attribute:: description
+      :type:  str
+      :value: ''
+
+
+
+   .. py:attribute:: epochs
+      :type:  int
+      :value: None
+
+
+
+   .. py:attribute:: input_size
+      :type:  str
+      :value: None
+
+
+
+   .. py:attribute:: batch_size
+      :type:  int
+      :value: None
+
+
+
+   .. py:attribute:: base_architecture
+      :type:  str
+      :value: None
+
+
+
+.. py:function:: update_model(model_id: str, req: UpdateModelRequestSchema, _=Depends(verify_token))
+   :async:
+
+

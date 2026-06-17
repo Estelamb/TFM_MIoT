@@ -1,0 +1,27 @@
+app.stubs
+=========
+
+.. py:module:: app.stubs
+
+.. autoapi-nested-parse::
+
+   gRPC stubs singleton para el gateway.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   app.stubs.init_stubs
+   app.stubs.get_stub
+
+
+Module Contents
+---------------
+
+.. py:function:: init_stubs()
+
+.. py:function:: get_stub(name: str)
+

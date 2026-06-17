@@ -1,0 +1,37 @@
+app.compilers.yolo_train
+========================
+
+.. py:module:: app.compilers.yolo_train
+
+.. autoapi-nested-parse::
+
+   YOLO Dataset Preparation and Training Pipeline
+   =================================================
+
+   This script combines dataset splitting and YOLO model training into a single workflow.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   app.compilers.yolo_train.parse_arguments
+   app.compilers.yolo_train.prepare_dataset
+   app.compilers.yolo_train.main
+
+
+Module Contents
+---------------
+
+.. py:function:: parse_arguments()
+
+.. py:function:: prepare_dataset(args) -> str
+
+   Discovers images, splits them into train/val/test sets, and generates a YOLO YAML config.
+   Returns the path to the generated YAML config file.
+
+
+.. py:function:: main()
+

@@ -1,0 +1,64 @@
+aura_hw.detect
+==============
+
+.. py:module:: aura_hw.detect
+
+.. autoapi-nested-parse::
+
+   Hardware auto-detection for the AURA edge runtime.
+
+   Probes the host system to determine which AI accelerator is available.
+   The result is cached after the first call so repeated imports don't
+   re-run the detection logic.
+
+   Detection order
+   ---------------
+   1. ``AURA_HARDWARE_TYPE`` environment variable (override, highest priority)
+   2. ``hailortcli fw-control identify`` → ``hailo8`` / ``hailo8l``
+   3. ``/etc/nv_tegra_release`` → ``jetson_orin_nano``
+   4. ``libcamera-hello --list-cameras`` with *imx500* in output → ``rpi_ai_cam``
+   5. ``/proc/device-tree/model`` containing *raspberry* → ``rpi``
+   6. Fallback → ``unknown``
+
+   If the result is ``"unknown"``, :func:`~aura_hw.runtime.load_model` will
+   raise :exc:`RuntimeError`.  Set ``AURA_HARDWARE_TYPE`` to a supported
+   target to override auto-detection.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   aura_hw.detect.detect_hardware
+
+
+Module Contents
+---------------
+
+.. py:function:: detect_hardware() -> str
+
+   Detect the available AI hardware on the current device.
+
+   The result is cached after the first successful call via
+   :func:`functools.lru_cache`.
+
+   :returns:
+
+             * ``"hailo8"``
+             * ``"hailo8l"``
+             * ``"jetson_orin_nano"``
+             * ``"rpi_ai_cam"``
+             * ``"rpi"``
+             * ``"unknown"``
+   :rtype: A hardware identifier string. One of
+
+   .. note::
+
+      Set the environment variable ``AURA_HARDWARE_TYPE`` to bypass
+      auto-detection entirely::
+      
+          AURA_HARDWARE_TYPE=hailo8 python agent.py
+
+

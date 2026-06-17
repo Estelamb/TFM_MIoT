@@ -1,0 +1,15 @@
+app.auth
+========
+
+.. py:module:: app.auth
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/app/auth/jwt/index
+
+

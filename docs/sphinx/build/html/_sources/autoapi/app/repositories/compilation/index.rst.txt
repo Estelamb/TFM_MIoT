@@ -1,0 +1,34 @@
+app.repositories.compilation
+============================
+
+.. py:module:: app.repositories.compilation
+
+.. autoapi-nested-parse::
+
+   Repositorio de compilación.
+   Nota: el estado se actualiza via gRPC al ai-service (que es owner de la tabla models).
+   Este repo solo se usa para lecturas locales de diagnóstico.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   app.repositories.compilation.CompilationRepository
+
+
+Module Contents
+---------------
+
+.. py:class:: CompilationRepository(s: sqlalchemy.ext.asyncio.AsyncSession)
+
+   .. py:attribute:: s
+
+
+   .. py:method:: get_model_ref(model_id: str) -> app.models.orm.ModelRef | None
+      :async:
+
+
+

@@ -1,0 +1,29 @@
+# Tutorial: Raspberry Pi 5 + AI Camera (IMX500)
+
+*(Este tutorial será redactado por el usuario. Espacio reservado para la guía de integración de la cámara inteligente Raspberry Pi AI Camera con sensor IMX500).*
+
+## Introducción a la Raspberry Pi AI Camera (IMX500)
+
+La Raspberry Pi AI Camera incorpora el sensor de visión inteligente Sony IMX500, el cual realiza procesamiento de redes neuronales directamente en la propia cámara. Esto permite procesar imágenes con latencia ultrabaja y liberar de procesamiento a la CPU de la Raspberry Pi.
+
+## Requisitos de Hardware
+
+* Raspberry Pi 5.
+* Raspberry Pi AI Camera (con cable plano CSI específico de RPi5/Zero).
+
+## Configuración y Verificación del Sensor
+
+1. Conecta la cámara al puerto CSI de la Raspberry Pi 5 (asegura una conexión firme del cable flexible).
+2. Actualiza tu sistema operativo:
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
+3. Verifica que la cámara sea detectada:
+   ```bash
+   libcamera-hello --list-cameras
+   ```
+   Deberías ver una cámara detectada con la designación `imx500`.
+
+## Despliegue de Modelos en AURA
+
+El formato de modelo esperado para la AI Camera es un paquete en zip comprimido (`packerOut.zip`) que contiene el firmware de red neuronal compilado para el IMX500 y sus metadatos asociados. Aprende aquí cómo gestionarlo en AURA.

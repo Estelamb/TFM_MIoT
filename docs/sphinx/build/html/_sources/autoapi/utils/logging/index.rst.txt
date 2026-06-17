@@ -1,0 +1,42 @@
+utils.logging
+=============
+
+.. py:module:: utils.logging
+
+.. autoapi-nested-parse::
+
+   Structured logging configuration for all AURA services.
+
+   Configures a consistent log format that includes the service name,
+   making it easy to filter logs when running the full stack.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   utils.logging.configure_logging
+
+
+Module Contents
+---------------
+
+.. py:function:: configure_logging(service: str, level: str = 'INFO') -> None
+
+   Configure stdout logging for a service.
+
+   Sets up a :class:`logging.StreamHandler` writing to stdout with a
+   format that includes the service name and log level.
+
+   :param service: Human-readable service name used as a prefix in every
+                   log line, e.g. ``"api-gateway"`` or ``"device-service"``.
+   :param level: Log level string: ``"DEBUG"``, ``"INFO"``, ``"WARNING"``
+                 or ``"ERROR"``. Defaults to ``"INFO"``.
+
+   .. rubric:: Example
+
+   >>> configure_logging("my-service", "DEBUG")
+
+

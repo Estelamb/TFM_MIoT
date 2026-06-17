@@ -1,0 +1,82 @@
+app.routers.deployments
+=======================
+
+.. py:module:: app.routers.deployments
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   app.routers.deployments.router
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   app.routers.deployments.DeployRequest
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   app.routers.deployments.create_deployment
+   app.routers.deployments.list_deployments
+   app.routers.deployments.list_device_deployments
+   app.routers.deployments.get_deployment
+   app.routers.deployments.delete_deployment
+
+
+Module Contents
+---------------
+
+.. py:data:: router
+
+.. py:class:: DeployRequest
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   .. py:attribute:: device_id
+      :type:  str
+
+
+   .. py:attribute:: model_id
+      :type:  str
+
+
+   .. py:attribute:: script_id
+      :type:  str
+
+
+   .. py:attribute:: name
+      :type:  str
+      :value: ''
+
+
+
+.. py:function:: create_deployment(body: DeployRequest, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: list_deployments(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: list_device_deployments(device_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: get_deployment(deployment_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: delete_deployment(deployment_id: str, _=Depends(verify_token))
+   :async:
+
+

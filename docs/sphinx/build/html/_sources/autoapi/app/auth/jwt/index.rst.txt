@@ -1,0 +1,44 @@
+app.auth.jwt
+============
+
+.. py:module:: app.auth.jwt
+
+.. autoapi-nested-parse::
+
+   JWT authentication helpers for the API Gateway.
+
+   Provides token creation and verification utilities, plus the hardcoded
+   demo user. The demo user will be replaced with database-backed auth
+   in a future iteration.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   app.auth.jwt.oauth2_scheme
+   app.auth.jwt.DEMO_USER
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   app.auth.jwt.create_token
+   app.auth.jwt.verify_token
+
+
+Module Contents
+---------------
+
+.. py:data:: oauth2_scheme
+
+.. py:data:: DEMO_USER
+
+.. py:function:: create_token(username: str) -> str
+
+.. py:function:: verify_token(token: str = Depends(oauth2_scheme)) -> str
+

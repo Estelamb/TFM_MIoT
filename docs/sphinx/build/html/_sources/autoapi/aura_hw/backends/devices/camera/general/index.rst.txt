@@ -1,0 +1,93 @@
+aura_hw.backends.devices.camera.general
+=======================================
+
+.. py:module:: aura_hw.backends.devices.camera.general
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   aura_hw.backends.devices.camera.general.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   aura_hw.backends.devices.camera.general.GeneralCameraBackend
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:class:: GeneralCameraBackend(component_id: str, driver: str)
+
+   Bases: :py:obj:`aura_hw.backends.devices.camera.base.CameraBackend`
+
+
+   General Camera library/wrapper.
+   Depending on the driver selected in the config:
+     - For built-in drivers ('opencv', 'libcamera', 'imx500'), delegates to the built-in backends.
+     - For custom drivers, dynamically loads from hardware/sensors/camera/<driver>/library.py.
+
+
+   .. py:property:: driver
+      :type: str
+
+
+      Driver / backend implementation name.
+
+      :returns: A short lowercase identifier such as ``"opencv"``,
+                ``"libcamera"``, ``"imx500"``, ``"bme280"``.
+
+
+   .. py:method:: open(params: dict) -> None
+
+      Initialise the device with the given configuration parameters.
+
+      :param params: Dict from the ``params`` block in
+                     ``components_config.yaml`` for this component.
+
+      :raises RuntimeError: If the required SDK/driver is not available.
+      :raises OSError: If the device cannot be opened (e.g. wrong index).
+
+
+
+   .. py:method:: close() -> None
+
+      Release all resources held by this device.
+
+      Safe to call even if :meth:`open` has not been called (no-op).
+
+
+
+   .. py:method:: capture_frame() -> numpy.ndarray
+
+      Capture and return the latest image frame.
+
+      :returns: A ``numpy.ndarray`` with shape ``(H, W, 3)`` in BGR uint8.
+
+      :raises RuntimeError: If the camera has not been opened yet.
+      :raises IOError: If frame capture fails.
+
+
+
+   .. py:method:: info() -> dict
+
+      Return a dict describing this device's current state.
+
+      :returns:
+
+                * ``component_id`` — same as :attr:`component_id`
+                * ``device_type``  — same as :attr:`device_type`
+                * ``driver``       — same as :attr:`driver`
+                * ``status``       — ``"open"`` or ``"closed"``
+      :rtype: A dict with at minimum
+
+
+

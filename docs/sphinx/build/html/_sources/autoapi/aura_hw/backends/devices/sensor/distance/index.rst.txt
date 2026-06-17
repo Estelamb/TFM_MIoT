@@ -1,0 +1,108 @@
+aura_hw.backends.devices.sensor.distance
+========================================
+
+.. py:module:: aura_hw.backends.devices.sensor.distance
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   aura_hw.backends.devices.sensor.distance.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:class:: GeneralDistanceSensor(component_id: str, driver: str)
+
+   Bases: :py:obj:`aura_hw.backends.devices.sensor.base.SensorBackend`
+
+
+   General Distance Sensor library/wrapper.
+   Dynamically loads custom distance sensor from hardware/sensors/distance/<driver>/library.py.
+
+
+   .. py:property:: device_type
+      :type: str
+
+
+      Device category string.
+
+      :returns: One of ``"camera"``, ``"sensor"``, ``"gpio"``.
+
+
+   .. py:property:: driver
+      :type: str
+
+
+      Driver / backend implementation name.
+
+      :returns: A short lowercase identifier such as ``"opencv"``,
+                ``"libcamera"``, ``"imx500"``, ``"bme280"``.
+
+
+   .. py:method:: open(params: dict) -> None
+
+      Initialise the device with the given configuration parameters.
+
+      :param params: Dict from the ``params`` block in
+                     ``components_config.yaml`` for this component.
+
+      :raises RuntimeError: If the required SDK/driver is not available.
+      :raises OSError: If the device cannot be opened (e.g. wrong index).
+
+
+
+   .. py:method:: close() -> None
+
+      Release all resources held by this device.
+
+      Safe to call even if :meth:`open` has not been called (no-op).
+
+
+
+   .. py:method:: measure() -> dict
+
+      Read all measurements from the sensor.
+
+      :returns:
+
+                A dict mapping measurement names to values, for example::
+
+                    {
+                        "temperature_c":  23.4,
+                        "humidity_pct":   55.1,
+                        "pressure_hpa": 1013.2,
+                    }
+
+      :raises RuntimeError: If the sensor has not been opened.
+      :raises IOError: If the measurement fails (e.g. I2C bus error).
+
+
+
+   .. py:method:: info() -> dict
+
+      Return a dict describing this device's current state.
+
+      :returns:
+
+                * ``component_id`` — same as :attr:`component_id`
+                * ``device_type``  — same as :attr:`device_type`
+                * ``driver``       — same as :attr:`driver`
+                * ``status``       — ``"open"`` or ``"closed"``
+      :rtype: A dict with at minimum
+
+
+

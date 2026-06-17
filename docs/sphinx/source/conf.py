@@ -8,12 +8,9 @@ _root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 sys.path.insert(0, _root)
 for svc in [
     "services/api-gateway",
-    "services/device-service",
-    "services/ai-service",
-    "services/script-service",
+    "services/registry-service",
     "services/mlops-service",
-    "services/deployment-service",
-    "services/monitoring-service",
+    "services/edge-connector-service",
     "edge-runtime",
 ]:
     sys.path.insert(0, os.path.join(_root, svc))
@@ -41,12 +38,9 @@ autoapi_dirs              = [
     os.path.join(_root, "shared"),
     os.path.join(_root, "edge-runtime/aura_hw"),
     os.path.join(_root, "services/api-gateway/app"),
-    os.path.join(_root, "services/device-service/app"),
-    os.path.join(_root, "services/ai-service/app"),
-    os.path.join(_root, "services/script-service/app"),
+    os.path.join(_root, "services/registry-service/app"),
     os.path.join(_root, "services/mlops-service/app"),
-    os.path.join(_root, "services/deployment-service/app"),
-    os.path.join(_root, "services/monitoring-service/app"),
+    os.path.join(_root, "services/edge-connector-service/app"),
 ]
 autoapi_keep_files        = False
 autoapi_options           = [
