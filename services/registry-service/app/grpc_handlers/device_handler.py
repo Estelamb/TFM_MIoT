@@ -51,3 +51,9 @@ class DeviceServiceHandler(device_pb2_grpc.DeviceServiceServicer):
             d = await DeviceRepository(s).update_status(req.id, req.status)
             if not d: ctx.abort(grpc.StatusCode.NOT_FOUND, "Device not found"); return
             return _to_proto(d)
+
+    async def UpdateDevice(self, req, ctx):
+        async with self._sf() as s:
+            d = await DeviceRepository(s).update(req.id, req.name, req.description or None)
+            if not d: ctx.abort(grpc.StatusCode.NOT_FOUND, "Device not found"); return
+            return _to_proto(d)

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDevices, createDevice, deleteDevice, getHardwareTypes, getSensors, getActuators } from "@/lib/api";
+import { getDevices, createDevice, deleteDevice, getHardwareTypes, getSensors, getActuators, updateDevice } from "@/lib/api";
 import { useDataMode } from "@/hooks/useDataMode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -12,7 +12,7 @@ import { Modal } from "@/components/ui/Modal";
 import { HW_LABELS } from "@/lib/utils";
 import {
   Cpu, Plus, Trash2, Zap, Radio, Layers, Server, Check, Info, ChevronDown, ChevronRight,
-  Camera, Thermometer, Ruler, Compass, Power, Disc, Volume2, Lightbulb
+  Camera, Thermometer, Ruler, Compass, Power, Disc, Volume2, Lightbulb, Edit2
 } from "lucide-react";
 
 type TabType = "devices" | "architectures" | "sensors" | "actuators" | "nodes";
@@ -76,6 +76,24 @@ export default function DevicesPage() {
   const [openRegisterComponent, setOpenRegisterComponent] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState<any>(null);
   const [componentName, setComponentName] = useState("");
+  const [editingModalName, setEditingModalName] = useState("");
+
+  useEffect(() => {
+    if (selectedDevice) {
+      setEditingModalName(selectedDevice.name);
+    } else {
+      setEditingModalName("");
+    }
+  }, [selectedDevice]);
+
+  const updateDeviceMutation = useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) =>
+      updateDevice(id, { name }),
+    onSuccess: (updatedDevice) => {
+      qc.invalidateQueries({ queryKey: ["devices"] });
+      setSelectedDevice((prev: any) => prev ? { ...prev, name: updatedDevice.name } : null);
+    },
+  });
 
   const [deviceForm, setDeviceForm] = useState({
     name: "",
@@ -581,8 +599,33 @@ export default function DevicesPage() {
       </Modal>
 
       {/* MODAL: DEVICE SPEC VIEW */}
-      <Modal open={!!selectedDevice} onClose={() => setSelectedDevice(null)} title={`Stack Details: ${selectedDevice?.name}`}>
+      <Modal open={!!selectedDevice} onClose={() => setSelectedDevice(null)} title="Device Specs & Stack">
         <div className="space-y-6 pt-4">
+          <div>
+            <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider block">Device Name / Label</label>
+            <div className="flex gap-2">
+              <Input
+                value={editingModalName}
+                onChange={(e) => setEditingModalName(e.target.value)}
+                className="flex-1 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500"
+                placeholder="Device label..."
+              />
+              <Button
+                type="button"
+                onClick={() => {
+                  if (editingModalName.trim()) {
+                    updateDeviceMutation.mutate({ id: selectedDevice.id, name: editingModalName.trim() });
+                  }
+                }}
+                disabled={!editingModalName.trim() || editingModalName === selectedDevice?.name || updateDeviceMutation.isPending}
+                loading={updateDeviceMutation.isPending}
+                className="shrink-0"
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+
           <div>
             <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Hardware Type</h4>
             <Badge variant="default">{HW_LABELS[selectedDevice?.hardware_type] || selectedDevice?.hardware_type || "—"}</Badge>

@@ -7,6 +7,7 @@ service DeviceService {
   rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse);
   rpc DeleteDevice(DeleteDeviceRequest) returns (DeleteDeviceResponse);
   rpc UpdateDeviceStatus(UpdateDeviceStatusRequest) returns (DeviceResponse);
+  rpc UpdateDevice(UpdateDeviceRequest) returns (DeviceResponse);
 }
 
 message CreateDeviceRequest {
@@ -24,6 +25,11 @@ message DeleteDeviceResponse { bool success = 1; }
 message UpdateDeviceStatusRequest {
   string id = 1;
   string status = 2;
+}
+message UpdateDeviceRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
 }
 message DeviceResponse {
   string id = 1;

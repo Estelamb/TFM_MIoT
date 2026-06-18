@@ -12,6 +12,10 @@ class DeviceCreate(BaseModel):
     actuators: list[str] = []
     others: list[str] = []
 
+class DeviceUpdate(BaseModel):
+    name: str
+    description: str = ""
+
 @router.post("", status_code=201)
 async def create_device(body: DeviceCreate, _=Depends(verify_token)):
     stub = get_stub("device")
@@ -84,4 +88,13 @@ async def get_device(device_id: str, _=Depends(verify_token)):
 @router.delete("/{device_id}", status_code=204)
 async def delete_device(device_id: str, _=Depends(verify_token)):
     await get_stub("device").DeleteDevice(device_pb2.DeleteDeviceRequest(id=device_id))
+
+@router.put("/{device_id}")
+async def update_device(device_id: str, body: DeviceUpdate, _=Depends(verify_token)):
+    stub = get_stub("device")
+    r = await stub.UpdateDevice(device_pb2.UpdateDeviceRequest(
+        id=device_id, name=body.name, description=body.description))
+    return {"id": r.id, "name": r.name, "hardware_type": r.hardware_type,
+            "description": r.description, "status": r.status, "created_at": r.created_at,
+            "sensors": list(r.sensors), "actuators": list(r.actuators), "others": list(r.others)}
 

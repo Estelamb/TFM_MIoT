@@ -195,14 +195,31 @@ class OTAHandler:
     async def _download(url: str, dest: Path) -> None:
         """Stream-download *url* to *dest* using chunked I/O."""
         import os
+        import socket
+        from urllib.parse import urlparse, urlunparse
+        
         headers = {}
-        if os.path.exists("/.dockerenv") or os.environ.get("AURA_MQTT_HOST") == "mosquitto":
-            if "http://localhost:9000" in url:
-                headers["Host"] = "localhost:9000"
-                url = url.replace("http://localhost:9000", "http://minio:9000")
-            elif "http://127.0.0.1:9000" in url:
-                headers["Host"] = "127.0.0.1:9000"
-                url = url.replace("http://127.0.0.1:9000", "http://minio:9000")
+        parsed = urlparse(url)
+        
+        # Check if the URL points to a standard local/internal development address
+        if parsed.hostname in ("localhost", "127.0.0.1", "minio"):
+            # Check if internal 'minio' hostname is resolvable (true in platform docker network)
+            use_minio = False
+            try:
+                socket.gethostbyname("minio")
+                use_minio = True
+            except socket.gaierror:
+                pass
+                
+            target_host = "minio" if use_minio else os.environ.get("AURA_MQTT_HOST", "localhost")
+            new_netloc = f"{target_host}:{parsed.port}" if parsed.port else target_host
+            
+            # Always preserve the original signed Host header for signature validation
+            headers["Host"] = parsed.netloc
+                
+            parsed = parsed._replace(netloc=new_netloc)
+            url = urlunparse(parsed)
+            logger.info(f"Redirected local download URL target to: {url}")
 
         async with httpx.AsyncClient(
             timeout=120.0, follow_redirects=True

@@ -82,27 +82,63 @@ done
 
 ---
 
-## Run the edge agent on a physical device
+## Run the edge runtime (Agent)
 
-Install dependencies (Hailo example):
+The AURA edge agent runs on the edge device or locally for testing using Docker.
 
+### Running with Docker Compose
+
+Depending on where you are running the agent:
+
+#### Case A: Running locally on the same host as the platform (Testing)
+1. **Verify network**: The edge agent container connects to the main platform network (`aura_aura-net`). Ensure you have started the core platform stack first (`docker compose up -d` in the root).
+2. **Start the agent**:
+   ```bash
+   docker compose -f edge-runtime/docker-compose.yml up -d
+   ```
+
+#### Case B: Running on a physical edge device
+Since the AURA platform runs on a different host, the `aura_aura-net` network does not exist on the device, and the agent must connect over the network.
+
+1. **Modify `edge-runtime/docker-compose.yml`**:
+   - Change `AURA_MQTT_HOST` from `mosquitto` to the actual IP address or domain of the platform server (e.g., `192.168.1.100`).
+   - Remove or comment out the `networks` block under the `edge-agent` service and the global `networks` section at the bottom of the file so Docker uses the default bridge network.
+2. **Start the Host Hardware Daemon** (needed for native Pi camera access):
+   - Run the lightweight camera daemon natively on your physical Pi's host OS:
+     ```bash
+     python3 edge-runtime/hardware_daemon.py
+     ```
+   - The edge agent container will automatically detect and pull raw frames from this host daemon on port `8008` (using the container bridge gateway route).
+3. **Start the agent**:
+   ```bash
+   docker compose -f docker-compose.yml up -d
+   ```
+
+---
+
+### Verify agent logs
+Regardless of the case, you can monitor the agent via logs:
 ```bash
-pip install aiomqtt httpx numpy psutil
-# HailoRT SDK must already be installed system-wide
+docker compose -f edge-runtime/docker-compose.yml logs -f edge-agent
 ```
 
-Copy the `edge-runtime/` folder to the device, then:
+---
 
-```bash
-AURA_DEVICE_ID=<your-device-id> \
-AURA_MQTT_HOST=<platform-ip> \
-AURA_MQTT_PORT=1883 \
-AURA_HARDWARE_TYPE=hailo8 \
-AURA_TELEMETRY_INTERVAL=10 \
-python agent.py
-```
+### Configuration Parameters Reference
 
-The agent auto-detects hardware if `AURA_HARDWARE_TYPE` is not set.
+The agent reads configuration from `edge-runtime/config/device_config.yaml`. Any configuration key can be overridden using environment variables in the `docker-compose.yml` file:
+
+| Environment Variable | Default (YAML) | Description |
+|---|---|---|
+| `AURA_DEVICE_ID` | `IoT-Edge-Device-01` | Unique device identifier. Must match the Device ID in the AURA web console. |
+| `AURA_MQTT_HOST` | `localhost` | MQTT Broker host IP/domain. |
+| `AURA_MQTT_PORT` | `1883` | MQTT Broker port. |
+| `AURA_HARDWARE_TYPE` | `auto` | Edge hardware profile: `hailo8`, `hailo8l`, `rpi`, `rpi_ai_cam`, `jetson_orin_nano`, `simulated`, or `auto` (auto-detect). |
+| `AURA_TELEMETRY_INTERVAL`| `10` | Frequency (in seconds) to send CPU/RAM telemetry. |
+| `AURA_INFERENCE_INTERVAL`| `0.1` | Loop interval (in seconds) for model inference. |
+| `AURA_WORK_DIR` | `/tmp/aura` | Temporary folder for OTA updates and pipeline work. |
+| `AURA_LOG_LEVEL` | `INFO` | Logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`). |
+| `AURA_COORDINATES` | `[-3.6288, 40.3899]` | GPS coordinates in JSON array style `[longitude, latitude]`. |
 
 ---
 

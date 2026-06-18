@@ -59,6 +59,11 @@ class DeviceServiceStub(object):
                 request_serializer=device__pb2.UpdateDeviceStatusRequest.SerializeToString,
                 response_deserializer=device__pb2.DeviceResponse.FromString,
                 _registered_method=True)
+        self.UpdateDevice = channel.unary_unary(
+                '/aura.device.v1.DeviceService/UpdateDevice',
+                request_serializer=device__pb2.UpdateDeviceRequest.SerializeToString,
+                response_deserializer=device__pb2.DeviceResponse.FromString,
+                _registered_method=True)
 
 
 class DeviceServiceServicer(object):
@@ -94,6 +99,12 @@ class DeviceServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateDevice(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_DeviceServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -120,6 +131,11 @@ def add_DeviceServiceServicer_to_server(servicer, server):
             'UpdateDeviceStatus': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateDeviceStatus,
                     request_deserializer=device__pb2.UpdateDeviceStatusRequest.FromString,
+                    response_serializer=device__pb2.DeviceResponse.SerializeToString,
+            ),
+            'UpdateDevice': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateDevice,
+                    request_deserializer=device__pb2.UpdateDeviceRequest.FromString,
                     response_serializer=device__pb2.DeviceResponse.SerializeToString,
             ),
     }
@@ -257,6 +273,33 @@ class DeviceService(object):
             target,
             '/aura.device.v1.DeviceService/UpdateDeviceStatus',
             device__pb2.UpdateDeviceStatusRequest.SerializeToString,
+            device__pb2.DeviceResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateDevice(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aura.device.v1.DeviceService/UpdateDevice',
+            device__pb2.UpdateDeviceRequest.SerializeToString,
             device__pb2.DeviceResponse.FromString,
             options,
             channel_credentials,

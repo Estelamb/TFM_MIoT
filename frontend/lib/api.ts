@@ -525,3 +525,27 @@ export const updateDataset = async (id: string, body: UpdateDatasetRequest): Pro
   }
   return api.put<Dataset>(`/api/datasets/${id}`, body).then(r => r.data);
 };
+
+export interface UpdateDeviceRequest {
+  name: string;
+  description?: string;
+}
+
+export const updateDevice = async (id: string, body: UpdateDeviceRequest): Promise<Device> => {
+  if (useDataMode.getState().mode === "demo") {
+    const currentDevices = useDataMode.getState().demoData.devices;
+    const updated = currentDevices.map((d: any) =>
+      d.id === id ? { ...d, ...body } : d
+    );
+    useDataMode.setState({
+      demoData: {
+        ...useDataMode.getState().demoData,
+        devices: updated,
+      },
+    });
+    const found = updated.find((d: any) => d.id === id);
+    if (!found) throw new Error("Device not found");
+    return found;
+  }
+  return api.put<Device>(`/api/devices/${id}`, body).then(r => r.data);
+};

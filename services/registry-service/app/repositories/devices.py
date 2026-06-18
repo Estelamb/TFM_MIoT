@@ -24,6 +24,14 @@ class DeviceRepository:
         d.last_seen_at = datetime.now(timezone.utc)
         await self.s.commit(); await self.s.refresh(d); return d
 
+    async def update(self, id: str, name: str, description: str | None) -> Device | None:
+        d = await self.get(id)
+        if not d: return None
+        d.name = name
+        if description is not None:
+            d.description = description
+        await self.s.commit(); await self.s.refresh(d); return d
+
     async def delete(self, id: str) -> bool:
         d = await self.get(id)
         if not d: return False

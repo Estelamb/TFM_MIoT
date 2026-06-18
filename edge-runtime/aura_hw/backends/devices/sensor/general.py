@@ -9,30 +9,37 @@ logger = logging.getLogger(__name__)
 class GeneralSensorBackend(SensorBackend):
     """
     General Sensor library/wrapper.
-    - If driver is 'bme280', delegates to the built-in BME280Backend.
-    - Otherwise, dynamically loads custom sensor from hardware/sensors/sensor/<driver>/library.py.
+    Dynamically loads custom sensor from hardware/sensors/<device_type>/<driver>/library.py.
     """
 
-    def __init__(self, component_id: str, driver: str) -> None:
+    def __init__(self, component_id: str, device_type: str, driver: str) -> None:
         super().__init__(component_id)
+        self._device_type = device_type
         self._driver = driver
         self._delegate = None
         self._is_open = False
+
+    @property
+    def device_type(self) -> str:
+        return self._device_type
 
     @property
     def driver(self) -> str:
         return self._driver
 
     def open(self, params: dict) -> None:
-        # All sensor drivers are loaded dynamically from hardware/sensors/sensor/<driver>/library.py
-        logger.info(f"[GeneralSensorBackend] Dynamically loading sensor driver '{self._driver}'")
-        cls = load_component_class("sensors", "sensor", self._driver)
-        self._delegate = cls()
+        logger.info(f"[GeneralSensorBackend] Dynamically loading custom {self._device_type} driver '{self._driver}'")
+        cls = load_component_class("sensors", self._device_type, self._driver)
+        
+        try:
+            self._delegate = cls(**params)
+        except TypeError:
+            self._delegate = cls()
 
         if hasattr(self._delegate, "initialize"):
             success = self._delegate.initialize()
             if not success:
-                raise OSError(f"Failed to initialize sensor driver '{self._driver}'")
+                raise OSError(f"Failed to initialize custom {self._device_type} driver '{self._driver}'")
         elif hasattr(self._delegate, "open"):
             self._delegate.open(params)
 

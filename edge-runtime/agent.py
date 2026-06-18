@@ -97,6 +97,18 @@ async def main() -> None:
     _setup_logging(log_level)
     logger = logging.getLogger(__name__)
 
+    # Register signal handlers for graceful shutdown on SIGTERM/SIGINT
+    import signal
+    def handle_sigterm(*args):
+        logger.info("Signal received — exiting gracefully")
+        sys.exit(0)
+
+    try:
+        signal.signal(signal.SIGTERM, handle_sigterm)
+        signal.signal(signal.SIGINT, handle_sigterm)
+    except ValueError:
+        pass
+
     work_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"AURA Edge Agent starting — device_id={device_id}")
 
@@ -155,6 +167,19 @@ async def main() -> None:
         # Ensure devices are cleanly closed on exit
         logger.info("Shutting down — closing all devices")
         device_manager.close_all()
+
+        # Publish offline status to the broker before exiting (handles clean exit status sync)
+        logger.info("Publishing offline status to broker...")
+        import json
+        try:
+            import paho.mqtt.client as mqtt
+            client = mqtt.Client()
+            client.connect(mqtt_host, mqtt_port, 60)
+            client.publish(f"device/{device_id}/status", json.dumps({"status": "offline"}), retain=True)
+            client.disconnect()
+            logger.info("Offline status published successfully.")
+        except Exception as e:
+            logger.warning(f"Could not publish offline status on exit: {e}")
 
 
 if __name__ == "__main__":

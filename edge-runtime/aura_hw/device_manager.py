@@ -45,35 +45,35 @@ def _make_camera(cid: str, driver: str) -> DeviceBackend:
 
 def _make_sensor(cid: str, driver: str) -> DeviceBackend:
     from aura_hw.backends.devices.sensor.general import GeneralSensorBackend
-    return GeneralSensorBackend(cid, driver)
+    return GeneralSensorBackend(cid, "sensor", driver)
 
 def _make_temperature(cid: str, driver: str) -> DeviceBackend:
-    from aura_hw.backends.devices.sensor.temperature import GeneralTemperatureSensor
-    return GeneralTemperatureSensor(cid, driver)
+    from aura_hw.backends.devices.sensor.general import GeneralSensorBackend
+    return GeneralSensorBackend(cid, "temperature", driver)
 
 def _make_distance(cid: str, driver: str) -> DeviceBackend:
-    from aura_hw.backends.devices.sensor.distance import GeneralDistanceSensor
-    return GeneralDistanceSensor(cid, driver)
+    from aura_hw.backends.devices.sensor.general import GeneralSensorBackend
+    return GeneralSensorBackend(cid, "distance", driver)
 
 def _make_imu(cid: str, driver: str) -> DeviceBackend:
-    from aura_hw.backends.devices.sensor.imu import GeneralIMUSensor
-    return GeneralIMUSensor(cid, driver)
+    from aura_hw.backends.devices.sensor.general import GeneralSensorBackend
+    return GeneralSensorBackend(cid, "imu", driver)
 
 def _make_led(cid: str, driver: str) -> DeviceBackend:
-    from aura_hw.backends.devices.actuator.led import GeneralLEDActuator
-    return GeneralLEDActuator(cid, driver)
+    from aura_hw.backends.devices.actuator.general import GeneralActuatorBackend
+    return GeneralActuatorBackend(cid, "led", driver)
 
 def _make_buzzer(cid: str, driver: str) -> DeviceBackend:
-    from aura_hw.backends.devices.actuator.buzzer import GeneralBuzzerActuator
-    return GeneralBuzzerActuator(cid, driver)
+    from aura_hw.backends.devices.actuator.general import GeneralActuatorBackend
+    return GeneralActuatorBackend(cid, "buzzer", driver)
 
 def _make_servo(cid: str, driver: str) -> DeviceBackend:
-    from aura_hw.backends.devices.actuator.servo import GeneralServoActuator
-    return GeneralServoActuator(cid, driver)
+    from aura_hw.backends.devices.actuator.general import GeneralActuatorBackend
+    return GeneralActuatorBackend(cid, "servo", driver)
 
 def _make_relay(cid: str, driver: str) -> DeviceBackend:
-    from aura_hw.backends.devices.actuator.relay import GeneralRelayActuator
-    return GeneralRelayActuator(cid, driver)
+    from aura_hw.backends.devices.actuator.general import GeneralActuatorBackend
+    return GeneralActuatorBackend(cid, "relay", driver)
 
 
 # Maps device type → dynamic factory

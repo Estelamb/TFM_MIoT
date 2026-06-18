@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   edge-agent:
     build:
@@ -8,8 +6,8 @@ services:
     container_name: aura-edge-agent
     restart: unless-stopped
     environment:
-      - AURA_DEVICE_ID=a7b02342-4d3e-412a-b821-81194fc46f7a
-      - AURA_MQTT_HOST=mosquitto
+      - AURA_DEVICE_ID=a7b02342-4d3e-412a-b821-81194fc46f7a # ID of the device
+      - AURA_MQTT_HOST=aura-mosquitto # IP of the MQTT Broker
       - AURA_MQTT_PORT=1883
       - AURA_HARDWARE_TYPE=rpi
       - AURA_TELEMETRY_INTERVAL=10
@@ -26,15 +24,14 @@ services:
       # Librerías de hardware — persistente entre reinicios.
       # Se llena vía OTA (update_libraries) al conectarse a la plataforma.
       - edge-agent-hardware:/app/hardware
-    networks:
-      - aura-net
+    # networks: # Only needed if the edge runtime is running on the same host as the platform
+    #   - aura-net
 
 volumes:
   edge-agent-data:
   edge-agent-hardware:
 
-networks:
-  aura-net:
-    name: aura_aura-net
-    external: true
-
+# networks: # Only needed if the edge runtime is running on the same host as the platform
+#   aura-net:
+#     name: aura_aura-net
+#     external: true

@@ -1,35 +1,36 @@
 import logging
 from typing import Any
 
-from aura_hw.backends.devices.sensor.base import SensorBackend
+from aura_hw.backends.devices.actuator.base import ActuatorBackend
 from aura_hw.loader import load_component_class
 
 logger = logging.getLogger(__name__)
 
-class GeneralDistanceSensor(SensorBackend):
+class GeneralActuatorBackend(ActuatorBackend):
     """
-    General Distance Sensor library/wrapper.
-    Dynamically loads custom distance sensor from hardware/sensors/distance/<driver>/library.py.
+    General Actuator library/wrapper.
+    Dynamically loads custom actuator from hardware/actuators/<device_type>/<driver>/library.py.
     """
 
-    def __init__(self, component_id: str, driver: str) -> None:
+    def __init__(self, component_id: str, device_type: str, driver: str) -> None:
         super().__init__(component_id)
+        self._device_type = device_type
         self._driver = driver
         self._delegate = None
         self._is_open = False
 
     @property
     def device_type(self) -> str:
-        return "distance"
+        return self._device_type
 
     @property
     def driver(self) -> str:
         return self._driver
 
     def open(self, params: dict) -> None:
-        logger.info(f"[GeneralDistanceSensor] Dynamically loading custom distance driver '{self._driver}'")
-        cls = load_component_class("sensors", "distance", self._driver)
-        
+        logger.info(f"[GeneralActuatorBackend] Dynamically loading custom {self._device_type} driver '{self._driver}'")
+        cls = load_component_class("actuators", self._device_type, self._driver)
+
         try:
             self._delegate = cls(**params)
         except TypeError:
@@ -38,7 +39,7 @@ class GeneralDistanceSensor(SensorBackend):
         if hasattr(self._delegate, "initialize"):
             success = self._delegate.initialize()
             if not success:
-                raise OSError(f"Failed to initialize custom distance driver '{self._driver}'")
+                raise OSError(f"Failed to initialize custom {self._device_type} driver '{self._driver}'")
         elif hasattr(self._delegate, "open"):
             self._delegate.open(params)
 
@@ -51,23 +52,16 @@ class GeneralDistanceSensor(SensorBackend):
             self._delegate = None
         self._is_open = False
 
-    def measure(self) -> dict:
+    def write(self, value: Any) -> None:
         if not self._is_open or self._delegate is None:
-            raise RuntimeError(f"Distance sensor '{self.component_id}' is not open.")
+            raise RuntimeError(f"{self._device_type.capitalize()} actuator '{self.component_id}' is not open.")
 
-        if hasattr(self._delegate, "read_value"):
-            val = self._delegate.read_value()
-        elif hasattr(self._delegate, "measure"):
-            val = self._delegate.measure()
-        elif hasattr(self._delegate, "read"):
-            val = self._delegate.read()
+        if hasattr(self._delegate, "write_value"):
+            self._delegate.write_value(value)
+        elif hasattr(self._delegate, "write"):
+            self._delegate.write(value)
         else:
-            raise AttributeError(f"Custom distance driver class has no read/measure method")
-
-        # Return dict wrapping the raw distance measurement
-        if isinstance(val, dict):
-            return val
-        return {"distance_cm": val}
+            raise AttributeError(f"Custom {self._device_type} driver class has no write/write_value method")
 
     def info(self) -> dict:
         if self._delegate and hasattr(self._delegate, "info"):
