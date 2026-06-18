@@ -12,7 +12,8 @@ RUN pip install --no-cache-dir \
     httpx==0.27.2 \
     numpy \
     psutil==6.0.0 \
-    pyyaml>=6.0
+    pyyaml>=6.0 \
+    "onnxruntime>=1.16.0"
 
 # ── Application source (PAL + dynamic loading framework) ─────────────────────
 COPY edge-runtime/aura_hw/   /app/aura_hw/
