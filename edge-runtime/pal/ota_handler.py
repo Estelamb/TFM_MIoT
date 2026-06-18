@@ -121,7 +121,9 @@ class OTAHandler:
                 "script_module": script_module,
                 "model_path": str(self._model_path),
             }
-            await self._on_deploy_success(new_state)
+            res = self._on_deploy_success(new_state)
+            if res is not None and (asyncio.iscoroutine(res) or hasattr(res, "__await__")):
+                await res
             await self._on_event("deploy_ack", deployment_id=dep_id)
             logger.info(f"[{dep_id}] OTA deploy completed successfully")
 
