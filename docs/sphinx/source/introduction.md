@@ -7,7 +7,7 @@ Welcome to the official documentation for **AURA Platform**, a comprehensive, en
 AURA provides a robust and scalable infrastructure that enables ML engineers, developers, and integrators to manage and orchestrate Edge AI workflows with ease. The platform covers the following key phases:
 
 1. **Upload and Registry**: Centralized registry for machine learning models (standard formats like PyTorch `.pt`) and custom Python inference scripts.
-2. **Compilation and Optimization**: Automatic model compilation for target hardware architectures (such as Hailo-8, IMX500, TFLite, or TensorRT) via the MLOps service.
+2. **Compilation and Optimization**: Automatic model compilation for target hardware architectures (such as Hailo-8, IMX500, ONNX, or TensorRT) via the MLOps service.
 3. **Remote (Over-the-Air) Deployment**: Distribution of the optimized model and corresponding inference script to multiple edge devices over a secure network powered by the MQTT protocol.
 4. **Monitoring and Telemetry**: Continuous tracking of hardware performance (CPU, RAM usage, temperature) and real-time streaming of inference results via visualization dashboards.
 
@@ -72,7 +72,7 @@ AURA abstracts the complexity of the underlying hardware acceleration. Developer
 | **Raspberry Pi 5 + Hailo-8** | `.hef` (Hailo Executable Format) | Full (Production) |
 | **Raspberry Pi 5 + Hailo-8L** | `.hef` | Full (Production) |
 | **Raspberry Pi 5 + AI Camera (IMX500)** | `packerOut.zip` | Full (Production) |
-| **Raspberry Pi 5 (CPU)** | `.tflite` | Base Integration (CPU Fallback) |
+| **Raspberry Pi 5 (CPU)** | `.onnx` | Full (Production) |
 | **NVIDIA Jetson Orin Nano** | `.engine` (TensorRT) | Base Integration (Preliminary) |
 
 To start deploying your own models, head over to the [Platform Execution Tutorial](tutorials/run_platform) to set up the system.

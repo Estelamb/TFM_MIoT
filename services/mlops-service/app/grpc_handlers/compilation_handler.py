@@ -5,7 +5,7 @@ Orquesta la compilación de modelos .pt para cada hardware:
 
   hailo8 / hailo8l  → HailoCompiler  (lanza Docker con Hailo AI SW Suite)
   rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter en Python)
-  rpi               → stub (TFLite, pendiente)
+  rpi               → RPiCPUCompiler (exportación a ONNX en Docker)
   jetson_orin_nano  → stub (TensorRT, pendiente)
 
 El handler es no-bloqueante: CompileModel lanza la compilación como tarea

@@ -1,6 +1,7 @@
 import ast
 import uuid
 import logging
+import aiohttp
 from pathlib import Path
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from app.auth.jwt import verify_token
@@ -37,24 +38,25 @@ async def list_scripts(_=Depends(verify_token)):
     minio = get_minio()
     
     scripts_list = []
-    for s in r.scripts:
-        content = ""
-        if s.script_key:
-            try:
-                resp = await minio.get_object(s_settings.minio_bucket_scripts, s.script_key)
-                content_bytes = await resp.read()
-                content = content_bytes.decode("utf-8")
-            except Exception:
-                pass
-        scripts_list.append({
-            "id": s.id,
-            "name": s.name,
-            "description": s.description,
-            "language": s.language,
-            "script_sha256": s.script_sha256,
-            "created_at": s.created_at,
-            "content": content
-        })
+    async with aiohttp.ClientSession() as session:
+        for s in r.scripts:
+            content = ""
+            if s.script_key:
+                try:
+                    resp = await minio.get_object(s_settings.minio_bucket_scripts, s.script_key, session)
+                    content_bytes = await resp.read()
+                    content = content_bytes.decode("utf-8")
+                except Exception as e:
+                    logger.error(f"Error fetching script content for {s.script_key}: {e}")
+            scripts_list.append({
+                "id": s.id,
+                "name": s.name,
+                "description": s.description,
+                "language": s.language,
+                "script_sha256": s.script_sha256,
+                "created_at": s.created_at,
+                "content": content
+            })
     return scripts_list
 
 
@@ -245,11 +247,12 @@ async def get_script(script_id: str, _=Depends(verify_token)):
     content = ""
     if s.script_key:
         try:
-            resp = await minio.get_object(s_settings.minio_bucket_scripts, s.script_key)
-            content_bytes = await resp.read()
-            content = content_bytes.decode("utf-8")
-        except Exception:
-            pass
+            async with aiohttp.ClientSession() as session:
+                resp = await minio.get_object(s_settings.minio_bucket_scripts, s.script_key, session)
+                content_bytes = await resp.read()
+                content = content_bytes.decode("utf-8")
+        except Exception as e:
+            logger.error(f"Error fetching script content for {s.script_key}: {e}")
             
     return {
         "id": s.id,

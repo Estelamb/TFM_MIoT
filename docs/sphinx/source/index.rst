@@ -43,7 +43,6 @@ Edge AI deployment platform for IoT devices.
    :caption: Development
 
    contributing
-   changelog
 
 Indices and tables
 ==================

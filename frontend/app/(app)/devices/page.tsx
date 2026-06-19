@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDevices, createDevice, deleteDevice, getHardwareTypes, getSensors, getActuators, updateDevice } from "@/lib/api";
+import { getDevices, createDevice, deleteDevice, getHardwareTypes, getSensors, getActuators, updateDevice, getInferenceResults } from "@/lib/api";
 import { useDataMode } from "@/hooks/useDataMode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -12,7 +12,7 @@ import { Modal } from "@/components/ui/Modal";
 import { HW_LABELS } from "@/lib/utils";
 import {
   Cpu, Plus, Trash2, Zap, Radio, Layers, Server, Check, Info, ChevronDown, ChevronRight,
-  Camera, Thermometer, Ruler, Compass, Power, Disc, Volume2, Lightbulb, Edit2
+  Camera, Thermometer, Ruler, Compass, Power, Disc, Volume2, Lightbulb, Edit2, Activity, Play
 } from "lucide-react";
 
 type TabType = "devices" | "architectures" | "sensors" | "actuators" | "nodes";
@@ -77,10 +77,12 @@ export default function DevicesPage() {
   const [selectedDevice, setSelectedDevice] = useState<any>(null);
   const [componentName, setComponentName] = useState("");
   const [editingModalName, setEditingModalName] = useState("");
+  const [modalTab, setModalTab] = useState<"specs" | "inference">("specs");
 
   useEffect(() => {
     if (selectedDevice) {
       setEditingModalName(selectedDevice.name);
+      setModalTab("specs");
     } else {
       setEditingModalName("");
     }
@@ -111,6 +113,13 @@ export default function DevicesPage() {
   });
 
   const devices = isDemo ? demoData.devices : realDevices;
+
+  const { data: inferenceResults = [], isLoading: loadingInference } = useQuery({
+    queryKey: ["device-inference", selectedDevice?.id],
+    queryFn: () => getInferenceResults(selectedDevice.id),
+    enabled: !!selectedDevice && modalTab === "inference",
+    refetchInterval: modalTab === "inference" ? 2000 : false,
+  });
 
   const globalArchitectures = isDemo ? demoData.architectures : hardwareTypes;
   const globalSensors = isDemo ? demoData.sensors : sensors;
@@ -599,74 +608,180 @@ export default function DevicesPage() {
       </Modal>
 
       {/* MODAL: DEVICE SPEC VIEW */}
-      <Modal open={!!selectedDevice} onClose={() => setSelectedDevice(null)} title="Device Specs & Stack">
-        <div className="space-y-6 pt-4">
-          <div>
-            <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider block">Device Name / Label</label>
-            <div className="flex gap-2">
-              <Input
-                value={editingModalName}
-                onChange={(e) => setEditingModalName(e.target.value)}
-                className="flex-1 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500"
-                placeholder="Device label..."
-              />
-              <Button
-                type="button"
-                onClick={() => {
-                  if (editingModalName.trim()) {
-                    updateDeviceMutation.mutate({ id: selectedDevice.id, name: editingModalName.trim() });
-                  }
-                }}
-                disabled={!editingModalName.trim() || editingModalName === selectedDevice?.name || updateDeviceMutation.isPending}
-                loading={updateDeviceMutation.isPending}
-                className="shrink-0"
-              >
-                Save
-              </Button>
-            </div>
-          </div>
+      <Modal open={!!selectedDevice} onClose={() => setSelectedDevice(null)} title="Device Specs & Live Inference" size="lg">
+        {/* Tab Selection */}
+        <div className="flex border-b border-gray-200 dark:border-gray-800 gap-4 mb-5">
+          <button
+            type="button"
+            onClick={() => setModalTab("specs")}
+            className={`pb-2.5 text-sm font-semibold border-b-2 transition-all ${
+              modalTab === "specs"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400 font-bold"
+                : "border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            }`}
+          >
+            Specs & Stack
+          </button>
+          <button
+            type="button"
+            onClick={() => setModalTab("inference")}
+            className={`pb-2.5 text-sm font-semibold border-b-2 transition-all ${
+              modalTab === "inference"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400 font-bold"
+                : "border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            }`}
+          >
+            Live Inference
+          </button>
+        </div>
 
-          <div>
-            <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Hardware Type</h4>
-            <Badge variant="default">{HW_LABELS[selectedDevice?.hardware_type] || selectedDevice?.hardware_type || "—"}</Badge>
-          </div>
-          {(selectedDevice?.sensors?.length > 0 || selectedDevice?.actuators?.length > 0) && (
+        {modalTab === "specs" ? (
+          <div className="space-y-6">
             <div>
-              <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Attached Peripherals</h4>
-              <div className="space-y-2">
-                {selectedDevice?.sensors?.map((s: any, i: number) => {
-                  const name = s.name || s;
-                  const Icon = getPeripheralIcon(name, Radio);
+              <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider block">Device Name / Label</label>
+              <div className="flex gap-2">
+                <Input
+                  value={editingModalName}
+                  onChange={(e) => setEditingModalName(e.target.value)}
+                  className="flex-1 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-inner focus:ring-2 focus:ring-blue-500"
+                  placeholder="Device label..."
+                />
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (editingModalName.trim()) {
+                      updateDeviceMutation.mutate({ id: selectedDevice.id, name: editingModalName.trim() });
+                    }
+                  }}
+                  disabled={!editingModalName.trim() || editingModalName === selectedDevice?.name || updateDeviceMutation.isPending}
+                  loading={updateDeviceMutation.isPending}
+                  className="shrink-0"
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Hardware Type</h4>
+              <Badge variant="default">{HW_LABELS[selectedDevice?.hardware_type] || selectedDevice?.hardware_type || "—"}</Badge>
+            </div>
+            {(selectedDevice?.sensors?.length > 0 || selectedDevice?.actuators?.length > 0) && (
+              <div>
+                <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Attached Peripherals</h4>
+                <div className="space-y-2">
+                  {selectedDevice?.sensors?.map((s: any, i: number) => {
+                    const name = s.name || s;
+                    const Icon = getPeripheralIcon(name, Radio);
+                    return (
+                      <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
+                        <span className="flex items-center gap-2">
+                          <Icon size={14} className="text-emerald-500" />
+                          {HW_LABELS[name] || name}
+                        </span>
+                        <Badge variant="success">Sensor</Badge>
+                      </div>
+                    );
+                  })}
+                  {selectedDevice?.actuators?.map((a: any, i: number) => {
+                    const name = a.name || a;
+                    const Icon = getPeripheralIcon(name, Zap);
+                    return (
+                      <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
+                        <span className="flex items-center gap-2">
+                          <Icon size={14} className="text-yellow-500" />
+                          {HW_LABELS[name] || name}
+                        </span>
+                        <Badge variant="warning">Actuator</Badge>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {!selectedDevice?.sensors?.length && !selectedDevice?.actuators?.length && (
+              <p className="text-xs text-gray-500 italic">No peripheral components linked to this unit.</p>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                <Activity size={16} className="text-blue-500 animate-pulse" /> Live Inference Stream
+              </h4>
+              <span className="text-[10px] font-mono text-gray-400 bg-gray-100 dark:bg-gray-850 px-2 py-0.5 rounded">
+                2s polling
+              </span>
+            </div>
+
+            {loadingInference ? (
+              <div className="text-center py-8 text-xs text-gray-400 italic">Fetching predictions...</div>
+            ) : inferenceResults.length === 0 ? (
+              <div className="text-center py-10 border border-dashed rounded-xl flex flex-col items-center justify-center space-y-2">
+                <Play size={24} className="text-gray-300 dark:text-gray-700" />
+                <p className="text-sm font-bold text-gray-500 dark:text-gray-400">No predictions recorded</p>
+                <p className="text-xs text-gray-400 max-w-xs text-center">
+                  Verify that the edge agent is online and has a running script/model deployment executing inference.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-[450px] overflow-y-auto pr-1">
+                {inferenceResults.map((result: any, idx: number) => {
+                  let parsedResult: any = [];
+                  try {
+                    parsedResult = JSON.parse(result.result_json);
+                  } catch (e) {
+                    parsedResult = result.result_json;
+                  }
+
+                  const detections = Array.isArray(parsedResult)
+                    ? parsedResult
+                    : parsedResult && typeof parsedResult === "object"
+                    ? Object.entries(parsedResult).map(([k, v]) => ({ class: k, value: v }))
+                    : [];
+
+                  const hasDetections = detections.length > 0;
+
                   return (
-                    <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
-                      <span className="flex items-center gap-2">
-                        <Icon size={14} className="text-emerald-500" />
-                        {HW_LABELS[name] || name}
-                      </span>
-                      <Badge variant="success">Sensor</Badge>
-                    </div>
-                  );
-                })}
-                {selectedDevice?.actuators?.map((a: any, i: number) => {
-                  const name = a.name || a;
-                  const Icon = getPeripheralIcon(name, Zap);
-                  return (
-                    <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
-                      <span className="flex items-center gap-2">
-                        <Icon size={14} className="text-yellow-500" />
-                        {HW_LABELS[name] || name}
-                      </span>
-                      <Badge variant="warning">Actuator</Badge>
-                    </div>
+                    <Card key={idx} className="p-3 border border-gray-105 dark:border-gray-800 shadow-sm bg-gray-50/50 dark:bg-gray-900/40">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold font-mono text-gray-400">
+                          {new Date(result.timestamp).toLocaleTimeString()}
+                        </span>
+                        <Badge variant="default" className="text-[9px] scale-90 origin-right">
+                          dep: {result.deployment_id?.slice(0, 8) || "—"}
+                        </Badge>
+                      </div>
+
+                      {hasDetections ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                          {detections.map((det: any, dIdx: number) => (
+                            <div key={dIdx} className="flex items-center justify-between p-2 rounded-lg bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800/80">
+                              <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                                🎯 {det.class}
+                              </span>
+                              {det.confidence !== undefined ? (
+                                <Badge variant="success" className="text-xs font-bold">
+                                  {Math.round(det.confidence * 100)}%
+                                </Badge>
+                              ) : det.value !== undefined ? (
+                                <span className="text-xs font-mono text-blue-500 font-bold truncate max-w-[80px]">
+                                  {typeof det.value === "object" ? JSON.stringify(det.value) : String(det.value)}
+                                </span>
+                              ) : null}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">No targets detected in this frame.</p>
+                      )}
+                    </Card>
                   );
                 })}
               </div>
-            </div>
-          )}
-          {!selectedDevice?.sensors?.length && !selectedDevice?.actuators?.length && (
-            <p className="text-xs text-gray-500 italic">No peripheral components linked to this unit.</p>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </Modal>
     </div>
   );

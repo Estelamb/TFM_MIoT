@@ -21,7 +21,7 @@ async def create_deployment(body: DeployRequest, _=Depends(verify_token)):
 async def list_deployments(_=Depends(verify_token)):
     r = await get_stub("deployment").ListDeployments(deployment_pb2.ListDeploymentsRequest())
     return [{"id": d.id, "device_id": d.device_id, "model_id": d.model_id,
-             "script_id": d.script_id, "status": d.status, "created_at": d.created_at, "name": d.name}
+             "script_id": d.script_id, "status": d.status, "error_msg": d.error_msg, "created_at": d.created_at, "name": d.name}
             for d in r.deployments]
 
 @router.get("/device/{device_id}")
@@ -29,7 +29,7 @@ async def list_device_deployments(device_id: str, _=Depends(verify_token)):
     r = await get_stub("deployment").ListDeviceDeployments(
         deployment_pb2.ListDeviceDeploymentsRequest(device_id=device_id))
     return [{"id": d.id, "model_id": d.model_id, "script_id": d.script_id,
-             "status": d.status, "running_at": d.running_at, "created_at": d.created_at, "name": d.name}
+             "status": d.status, "error_msg": d.error_msg, "running_at": d.running_at, "created_at": d.created_at, "name": d.name}
             for d in r.deployments]
 
 @router.get("/{deployment_id}")

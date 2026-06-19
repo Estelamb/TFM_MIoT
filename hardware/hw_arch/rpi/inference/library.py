@@ -75,8 +75,13 @@ class RPiCPUBackend:
         # Handle raw HWC image (numpy.ndarray of shape [H, W, 3]) by applying standard resizing/normalization
         if isinstance(inputs, np.ndarray) and len(inputs.shape) == 3:
             import cv2
-            h_target = self._input_shape[2] if isinstance(self._input_shape[2], int) else 640
-            w_target = self._input_shape[3] if isinstance(self._input_shape[3], int) else 640
+            h_target = 640
+            w_target = 640
+            if isinstance(self._input_shape, (list, tuple)):
+                if len(self._input_shape) >= 3 and isinstance(self._input_shape[2], int):
+                    h_target = self._input_shape[2]
+                if len(self._input_shape) >= 4 and isinstance(self._input_shape[3], int):
+                    w_target = self._input_shape[3]
             
             img = cv2.resize(inputs, (w_target, h_target))
             img = img.astype(np.float32) / 255.0

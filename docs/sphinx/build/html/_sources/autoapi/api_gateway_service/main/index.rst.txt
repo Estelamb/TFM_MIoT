@@ -1,0 +1,59 @@
+api_gateway_service.main
+========================
+
+.. py:module:: api_gateway_service.main
+
+.. autoapi-nested-parse::
+
+   API Gateway entry point.
+
+   FastAPI application that acts as the single HTTP entry point for the
+   frontend. Authenticates requests with JWT and proxies them to the
+   appropriate downstream gRPC service. Handles multipart file uploads
+   directly to MinIO to avoid passing large binaries through gRPC.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   api_gateway_service.main.s
+   api_gateway_service.main.app
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   api_gateway_service.main.bootstrap_base_models
+   api_gateway_service.main.lifespan
+   api_gateway_service.main.login
+   api_gateway_service.main.health
+
+
+Module Contents
+---------------
+
+.. py:data:: s
+
+.. py:function:: bootstrap_base_models()
+   :async:
+
+
+.. py:function:: lifespan(app: fastapi.FastAPI)
+   :async:
+
+
+.. py:data:: app
+
+.. py:function:: login(form: fastapi.security.OAuth2PasswordRequestForm = Depends())
+   :async:
+
+
+.. py:function:: health()
+   :async:
+
+

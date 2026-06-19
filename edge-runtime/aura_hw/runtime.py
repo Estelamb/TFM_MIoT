@@ -68,30 +68,12 @@ def _get_backend(hw: str) -> InferenceBackend:
 
 
 def load_model(model_path: str) -> None:
-    """Detect hardware and load a compiled model.
-
-    Calls :func:`~aura_hw.detect.detect_hardware`, selects the matching
-    backend, and invokes its ``load()`` method.  Any previously loaded
-    model is **not** automatically unloaded — call :func:`unload_model`
-    first if you need to swap models.
-
-    Args:
-        model_path: Absolute path to the compiled model file
-                    (``.hef`` for Hailo, ``packerOut.zip`` for IMX500,
-                    ``.tflite`` for CPU).
-
-    Raises:
-        RuntimeError: If the detected hardware has no supported backend.
-
-    Example:
-        >>> from aura_hw import load_model, execute_inference
-        >>> load_model("/tmp/aura/model")
-    """
     global _backend
     hw = detect_hardware()
     logger.info(f"Hardware detected: {hw}")
-    _backend = _get_backend(hw)
-    _backend.load(model_path)
+    backend = _get_backend(hw)
+    backend.load(model_path)
+    _backend = backend
 
 
 def execute_inference(inputs: "np.ndarray | dict | None" = None) -> Any:
@@ -100,7 +82,7 @@ def execute_inference(inputs: "np.ndarray | dict | None" = None) -> Any:
     Args:
         inputs: Input tensor(s) for the model.
 
-                * For Hailo and TFLite: a ``numpy.ndarray`` (NCHW for YOLOv8)
+                * For Hailo and ONNX: a ``numpy.ndarray`` (NCHW for YOLOv8)
                   or a ``dict`` mapping input names to arrays.
                 * For RPi AI Camera (IMX500): pass ``None`` — the sensor
                   captures and runs inference internally.
@@ -109,7 +91,7 @@ def execute_inference(inputs: "np.ndarray | dict | None" = None) -> Any:
         Raw model outputs. Structure depends on the backend:
 
         * Hailo: ``dict[str, numpy.ndarray]``
-        * TFLite: ``dict[str, numpy.ndarray]``
+        * ONNX: ``dict[str, numpy.ndarray]``
         * IMX500: output from ``IMX500.get_outputs(metadata)``
 
     Raises:

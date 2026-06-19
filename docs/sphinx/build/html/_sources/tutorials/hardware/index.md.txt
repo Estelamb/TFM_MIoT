@@ -7,7 +7,7 @@ Select your target hardware configuration from the list below to access its spec
 * [Raspberry Pi 5 + Hailo-8 Accelerator](hailo8)
 * [Raspberry Pi 5 + Hailo-8L Accelerator](hailo8l)
 * [Raspberry Pi 5 + AI Camera (IMX500)](imx500)
-* [Raspberry Pi 5 (CPU Inference via TFLite)](rpi_cpu)
+* [Raspberry Pi 5 (CPU Inference via ONNX)](rpi_cpu)
 * [NVIDIA Jetson Orin Nano](jetson_orin)
 
 ```{toctree}

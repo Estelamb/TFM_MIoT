@@ -152,9 +152,9 @@ export default function DeploymentsPage() {
                       <span>{getScriptName(d.script_id)}</span>
                     </p>
                     {d.error_msg && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <AlertTriangle size={11} className="text-red-500" />
-                        <p className="text-xs text-red-500 font-mono">{d.error_msg.slice(0, 80)}</p>
+                      <div className="flex items-start gap-1.5 mt-2 p-2 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-lg max-w-xl" title={d.error_msg}>
+                        <AlertTriangle size={13} className="text-red-500 shrink-0 mt-0.5" />
+                        <p className="text-xs text-red-600 dark:text-red-400 font-mono break-all line-clamp-2">{d.error_msg}</p>
                       </div>
                     )}
                   </div>

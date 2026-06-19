@@ -46,4 +46,4 @@ def run(raw_input):   # called by the runtime
 3. `/etc/nv_tegra_release` → `jetson_orin_nano`
 4. `libcamera-hello --list-cameras` with imx500 → `rpi_ai_cam`
 5. `/proc/device-tree/model` with "raspberry" → `rpi`
-6. Fallback → TFLite CPU
+6. Fallback → ONNX CPU

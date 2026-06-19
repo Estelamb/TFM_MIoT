@@ -210,7 +210,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/imx500.html">Tutorial: Raspberry Pi 5 + AI Camera (IMX500)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - TFLite)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - ONNX)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/jetson_orin.html">Tutorial: NVIDIA Jetson Orin Nano</a></li>
 </ul>
 </li>
@@ -222,116 +222,25 @@
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/actuators/index.html">app.actuators</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/auth/jwt/index.html">app.auth.jwt</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/compilers/base/index.html">app.compilers.base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/compilers/yolo_train/index.html">app.compilers.yolo_train</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/config/index.html">api_gateway_service.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/main/index.html">api_gateway_service.main</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/api_gateway_service/routers/index.html">api_gateway_service.routers</a><input aria-label="Toggle navigation of api_gateway_service.routers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/datasets/index.html">api_gateway_service.routers.datasets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/deployments/index.html">api_gateway_service.routers.deployments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/devices/index.html">api_gateway_service.routers.devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/models/index.html">api_gateway_service.routers.models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/monitoring/index.html">api_gateway_service.routers.monitoring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/scripts/index.html">api_gateway_service.routers.scripts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/config/index.html">app.config</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/compilation_handler/index.html">app.grpc_handlers.compilation_handler</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/deployment_handler/index.html">app.grpc_handlers.deployment_handler</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/monitoring_handler/index.html">app.grpc_handlers.monitoring_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/main/index.html">app.main</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/models/mongo/index.html">app.models.mongo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/models/orm/index.html">app.models.orm</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/mqtt/listener/index.html">app.mqtt.listener</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/compilation/index.html">app.repositories.compilation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/deployments/index.html">app.repositories.deployments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/monitoring/index.html">app.repositories.monitoring</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/datasets/index.html">app.routers.datasets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/deployments/index.html">app.routers.deployments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/devices/index.html">app.routers.devices</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/models/index.html">app.routers.models</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/monitoring/index.html">app.routers.monitoring</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/scripts/index.html">app.routers.scripts</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/sensors/index.html">app.sensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/stubs/index.html">app.stubs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/worker/index.html">app.worker</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/orm/index.html">orm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/main/index.html">main</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/database/index.html">utils.database</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/grpc_server/index.html">utils.grpc_server</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/logging/index.html">utils.logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/minio/index.html">utils.minio</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/config/index.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/models/index.html">models</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/aura_hw/backends/base/index.html">aura_hw.backends.base</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/base/index.html">aura_hw.backends.devices.actuator.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html">aura_hw.backends.devices.actuator.buzzer</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/led/index.html">aura_hw.backends.devices.actuator.led</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/relay/index.html">aura_hw.backends.devices.actuator.relay</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/servo/index.html">aura_hw.backends.devices.actuator.servo</a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/devices/base/index.html">aura_hw.backends.devices.base</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/base/index.html">aura_hw.backends.devices.camera.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/general/index.html">aura_hw.backends.devices.camera.general</a></li>
-</ul>
-</li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/base/index.html">aura_hw.backends.devices.sensor.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/distance/index.html">aura_hw.backends.devices.sensor.distance</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/general/index.html">aura_hw.backends.devices.sensor.general</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/imu/index.html">aura_hw.backends.devices.sensor.imu</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html">aura_hw.backends.devices.sensor.temperature</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/inference/base/index.html">aura_hw.backends.inference.base</a></li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/inference/general/index.html">aura_hw.backends.inference.general</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/detect/index.html">aura_hw.detect</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/device_manager/index.html">aura_hw.device_manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/loader/index.html">aura_hw.loader</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/runtime/index.html">aura_hw.runtime</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/devices/index.html">devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/scripts/index.html">scripts</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/transport/base/index.html">transport.base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/transport/mqtt/index.html">transport.mqtt</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/ai_handler/index.html">ai_handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/device_handler/index.html">device_handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/script_handler/index.html">script_handler</a></li>
 </ul>
 </li>
 </ul>
@@ -342,7 +251,6 @@
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
 </div>
@@ -378,7 +286,7 @@
           
 <section class="domainindex-section">
   <h1>Python Module Index</h1>
-  <div class="domainindex-jumpbox"><a href="#cap-a"><strong>a</strong></a> | <a href="#cap-c"><strong>c</strong></a> | <a href="#cap-d"><strong>d</strong></a> | <a href="#cap-m"><strong>m</strong></a> | <a href="#cap-o"><strong>o</strong></a> | <a href="#cap-s"><strong>s</strong></a> | <a href="#cap-t"><strong>t</strong></a> | <a href="#cap-u"><strong>u</strong></a></div>
+  <div class="domainindex-jumpbox"><a href="#cap-a"><strong>a</strong></a></div>
 </section>
 <table class="domainindex-table">
   <tr class="pcap">
@@ -388,505 +296,82 @@
     <td></td><td><strong>a</strong></td><td></td>
   </tr>
   <tr>
-    <td></td>
-    <td>
-        <a href="autoapi/ai_handler/index.html#module-ai_handler"><code class="xref">ai_handler</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr>
     <td><img src="_static/minus.png" class="toggler"
               id="toggle-1" style="display: none" alt="-" /></td>
     <td>
-        <a href="autoapi/app/index.html#module-app"><code class="xref">app</code></a></td><td>
+        <a href="autoapi/api_gateway_service/index.html#module-api_gateway_service"><code class="xref">api_gateway_service</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/actuators/index.html#module-app.actuators"><code class="xref">app.actuators</code></a></td><td>
+        <a href="autoapi/api_gateway_service/auth/index.html#module-api_gateway_service.auth"><code class="xref">api_gateway_service.auth</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/auth/index.html#module-app.auth"><code class="xref">app.auth</code></a></td><td>
+        <a href="autoapi/api_gateway_service/auth/jwt/index.html#module-api_gateway_service.auth.jwt"><code class="xref">api_gateway_service.auth.jwt</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/auth/jwt/index.html#module-app.auth.jwt"><code class="xref">app.auth.jwt</code></a></td><td>
+        <a href="autoapi/api_gateway_service/config/index.html#module-api_gateway_service.config"><code class="xref">api_gateway_service.config</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/compilers/index.html#module-app.compilers"><code class="xref">app.compilers</code></a></td><td>
+        <a href="autoapi/api_gateway_service/main/index.html#module-api_gateway_service.main"><code class="xref">api_gateway_service.main</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/compilers/base/index.html#module-app.compilers.base"><code class="xref">app.compilers.base</code></a></td><td>
+        <a href="autoapi/api_gateway_service/routers/index.html#module-api_gateway_service.routers"><code class="xref">api_gateway_service.routers</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/compilers/yolo_train/index.html#module-app.compilers.yolo_train"><code class="xref">app.compilers.yolo_train</code></a></td><td>
+        <a href="autoapi/api_gateway_service/routers/datasets/index.html#module-api_gateway_service.routers.datasets"><code class="xref">api_gateway_service.routers.datasets</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/config/index.html#module-app.config"><code class="xref">app.config</code></a></td><td>
+        <a href="autoapi/api_gateway_service/routers/deployments/index.html#module-api_gateway_service.routers.deployments"><code class="xref">api_gateway_service.routers.deployments</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/grpc_handlers/index.html#module-app.grpc_handlers"><code class="xref">app.grpc_handlers</code></a></td><td>
+        <a href="autoapi/api_gateway_service/routers/devices/index.html#module-api_gateway_service.routers.devices"><code class="xref">api_gateway_service.routers.devices</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/grpc_handlers/compilation_handler/index.html#module-app.grpc_handlers.compilation_handler"><code class="xref">app.grpc_handlers.compilation_handler</code></a></td><td>
+        <a href="autoapi/api_gateway_service/routers/models/index.html#module-api_gateway_service.routers.models"><code class="xref">api_gateway_service.routers.models</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/grpc_handlers/deployment_handler/index.html#module-app.grpc_handlers.deployment_handler"><code class="xref">app.grpc_handlers.deployment_handler</code></a></td><td>
+        <a href="autoapi/api_gateway_service/routers/monitoring/index.html#module-api_gateway_service.routers.monitoring"><code class="xref">api_gateway_service.routers.monitoring</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/grpc_handlers/monitoring_handler/index.html#module-app.grpc_handlers.monitoring_handler"><code class="xref">app.grpc_handlers.monitoring_handler</code></a></td><td>
+        <a href="autoapi/api_gateway_service/routers/scripts/index.html#module-api_gateway_service.routers.scripts"><code class="xref">api_gateway_service.routers.scripts</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="autoapi/app/main/index.html#module-app.main"><code class="xref">app.main</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/models/index.html#module-app.models"><code class="xref">app.models</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/models/mongo/index.html#module-app.models.mongo"><code class="xref">app.models.mongo</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/models/orm/index.html#module-app.models.orm"><code class="xref">app.models.orm</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/mqtt/index.html#module-app.mqtt"><code class="xref">app.mqtt</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/mqtt/listener/index.html#module-app.mqtt.listener"><code class="xref">app.mqtt.listener</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/repositories/index.html#module-app.repositories"><code class="xref">app.repositories</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/repositories/compilation/index.html#module-app.repositories.compilation"><code class="xref">app.repositories.compilation</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/repositories/deployments/index.html#module-app.repositories.deployments"><code class="xref">app.repositories.deployments</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/repositories/monitoring/index.html#module-app.repositories.monitoring"><code class="xref">app.repositories.monitoring</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/routers/index.html#module-app.routers"><code class="xref">app.routers</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/routers/datasets/index.html#module-app.routers.datasets"><code class="xref">app.routers.datasets</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/routers/deployments/index.html#module-app.routers.deployments"><code class="xref">app.routers.deployments</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/routers/devices/index.html#module-app.routers.devices"><code class="xref">app.routers.devices</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/routers/models/index.html#module-app.routers.models"><code class="xref">app.routers.models</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/routers/monitoring/index.html#module-app.routers.monitoring"><code class="xref">app.routers.monitoring</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/routers/scripts/index.html#module-app.routers.scripts"><code class="xref">app.routers.scripts</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/sensors/index.html#module-app.sensors"><code class="xref">app.sensors</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/stubs/index.html#module-app.stubs"><code class="xref">app.stubs</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/app/worker/index.html#module-app.worker"><code class="xref">app.worker</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr>
-    <td><img src="_static/minus.png" class="toggler"
-              id="toggle-2" style="display: none" alt="-" /></td>
-    <td>
-        <a href="autoapi/aura_hw/index.html#module-aura_hw"><code class="xref">aura_hw</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/index.html#module-aura_hw.backends"><code class="xref">aura_hw.backends</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/base/index.html#module-aura_hw.backends.base"><code class="xref">aura_hw.backends.base</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/index.html#module-aura_hw.backends.devices"><code class="xref">aura_hw.backends.devices</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/actuator/index.html#module-aura_hw.backends.devices.actuator"><code class="xref">aura_hw.backends.devices.actuator</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/actuator/base/index.html#module-aura_hw.backends.devices.actuator.base"><code class="xref">aura_hw.backends.devices.actuator.base</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#module-aura_hw.backends.devices.actuator.buzzer"><code class="xref">aura_hw.backends.devices.actuator.buzzer</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#module-aura_hw.backends.devices.actuator.led"><code class="xref">aura_hw.backends.devices.actuator.led</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#module-aura_hw.backends.devices.actuator.relay"><code class="xref">aura_hw.backends.devices.actuator.relay</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#module-aura_hw.backends.devices.actuator.servo"><code class="xref">aura_hw.backends.devices.actuator.servo</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/base/index.html#module-aura_hw.backends.devices.base"><code class="xref">aura_hw.backends.devices.base</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/camera/index.html#module-aura_hw.backends.devices.camera"><code class="xref">aura_hw.backends.devices.camera</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/camera/base/index.html#module-aura_hw.backends.devices.camera.base"><code class="xref">aura_hw.backends.devices.camera.base</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/camera/general/index.html#module-aura_hw.backends.devices.camera.general"><code class="xref">aura_hw.backends.devices.camera.general</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/sensor/index.html#module-aura_hw.backends.devices.sensor"><code class="xref">aura_hw.backends.devices.sensor</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/sensor/base/index.html#module-aura_hw.backends.devices.sensor.base"><code class="xref">aura_hw.backends.devices.sensor.base</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#module-aura_hw.backends.devices.sensor.distance"><code class="xref">aura_hw.backends.devices.sensor.distance</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#module-aura_hw.backends.devices.sensor.general"><code class="xref">aura_hw.backends.devices.sensor.general</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#module-aura_hw.backends.devices.sensor.imu"><code class="xref">aura_hw.backends.devices.sensor.imu</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#module-aura_hw.backends.devices.sensor.temperature"><code class="xref">aura_hw.backends.devices.sensor.temperature</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/inference/index.html#module-aura_hw.backends.inference"><code class="xref">aura_hw.backends.inference</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/inference/base/index.html#module-aura_hw.backends.inference.base"><code class="xref">aura_hw.backends.inference.base</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/backends/inference/general/index.html#module-aura_hw.backends.inference.general"><code class="xref">aura_hw.backends.inference.general</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/detect/index.html#module-aura_hw.detect"><code class="xref">aura_hw.detect</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/device_manager/index.html#module-aura_hw.device_manager"><code class="xref">aura_hw.device_manager</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/loader/index.html#module-aura_hw.loader"><code class="xref">aura_hw.loader</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-2">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/aura_hw/runtime/index.html#module-aura_hw.runtime"><code class="xref">aura_hw.runtime</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="pcap">
-    <td></td><td>&#160;</td><td></td>
-  </tr>
-  <tr class="cap" id="cap-c">
-    <td></td><td><strong>c</strong></td><td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>
-        <a href="autoapi/config/index.html#module-config"><code class="xref">config</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="pcap">
-    <td></td><td>&#160;</td><td></td>
-  </tr>
-  <tr class="cap" id="cap-d">
-    <td></td><td><strong>d</strong></td><td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>
-        <a href="autoapi/device_handler/index.html#module-device_handler"><code class="xref">device_handler</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>
-        <a href="autoapi/devices/index.html#module-devices"><code class="xref">devices</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="pcap">
-    <td></td><td>&#160;</td><td></td>
-  </tr>
-  <tr class="cap" id="cap-m">
-    <td></td><td><strong>m</strong></td><td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>
-        <a href="autoapi/main/index.html#module-main"><code class="xref">main</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>
-        <a href="autoapi/models/index.html#module-models"><code class="xref">models</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="pcap">
-    <td></td><td>&#160;</td><td></td>
-  </tr>
-  <tr class="cap" id="cap-o">
-    <td></td><td><strong>o</strong></td><td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>
-        <a href="autoapi/orm/index.html#module-orm"><code class="xref">orm</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="pcap">
-    <td></td><td>&#160;</td><td></td>
-  </tr>
-  <tr class="cap" id="cap-s">
-    <td></td><td><strong>s</strong></td><td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>
-        <a href="autoapi/script_handler/index.html#module-script_handler"><code class="xref">script_handler</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>
-        <a href="autoapi/scripts/index.html#module-scripts"><code class="xref">scripts</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="pcap">
-    <td></td><td>&#160;</td><td></td>
-  </tr>
-  <tr class="cap" id="cap-t">
-    <td></td><td><strong>t</strong></td><td></td>
-  </tr>
-  <tr>
-    <td><img src="_static/minus.png" class="toggler"
-              id="toggle-3" style="display: none" alt="-" /></td>
-    <td>
-        <a href="autoapi/transport/index.html#module-transport"><code class="xref">transport</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-3">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/transport/base/index.html#module-transport.base"><code class="xref">transport.base</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-3">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/transport/mqtt/index.html#module-transport.mqtt"><code class="xref">transport.mqtt</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="pcap">
-    <td></td><td>&#160;</td><td></td>
-  </tr>
-  <tr class="cap" id="cap-u">
-    <td></td><td><strong>u</strong></td><td></td>
-  </tr>
-  <tr>
-    <td><img src="_static/minus.png" class="toggler"
-              id="toggle-4" style="display: none" alt="-" /></td>
-    <td>
-        <a href="autoapi/utils/index.html#module-utils"><code class="xref">utils</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-4">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/utils/database/index.html#module-utils.database"><code class="xref">utils.database</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-4">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/utils/grpc_server/index.html#module-utils.grpc_server"><code class="xref">utils.grpc_server</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-4">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/utils/logging/index.html#module-utils.logging"><code class="xref">utils.logging</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-4">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/utils/minio/index.html#module-utils.minio"><code class="xref">utils.minio</code></a></td><td>
+        <a href="autoapi/api_gateway_service/stubs/index.html#module-api_gateway_service.stubs"><code class="xref">api_gateway_service.stubs</code></a></td><td>
     <em></em></td>
   </tr>
 </table>

@@ -6,18 +6,6 @@ This page contains auto-generated API reference documentation [#f1]_.
 .. toctree::
    :titlesonly:
 
-   /autoapi/app/index
-   /autoapi/orm/index
-   /autoapi/main/index
-   /autoapi/utils/index
-   /autoapi/config/index
-   /autoapi/models/index
-   /autoapi/aura_hw/index
-   /autoapi/devices/index
-   /autoapi/scripts/index
-   /autoapi/transport/index
-   /autoapi/ai_handler/index
-   /autoapi/device_handler/index
-   /autoapi/script_handler/index
+   /autoapi/api_gateway_service/index
 
 .. [#f1] Created with `sphinx-autoapi <https://github.com/readthedocs/sphinx-autoapi>`_

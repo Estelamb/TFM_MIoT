@@ -1,19 +1,25 @@
 """Sphinx configuration for AURA Platform documentation."""
 import os
 import sys
+import shutil
 
 # ── Path setup ────────────────────────────────────────────────────────────────
-# Add all service roots and shared/ so autoapi can find the packages.
 _root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+temp_api_dir = os.path.join(os.path.dirname(__file__), "api_gateway_service")
+
+# Dynamic copy of api-gateway/app to api_gateway_service for clean namespace API docs
+if os.path.exists(temp_api_dir):
+    try:
+        shutil.rmtree(temp_api_dir)
+    except Exception:
+        pass
+
+src_app = os.path.join(_root, "services/api-gateway/app")
+shutil.copytree(src_app, temp_api_dir)
+
 sys.path.insert(0, _root)
-for svc in [
-    "services/api-gateway",
-    "services/registry-service",
-    "services/mlops-service",
-    "services/edge-connector-service",
-    "edge-runtime",
-]:
-    sys.path.insert(0, os.path.join(_root, svc))
+sys.path.insert(0, os.path.join(_root, "services/api-gateway"))
+sys.path.insert(0, os.path.dirname(__file__))
 
 # ── Project info ──────────────────────────────────────────────────────────────
 project   = "AURA Platform"
@@ -34,14 +40,7 @@ extensions = [
 
 # ── autoapi ───────────────────────────────────────────────────────────────────
 autoapi_type              = "python"
-autoapi_dirs              = [
-    os.path.join(_root, "shared"),
-    os.path.join(_root, "edge-runtime/aura_hw"),
-    os.path.join(_root, "services/api-gateway/app"),
-    os.path.join(_root, "services/registry-service/app"),
-    os.path.join(_root, "services/mlops-service/app"),
-    os.path.join(_root, "services/edge-connector-service/app"),
-]
+autoapi_dirs              = [temp_api_dir]
 autoapi_keep_files        = False
 autoapi_options           = [
     "members",

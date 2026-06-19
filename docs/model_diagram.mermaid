@@ -1,0 +1,73 @@
+%%{init: {
+  "theme": "neutral",
+  "themeVariables": {
+    "fontFamily": "Segoe UI, system-ui, sans-serif",
+    "fontSize": "13px"
+  }
+}}%%
+erDiagram
+    devices {
+        uuid id PK
+        string name
+        string hardware_type
+        string description
+        string status
+        string_array sensors
+        string_array actuators
+        string_array others
+        timestamp last_seen_at
+        timestamp created_at
+    }
+    datasets {
+        uuid id PK
+        string name
+        string description
+        string object_key
+        string sha256
+        int size_bytes
+        json meta_info
+        timestamp created_at
+    }
+    models {
+        uuid id PK
+        string name
+        string description
+        string source_key
+        string source_sha256
+        string compiled_key
+        string compiled_sha256
+        string hardware_type
+        string compile_status
+        string compile_error
+        uuid dataset_id FK
+        string base_architecture
+        int epochs
+        string input_size
+        int batch_size
+        timestamp created_at
+    }
+    scripts {
+        uuid id PK
+        string name
+        string description
+        string script_key
+        string script_sha256
+        string language
+        timestamp created_at
+    }
+    deployments {
+        uuid id PK
+        uuid device_id FK
+        uuid model_id FK
+        uuid script_id FK
+        string status
+        timestamp sent_at
+        timestamp running_at
+        string error_msg
+        timestamp created_at
+    }
+
+    datasets ||--o{ models : "used by"
+    devices ||--o{ deployments : "target"
+    models ||--o{ deployments : "deployed"
+    scripts ||--o{ deployments : "executed by"

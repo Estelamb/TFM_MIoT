@@ -1,0 +1,20 @@
+api_gateway_service.routers
+===========================
+
+.. py:module:: api_gateway_service.routers
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/api_gateway_service/routers/datasets/index
+   /autoapi/api_gateway_service/routers/deployments/index
+   /autoapi/api_gateway_service/routers/devices/index
+   /autoapi/api_gateway_service/routers/models/index
+   /autoapi/api_gateway_service/routers/monitoring/index
+   /autoapi/api_gateway_service/routers/scripts/index
+
+

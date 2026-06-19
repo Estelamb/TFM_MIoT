@@ -1,0 +1,154 @@
+api_gateway_service.config
+==========================
+
+.. py:module:: api_gateway_service.config
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   api_gateway_service.config.Settings
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   api_gateway_service.config.get_settings
+
+
+Module Contents
+---------------
+
+.. py:class:: Settings
+
+   Bases: :py:obj:`pydantic_settings.BaseSettings`
+
+
+   .. py:attribute:: secret_key
+      :type:  str
+      :value: 'dev-insecure-change-me'
+
+
+
+   .. py:attribute:: access_token_expire_minutes
+      :type:  int
+      :value: 60
+
+
+
+   .. py:attribute:: device_service_grpc
+      :type:  str
+      :value: 'device-service:50051'
+
+
+
+   .. py:attribute:: ai_service_grpc
+      :type:  str
+      :value: 'ai-service:50052'
+
+
+
+   .. py:attribute:: script_service_grpc
+      :type:  str
+      :value: 'script-service:50053'
+
+
+
+   .. py:attribute:: compilation_service_grpc
+      :type:  str
+      :value: 'mlops-service:50052'
+
+
+
+   .. py:attribute:: deployment_service_grpc
+      :type:  str
+      :value: 'edge-connector-service:50053'
+
+
+
+   .. py:attribute:: monitoring_service_grpc
+      :type:  str
+      :value: 'edge-connector-service:50053'
+
+
+
+   .. py:attribute:: minio_endpoint
+      :type:  str
+      :value: 'minio:9000'
+
+
+
+   .. py:attribute:: minio_access_key
+      :type:  str
+      :value: 'aura'
+
+
+
+   .. py:attribute:: minio_secret_key
+      :type:  str
+      :value: 'aura_dev'
+
+
+
+   .. py:attribute:: minio_secure
+      :type:  bool
+      :value: False
+
+
+
+   .. py:attribute:: minio_bucket_models
+      :type:  str
+      :value: 'models'
+
+
+
+   .. py:attribute:: minio_bucket_compiled
+      :type:  str
+      :value: 'compiled'
+
+
+
+   .. py:attribute:: minio_bucket_scripts
+      :type:  str
+      :value: 'scripts'
+
+
+
+   .. py:attribute:: minio_bucket_datasets
+      :type:  str
+      :value: 'datasets'
+
+
+
+   .. py:attribute:: minio_bucket_base_models
+      :type:  str
+      :value: 'base-models'
+
+
+
+   .. py:attribute:: log_level
+      :type:  str
+      :value: 'DEBUG'
+
+
+
+   .. py:attribute:: redis_url
+      :type:  str
+      :value: 'redis://localhost:6379'
+
+
+
+   .. py:class:: Config
+
+      .. py:attribute:: env_file
+         :value: '.env'
+
+
+
+
+.. py:function:: get_settings()
+

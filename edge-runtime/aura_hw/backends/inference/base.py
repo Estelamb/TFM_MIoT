@@ -1,7 +1,7 @@
 """
 Abstract base class for all AURA inference backends.
 
-Each hardware accelerator target (Hailo, TFLite, IMX500, TensorRT)
+Each hardware accelerator target (Hailo, ONNX, IMX500, TensorRT)
 implements this interface so the rest of the runtime is fully
 hardware-agnostic.
 
@@ -29,7 +29,7 @@ class InferenceBackend(ABC):
         Args:
             model_path: Absolute path to the compiled model.
                         Expected format depends on the backend
-                        (``.hef`` for Hailo, ``.tflite`` for RPi CPU,
+                        (``.hef`` for Hailo, ``.onnx`` for RPi CPU,
                         ``packerOut.zip`` for IMX500).
 
         Raises:

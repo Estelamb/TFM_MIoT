@@ -107,7 +107,7 @@ inference_results  — append-only inference outputs with timestamp
 
 ```
 models     — original .pt files
-compiled   — compiled model artifacts (.hef, packerOut.zip, .tflite)
+compiled   — compiled model artifacts (.hef, packerOut.zip, .onnx)
 scripts    — inference scripts (.py)
 ```
 
@@ -165,7 +165,7 @@ COMPILER_REGISTRY = {
     "hailo8":     HailoCompiler,    # launches hailo_ai_sw_suite Docker container
     "hailo8l":    HailoCompiler,    # same, different --hw-arch flag
     "rpi_ai_cam": AICamCompiler,    # MCT + imx500-converter Python pipeline
-    # "rpi":      TFLiteCompiler,   # TODO
+    "rpi":        RPiCPUCompiler,   # exports to ONNX via Ultralytics Docker
     # "jetson_orin_nano": TRTCompiler  # TODO
 }
 ```
@@ -197,7 +197,7 @@ def run(raw_input):          # called by the edge runtime
     return post_inference(execute_inference(pre_inference(raw_input)))
 ```
 
-Hardware detection order: `AURA_HARDWARE_TYPE` env var → `hailortcli` → `/etc/nv_tegra_release` → `libcamera-hello` (IMX500) → `/proc/device-tree/model` (RPi) → TFLite fallback.
+Hardware detection order: `AURA_HARDWARE_TYPE` env var → `hailortcli` → `/etc/nv_tegra_release` → `libcamera-hello` (IMX500) → `/proc/device-tree/model` (RPi) → ONNX fallback.
 
 ---
 
@@ -208,7 +208,7 @@ Hardware detection order: `AURA_HARDWARE_TYPE` env var → `hailortcli` → `/et
 | RPi5 + Hailo-8 | `.hef` | HailoRT SDK | ✅ Full |
 | RPi5 + Hailo-8L | `.hef` | HailoRT SDK | ✅ Full |
 | RPi5 + AI Camera (IMX500) | `packerOut.zip` | picamera2 | ✅ Full |
-| RPi5 (CPU only) | `.tflite` | TFLite Runtime | ⚠️ Backend ready, compiler stub |
+| RPi5 (CPU only) | `.onnx` | ONNX Runtime | ✅ Full |
 | Jetson Orin Nano | `.engine` | TensorRT | ⚠️ Stub |
 
 ---
@@ -245,6 +245,6 @@ Pages: **Dashboard** · **Devices** · **Models** · **Scripts** · **Deployment
 
 - Auth uses a hardcoded user (`admin` / `aura2026`). Replace with DB-backed auth in the next iteration.
 - Calibration images for Hailo and AI Camera compilation are currently dummy frames. Real dataset support is pending.
-- Compilers for `rpi` (TFLite) and `jetson_orin_nano` (TensorRT) are stubs.
+- Compiler for `jetson_orin_nano` (TensorRT) is a stub.
 - No deployment rollback if `deploy_failed`.
 - No real-time log streaming from edge devices to the UI.

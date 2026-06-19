@@ -212,7 +212,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/imx500.html">Tutorial: Raspberry Pi 5 + AI Camera (IMX500)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - TFLite)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - ONNX)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/jetson_orin.html">Tutorial: NVIDIA Jetson Orin Nano</a></li>
 </ul>
 </li>
@@ -224,116 +224,25 @@
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/actuators/index.html">app.actuators</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/auth/jwt/index.html">app.auth.jwt</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/compilers/base/index.html">app.compilers.base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/compilers/yolo_train/index.html">app.compilers.yolo_train</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/config/index.html">api_gateway_service.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/main/index.html">api_gateway_service.main</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/api_gateway_service/routers/index.html">api_gateway_service.routers</a><input aria-label="Toggle navigation of api_gateway_service.routers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/datasets/index.html">api_gateway_service.routers.datasets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/deployments/index.html">api_gateway_service.routers.deployments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/devices/index.html">api_gateway_service.routers.devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/models/index.html">api_gateway_service.routers.models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/monitoring/index.html">api_gateway_service.routers.monitoring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/scripts/index.html">api_gateway_service.routers.scripts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/config/index.html">app.config</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/compilation_handler/index.html">app.grpc_handlers.compilation_handler</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/deployment_handler/index.html">app.grpc_handlers.deployment_handler</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/monitoring_handler/index.html">app.grpc_handlers.monitoring_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/main/index.html">app.main</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/models/mongo/index.html">app.models.mongo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/models/orm/index.html">app.models.orm</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/mqtt/listener/index.html">app.mqtt.listener</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/compilation/index.html">app.repositories.compilation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/deployments/index.html">app.repositories.deployments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/monitoring/index.html">app.repositories.monitoring</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/datasets/index.html">app.routers.datasets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/deployments/index.html">app.routers.deployments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/devices/index.html">app.routers.devices</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/models/index.html">app.routers.models</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/monitoring/index.html">app.routers.monitoring</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/scripts/index.html">app.routers.scripts</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/sensors/index.html">app.sensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/stubs/index.html">app.stubs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/worker/index.html">app.worker</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/orm/index.html">orm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/main/index.html">main</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/database/index.html">utils.database</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/grpc_server/index.html">utils.grpc_server</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/logging/index.html">utils.logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/minio/index.html">utils.minio</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/config/index.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/models/index.html">models</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/aura_hw/backends/base/index.html">aura_hw.backends.base</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/base/index.html">aura_hw.backends.devices.actuator.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html">aura_hw.backends.devices.actuator.buzzer</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/led/index.html">aura_hw.backends.devices.actuator.led</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/relay/index.html">aura_hw.backends.devices.actuator.relay</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/servo/index.html">aura_hw.backends.devices.actuator.servo</a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/devices/base/index.html">aura_hw.backends.devices.base</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/base/index.html">aura_hw.backends.devices.camera.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/general/index.html">aura_hw.backends.devices.camera.general</a></li>
-</ul>
-</li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/base/index.html">aura_hw.backends.devices.sensor.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/distance/index.html">aura_hw.backends.devices.sensor.distance</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/general/index.html">aura_hw.backends.devices.sensor.general</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/imu/index.html">aura_hw.backends.devices.sensor.imu</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html">aura_hw.backends.devices.sensor.temperature</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/inference/base/index.html">aura_hw.backends.inference.base</a></li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/inference/general/index.html">aura_hw.backends.inference.general</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/detect/index.html">aura_hw.detect</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/device_manager/index.html">aura_hw.device_manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/loader/index.html">aura_hw.loader</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/runtime/index.html">aura_hw.runtime</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/devices/index.html">devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/scripts/index.html">scripts</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/transport/base/index.html">transport.base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/transport/mqtt/index.html">transport.mqtt</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/ai_handler/index.html">ai_handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/device_handler/index.html">device_handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/script_handler/index.html">script_handler</a></li>
 </ul>
 </li>
 </ul>
@@ -344,7 +253,6 @@
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
 </div>
@@ -418,13 +326,40 @@
 <section id="services-api-gateway">
 <h3><code class="docutils literal notranslate"><span class="pre">services/api-gateway/</span></code><a class="headerlink" href="#services-api-gateway" title="Link to this heading">¶</a></h3>
 <p>Acts as the single REST entry point. Resolves authentication and proxies requests to internal gRPC endpoints.</p>
-<ul class="simple">
-<li><p>[api-gateway/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/main.py): Initializes the FastAPI application, mounts CORS middlewares, and binds REST routers.</p></li>
-<li><p>[api-gateway/app/config.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/config.py): Validates configurations (JWT secrets, internal gRPC host mappings).</p></li>
-<li><p>[api-gateway/app/stubs.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/stubs.py): Caches active gRPC channels to communicate with backends.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/auth/</span></code></strong>: Contains utility functions to sign/decode JWT tokens and hash credentials.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/routers/</span></code></strong>: Exposes REST paths by calling internal gRPC channels:</p>
 <ul>
+<li><p>[api-gateway/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/main.py): Initializes the FastAPI application, mounts CORS middlewares, and binds REST routers.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;API Gateway entry point.</span>
+
+<span class="sd">FastAPI application that acts as the single HTTP entry point for the</span>
+<span class="sd">frontend. Authenticates requests with JWT and proxies them to the</span>
+<span class="sd">appropriate downstream gRPC service. Handles multipart file uploads</span>
+<span class="sd">directly to MinIO to avoid passing large binaries through gRPC.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>[api-gateway/app/config.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/config.py): Validates configurations (JWT secrets, internal gRPC host mappings).</p></li>
+<li><p>[api-gateway/app/stubs.py](file:///c:/Users/Estela/TFM_MIoT/services/api-gateway/app/stubs.py): Caches active gRPC channels to communicate with backends.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;gRPC stubs singleton para el gateway.&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/auth/</span></code></strong>: Contains utility functions to sign/decode JWT tokens and hash credentials.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">jwt.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;JWT authentication helpers for the API Gateway.</span>
+
+<span class="sd">Provides token creation and verification utilities, plus the hardcoded</span>
+<span class="sd">demo user. The demo user will be replaced with database-backed auth</span>
+<span class="sd">in a future iteration.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/routers/</span></code></strong>: Exposes REST paths by calling internal gRPC channels:</p>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">deployments.py</span></code>: Manages the lifecycle of deployments and releases.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">devices.py</span></code>: Manages device metadata and connection states.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">models.py</span></code>: Handles model uploads and compilation triggers.</p></li>
@@ -437,8 +372,17 @@
 <section id="services-registry-service">
 <h3><code class="docutils literal notranslate"><span class="pre">services/registry-service/</span></code><a class="headerlink" href="#services-registry-service" title="Link to this heading">¶</a></h3>
 <p>Acts as the metadata catalog. Persists data about registered hardware, uploaded model assets, and scripts.</p>
-<ul class="simple">
-<li><p>[registry-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/registry-service/app/main.py): Sets up and runs the gRPC server on port <code class="docutils literal notranslate"><span class="pre">50051</span></code>.</p></li>
+<ul>
+<li><p>[registry-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/registry-service/app/main.py): Sets up and runs the gRPC server on port <code class="docutils literal notranslate"><span class="pre">50051</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Registry Service entry point.</span>
+
+<span class="sd">Consolidates Device, AI, and Script metadata management.</span>
+<span class="sd">Starts a single async gRPC server on port 50051 that hosts</span>
+<span class="sd">DeviceServiceHandler, AIServiceHandler, and ScriptServiceHandler.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">app/grpc_handlers/</span></code></strong>: Handles RPC calls to fetch/modify devices, models, and scripts.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">app/repositories/</span></code></strong>: Implements Repository patterns using SQLAlchemy to perform PostgreSQL operations.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">app/models/</span></code></strong>: SQL schemas mapped via SQLAlchemy ORM classes.</p></li>
@@ -447,18 +391,59 @@
 <section id="services-mlops-service">
 <h3><code class="docutils literal notranslate"><span class="pre">services/mlops-service/</span></code><a class="headerlink" href="#services-mlops-service" title="Link to this heading">¶</a></h3>
 <p>Runs asynchronous compilation and optimization pipelines using isolated Docker runtimes.</p>
-<ul class="simple">
-<li><p>[mlops-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/mlops-service/app/main.py): Listens for gRPC compilation requests on port <code class="docutils literal notranslate"><span class="pre">50052</span></code>.</p></li>
-<li><p>[mlops-service/app/worker.py](file:///c:/Users/Estela/TFM_MIoT/services/mlops-service/app/worker.py): Manages compilation tasks and spawns local Docker container compilations using the Docker socket.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/compilers/</span></code></strong>: Contains compiler implementations (Hailo, TensorRT, TFLite).</p></li>
+<ul>
+<li><p>[mlops-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/mlops-service/app/main.py): Listens for gRPC compilation requests on port <code class="docutils literal notranslate"><span class="pre">50052</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Compilation Service entry point.</span>
+
+<span class="sd">Starts an async gRPC server on port 50054 that exposes</span>
+<span class="sd">:class:`~app.grpc_handlers.compilation_handler.CompilationServiceHandler`.</span>
+<span class="sd">Compilation jobs run as background asyncio tasks so the RPC returns immediately.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>[mlops-service/app/worker.py](file:///c:/Users/Estela/TFM_MIoT/services/mlops-service/app/worker.py): Manages compilation tasks and spawns local Docker container compilations using the Docker socket.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;ARQ worker for compilation-service.</span>
+
+<span class="sd">Defines job functions for:</span>
+<span class="sd">  - train_job:   runs YOLO training subprocess, uploads best.pt to MinIO</span>
+<span class="sd">  - compile_job: runs hardware-specific compiler, uploads artefact to MinIO</span>
+
+<span class="sd">Both jobs update the model status in ai-service via gRPC on completion.</span>
+
+<span class="sd">The worker runs inside the same Docker container as the gRPC server but as</span>
+<span class="sd">a separate process (started via arq app.worker.WorkerSettings).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">app/compilers/</span></code></strong>: Contains compiler implementations (Hailo, TensorRT, ONNX).</p></li>
 </ul>
 </section>
 <section id="services-edge-connector-service">
 <h3><code class="docutils literal notranslate"><span class="pre">services/edge-connector-service/</span></code><a class="headerlink" href="#services-edge-connector-service" title="Link to this heading">¶</a></h3>
 <p>Connects the cloud services to the physical hardware devices.</p>
-<ul class="simple">
-<li><p>[edge-connector-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/edge-connector-service/app/main.py): Initializes the service on port <code class="docutils literal notranslate"><span class="pre">50053</span></code>.</p></li>
-<li><p>[edge-connector-service/app/worker.py](file:///c:/Users/Estela/TFM_MIoT/services/edge-connector-service/app/worker.py): Listens to incoming MQTT metrics and telemetry, persisting them in MongoDB and Prometheus.</p></li>
+<ul>
+<li><p>[edge-connector-service/app/main.py](file:///c:/Users/Estela/TFM_MIoT/services/edge-connector-service/app/main.py): Initializes the service on port <code class="docutils literal notranslate"><span class="pre">50053</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Edge Connector Service entry point.</span>
+
+<span class="sd">Consolidates OTA deployment orchestration, telemetry monitoring,</span>
+<span class="sd">and Prometheus metrics. Launches gRPC server, Prometheus exporter,</span>
+<span class="sd">MQTT background listener, and deployment arq worker.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>[edge-connector-service/app/worker.py](file:///c:/Users/Estela/TFM_MIoT/services/edge-connector-service/app/worker.py): Listens to incoming MQTT metrics and telemetry, persisting them in MongoDB and Prometheus.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;ARQ worker for deployment-service.</span>
+
+<span class="sd">Defines compile_and_deploy_job: triggers compilation via compilation-service</span>
+<span class="sd">gRPC, then waits for the model to become ready by polling Redis (published</span>
+<span class="sd">by the compilation worker) rather than polling Postgres in a busy loop.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">app/mqtt/</span></code></strong>: MQTT client configuration and subscription loops.</p></li>
 </ul>
 </section>
@@ -467,20 +452,110 @@
 <section id="edge-agent-edge-runtime">
 <h2>2. Edge Agent (<code class="docutils literal notranslate"><span class="pre">edge-runtime/</span></code>)<a class="headerlink" href="#edge-agent-edge-runtime" title="Link to this heading">¶</a></h2>
 <p>Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).</p>
-<ul class="simple">
-<li><p>[edge-runtime/agent.py](file:///c:/Users/Estela/TFM_MIoT/edge-runtime/agent.py): The edge agent entry point. Establishes the MQTT client connection, sends system metrics, downloads compiled model artifacts, verifies hashes, and starts the active inference loop.</p></li>
+<ul>
+<li><p>[edge-runtime/agent.py](file:///c:/Users/Estela/TFM_MIoT/edge-runtime/agent.py): The edge agent entry point. Establishes the MQTT client connection, sends system metrics, downloads compiled model artifacts, verifies hashes, and starts the active inference loop.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;AURA Edge Agent — Entrypoint</span>
+<span class="sd">=============================</span>
+<span class="sd">Minimal entrypoint that wires together the PAL components:</span>
+
+<span class="sd">* :class:`~pal.comm_client.CommunicationClient` — MQTT publish/subscribe</span>
+<span class="sd">* :class:`~pal.ota_handler.OTAHandler`          — OTA deploy handler</span>
+<span class="sd">* :class:`~pal.orchestrator.Orchestrator`        — inference + telemetry loops</span>
+<span class="sd">* :class:`~aura_hw.device_manager.DeviceManager` — connected device backends</span>
+
+<span class="sd">Configuration (priority order)</span>
+<span class="sd">-------------------------------</span>
+<span class="sd">1. Environment variables</span>
+<span class="sd">2. config/device_config.yaml</span>
+<span class="sd">3. Built-in defaults</span>
+
+<span class="sd">MQTT Topics</span>
+<span class="sd">-----------</span>
+<span class="sd">Subscribe:  device/{DEVICE_ID}/commands</span>
+<span class="sd">Publish:    device/{DEVICE_ID}/events</span>
+<span class="sd">            device/{DEVICE_ID}/telemetry</span>
+<span class="sd">            device/{DEVICE_ID}/inference</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">edge-runtime/pal/</span></code></strong>: Platform Abstraction Layer:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">comm_client.py</span></code>: Handles MQTT socket client interfaces and telemetry message publishing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comm_client.py</span></code>: Handles MQTT socket client interfaces and telemetry message publishing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;PAL — Communication Client</span>
+<span class="sd">===========================</span>
+<span class="sd">Async MQTT wrapper that provides a stable publish/subscribe interface</span>
+<span class="sd">to the rest of the runtime, with automatic reconnection on broker</span>
+<span class="sd">failures.</span>
+
+<span class="sd">All MQTT topic conventions live here so the rest of the codebase never</span>
+<span class="sd">constructs raw topic strings.</span>
+
+<span class="sd">Topics</span>
+<span class="sd">------</span>
+<span class="sd">Subscribe:</span>
+<span class="sd">    device/{device_id}/commands</span>
+
+<span class="sd">Publish:</span>
+<span class="sd">    device/{device_id}/events</span>
+<span class="sd">    device/{device_id}/telemetry</span>
+<span class="sd">    device/{device_id}/inference</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
 </ul>
 </li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">edge-runtime/aura_hw/</span></code></strong>: Hardware abstraction library:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">detect.py</span></code>: Automatically runs hardware inspection commands to check which NPUs are attached.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">device_manager.py</span></code>: Controls low-level sensor interfaces, camera devices, and active actuators.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">detect.py</span></code>: Automatically runs hardware inspection commands to check which NPUs are attached.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Hardware auto-detection for the AURA edge runtime.</span>
+
+<span class="sd">Probes the host system to determine which AI accelerator is available.</span>
+<span class="sd">The result is cached after the first call so repeated imports don&#39;t</span>
+<span class="sd">re-run the detection logic.</span>
+
+<span class="sd">Detection order</span>
+<span class="sd">---------------</span>
+<span class="sd">1. AURA_HARDWARE_TYPE environment variable (override, highest priority)</span>
+<span class="sd">2. hailortcli fw-control identify → hailo8 / hailo8l</span>
+<span class="sd">3. /etc/nv_tegra_release → jetson_orin_nano</span>
+<span class="sd">4. libcamera-hello --list-cameras with imx500 in output → rpi_ai_cam</span>
+<span class="sd">5. /proc/device-tree/model containing raspberry → rpi</span>
+<span class="sd">6. Fallback → unknown</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">device_manager.py</span></code>: Controls low-level sensor interfaces, camera devices, and active actuators.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;AURA Device Manager</span>
+<span class="sd">=====================</span>
+<span class="sd">Reads components_config.yaml, instantiates the correct device</span>
+<span class="sd">backend for each enabled component, and manages their lifecycle.</span>
+
+<span class="sd">All device backends are loaded dynamically from the hardware/</span>
+<span class="sd">directory, which is populated via OTA when the device connects to</span>
+<span class="sd">the AURA platform.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
 <li><p><code class="docutils literal notranslate"><span class="pre">loader.py</span></code>: Loads the user-submitted Python inference script dynamically into the Python runtime.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">runtime.py</span></code>: Coordinates model execution with the detected backend accelerator.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">aura_hw/backends/</span></code></strong>: Specific backends for each compiler output target (Hailo, IMX500, CPU/TFLite, Jetson).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">runtime.py</span></code>: Coordinates model execution with the detected backend accelerator.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Public API for the AURA hardware abstraction layer.</span>
+
+<span class="sd">Exposes five functions for inference scripts and the PAL layer:</span>
+
+<span class="sd">* load_model        — load a compiled model onto the detected hardware</span>
+<span class="sd">* execute_inference — run one inference pass</span>
+<span class="sd">* unload_model      — release the model and free accelerator resources</span>
+<span class="sd">* get_hardware_info — return a dict describing the current hardware state</span>
+<span class="sd">* get_last_inference— return the result of the last inference pass</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">aura_hw/backends/</span></code></strong>: Specific backends for each compiler output target (Hailo, IMX500, CPU/ONNX, Jetson).</p></li>
 </ul>
 </li>
 </ul>
@@ -509,15 +584,40 @@
 <section id="shared-modules-shared">
 <h2>4. Shared Modules (<code class="docutils literal notranslate"><span class="pre">shared/</span></code>)<a class="headerlink" href="#shared-modules-shared" title="Link to this heading">¶</a></h2>
 <p>Common modules imported by both backend microservices and edge runtimes.</p>
-<ul class="simple">
+<ul>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/proto/</span></code></strong>: Standard Protocol Buffer definitions (<code class="docutils literal notranslate"><span class="pre">.proto</span></code>).</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/proto_gen/</span></code></strong>: Auto-generated gRPC code generated using <code class="docutils literal notranslate"><span class="pre">grpcio-tools</span></code>.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/transport/</span></code></strong>: Common network wrappers (e.g., helper clients for secure MQTT connections).</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">shared/utils/</span></code></strong>:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">database.py</span></code>: PostgreSQL connection utilities and session decorators.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">minio.py</span></code>: Helper class for MinIO S3 object storage (bucket operations, pre-signed URL creation).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">logging.py</span></code>: Centralized logging formatters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">database.py</span></code>: PostgreSQL connection utilities and session decorators.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Database utilities shared across all AURA services.</span>
+
+<span class="sd">Provides SQLAlchemy async engine and session factory builders,</span>
+<span class="sd">plus a common declarative base for ORM models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">minio.py</span></code>: Helper class for MinIO S3 object storage (bucket operations, pre-signed URL creation).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;MinIO async client helpers for AURA services.</span>
+
+<span class="sd">Wraps miniopy-async to provide initialisation, bucket bootstrapping,</span>
+<span class="sd">binary upload and presigned URL generation as simple module-level calls</span>
+<span class="sd">shared across all services.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.py</span></code>: Centralized logging formatters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Structured logging configuration for all AURA services.</span>
+
+<span class="sd">Configures a consistent log format that includes the service name,</span>
+<span class="sd">making it easy to filter logs when running the full stack.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
 </ul>
 </li>
 </ul>

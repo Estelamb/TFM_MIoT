@@ -463,8 +463,32 @@ export const getMonitoringStates = async (): Promise<DeviceState[]> => {
 export const getDeviceState = (id: string) =>
   api.get<DeviceState>(`/api/monitoring/devices/${id}`).then(r => r.data);
 
-export const getInferenceResults = (device_id: string, limit = 20) =>
-  api.get<InferenceResult[]>(`/api/monitoring/devices/${device_id}/inference?limit=${limit}`).then(r => r.data);
+export const getInferenceResults = async (device_id: string, limit = 20): Promise<InferenceResult[]> => {
+  if (useDataMode.getState().mode === "demo") {
+    const now = new Date();
+    return Array.from({ length: 10 }).map((_, i) => {
+      const ts = new Date(now.getTime() - i * 5000).toISOString();
+      const mockResult = Math.random() > 0.2 ? [
+        {
+          class: i % 2 === 0 ? "person" : "dog",
+          confidence: parseFloat((0.8 + Math.random() * 0.18).toFixed(2)),
+          bbox: [Math.round(100 + Math.random() * 50), Math.round(150 + Math.random() * 50), 60, 110]
+        },
+        {
+          class: "car",
+          confidence: parseFloat((0.75 + Math.random() * 0.2).toFixed(2)),
+          bbox: [Math.round(300 + Math.random() * 50), Math.round(200 + Math.random() * 50), 120, 80]
+        }
+      ] : [];
+      return {
+        timestamp: ts,
+        deployment_id: "demo-dep-123",
+        result_json: JSON.stringify(mockResult)
+      };
+    });
+  }
+  return api.get<InferenceResult[]>(`/api/monitoring/devices/${device_id}/inference?limit=${limit}`).then(r => r.data);
+};
 
 // ── Metadata Management (PUT) ──────────────────────────────────────────────────
 export interface UpdateModelRequest {

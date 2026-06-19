@@ -1,0 +1,60 @@
+api_gateway_service.routers.scripts
+===================================
+
+.. py:module:: api_gateway_service.routers.scripts
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   api_gateway_service.routers.scripts.logger
+   api_gateway_service.routers.scripts.router
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   api_gateway_service.routers.scripts.upload_script
+   api_gateway_service.routers.scripts.list_scripts
+   api_gateway_service.routers.scripts.list_libraries
+   api_gateway_service.routers.scripts.get_script
+   api_gateway_service.routers.scripts.delete_script
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:data:: router
+
+.. py:function:: upload_script(name: str = Form(...), description: str = Form(''), language: str = Form('python'), file: fastapi.UploadFile = File(...), _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: list_scripts(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: list_libraries(_=Depends(verify_token))
+   :async:
+
+
+   Scan the hardware/ directory and return the generic library APIs.
+
+   Returns a dict mapping category to a list of API entries extracted
+   from each library.py file.
+
+
+.. py:function:: get_script(script_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: delete_script(script_id: str, _=Depends(verify_token))
+   :async:
+
+

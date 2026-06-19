@@ -1,0 +1,15 @@
+api_gateway_service.auth
+========================
+
+.. py:module:: api_gateway_service.auth
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/api_gateway_service/auth/jwt/index
+
+

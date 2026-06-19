@@ -1,17 +1,17 @@
-# Tutorial: Raspberry Pi 5 (CPU - TFLite)
+# Tutorial: Raspberry Pi 5 (CPU - ONNX)
 
-*(This tutorial will be completed by the user. Placeholder reserved for the CPU execution guide on Raspberry Pi using TensorFlow Lite).*
+*(This tutorial will be completed by the user. Placeholder reserved for the CPU execution guide on Raspberry Pi using ONNX Runtime).*
 
 ## Introduction to CPU Inference
 
-When no hardware accelerator (NPU/TPU) is available on the edge device, AURA can process models on the host CPU using TensorFlow Lite (`.tflite` format). Performance will be lower, but it is ideal for debugging and lightweight models.
+When no hardware accelerator (NPU/TPU) is available on the edge device, AURA can process models on the host CPU using ONNX (`.onnx` format). Performance will be lower, but it is ideal for debugging and lightweight models.
 
 ## Software Requirements
 
 * Python 3.10+ installed on the Raspberry Pi.
-* TensorFlow Lite Runtime library:
+* ONNX Runtime library:
   ```bash
-  pip install tflite-runtime
+  pip install onnxruntime
   ```
 
 ## Using the CPU Backend in AURA

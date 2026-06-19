@@ -174,6 +174,15 @@ export const useDataMode = create<DataStore>((set) => ({
         script_id: 'scr-201',
         status: 'running',
         created_at: new Date().toISOString()
+      },
+      {
+        id: 'dep-302',
+        device_id: 'dev-002',
+        model_id: 'mod-101',
+        script_id: 'scr-201',
+        status: 'failed',
+        error_msg: "OTA deploy failed: No module named 'onnxruntime' inside custom inference runtime loading stage.",
+        created_at: new Date(Date.now() - 3600000).toISOString()
       }
     ],
     monitoringStates: [

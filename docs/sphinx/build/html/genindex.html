@@ -210,7 +210,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/imx500.html">Tutorial: Raspberry Pi 5 + AI Camera (IMX500)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - TFLite)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - ONNX)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/jetson_orin.html">Tutorial: NVIDIA Jetson Orin Nano</a></li>
 </ul>
 </li>
@@ -222,116 +222,25 @@
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/actuators/index.html">app.actuators</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/auth/jwt/index.html">app.auth.jwt</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/compilers/base/index.html">app.compilers.base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/compilers/yolo_train/index.html">app.compilers.yolo_train</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/config/index.html">api_gateway_service.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/main/index.html">api_gateway_service.main</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/api_gateway_service/routers/index.html">api_gateway_service.routers</a><input aria-label="Toggle navigation of api_gateway_service.routers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/datasets/index.html">api_gateway_service.routers.datasets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/deployments/index.html">api_gateway_service.routers.deployments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/devices/index.html">api_gateway_service.routers.devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/models/index.html">api_gateway_service.routers.models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/monitoring/index.html">api_gateway_service.routers.monitoring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/api_gateway_service/routers/scripts/index.html">api_gateway_service.routers.scripts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/config/index.html">app.config</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/compilation_handler/index.html">app.grpc_handlers.compilation_handler</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/deployment_handler/index.html">app.grpc_handlers.deployment_handler</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/grpc_handlers/monitoring_handler/index.html">app.grpc_handlers.monitoring_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/main/index.html">app.main</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/models/mongo/index.html">app.models.mongo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/models/orm/index.html">app.models.orm</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/mqtt/listener/index.html">app.mqtt.listener</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/compilation/index.html">app.repositories.compilation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/deployments/index.html">app.repositories.deployments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/repositories/monitoring/index.html">app.repositories.monitoring</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/datasets/index.html">app.routers.datasets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/deployments/index.html">app.routers.deployments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/devices/index.html">app.routers.devices</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/models/index.html">app.routers.models</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/monitoring/index.html">app.routers.monitoring</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/app/routers/scripts/index.html">app.routers.scripts</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/sensors/index.html">app.sensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/stubs/index.html">app.stubs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/app/worker/index.html">app.worker</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/orm/index.html">orm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/main/index.html">main</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/database/index.html">utils.database</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/grpc_server/index.html">utils.grpc_server</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/logging/index.html">utils.logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/utils/minio/index.html">utils.minio</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/config/index.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/models/index.html">models</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/aura_hw/backends/base/index.html">aura_hw.backends.base</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/base/index.html">aura_hw.backends.devices.actuator.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html">aura_hw.backends.devices.actuator.buzzer</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/led/index.html">aura_hw.backends.devices.actuator.led</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/relay/index.html">aura_hw.backends.devices.actuator.relay</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/actuator/servo/index.html">aura_hw.backends.devices.actuator.servo</a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/devices/base/index.html">aura_hw.backends.devices.base</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/base/index.html">aura_hw.backends.devices.camera.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/camera/general/index.html">aura_hw.backends.devices.camera.general</a></li>
-</ul>
-</li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/base/index.html">aura_hw.backends.devices.sensor.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/distance/index.html">aura_hw.backends.devices.sensor.distance</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/general/index.html">aura_hw.backends.devices.sensor.general</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/imu/index.html">aura_hw.backends.devices.sensor.imu</a></li>
-<li class="toctree-l6"><a class="reference internal" href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html">aura_hw.backends.devices.sensor.temperature</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/inference/base/index.html">aura_hw.backends.inference.base</a></li>
-<li class="toctree-l5"><a class="reference internal" href="autoapi/aura_hw/backends/inference/general/index.html">aura_hw.backends.inference.general</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/detect/index.html">aura_hw.detect</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/device_manager/index.html">aura_hw.device_manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/loader/index.html">aura_hw.loader</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/aura_hw/runtime/index.html">aura_hw.runtime</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/devices/index.html">devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/scripts/index.html">scripts</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/transport/base/index.html">transport.base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="autoapi/transport/mqtt/index.html">transport.mqtt</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/ai_handler/index.html">ai_handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/device_handler/index.html">device_handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/script_handler/index.html">script_handler</a></li>
 </ul>
 </li>
 </ul>
@@ -342,7 +251,6 @@
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
 </div>
@@ -378,490 +286,117 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#_"><strong>_</strong></a> | <a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#K"><strong>K</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#Q"><strong>Q</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#W"><strong>W</strong></a></div>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#V"><strong>V</strong></a></div>
 </section>
-<section id="_" class="genindex-section">
-  <h2>_</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.__tablename__">__tablename__ (app.models.orm.Deployment attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.DeviceRef.__tablename__">(app.models.orm.DeviceRef attribute)</a>
-</li>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.__tablename__">(app.models.orm.ModelRef attribute)</a>
-</li>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ScriptRef.__tablename__">(app.models.orm.ScriptRef attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Dataset.__tablename__">(orm.Dataset attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.DatasetVersion.__tablename__">(orm.DatasetVersion attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Device.__tablename__">(orm.Device attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.__tablename__">(orm.Model attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Script.__tablename__">(orm.Script attribute)</a>
-</li>
-        </ul></li>
-    </ul></td>
-  </tr></table>
-</section>
-
 <section id="A" class="genindex-section">
   <h2>A</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/index.html#aura_hw.backends.devices.actuator.ActuatorBackend">ActuatorBackend (class in aura_hw.backends.devices.actuator)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/base/index.html#aura_hw.backends.devices.actuator.base.ActuatorBackend">(class in aura_hw.backends.devices.actuator.base)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.access_token_expire_minutes">access_token_expire_minutes (api_gateway_service.config.Settings attribute)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.DeviceCreate.actuators">actuators (app.routers.devices.DeviceCreate attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceCreate.actuators">actuators (api_gateway_service.routers.devices.DeviceCreate attribute)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.ai_service_grpc">ai_service_grpc (api_gateway_service.config.Settings attribute)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.ALLOWED_BASE_MODELS">ALLOWED_BASE_MODELS (in module api_gateway_service.routers.models)</a>
+</li>
+        <li>
+    api_gateway_service
 
         <ul>
-          <li><a href="autoapi/orm/index.html#orm.Device.actuators">(orm.Device attribute)</a>
+          <li><a href="autoapi/api_gateway_service/index.html#module-api_gateway_service">module</a>
 </li>
         </ul></li>
         <li>
-    ai_handler
+    api_gateway_service.auth
 
         <ul>
-          <li><a href="autoapi/ai_handler/index.html#module-ai_handler">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.ai_service_grpc">ai_service_grpc (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler">AIServiceHandler (class in ai_handler)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.ALLOWED_BASE_MODELS">ALLOWED_BASE_MODELS (in module ai_handler)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.ALLOWED_BASE_MODELS">(in module app.routers.models)</a>
+          <li><a href="autoapi/api_gateway_service/auth/index.html#module-api_gateway_service.auth">module</a>
 </li>
         </ul></li>
         <li>
-    app
+    api_gateway_service.auth.jwt
 
         <ul>
-          <li><a href="autoapi/app/index.html#module-app">module</a>
+          <li><a href="autoapi/api_gateway_service/auth/jwt/index.html#module-api_gateway_service.auth.jwt">module</a>
 </li>
         </ul></li>
         <li>
-    app.actuators
+    api_gateway_service.config
 
         <ul>
-          <li><a href="autoapi/app/actuators/index.html#module-app.actuators">module</a>
+          <li><a href="autoapi/api_gateway_service/config/index.html#module-api_gateway_service.config">module</a>
 </li>
         </ul></li>
         <li>
-    app.auth
+    api_gateway_service.main
 
         <ul>
-          <li><a href="autoapi/app/auth/index.html#module-app.auth">module</a>
+          <li><a href="autoapi/api_gateway_service/main/index.html#module-api_gateway_service.main">module</a>
 </li>
         </ul></li>
         <li>
-    app.auth.jwt
+    api_gateway_service.routers
 
         <ul>
-          <li><a href="autoapi/app/auth/jwt/index.html#module-app.auth.jwt">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.compilers
-
-        <ul>
-          <li><a href="autoapi/app/compilers/index.html#module-app.compilers">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.compilers.base
-
-        <ul>
-          <li><a href="autoapi/app/compilers/base/index.html#module-app.compilers.base">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.compilers.yolo_train
-
-        <ul>
-          <li><a href="autoapi/app/compilers/yolo_train/index.html#module-app.compilers.yolo_train">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.config
-
-        <ul>
-          <li><a href="autoapi/app/config/index.html#module-app.config">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.grpc_handlers
-
-        <ul>
-          <li><a href="autoapi/app/grpc_handlers/index.html#module-app.grpc_handlers">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.grpc_handlers.compilation_handler
-
-        <ul>
-          <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#module-app.grpc_handlers.compilation_handler">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.grpc_handlers.deployment_handler
-
-        <ul>
-          <li><a href="autoapi/app/grpc_handlers/deployment_handler/index.html#module-app.grpc_handlers.deployment_handler">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.grpc_handlers.monitoring_handler
-
-        <ul>
-          <li><a href="autoapi/app/grpc_handlers/monitoring_handler/index.html#module-app.grpc_handlers.monitoring_handler">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.main
-
-        <ul>
-          <li><a href="autoapi/app/main/index.html#module-app.main">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.models
-
-        <ul>
-          <li><a href="autoapi/app/models/index.html#module-app.models">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.models.mongo
-
-        <ul>
-          <li><a href="autoapi/app/models/mongo/index.html#module-app.models.mongo">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.models.orm
-
-        <ul>
-          <li><a href="autoapi/app/models/orm/index.html#module-app.models.orm">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.mqtt
-
-        <ul>
-          <li><a href="autoapi/app/mqtt/index.html#module-app.mqtt">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.mqtt.listener
-
-        <ul>
-          <li><a href="autoapi/app/mqtt/listener/index.html#module-app.mqtt.listener">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.repositories
-
-        <ul>
-          <li><a href="autoapi/app/repositories/index.html#module-app.repositories">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.repositories.compilation
-
-        <ul>
-          <li><a href="autoapi/app/repositories/compilation/index.html#module-app.repositories.compilation">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.repositories.deployments
-
-        <ul>
-          <li><a href="autoapi/app/repositories/deployments/index.html#module-app.repositories.deployments">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.repositories.monitoring
-
-        <ul>
-          <li><a href="autoapi/app/repositories/monitoring/index.html#module-app.repositories.monitoring">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.routers
-
-        <ul>
-          <li><a href="autoapi/app/routers/index.html#module-app.routers">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.routers.datasets
-
-        <ul>
-          <li><a href="autoapi/app/routers/datasets/index.html#module-app.routers.datasets">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.routers.deployments
-
-        <ul>
-          <li><a href="autoapi/app/routers/deployments/index.html#module-app.routers.deployments">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.routers.devices
-
-        <ul>
-          <li><a href="autoapi/app/routers/devices/index.html#module-app.routers.devices">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.routers.models
-
-        <ul>
-          <li><a href="autoapi/app/routers/models/index.html#module-app.routers.models">module</a>
-</li>
-        </ul></li>
-        <li>
-    app.routers.monitoring
-
-        <ul>
-          <li><a href="autoapi/app/routers/monitoring/index.html#module-app.routers.monitoring">module</a>
+          <li><a href="autoapi/api_gateway_service/routers/index.html#module-api_gateway_service.routers">module</a>
 </li>
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li>
-    app.routers.scripts
+    api_gateway_service.routers.datasets
 
         <ul>
-          <li><a href="autoapi/app/routers/scripts/index.html#module-app.routers.scripts">module</a>
+          <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#module-api_gateway_service.routers.datasets">module</a>
 </li>
         </ul></li>
         <li>
-    app.sensors
+    api_gateway_service.routers.deployments
 
         <ul>
-          <li><a href="autoapi/app/sensors/index.html#module-app.sensors">module</a>
+          <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#module-api_gateway_service.routers.deployments">module</a>
 </li>
         </ul></li>
         <li>
-    app.stubs
+    api_gateway_service.routers.devices
 
         <ul>
-          <li><a href="autoapi/app/stubs/index.html#module-app.stubs">module</a>
+          <li><a href="autoapi/api_gateway_service/routers/devices/index.html#module-api_gateway_service.routers.devices">module</a>
 </li>
         </ul></li>
         <li>
-    app.worker
+    api_gateway_service.routers.models
 
         <ul>
-          <li><a href="autoapi/app/worker/index.html#module-app.worker">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/models/index.html#models.ModelRepository.associate_dataset">associate_dataset() (models.ModelRepository method)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.associate_model_dataset">associate_model_dataset() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.AssociateModelDataset">AssociateModelDataset() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li>
-    aura_hw
-
-        <ul>
-          <li><a href="autoapi/aura_hw/index.html#module-aura_hw">module</a>
+          <li><a href="autoapi/api_gateway_service/routers/models/index.html#module-api_gateway_service.routers.models">module</a>
 </li>
         </ul></li>
         <li>
-    aura_hw.backends
+    api_gateway_service.routers.monitoring
 
         <ul>
-          <li><a href="autoapi/aura_hw/backends/index.html#module-aura_hw.backends">module</a>
+          <li><a href="autoapi/api_gateway_service/routers/monitoring/index.html#module-api_gateway_service.routers.monitoring">module</a>
 </li>
         </ul></li>
         <li>
-    aura_hw.backends.base
+    api_gateway_service.routers.scripts
 
         <ul>
-          <li><a href="autoapi/aura_hw/backends/base/index.html#module-aura_hw.backends.base">module</a>
+          <li><a href="autoapi/api_gateway_service/routers/scripts/index.html#module-api_gateway_service.routers.scripts">module</a>
 </li>
         </ul></li>
         <li>
-    aura_hw.backends.devices
+    api_gateway_service.stubs
 
         <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/index.html#module-aura_hw.backends.devices">module</a>
+          <li><a href="autoapi/api_gateway_service/stubs/index.html#module-api_gateway_service.stubs">module</a>
 </li>
         </ul></li>
-        <li>
-    aura_hw.backends.devices.actuator
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/index.html#module-aura_hw.backends.devices.actuator">module</a>
+        <li><a href="autoapi/api_gateway_service/main/index.html#api_gateway_service.main.app">app (in module api_gateway_service.main)</a>
 </li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.actuator.base
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/base/index.html#module-aura_hw.backends.devices.actuator.base">module</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.associate_model_dataset">associate_model_dataset() (in module api_gateway_service.routers.models)</a>
 </li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.actuator.buzzer
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#module-aura_hw.backends.devices.actuator.buzzer">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.actuator.led
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#module-aura_hw.backends.devices.actuator.led">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.actuator.relay
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#module-aura_hw.backends.devices.actuator.relay">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.actuator.servo
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#module-aura_hw.backends.devices.actuator.servo">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.base
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/base/index.html#module-aura_hw.backends.devices.base">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.camera
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#module-aura_hw.backends.devices.camera">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.camera.base
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/base/index.html#module-aura_hw.backends.devices.camera.base">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.camera.general
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/general/index.html#module-aura_hw.backends.devices.camera.general">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.sensor
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#module-aura_hw.backends.devices.sensor">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.sensor.base
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/base/index.html#module-aura_hw.backends.devices.sensor.base">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.sensor.distance
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#module-aura_hw.backends.devices.sensor.distance">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.sensor.general
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#module-aura_hw.backends.devices.sensor.general">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.sensor.imu
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#module-aura_hw.backends.devices.sensor.imu">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.devices.sensor.temperature
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#module-aura_hw.backends.devices.sensor.temperature">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.inference
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/inference/index.html#module-aura_hw.backends.inference">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.inference.base
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/inference/base/index.html#module-aura_hw.backends.inference.base">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.backends.inference.general
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/inference/general/index.html#module-aura_hw.backends.inference.general">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.detect
-
-        <ul>
-          <li><a href="autoapi/aura_hw/detect/index.html#module-aura_hw.detect">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.device_manager
-
-        <ul>
-          <li><a href="autoapi/aura_hw/device_manager/index.html#module-aura_hw.device_manager">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.loader
-
-        <ul>
-          <li><a href="autoapi/aura_hw/loader/index.html#module-aura_hw.loader">module</a>
-</li>
-        </ul></li>
-        <li>
-    aura_hw.runtime
-
-        <ul>
-          <li><a href="autoapi/aura_hw/runtime/index.html#module-aura_hw.runtime">module</a>
-</li>
-        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -870,29 +405,15 @@
   <h2>B</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/utils/database/index.html#utils.database.Base">Base (class in utils.database)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.UpdateModelRequestSchema.base_architecture">base_architecture (api_gateway_service.routers.models.UpdateModelRequestSchema attribute)</a>
 </li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.base_architecture">base_architecture (app.models.orm.ModelRef attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.UpdateModelRequestSchema.base_architecture">(app.routers.models.UpdateModelRequestSchema attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.base_model">base_model (api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
 </li>
-          <li><a href="autoapi/orm/index.html#orm.Model.base_architecture">(orm.Model attribute)</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema.base_model">base_model (app.routers.models.TrainModelRequestSchema attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.UpdateModelRequestSchema.batch_size">batch_size (api_gateway_service.routers.models.UpdateModelRequestSchema attribute)</a>
 </li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.UpdateModelRequestSchema.batch_size">batch_size (app.routers.models.UpdateModelRequestSchema attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Model.batch_size">(orm.Model attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/utils/database/index.html#utils.database.build_engine">build_engine() (in module utils.database)</a>
-</li>
-        <li><a href="autoapi/utils/database/index.html#utils.database.build_session_factory">build_session_factory() (in module utils.database)</a>
+        <li><a href="autoapi/api_gateway_service/main/index.html#api_gateway_service.main.bootstrap_base_models">bootstrap_base_models() (in module api_gateway_service.main)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -902,166 +423,17 @@
   <h2>C</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.CameraBackend">CameraBackend (class in aura_hw.backends.devices.camera)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/base/index.html#aura_hw.backends.devices.camera.base.CameraBackend">(class in aura_hw.backends.devices.camera.base)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.compilation_service_grpc">compilation_service_grpc (api_gateway_service.config.Settings attribute)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/backends/devices/camera/base/index.html#aura_hw.backends.devices.camera.base.CameraBackend.capture_frame">capture_frame() (aura_hw.backends.devices.camera.base.CameraBackend method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.CameraBackend.capture_frame">(aura_hw.backends.devices.camera.CameraBackend method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.create_dataset">create_dataset() (in module api_gateway_service.routers.datasets)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/general/index.html#aura_hw.backends.devices.camera.general.GeneralCameraBackend.capture_frame">(aura_hw.backends.devices.camera.general.GeneralCameraBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.GeneralCameraBackend.capture_frame">(aura_hw.backends.devices.camera.GeneralCameraBackend method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator.close">close() (aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#aura_hw.backends.devices.actuator.led.GeneralLEDActuator.close">(aura_hw.backends.devices.actuator.led.GeneralLEDActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#aura_hw.backends.devices.actuator.relay.GeneralRelayActuator.close">(aura_hw.backends.devices.actuator.relay.GeneralRelayActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#aura_hw.backends.devices.actuator.servo.GeneralServoActuator.close">(aura_hw.backends.devices.actuator.servo.GeneralServoActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/base/index.html#aura_hw.backends.devices.base.DeviceBackend.close">(aura_hw.backends.devices.base.DeviceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/general/index.html#aura_hw.backends.devices.camera.general.GeneralCameraBackend.close">(aura_hw.backends.devices.camera.general.GeneralCameraBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.GeneralCameraBackend.close">(aura_hw.backends.devices.camera.GeneralCameraBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/index.html#aura_hw.backends.devices.DeviceBackend.close">(aura_hw.backends.devices.DeviceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor.close">(aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#aura_hw.backends.devices.sensor.general.GeneralSensorBackend.close">(aura_hw.backends.devices.sensor.general.GeneralSensorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.GeneralSensorBackend.close">(aura_hw.backends.devices.sensor.GeneralSensorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#aura_hw.backends.devices.sensor.imu.GeneralIMUSensor.close">(aura_hw.backends.devices.sensor.imu.GeneralIMUSensor method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor.close">(aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/device_manager/index.html#aura_hw.device_manager.DeviceManager.close_all">close_all() (aura_hw.device_manager.DeviceManager method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/index.html#aura_hw.DeviceManager.close_all">(aura_hw.DeviceManager method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.compilation_service_grpc">compilation_service_grpc (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/app/repositories/compilation/index.html#app.repositories.compilation.CompilationRepository">CompilationRepository (class in app.repositories.compilation)</a>
-</li>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilationResult">CompilationResult (class in app.compilers.base)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#app.grpc_handlers.compilation_handler.CompilationServiceHandler">CompilationServiceHandler (class in app.grpc_handlers.compilation_handler)</a>
-</li>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilerBase.compile">compile() (app.compilers.base.CompilerBase method)</a>
-
-        <ul>
-          <li><a href="autoapi/app/compilers/index.html#app.compilers.CompilerBase.compile">(app.compilers.CompilerBase method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/worker/index.html#app.worker.compile_and_deploy_job">compile_and_deploy_job() (in module app.worker)</a>
-</li>
-        <li><a href="autoapi/orm/index.html#orm.Model.compile_error">compile_error (orm.Model attribute)</a>
-</li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.compile_status">compile_status (app.models.orm.ModelRef attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Model.compile_status">(orm.Model attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilationResult.compiled_key">compiled_key (app.compilers.base.CompilationResult attribute)</a>, <a href="autoapi/app/compilers/base/index.html#id1">[1]</a>
-
-        <ul>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.compiled_key">(app.models.orm.ModelRef attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.compiled_key">(orm.Model attribute)</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilationResult.compiled_sha256">compiled_sha256 (app.compilers.base.CompilationResult attribute)</a>, <a href="autoapi/app/compilers/base/index.html#id2">[1]</a>
-
-        <ul>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.compiled_sha256">(app.models.orm.ModelRef attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.create_deployment">create_deployment() (in module api_gateway_service.routers.deployments)</a>
 </li>
-          <li><a href="autoapi/orm/index.html#orm.Model.compiled_sha256">(orm.Model attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.create_device">create_device() (in module api_gateway_service.routers.devices)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#app.grpc_handlers.compilation_handler.CompilationServiceHandler.CompileModel">CompileModel() (app.grpc_handlers.compilation_handler.CompilationServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/compilers/index.html#app.compilers.CompilerBase">CompilerBase (class in app.compilers)</a>
-
-        <ul>
-          <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilerBase">(class in app.compilers.base)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/backends/devices/base/index.html#aura_hw.backends.devices.base.DeviceBackend.component_id">component_id (aura_hw.backends.devices.base.DeviceBackend property)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/index.html#aura_hw.backends.devices.DeviceBackend.component_id">(aura_hw.backends.devices.DeviceBackend property)</a>
-</li>
-        </ul></li>
-        <li>
-    config
-
-        <ul>
-          <li><a href="autoapi/config/index.html#module-config">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/utils/logging/index.html#utils.logging.configure_logging">configure_logging() (in module utils.logging)</a>
-</li>
-        <li><a href="autoapi/transport/base/index.html#transport.base.TransportBase.connect">connect() (transport.base.TransportBase method)</a>
-
-        <ul>
-          <li><a href="autoapi/transport/mqtt/index.html#transport.mqtt.MQTTTransport.connect">(transport.mqtt.MQTTTransport method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/mqtt/listener/index.html#app.mqtt.listener.CPU_GAUGE">CPU_GAUGE (in module app.mqtt.listener)</a>
-</li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.create">create() (app.repositories.deployments.DeploymentRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/devices/index.html#devices.DeviceRepository.create">(devices.DeviceRepository method)</a>
-</li>
-          <li><a href="autoapi/models/index.html#models.DatasetRepository.create">(models.DatasetRepository method)</a>
-</li>
-          <li><a href="autoapi/models/index.html#models.ModelRepository.create">(models.ModelRepository method)</a>
-</li>
-          <li><a href="autoapi/scripts/index.html#scripts.ScriptRepository.create">(scripts.ScriptRepository method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.create_dataset">create_dataset() (in module app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.create_deployment">create_deployment() (in module app.routers.deployments)</a>
-</li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.create_device">create_device() (in module app.routers.devices)</a>
-</li>
-        <li><a href="autoapi/app/auth/jwt/index.html#app.auth.jwt.create_token">create_token() (in module app.auth.jwt)</a>
-</li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.created_at">created_at (app.models.orm.Deployment attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Dataset.created_at">(orm.Dataset attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.DatasetVersion.created_at">(orm.DatasetVersion attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Device.created_at">(orm.Device attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.created_at">(orm.Model attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Script.created_at">(orm.Script attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/grpc_handlers/deployment_handler/index.html#app.grpc_handlers.deployment_handler.DeploymentServiceHandler.CreateDeployment">CreateDeployment() (app.grpc_handlers.deployment_handler.DeploymentServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/device_handler/index.html#device_handler.DeviceServiceHandler.CreateDevice">CreateDevice() (device_handler.DeviceServiceHandler method)</a>
+        <li><a href="autoapi/api_gateway_service/auth/jwt/index.html#api_gateway_service.auth.jwt.create_token">create_token() (in module api_gateway_service.auth.jwt)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1071,240 +443,60 @@
   <h2>D</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/orm/index.html#orm.Dataset">Dataset (class in orm)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.dataset_id">dataset_id (api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
 </li>
-        <li><a href="autoapi/orm/index.html#orm.DatasetVersion.dataset">dataset (orm.DatasetVersion attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.dataset_version_id">dataset_version_id (api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.delete_dataset">delete_dataset() (in module api_gateway_service.routers.datasets)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.delete_deployment">delete_deployment() (in module api_gateway_service.routers.deployments)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.delete_device">delete_device() (in module api_gateway_service.routers.devices)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.delete_model">delete_model() (in module api_gateway_service.routers.models)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/routers/scripts/index.html#api_gateway_service.routers.scripts.delete_script">delete_script() (in module api_gateway_service.routers.scripts)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/auth/jwt/index.html#api_gateway_service.auth.jwt.DEMO_USER">DEMO_USER (in module api_gateway_service.auth.jwt)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.deployment_service_grpc">deployment_service_grpc (api_gateway_service.config.Settings attribute)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.DeployRequest">DeployRequest (class in api_gateway_service.routers.deployments)</a>
+</li>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.UpdateDatasetRequestSchema.description">description (api_gateway_service.routers.datasets.UpdateDatasetRequestSchema attribute)</a>
 
         <ul>
-          <li><a href="autoapi/orm/index.html#orm.Model.dataset">(orm.Model attribute)</a>
+          <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceCreate.description">(api_gateway_service.routers.devices.DeviceCreate attribute)</a>
+</li>
+          <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceUpdate.description">(api_gateway_service.routers.devices.DeviceUpdate attribute)</a>
+</li>
+          <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.description">(api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
+</li>
+          <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.UpdateModelRequestSchema.description">(api_gateway_service.routers.models.UpdateModelRequestSchema attribute)</a>
 </li>
         </ul></li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.dataset_id">dataset_id (app.models.orm.ModelRef attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema.dataset_id">(app.routers.models.TrainModelRequestSchema attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.DatasetVersion.dataset_id">(orm.DatasetVersion attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.dataset_id">(orm.Model attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema.dataset_version_id">dataset_version_id (app.routers.models.TrainModelRequestSchema attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Model.dataset_version_id">(orm.Model attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/models/index.html#models.DatasetRepository">DatasetRepository (class in models)</a>
-</li>
-        <li><a href="autoapi/orm/index.html#orm.DatasetVersion">DatasetVersion (class in orm)</a>
-</li>
-        <li><a href="autoapi/devices/index.html#devices.DeviceRepository.delete">delete() (devices.DeviceRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/models/index.html#models.DatasetRepository.delete">(models.DatasetRepository method)</a>
-</li>
-          <li><a href="autoapi/models/index.html#models.ModelRepository.delete">(models.ModelRepository method)</a>
-</li>
-          <li><a href="autoapi/scripts/index.html#scripts.ScriptRepository.delete">(scripts.ScriptRepository method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.delete_dataset">delete_dataset() (in module app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.delete_deployment">delete_deployment() (in module app.routers.deployments)</a>
-</li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.delete_device">delete_device() (in module app.routers.devices)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.delete_model">delete_model() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/app/routers/scripts/index.html#app.routers.scripts.delete_script">delete_script() (in module app.routers.scripts)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.DeleteDataset">DeleteDataset() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/device_handler/index.html#device_handler.DeviceServiceHandler.DeleteDevice">DeleteDevice() (device_handler.DeviceServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.DeleteModel">DeleteModel() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/script_handler/index.html#script_handler.ScriptServiceHandler.DeleteScript">DeleteScript() (script_handler.ScriptServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/auth/jwt/index.html#app.auth.jwt.DEMO_USER">DEMO_USER (in module app.auth.jwt)</a>
-</li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment">Deployment (class in app.models.orm)</a>
-</li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository">DeploymentRepository (class in app.repositories.deployments)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/deployment_handler/index.html#app.grpc_handlers.deployment_handler.DeploymentServiceHandler">DeploymentServiceHandler (class in app.grpc_handlers.deployment_handler)</a>
-</li>
-        <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.DeployRequest">DeployRequest (class in app.routers.deployments)</a>
-</li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.UpdateDatasetRequestSchema.description">description (app.routers.datasets.UpdateDatasetRequestSchema attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.DeviceCreate.description">(app.routers.devices.DeviceCreate attribute)</a>
-</li>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema.description">(app.routers.models.TrainModelRequestSchema attribute)</a>
-</li>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.UpdateModelRequestSchema.description">(app.routers.models.UpdateModelRequestSchema attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Dataset.description">(orm.Dataset attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.DatasetVersion.description">(orm.DatasetVersion attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Device.description">(orm.Device attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.description">(orm.Model attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Script.description">(orm.Script attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/detect/index.html#aura_hw.detect.detect_hardware">detect_hardware() (in module aura_hw.detect)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema.device">device (app.routers.models.TrainModelRequestSchema attribute)</a>
-</li>
-        <li><a href="autoapi/orm/index.html#orm.Device">Device (class in orm)</a>
-</li>
-        <li>
-    device_handler
-
-        <ul>
-          <li><a href="autoapi/device_handler/index.html#module-device_handler">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.device_id">device_id (app.models.orm.Deployment attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.DeployRequest.device_id">(app.routers.deployments.DeployRequest attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/backends/base/index.html#aura_hw.backends.base.InferenceBackend.device_info">device_info() (aura_hw.backends.base.InferenceBackend method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/inference/base/index.html#aura_hw.backends.inference.base.InferenceBackend.device_info">(aura_hw.backends.inference.base.InferenceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/general/index.html#aura_hw.backends.inference.general.GeneralInferenceBackend.device_info">(aura_hw.backends.inference.general.GeneralInferenceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/index.html#aura_hw.backends.inference.InferenceBackend.device_info">(aura_hw.backends.inference.InferenceBackend method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.device_service_grpc">device_service_grpc (app.config.Settings attribute)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/models/mongo/index.html#app.models.mongo.DEVICE_STATES_COL">DEVICE_STATES_COL (in module app.models.mongo)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.device">device (api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
 </li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/index.html#aura_hw.backends.devices.actuator.ActuatorBackend.device_type">device_type (aura_hw.backends.devices.actuator.ActuatorBackend property)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/base/index.html#aura_hw.backends.devices.actuator.base.ActuatorBackend.device_type">(aura_hw.backends.devices.actuator.base.ActuatorBackend property)</a>
+        <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.DeployRequest.device_id">device_id (api_gateway_service.routers.deployments.DeployRequest attribute)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator.device_type">(aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator property)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.device_service_grpc">device_service_grpc (api_gateway_service.config.Settings attribute)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#aura_hw.backends.devices.actuator.led.GeneralLEDActuator.device_type">(aura_hw.backends.devices.actuator.led.GeneralLEDActuator property)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceCreate">DeviceCreate (class in api_gateway_service.routers.devices)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#aura_hw.backends.devices.actuator.relay.GeneralRelayActuator.device_type">(aura_hw.backends.devices.actuator.relay.GeneralRelayActuator property)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceUpdate">DeviceUpdate (class in api_gateway_service.routers.devices)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#aura_hw.backends.devices.actuator.servo.GeneralServoActuator.device_type">(aura_hw.backends.devices.actuator.servo.GeneralServoActuator property)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.download_base_model">download_base_model() (in module api_gateway_service.routers.models)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/base/index.html#aura_hw.backends.devices.base.DeviceBackend.device_type">(aura_hw.backends.devices.base.DeviceBackend property)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.download_dataset">download_dataset() (in module api_gateway_service.routers.datasets)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/base/index.html#aura_hw.backends.devices.camera.base.CameraBackend.device_type">(aura_hw.backends.devices.camera.base.CameraBackend property)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.download_dataset_version">download_dataset_version() (in module api_gateway_service.routers.datasets)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.CameraBackend.device_type">(aura_hw.backends.devices.camera.CameraBackend property)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.download_model_compiled">download_model_compiled() (in module api_gateway_service.routers.models)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/index.html#aura_hw.backends.devices.DeviceBackend.device_type">(aura_hw.backends.devices.DeviceBackend property)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.download_model_source">download_model_source() (in module api_gateway_service.routers.models)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/base/index.html#aura_hw.backends.devices.sensor.base.SensorBackend.device_type">(aura_hw.backends.devices.sensor.base.SensorBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor.device_type">(aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#aura_hw.backends.devices.sensor.imu.GeneralIMUSensor.device_type">(aura_hw.backends.devices.sensor.imu.GeneralIMUSensor property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.SensorBackend.device_type">(aura_hw.backends.devices.sensor.SensorBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor.device_type">(aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor property)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/backends/devices/index.html#aura_hw.backends.devices.DeviceBackend">DeviceBackend (class in aura_hw.backends.devices)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/base/index.html#aura_hw.backends.devices.base.DeviceBackend">(class in aura_hw.backends.devices.base)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.DeviceCreate">DeviceCreate (class in app.routers.devices)</a>
-</li>
-        <li><a href="autoapi/aura_hw/index.html#aura_hw.DeviceManager">DeviceManager (class in aura_hw)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/device_manager/index.html#aura_hw.device_manager.DeviceManager">(class in aura_hw.device_manager)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.DeviceRef">DeviceRef (class in app.models.orm)</a>
-</li>
-        <li><a href="autoapi/devices/index.html#devices.DeviceRepository">DeviceRepository (class in devices)</a>
-</li>
-        <li>
-    devices
-
-        <ul>
-          <li><a href="autoapi/devices/index.html#module-devices">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/device_handler/index.html#device_handler.DeviceServiceHandler">DeviceServiceHandler (class in device_handler)</a>
-</li>
-        <li><a href="autoapi/transport/base/index.html#transport.base.TransportBase.disconnect">disconnect() (transport.base.TransportBase method)</a>
-
-        <ul>
-          <li><a href="autoapi/transport/mqtt/index.html#transport.mqtt.MQTTTransport.disconnect">(transport.mqtt.MQTTTransport method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/compilers/index.html#app.compilers.discover_compilers">discover_compilers() (in module app.compilers)</a>
-</li>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilerBase.DOCKER_IMAGE">DOCKER_IMAGE (app.compilers.base.CompilerBase attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/compilers/index.html#app.compilers.CompilerBase.DOCKER_IMAGE">(app.compilers.CompilerBase attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.download_base_model">download_base_model() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.download_dataset">download_dataset() (in module app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.download_dataset_version">download_dataset_version() (in module app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.download_model_compiled">download_model_compiled() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.download_model_source">download_model_source() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.download_url_expiry_seconds">download_url_expiry_seconds (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator.driver">driver (aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator property)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#aura_hw.backends.devices.actuator.led.GeneralLEDActuator.driver">(aura_hw.backends.devices.actuator.led.GeneralLEDActuator property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#aura_hw.backends.devices.actuator.relay.GeneralRelayActuator.driver">(aura_hw.backends.devices.actuator.relay.GeneralRelayActuator property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#aura_hw.backends.devices.actuator.servo.GeneralServoActuator.driver">(aura_hw.backends.devices.actuator.servo.GeneralServoActuator property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/base/index.html#aura_hw.backends.devices.base.DeviceBackend.driver">(aura_hw.backends.devices.base.DeviceBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/general/index.html#aura_hw.backends.devices.camera.general.GeneralCameraBackend.driver">(aura_hw.backends.devices.camera.general.GeneralCameraBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.GeneralCameraBackend.driver">(aura_hw.backends.devices.camera.GeneralCameraBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/index.html#aura_hw.backends.devices.DeviceBackend.driver">(aura_hw.backends.devices.DeviceBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor.driver">(aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#aura_hw.backends.devices.sensor.general.GeneralSensorBackend.driver">(aura_hw.backends.devices.sensor.general.GeneralSensorBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.GeneralSensorBackend.driver">(aura_hw.backends.devices.sensor.GeneralSensorBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#aura_hw.backends.devices.sensor.imu.GeneralIMUSensor.driver">(aura_hw.backends.devices.sensor.imu.GeneralIMUSensor property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor.driver">(aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor property)</a>
-</li>
-        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -1313,54 +505,16 @@
   <h2>E</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/mqtt/listener/index.html#app.mqtt.listener.EdgeConnectorMQTTListener">EdgeConnectorMQTTListener (class in app.mqtt.listener)</a>
-</li>
-        <li><a href="autoapi/utils/minio/index.html#utils.minio.ensure_buckets">ensure_buckets() (in module utils.minio)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.Config.env_file">env_file (app.config.Settings.Config attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.Config.env_file">(config.Settings.Config attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema.epochs">epochs (app.routers.models.TrainModelRequestSchema attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.UpdateModelRequestSchema.epochs">(app.routers.models.UpdateModelRequestSchema attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.epochs">(orm.Model attribute)</a>
-</li>
-        </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilationResult.error">error (app.compilers.base.CompilationResult attribute)</a>, <a href="autoapi/app/compilers/base/index.html#id3">[1]</a>
-</li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.error_msg">error_msg (app.models.orm.Deployment attribute)</a>
-</li>
-        <li><a href="autoapi/aura_hw/index.html#aura_hw.execute_inference">execute_inference() (in module aura_hw)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/runtime/index.html#aura_hw.runtime.execute_inference">(in module aura_hw.runtime)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilerBase.EXECUTION_STRATEGY">EXECUTION_STRATEGY (app.compilers.base.CompilerBase attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/compilers/index.html#app.compilers.CompilerBase.EXECUTION_STRATEGY">(app.compilers.CompilerBase attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#app.grpc_handlers.compilation_handler.extract_classes_from_dataset">extract_classes_from_dataset() (in module app.grpc_handlers.compilation_handler)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.Config.env_file">env_file (api_gateway_service.config.Settings.Config attribute)</a>
 </li>
     </ul></td>
-  </tr></table>
-</section>
-
-<section id="F" class="genindex-section">
-  <h2>F</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/worker/index.html#app.worker.WorkerSettings.functions">functions (app.worker.WorkerSettings attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.epochs">epochs (api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
+
+        <ul>
+          <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.UpdateModelRequestSchema.epochs">(api_gateway_service.routers.models.UpdateModelRequestSchema attribute)</a>
 </li>
+        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -1369,196 +523,38 @@
   <h2>G</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator">GeneralBuzzerActuator (class in aura_hw.backends.devices.actuator.buzzer)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.get_actuators">get_actuators() (in module api_gateway_service.routers.devices)</a>
 </li>
-        <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.GeneralCameraBackend">GeneralCameraBackend (class in aura_hw.backends.devices.camera)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/general/index.html#aura_hw.backends.devices.camera.general.GeneralCameraBackend">(class in aura_hw.backends.devices.camera.general)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.get_all_labels">get_all_labels() (in module api_gateway_service.routers.devices)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor">GeneralDistanceSensor (class in aura_hw.backends.devices.sensor.distance)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.get_base_model_options">get_base_model_options() (in module api_gateway_service.routers.models)</a>
 </li>
-        <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#aura_hw.backends.devices.sensor.imu.GeneralIMUSensor">GeneralIMUSensor (class in aura_hw.backends.devices.sensor.imu)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.get_dataset">get_dataset() (in module api_gateway_service.routers.datasets)</a>
 </li>
-        <li><a href="autoapi/aura_hw/backends/inference/general/index.html#aura_hw.backends.inference.general.GeneralInferenceBackend">GeneralInferenceBackend (class in aura_hw.backends.inference.general)</a>
+        <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.get_deployment">get_deployment() (in module api_gateway_service.routers.deployments)</a>
 </li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#aura_hw.backends.devices.actuator.led.GeneralLEDActuator">GeneralLEDActuator (class in aura_hw.backends.devices.actuator.led)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.get_device">get_device() (in module api_gateway_service.routers.devices)</a>
 </li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#aura_hw.backends.devices.actuator.relay.GeneralRelayActuator">GeneralRelayActuator (class in aura_hw.backends.devices.actuator.relay)</a>
+        <li><a href="autoapi/api_gateway_service/routers/monitoring/index.html#api_gateway_service.routers.monitoring.get_device_state">get_device_state() (in module api_gateway_service.routers.monitoring)</a>
 </li>
-        <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.GeneralSensorBackend">GeneralSensorBackend (class in aura_hw.backends.devices.sensor)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#aura_hw.backends.devices.sensor.general.GeneralSensorBackend">(class in aura_hw.backends.devices.sensor.general)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#aura_hw.backends.devices.actuator.servo.GeneralServoActuator">GeneralServoActuator (class in aura_hw.backends.devices.actuator.servo)</a>
-</li>
-        <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor">GeneralTemperatureSensor (class in aura_hw.backends.devices.sensor.temperature)</a>
-</li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.get">get() (app.repositories.deployments.DeploymentRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/devices/index.html#devices.DeviceRepository.get">(devices.DeviceRepository method)</a>
-</li>
-          <li><a href="autoapi/models/index.html#models.DatasetRepository.get">(models.DatasetRepository method)</a>
-</li>
-          <li><a href="autoapi/models/index.html#models.ModelRepository.get">(models.ModelRepository method)</a>
-</li>
-          <li><a href="autoapi/scripts/index.html#scripts.ScriptRepository.get">(scripts.ScriptRepository method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/actuators/index.html#app.actuators.get_actuators">get_actuators() (in module app.actuators)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.get_actuators">(in module app.routers.devices)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/actuators/index.html#app.actuators.get_actuators_data">get_actuators_data() (in module app.actuators)</a>
-</li>
-        <li><a href="autoapi/aura_hw/device_manager/index.html#aura_hw.device_manager.DeviceManager.get_all_info">get_all_info() (aura_hw.device_manager.DeviceManager method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/index.html#aura_hw.DeviceManager.get_all_info">(aura_hw.DeviceManager method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.get_all_labels">get_all_labels() (in module app.routers.devices)</a>
-</li>
-        <li><a href="autoapi/app/compilers/index.html#app.compilers.get_architectures">get_architectures() (in module app.compilers)</a>
-</li>
-        <li><a href="autoapi/app/compilers/index.html#app.compilers.get_architectures_data">get_architectures_data() (in module app.compilers)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.get_base_model_options">get_base_model_options() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.get_dataset">get_dataset() (in module app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.get_deployment">get_deployment() (in module app.routers.deployments)</a>
-</li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.get_device">get_device() (app.repositories.deployments.DeploymentRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/device_manager/index.html#aura_hw.device_manager.DeviceManager.get_device">(aura_hw.device_manager.DeviceManager method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/index.html#aura_hw.DeviceManager.get_device">(aura_hw.DeviceManager method)</a>
-</li>
-          <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.get_device">(in module app.routers.devices)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/repositories/monitoring/index.html#app.repositories.monitoring.MonitoringRepository.get_device_state">get_device_state() (app.repositories.monitoring.MonitoringRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/monitoring/index.html#app.routers.monitoring.get_device_state">(in module app.routers.monitoring)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/actuators/index.html#app.actuators.get_hardware_dir">get_hardware_dir() (in module app.actuators)</a>
-
-        <ul>
-          <li><a href="autoapi/app/compilers/index.html#app.compilers.get_hardware_dir">(in module app.compilers)</a>
-</li>
-          <li><a href="autoapi/app/sensors/index.html#app.sensors.get_hardware_dir">(in module app.sensors)</a>
-</li>
-          <li><a href="autoapi/aura_hw/loader/index.html#aura_hw.loader.get_hardware_dir">(in module aura_hw.loader)</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/aura_hw/index.html#aura_hw.get_hardware_info">get_hardware_info() (in module aura_hw)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/runtime/index.html#aura_hw.runtime.get_hardware_info">(in module aura_hw.runtime)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.get_hardware_types">get_hardware_types() (in module api_gateway_service.routers.devices)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.get_hardware_types">get_hardware_types() (in module app.routers.devices)</a>
+        <li><a href="autoapi/api_gateway_service/routers/monitoring/index.html#api_gateway_service.routers.monitoring.get_inference_results">get_inference_results() (in module api_gateway_service.routers.monitoring)</a>
 </li>
-        <li><a href="autoapi/app/repositories/monitoring/index.html#app.repositories.monitoring.MonitoringRepository.get_inference_results">get_inference_results() (app.repositories.monitoring.MonitoringRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/monitoring/index.html#app.routers.monitoring.get_inference_results">(in module app.routers.monitoring)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.get_model">get_model() (in module api_gateway_service.routers.models)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/app/actuators/index.html#app.actuators.get_label_from_file">get_label_from_file() (in module app.actuators)</a>
-
-        <ul>
-          <li><a href="autoapi/app/compilers/index.html#app.compilers.get_label_from_file">(in module app.compilers)</a>
+        <li><a href="autoapi/api_gateway_service/routers/scripts/index.html#api_gateway_service.routers.scripts.get_script">get_script() (in module api_gateway_service.routers.scripts)</a>
 </li>
-          <li><a href="autoapi/app/sensors/index.html#app.sensors.get_label_from_file">(in module app.sensors)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.get_sensors">get_sensors() (in module api_gateway_service.routers.devices)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/index.html#aura_hw.get_last_inference">get_last_inference() (in module aura_hw)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/runtime/index.html#aura_hw.runtime.get_last_inference">(in module aura_hw.runtime)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.get_settings">get_settings() (in module api_gateway_service.config)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/loader/index.html#aura_hw.loader.get_libraries_hash">get_libraries_hash() (in module aura_hw.loader)</a>
+        <li><a href="autoapi/api_gateway_service/stubs/index.html#api_gateway_service.stubs.get_stub">get_stub() (in module api_gateway_service.stubs)</a>
 </li>
-        <li><a href="autoapi/utils/minio/index.html#utils.minio.get_minio">get_minio() (in module utils.minio)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.gpu_percent">gpu_percent (api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
 </li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.get_model">get_model() (app.repositories.deployments.DeploymentRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.get_model">(in module app.routers.models)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/repositories/compilation/index.html#app.repositories.compilation.CompilationRepository.get_model_ref">get_model_ref() (app.repositories.compilation.CompilationRepository method)</a>
-</li>
-        <li><a href="autoapi/app/mqtt/listener/index.html#app.mqtt.listener.get_platform_hardware_hash_and_zip">get_platform_hardware_hash_and_zip() (in module app.mqtt.listener)</a>
-</li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.get_script">get_script() (app.repositories.deployments.DeploymentRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/scripts/index.html#app.routers.scripts.get_script">(in module app.routers.scripts)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.get_sensors">get_sensors() (in module app.routers.devices)</a>
-
-        <ul>
-          <li><a href="autoapi/app/sensors/index.html#app.sensors.get_sensors">(in module app.sensors)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/sensors/index.html#app.sensors.get_sensors_data">get_sensors_data() (in module app.sensors)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.get_settings">get_settings() (in module app.config)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.get_settings">(in module config)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/stubs/index.html#app.stubs.get_stub">get_stub() (in module app.stubs)</a>
-</li>
-        <li><a href="autoapi/transport/index.html#transport.get_transport">get_transport() (in module transport)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#app.grpc_handlers.compilation_handler.CompilationServiceHandler.GetCompilationStatus">GetCompilationStatus() (app.grpc_handlers.compilation_handler.CompilationServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.GetDataset">GetDataset() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/deployment_handler/index.html#app.grpc_handlers.deployment_handler.DeploymentServiceHandler.GetDeployment">GetDeployment() (app.grpc_handlers.deployment_handler.DeploymentServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/device_handler/index.html#device_handler.DeviceServiceHandler.GetDevice">GetDevice() (device_handler.DeviceServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/monitoring_handler/index.html#app.grpc_handlers.monitoring_handler.MonitoringServiceHandler.GetDeviceState">GetDeviceState() (app.grpc_handlers.monitoring_handler.MonitoringServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/monitoring_handler/index.html#app.grpc_handlers.monitoring_handler.MonitoringServiceHandler.GetInferenceResults">GetInferenceResults() (app.grpc_handlers.monitoring_handler.MonitoringServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.GetModel">GetModel() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/script_handler/index.html#script_handler.ScriptServiceHandler.GetScript">GetScript() (script_handler.ScriptServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#app.grpc_handlers.compilation_handler.CompilationServiceHandler.GetSupportedActuators">GetSupportedActuators() (app.grpc_handlers.compilation_handler.CompilationServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#app.grpc_handlers.compilation_handler.CompilationServiceHandler.GetSupportedHardware">GetSupportedHardware() (app.grpc_handlers.compilation_handler.CompilationServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#app.grpc_handlers.compilation_handler.CompilationServiceHandler.GetSupportedSensors">GetSupportedSensors() (app.grpc_handlers.compilation_handler.CompilationServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema.gpu_percent">gpu_percent (app.routers.models.TrainModelRequestSchema attribute)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.grpc_port">grpc_port (app.config.Settings attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.grpc_port">(config.Settings attribute)</a>
-</li>
-        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -1567,29 +563,11 @@
   <h2>H</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.DeviceRef.hardware_type">hardware_type (app.models.orm.DeviceRef attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.hardware_type">(app.models.orm.ModelRef attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceCreate.hardware_type">hardware_type (api_gateway_service.routers.devices.DeviceCreate attribute)</a>
 </li>
-          <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.DeviceCreate.hardware_type">(app.routers.devices.DeviceCreate attribute)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/base/index.html#aura_hw.backends.base.InferenceBackend.hardware_type">(aura_hw.backends.base.InferenceBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/base/index.html#aura_hw.backends.inference.base.InferenceBackend.hardware_type">(aura_hw.backends.inference.base.InferenceBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/general/index.html#aura_hw.backends.inference.general.GeneralInferenceBackend.hardware_type">(aura_hw.backends.inference.general.GeneralInferenceBackend property)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/index.html#aura_hw.backends.inference.InferenceBackend.hardware_type">(aura_hw.backends.inference.InferenceBackend property)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Device.hardware_type">(orm.Device attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.hardware_type">(orm.Model attribute)</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/transport/mqtt/index.html#transport.mqtt.MQTTTransport.host">host (transport.mqtt.MQTTTransport attribute)</a>
+        <li><a href="autoapi/api_gateway_service/main/index.html#api_gateway_service.main.health">health() (in module api_gateway_service.main)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1599,114 +577,16 @@
   <h2>I</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.id">id (app.models.orm.Deployment attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.DeviceRef.id">(app.models.orm.DeviceRef attribute)</a>
-</li>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.id">(app.models.orm.ModelRef attribute)</a>
-</li>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ScriptRef.id">(app.models.orm.ScriptRef attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Dataset.id">(orm.Dataset attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.DatasetVersion.id">(orm.DatasetVersion attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Device.id">(orm.Device attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.id">(orm.Model attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Script.id">(orm.Script attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/backends/base/index.html#aura_hw.backends.base.InferenceBackend.infer">infer() (aura_hw.backends.base.InferenceBackend method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/inference/base/index.html#aura_hw.backends.inference.base.InferenceBackend.infer">(aura_hw.backends.inference.base.InferenceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/general/index.html#aura_hw.backends.inference.general.GeneralInferenceBackend.infer">(aura_hw.backends.inference.general.GeneralInferenceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/index.html#aura_hw.backends.inference.InferenceBackend.infer">(aura_hw.backends.inference.InferenceBackend method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/models/mongo/index.html#app.models.mongo.INFERENCE_RESULTS_COL">INFERENCE_RESULTS_COL (in module app.models.mongo)</a>
-</li>
-        <li><a href="autoapi/aura_hw/backends/base/index.html#aura_hw.backends.base.InferenceBackend">InferenceBackend (class in aura_hw.backends.base)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/inference/index.html#aura_hw.backends.inference.InferenceBackend">(class in aura_hw.backends.inference)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/base/index.html#aura_hw.backends.inference.base.InferenceBackend">(class in aura_hw.backends.inference.base)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator.info">info() (aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#aura_hw.backends.devices.actuator.led.GeneralLEDActuator.info">(aura_hw.backends.devices.actuator.led.GeneralLEDActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#aura_hw.backends.devices.actuator.relay.GeneralRelayActuator.info">(aura_hw.backends.devices.actuator.relay.GeneralRelayActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#aura_hw.backends.devices.actuator.servo.GeneralServoActuator.info">(aura_hw.backends.devices.actuator.servo.GeneralServoActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/base/index.html#aura_hw.backends.devices.base.DeviceBackend.info">(aura_hw.backends.devices.base.DeviceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/general/index.html#aura_hw.backends.devices.camera.general.GeneralCameraBackend.info">(aura_hw.backends.devices.camera.general.GeneralCameraBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.GeneralCameraBackend.info">(aura_hw.backends.devices.camera.GeneralCameraBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/index.html#aura_hw.backends.devices.DeviceBackend.info">(aura_hw.backends.devices.DeviceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor.info">(aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#aura_hw.backends.devices.sensor.general.GeneralSensorBackend.info">(aura_hw.backends.devices.sensor.general.GeneralSensorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.GeneralSensorBackend.info">(aura_hw.backends.devices.sensor.GeneralSensorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#aura_hw.backends.devices.sensor.imu.GeneralIMUSensor.info">(aura_hw.backends.devices.sensor.imu.GeneralIMUSensor method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor.info">(aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor method)</a>
-</li>
-        </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/utils/minio/index.html#utils.minio.init_minio">init_minio() (in module utils.minio)</a>
-</li>
-        <li><a href="autoapi/app/stubs/index.html#app.stubs.init_stubs">init_stubs() (in module app.stubs)</a>
-</li>
-        <li><a href="autoapi/transport/index.html#transport.init_transport">init_transport() (in module transport)</a>
-</li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.input_size">input_size (app.models.orm.ModelRef attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema.input_size">(app.routers.models.TrainModelRequestSchema attribute)</a>
-</li>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.UpdateModelRequestSchema.input_size">(app.routers.models.UpdateModelRequestSchema attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.input_size">(orm.Model attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/repositories/monitoring/index.html#app.repositories.monitoring.MonitoringRepository.insert_inference_result">insert_inference_result() (app.repositories.monitoring.MonitoringRepository method)</a>
+        <li><a href="autoapi/api_gateway_service/stubs/index.html#api_gateway_service.stubs.init_stubs">init_stubs() (in module api_gateway_service.stubs)</a>
 </li>
     </ul></td>
-  </tr></table>
-</section>
-
-<section id="J" class="genindex-section">
-  <h2>J</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/worker/index.html#app.worker.WorkerSettings.job_timeout">job_timeout (app.worker.WorkerSettings attribute)</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.input_size">input_size (api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
 
-<section id="K" class="genindex-section">
-  <h2>K</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/worker/index.html#app.worker.WorkerSettings.keep_result">keep_result (app.worker.WorkerSettings attribute)</a>
+        <ul>
+          <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.UpdateModelRequestSchema.input_size">(api_gateway_service.routers.models.UpdateModelRequestSchema attribute)</a>
 </li>
+        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -1715,142 +595,32 @@
   <h2>L</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ScriptRef.language">language (app.models.orm.ScriptRef attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Script.language">(orm.Script attribute)</a>
+        <li><a href="autoapi/api_gateway_service/main/index.html#api_gateway_service.main.lifespan">lifespan() (in module api_gateway_service.main)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/orm/index.html#orm.Device.last_seen_at">last_seen_at (orm.Device attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.list_datasets">list_datasets() (in module api_gateway_service.routers.datasets)</a>
 </li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.list_all">list_all() (app.repositories.deployments.DeploymentRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/devices/index.html#devices.DeviceRepository.list_all">(devices.DeviceRepository method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.list_deployments">list_deployments() (in module api_gateway_service.routers.deployments)</a>
 </li>
-          <li><a href="autoapi/models/index.html#models.DatasetRepository.list_all">(models.DatasetRepository method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.list_device_deployments">list_device_deployments() (in module api_gateway_service.routers.deployments)</a>
 </li>
-          <li><a href="autoapi/models/index.html#models.ModelRepository.list_all">(models.ModelRepository method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/monitoring/index.html#api_gateway_service.routers.monitoring.list_device_states">list_device_states() (in module api_gateway_service.routers.monitoring)</a>
 </li>
-          <li><a href="autoapi/scripts/index.html#scripts.ScriptRepository.list_all">(scripts.ScriptRepository method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.list_devices">list_devices() (in module api_gateway_service.routers.devices)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/device_manager/index.html#aura_hw.device_manager.DeviceManager.list_components">list_components() (aura_hw.device_manager.DeviceManager method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/index.html#aura_hw.DeviceManager.list_components">(aura_hw.DeviceManager method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.list_datasets">list_datasets() (in module app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.list_deployments">list_deployments() (in module app.routers.deployments)</a>
-</li>
-        <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.list_device_deployments">list_device_deployments() (in module app.routers.deployments)</a>
-</li>
-        <li><a href="autoapi/app/repositories/monitoring/index.html#app.repositories.monitoring.MonitoringRepository.list_device_states">list_device_states() (app.repositories.monitoring.MonitoringRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/monitoring/index.html#app.routers.monitoring.list_device_states">(in module app.routers.monitoring)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.list_devices">list_devices() (in module app.routers.devices)</a>
-</li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.list_for_device">list_for_device() (app.repositories.deployments.DeploymentRepository method)</a>
-</li>
-        <li><a href="autoapi/app/routers/scripts/index.html#app.routers.scripts.list_libraries">list_libraries() (in module app.routers.scripts)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.list_models">list_models() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/app/routers/scripts/index.html#app.routers.scripts.list_scripts">list_scripts() (in module app.routers.scripts)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.ListDatasets">ListDatasets() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/deployment_handler/index.html#app.grpc_handlers.deployment_handler.DeploymentServiceHandler.ListDeployments">ListDeployments() (app.grpc_handlers.deployment_handler.DeploymentServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/deployment_handler/index.html#app.grpc_handlers.deployment_handler.DeploymentServiceHandler.ListDeviceDeployments">ListDeviceDeployments() (app.grpc_handlers.deployment_handler.DeploymentServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/device_handler/index.html#device_handler.DeviceServiceHandler.ListDevices">ListDevices() (device_handler.DeviceServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/monitoring_handler/index.html#app.grpc_handlers.monitoring_handler.MonitoringServiceHandler.ListDeviceStates">ListDeviceStates() (app.grpc_handlers.monitoring_handler.MonitoringServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.ListModels">ListModels() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/script_handler/index.html#script_handler.ScriptServiceHandler.ListScripts">ListScripts() (script_handler.ScriptServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/aura_hw/backends/base/index.html#aura_hw.backends.base.InferenceBackend.load">load() (aura_hw.backends.base.InferenceBackend method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/inference/base/index.html#aura_hw.backends.inference.base.InferenceBackend.load">(aura_hw.backends.inference.base.InferenceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/general/index.html#aura_hw.backends.inference.general.GeneralInferenceBackend.load">(aura_hw.backends.inference.general.GeneralInferenceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/index.html#aura_hw.backends.inference.InferenceBackend.load">(aura_hw.backends.inference.InferenceBackend method)</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/aura_hw/loader/index.html#aura_hw.loader.load_class_from_module">load_class_from_module() (in module aura_hw.loader)</a>
+        <li><a href="autoapi/api_gateway_service/routers/scripts/index.html#api_gateway_service.routers.scripts.list_libraries">list_libraries() (in module api_gateway_service.routers.scripts)</a>
 </li>
-        <li><a href="autoapi/aura_hw/loader/index.html#aura_hw.loader.load_component_class">load_component_class() (in module aura_hw.loader)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.list_models">list_models() (in module api_gateway_service.routers.models)</a>
 </li>
-        <li><a href="autoapi/aura_hw/loader/index.html#aura_hw.loader.load_inference_class">load_inference_class() (in module aura_hw.loader)</a>
+        <li><a href="autoapi/api_gateway_service/routers/scripts/index.html#api_gateway_service.routers.scripts.list_scripts">list_scripts() (in module api_gateway_service.routers.scripts)</a>
 </li>
-        <li><a href="autoapi/aura_hw/index.html#aura_hw.load_model">load_model() (in module aura_hw)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/runtime/index.html#aura_hw.runtime.load_model">(in module aura_hw.runtime)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.log_level">log_level (api_gateway_service.config.Settings attribute)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.log_level">log_level (app.config.Settings attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.log_level">(config.Settings attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/scripts/index.html#api_gateway_service.routers.scripts.logger">logger (in module api_gateway_service.routers.scripts)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/app/compilers/index.html#app.compilers.logger">logger (in module app.compilers)</a>
-
-        <ul>
-          <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#app.grpc_handlers.compilation_handler.logger">(in module app.grpc_handlers.compilation_handler)</a>
+        <li><a href="autoapi/api_gateway_service/main/index.html#api_gateway_service.main.login">login() (in module api_gateway_service.main)</a>
 </li>
-          <li><a href="autoapi/app/grpc_handlers/deployment_handler/index.html#app.grpc_handlers.deployment_handler.logger">(in module app.grpc_handlers.deployment_handler)</a>
-</li>
-          <li><a href="autoapi/app/mqtt/listener/index.html#app.mqtt.listener.logger">(in module app.mqtt.listener)</a>
-</li>
-          <li><a href="autoapi/app/routers/scripts/index.html#app.routers.scripts.logger">(in module app.routers.scripts)</a>
-</li>
-          <li><a href="autoapi/app/worker/index.html#app.worker.logger">(in module app.worker)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#aura_hw.backends.devices.actuator.buzzer.logger">(in module aura_hw.backends.devices.actuator.buzzer)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#aura_hw.backends.devices.actuator.led.logger">(in module aura_hw.backends.devices.actuator.led)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#aura_hw.backends.devices.actuator.relay.logger">(in module aura_hw.backends.devices.actuator.relay)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#aura_hw.backends.devices.actuator.servo.logger">(in module aura_hw.backends.devices.actuator.servo)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/general/index.html#aura_hw.backends.devices.camera.general.logger">(in module aura_hw.backends.devices.camera.general)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#aura_hw.backends.devices.sensor.distance.logger">(in module aura_hw.backends.devices.sensor.distance)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#aura_hw.backends.devices.sensor.general.logger">(in module aura_hw.backends.devices.sensor.general)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#aura_hw.backends.devices.sensor.imu.logger">(in module aura_hw.backends.devices.sensor.imu)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#aura_hw.backends.devices.sensor.temperature.logger">(in module aura_hw.backends.devices.sensor.temperature)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/general/index.html#aura_hw.backends.inference.general.logger">(in module aura_hw.backends.inference.general)</a>
-</li>
-          <li><a href="autoapi/aura_hw/device_manager/index.html#aura_hw.device_manager.logger">(in module aura_hw.device_manager)</a>
-</li>
-          <li><a href="autoapi/aura_hw/loader/index.html#aura_hw.loader.logger">(in module aura_hw.loader)</a>
-</li>
-          <li><a href="autoapi/aura_hw/runtime/index.html#aura_hw.runtime.logger">(in module aura_hw.runtime)</a>
-</li>
-          <li><a href="autoapi/transport/mqtt/index.html#transport.mqtt.logger">(in module transport.mqtt)</a>
-</li>
-          <li><a href="autoapi/utils/grpc_server/index.html#utils.grpc_server.logger">(in module utils.grpc_server)</a>
-</li>
-        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -1859,288 +629,60 @@
   <h2>M</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li>
-    main
-
-        <ul>
-          <li><a href="autoapi/main/index.html#module-main">module</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_access_key">minio_access_key (api_gateway_service.config.Settings attribute)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/app/compilers/yolo_train/index.html#app.compilers.yolo_train.main">main() (in module app.compilers.yolo_train)</a>
-
-        <ul>
-          <li><a href="autoapi/app/main/index.html#app.main.main">(in module app.main)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_bucket_base_models">minio_bucket_base_models (api_gateway_service.config.Settings attribute)</a>
 </li>
-          <li><a href="autoapi/main/index.html#main.main">(in module main)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_bucket_compiled">minio_bucket_compiled (api_gateway_service.config.Settings attribute)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.mark_failed">mark_failed() (app.repositories.deployments.DeploymentRepository method)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_bucket_datasets">minio_bucket_datasets (api_gateway_service.config.Settings attribute)</a>
 </li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.mark_running">mark_running() (app.repositories.deployments.DeploymentRepository method)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_bucket_models">minio_bucket_models (api_gateway_service.config.Settings attribute)</a>
 </li>
-        <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.mark_sent">mark_sent() (app.repositories.deployments.DeploymentRepository method)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_bucket_scripts">minio_bucket_scripts (api_gateway_service.config.Settings attribute)</a>
 </li>
-        <li><a href="autoapi/app/worker/index.html#app.worker.WorkerSettings.max_jobs">max_jobs (app.worker.WorkerSettings attribute)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_endpoint">minio_endpoint (api_gateway_service.config.Settings attribute)</a>
 </li>
-        <li><a href="autoapi/aura_hw/backends/devices/sensor/base/index.html#aura_hw.backends.devices.sensor.base.SensorBackend.measure">measure() (aura_hw.backends.devices.sensor.base.SensorBackend method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor.measure">(aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor method)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_secret_key">minio_secret_key (api_gateway_service.config.Settings attribute)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#aura_hw.backends.devices.sensor.general.GeneralSensorBackend.measure">(aura_hw.backends.devices.sensor.general.GeneralSensorBackend method)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_secure">minio_secure (api_gateway_service.config.Settings attribute)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.GeneralSensorBackend.measure">(aura_hw.backends.devices.sensor.GeneralSensorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#aura_hw.backends.devices.sensor.imu.GeneralIMUSensor.measure">(aura_hw.backends.devices.sensor.imu.GeneralIMUSensor method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.SensorBackend.measure">(aura_hw.backends.devices.sensor.SensorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor.measure">(aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/transport/base/index.html#transport.base.MessageEnvelope">MessageEnvelope (class in transport.base)</a>
-</li>
-        <li><a href="autoapi/orm/index.html#orm.Dataset.meta_info">meta_info (orm.Dataset attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.DatasetVersion.meta_info">(orm.DatasetVersion attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.minio_access_key">minio_access_key (app.config.Settings attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.minio_access_key">(config.Settings attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/config/index.html#config.Settings.minio_bucket_base_models">minio_bucket_base_models (config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.minio_bucket_compiled">minio_bucket_compiled (app.config.Settings attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.minio_bucket_compiled">(config.Settings attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/config/index.html#config.Settings.minio_bucket_datasets">minio_bucket_datasets (config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/config/index.html#config.Settings.minio_bucket_models">minio_bucket_models (config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.minio_bucket_scripts">minio_bucket_scripts (app.config.Settings attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.minio_bucket_scripts">(config.Settings attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.minio_endpoint">minio_endpoint (app.config.Settings attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.minio_endpoint">(config.Settings attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.minio_secret_key">minio_secret_key (app.config.Settings attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.minio_secret_key">(config.Settings attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.minio_secure">minio_secure (app.config.Settings attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.minio_secure">(config.Settings attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/orm/index.html#orm.Model">Model (class in orm)</a>
-</li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.model_id">model_id (app.models.orm.Deployment attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.DeployRequest.model_id">(app.routers.deployments.DeployRequest attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef">ModelRef (class in app.models.orm)</a>
-</li>
-        <li><a href="autoapi/models/index.html#models.ModelRepository">ModelRepository (class in models)</a>
-</li>
-        <li>
-    models
-
-        <ul>
-          <li><a href="autoapi/models/index.html#module-models">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/orm/index.html#orm.Dataset.models">models (orm.Dataset attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.DeployRequest.model_id">model_id (api_gateway_service.routers.deployments.DeployRequest attribute)</a>
 </li>
         <li>
     module
 
         <ul>
-          <li><a href="autoapi/ai_handler/index.html#module-ai_handler">ai_handler</a>
+          <li><a href="autoapi/api_gateway_service/index.html#module-api_gateway_service">api_gateway_service</a>
 </li>
-          <li><a href="autoapi/app/index.html#module-app">app</a>
+          <li><a href="autoapi/api_gateway_service/auth/index.html#module-api_gateway_service.auth">api_gateway_service.auth</a>
 </li>
-          <li><a href="autoapi/app/actuators/index.html#module-app.actuators">app.actuators</a>
+          <li><a href="autoapi/api_gateway_service/auth/jwt/index.html#module-api_gateway_service.auth.jwt">api_gateway_service.auth.jwt</a>
 </li>
-          <li><a href="autoapi/app/auth/index.html#module-app.auth">app.auth</a>
+          <li><a href="autoapi/api_gateway_service/config/index.html#module-api_gateway_service.config">api_gateway_service.config</a>
 </li>
-          <li><a href="autoapi/app/auth/jwt/index.html#module-app.auth.jwt">app.auth.jwt</a>
+          <li><a href="autoapi/api_gateway_service/main/index.html#module-api_gateway_service.main">api_gateway_service.main</a>
 </li>
-          <li><a href="autoapi/app/compilers/index.html#module-app.compilers">app.compilers</a>
+          <li><a href="autoapi/api_gateway_service/routers/index.html#module-api_gateway_service.routers">api_gateway_service.routers</a>
 </li>
-          <li><a href="autoapi/app/compilers/base/index.html#module-app.compilers.base">app.compilers.base</a>
+          <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#module-api_gateway_service.routers.datasets">api_gateway_service.routers.datasets</a>
 </li>
-          <li><a href="autoapi/app/compilers/yolo_train/index.html#module-app.compilers.yolo_train">app.compilers.yolo_train</a>
+          <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#module-api_gateway_service.routers.deployments">api_gateway_service.routers.deployments</a>
 </li>
-          <li><a href="autoapi/app/config/index.html#module-app.config">app.config</a>
+          <li><a href="autoapi/api_gateway_service/routers/devices/index.html#module-api_gateway_service.routers.devices">api_gateway_service.routers.devices</a>
 </li>
-          <li><a href="autoapi/app/grpc_handlers/index.html#module-app.grpc_handlers">app.grpc_handlers</a>
+          <li><a href="autoapi/api_gateway_service/routers/models/index.html#module-api_gateway_service.routers.models">api_gateway_service.routers.models</a>
 </li>
-          <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#module-app.grpc_handlers.compilation_handler">app.grpc_handlers.compilation_handler</a>
+          <li><a href="autoapi/api_gateway_service/routers/monitoring/index.html#module-api_gateway_service.routers.monitoring">api_gateway_service.routers.monitoring</a>
 </li>
-          <li><a href="autoapi/app/grpc_handlers/deployment_handler/index.html#module-app.grpc_handlers.deployment_handler">app.grpc_handlers.deployment_handler</a>
+          <li><a href="autoapi/api_gateway_service/routers/scripts/index.html#module-api_gateway_service.routers.scripts">api_gateway_service.routers.scripts</a>
 </li>
-          <li><a href="autoapi/app/grpc_handlers/monitoring_handler/index.html#module-app.grpc_handlers.monitoring_handler">app.grpc_handlers.monitoring_handler</a>
-</li>
-          <li><a href="autoapi/app/main/index.html#module-app.main">app.main</a>
-</li>
-          <li><a href="autoapi/app/models/index.html#module-app.models">app.models</a>
-</li>
-          <li><a href="autoapi/app/models/mongo/index.html#module-app.models.mongo">app.models.mongo</a>
-</li>
-          <li><a href="autoapi/app/models/orm/index.html#module-app.models.orm">app.models.orm</a>
-</li>
-          <li><a href="autoapi/app/mqtt/index.html#module-app.mqtt">app.mqtt</a>
-</li>
-          <li><a href="autoapi/app/mqtt/listener/index.html#module-app.mqtt.listener">app.mqtt.listener</a>
-</li>
-          <li><a href="autoapi/app/repositories/index.html#module-app.repositories">app.repositories</a>
-</li>
-          <li><a href="autoapi/app/repositories/compilation/index.html#module-app.repositories.compilation">app.repositories.compilation</a>
-</li>
-          <li><a href="autoapi/app/repositories/deployments/index.html#module-app.repositories.deployments">app.repositories.deployments</a>
-</li>
-          <li><a href="autoapi/app/repositories/monitoring/index.html#module-app.repositories.monitoring">app.repositories.monitoring</a>
-</li>
-          <li><a href="autoapi/app/routers/index.html#module-app.routers">app.routers</a>
-</li>
-          <li><a href="autoapi/app/routers/datasets/index.html#module-app.routers.datasets">app.routers.datasets</a>
-</li>
-          <li><a href="autoapi/app/routers/deployments/index.html#module-app.routers.deployments">app.routers.deployments</a>
-</li>
-          <li><a href="autoapi/app/routers/devices/index.html#module-app.routers.devices">app.routers.devices</a>
-</li>
-          <li><a href="autoapi/app/routers/models/index.html#module-app.routers.models">app.routers.models</a>
-</li>
-          <li><a href="autoapi/app/routers/monitoring/index.html#module-app.routers.monitoring">app.routers.monitoring</a>
-</li>
-          <li><a href="autoapi/app/routers/scripts/index.html#module-app.routers.scripts">app.routers.scripts</a>
-</li>
-          <li><a href="autoapi/app/sensors/index.html#module-app.sensors">app.sensors</a>
-</li>
-          <li><a href="autoapi/app/stubs/index.html#module-app.stubs">app.stubs</a>
-</li>
-          <li><a href="autoapi/app/worker/index.html#module-app.worker">app.worker</a>
-</li>
-          <li><a href="autoapi/aura_hw/index.html#module-aura_hw">aura_hw</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/index.html#module-aura_hw.backends">aura_hw.backends</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/base/index.html#module-aura_hw.backends.base">aura_hw.backends.base</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/index.html#module-aura_hw.backends.devices">aura_hw.backends.devices</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/index.html#module-aura_hw.backends.devices.actuator">aura_hw.backends.devices.actuator</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/base/index.html#module-aura_hw.backends.devices.actuator.base">aura_hw.backends.devices.actuator.base</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#module-aura_hw.backends.devices.actuator.buzzer">aura_hw.backends.devices.actuator.buzzer</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#module-aura_hw.backends.devices.actuator.led">aura_hw.backends.devices.actuator.led</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#module-aura_hw.backends.devices.actuator.relay">aura_hw.backends.devices.actuator.relay</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#module-aura_hw.backends.devices.actuator.servo">aura_hw.backends.devices.actuator.servo</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/base/index.html#module-aura_hw.backends.devices.base">aura_hw.backends.devices.base</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#module-aura_hw.backends.devices.camera">aura_hw.backends.devices.camera</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/base/index.html#module-aura_hw.backends.devices.camera.base">aura_hw.backends.devices.camera.base</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/general/index.html#module-aura_hw.backends.devices.camera.general">aura_hw.backends.devices.camera.general</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#module-aura_hw.backends.devices.sensor">aura_hw.backends.devices.sensor</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/base/index.html#module-aura_hw.backends.devices.sensor.base">aura_hw.backends.devices.sensor.base</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#module-aura_hw.backends.devices.sensor.distance">aura_hw.backends.devices.sensor.distance</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#module-aura_hw.backends.devices.sensor.general">aura_hw.backends.devices.sensor.general</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#module-aura_hw.backends.devices.sensor.imu">aura_hw.backends.devices.sensor.imu</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#module-aura_hw.backends.devices.sensor.temperature">aura_hw.backends.devices.sensor.temperature</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/index.html#module-aura_hw.backends.inference">aura_hw.backends.inference</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/base/index.html#module-aura_hw.backends.inference.base">aura_hw.backends.inference.base</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/inference/general/index.html#module-aura_hw.backends.inference.general">aura_hw.backends.inference.general</a>
-</li>
-          <li><a href="autoapi/aura_hw/detect/index.html#module-aura_hw.detect">aura_hw.detect</a>
-</li>
-          <li><a href="autoapi/aura_hw/device_manager/index.html#module-aura_hw.device_manager">aura_hw.device_manager</a>
-</li>
-          <li><a href="autoapi/aura_hw/loader/index.html#module-aura_hw.loader">aura_hw.loader</a>
-</li>
-          <li><a href="autoapi/aura_hw/runtime/index.html#module-aura_hw.runtime">aura_hw.runtime</a>
-</li>
-          <li><a href="autoapi/config/index.html#module-config">config</a>
-</li>
-          <li><a href="autoapi/device_handler/index.html#module-device_handler">device_handler</a>
-</li>
-          <li><a href="autoapi/devices/index.html#module-devices">devices</a>
-</li>
-          <li><a href="autoapi/main/index.html#module-main">main</a>
-</li>
-          <li><a href="autoapi/models/index.html#module-models">models</a>
-</li>
-          <li><a href="autoapi/orm/index.html#module-orm">orm</a>
-</li>
-          <li><a href="autoapi/script_handler/index.html#module-script_handler">script_handler</a>
-</li>
-          <li><a href="autoapi/scripts/index.html#module-scripts">scripts</a>
-</li>
-          <li><a href="autoapi/transport/index.html#module-transport">transport</a>
-</li>
-          <li><a href="autoapi/transport/base/index.html#module-transport.base">transport.base</a>
-</li>
-          <li><a href="autoapi/transport/mqtt/index.html#module-transport.mqtt">transport.mqtt</a>
-</li>
-          <li><a href="autoapi/utils/index.html#module-utils">utils</a>
-</li>
-          <li><a href="autoapi/utils/database/index.html#module-utils.database">utils.database</a>
-</li>
-          <li><a href="autoapi/utils/grpc_server/index.html#module-utils.grpc_server">utils.grpc_server</a>
-</li>
-          <li><a href="autoapi/utils/logging/index.html#module-utils.logging">utils.logging</a>
-</li>
-          <li><a href="autoapi/utils/minio/index.html#module-utils.minio">utils.minio</a>
+          <li><a href="autoapi/api_gateway_service/stubs/index.html#module-api_gateway_service.stubs">api_gateway_service.stubs</a>
 </li>
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.mongo_db">mongo_db (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.mongo_uri">mongo_uri (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/app/repositories/monitoring/index.html#app.repositories.monitoring.MonitoringRepository">MonitoringRepository (class in app.repositories.monitoring)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/monitoring_handler/index.html#app.grpc_handlers.monitoring_handler.MonitoringServiceHandler">MonitoringServiceHandler (class in app.grpc_handlers.monitoring_handler)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.mqtt_host">mqtt_host (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.mqtt_port">mqtt_port (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/transport/mqtt/index.html#transport.mqtt.MQTTTransport">MQTTTransport (class in transport.mqtt)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.monitoring_service_grpc">monitoring_service_grpc (api_gateway_service.config.Settings attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -2150,26 +692,18 @@
   <h2>N</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.name">name (app.models.orm.Deployment attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.UpdateDatasetRequestSchema.name">name (api_gateway_service.routers.datasets.UpdateDatasetRequestSchema attribute)</a>
 
         <ul>
-          <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.UpdateDatasetRequestSchema.name">(app.routers.datasets.UpdateDatasetRequestSchema attribute)</a>
+          <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.DeployRequest.name">(api_gateway_service.routers.deployments.DeployRequest attribute)</a>
 </li>
-          <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.DeployRequest.name">(app.routers.deployments.DeployRequest attribute)</a>
+          <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceCreate.name">(api_gateway_service.routers.devices.DeviceCreate attribute)</a>
 </li>
-          <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.DeviceCreate.name">(app.routers.devices.DeviceCreate attribute)</a>
+          <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceUpdate.name">(api_gateway_service.routers.devices.DeviceUpdate attribute)</a>
 </li>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema.name">(app.routers.models.TrainModelRequestSchema attribute)</a>
+          <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.name">(api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
 </li>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.UpdateModelRequestSchema.name">(app.routers.models.UpdateModelRequestSchema attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Dataset.name">(orm.Dataset attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Device.name">(orm.Device attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Model.name">(orm.Model attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Script.name">(orm.Script attribute)</a>
+          <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.UpdateModelRequestSchema.name">(api_gateway_service.routers.models.UpdateModelRequestSchema attribute)</a>
 </li>
         </ul></li>
     </ul></td>
@@ -2180,116 +714,11 @@
   <h2>O</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/auth/jwt/index.html#app.auth.jwt.oauth2_scheme">oauth2_scheme (in module app.auth.jwt)</a>
+        <li><a href="autoapi/api_gateway_service/auth/jwt/index.html#api_gateway_service.auth.jwt.oauth2_scheme">oauth2_scheme (in module api_gateway_service.auth.jwt)</a>
 </li>
-        <li><a href="autoapi/orm/index.html#orm.Dataset.object_key">object_key (orm.Dataset attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.DatasetVersion.object_key">(orm.DatasetVersion attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/worker/index.html#app.worker.WorkerSettings.on_shutdown">on_shutdown() (app.worker.WorkerSettings static method)</a>
-</li>
-        <li><a href="autoapi/app/worker/index.html#app.worker.WorkerSettings.on_startup">on_startup() (app.worker.WorkerSettings static method)</a>
-</li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator.open">open() (aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#aura_hw.backends.devices.actuator.led.GeneralLEDActuator.open">(aura_hw.backends.devices.actuator.led.GeneralLEDActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#aura_hw.backends.devices.actuator.relay.GeneralRelayActuator.open">(aura_hw.backends.devices.actuator.relay.GeneralRelayActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#aura_hw.backends.devices.actuator.servo.GeneralServoActuator.open">(aura_hw.backends.devices.actuator.servo.GeneralServoActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/base/index.html#aura_hw.backends.devices.base.DeviceBackend.open">(aura_hw.backends.devices.base.DeviceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/general/index.html#aura_hw.backends.devices.camera.general.GeneralCameraBackend.open">(aura_hw.backends.devices.camera.general.GeneralCameraBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.GeneralCameraBackend.open">(aura_hw.backends.devices.camera.GeneralCameraBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/index.html#aura_hw.backends.devices.DeviceBackend.open">(aura_hw.backends.devices.DeviceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/distance/index.html#aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor.open">(aura_hw.backends.devices.sensor.distance.GeneralDistanceSensor method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/general/index.html#aura_hw.backends.devices.sensor.general.GeneralSensorBackend.open">(aura_hw.backends.devices.sensor.general.GeneralSensorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.GeneralSensorBackend.open">(aura_hw.backends.devices.sensor.GeneralSensorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/imu/index.html#aura_hw.backends.devices.sensor.imu.GeneralIMUSensor.open">(aura_hw.backends.devices.sensor.imu.GeneralIMUSensor method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/temperature/index.html#aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor.open">(aura_hw.backends.devices.sensor.temperature.GeneralTemperatureSensor method)</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/aura_hw/device_manager/index.html#aura_hw.device_manager.DeviceManager.open_all">open_all() (aura_hw.device_manager.DeviceManager method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/index.html#aura_hw.DeviceManager.open_all">(aura_hw.DeviceManager method)</a>
-</li>
-        </ul></li>
-        <li>
-    orm
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#module-orm">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.DeviceCreate.others">others (app.routers.devices.DeviceCreate attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Device.others">(orm.Device attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilerBase.OUTPUT_FORMAT">OUTPUT_FORMAT (app.compilers.base.CompilerBase attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/compilers/index.html#app.compilers.CompilerBase.OUTPUT_FORMAT">(app.compilers.CompilerBase attribute)</a>
-</li>
-        </ul></li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="P" class="genindex-section">
-  <h2>P</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/compilers/yolo_train/index.html#app.compilers.yolo_train.parse_arguments">parse_arguments() (in module app.compilers.yolo_train)</a>
-</li>
-        <li><a href="autoapi/transport/base/index.html#id1">payload (transport.base.MessageEnvelope attribute)</a>, <a href="autoapi/transport/base/index.html#transport.base.MessageEnvelope.payload">[1]</a>
-</li>
-        <li><a href="autoapi/transport/mqtt/index.html#transport.mqtt.MQTTTransport.port">port (transport.mqtt.MQTTTransport attribute)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.postgres_dsn">postgres_dsn (app.config.Settings attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.postgres_dsn">(config.Settings attribute)</a>
-</li>
-        </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/compilers/yolo_train/index.html#app.compilers.yolo_train.prepare_dataset">prepare_dataset() (in module app.compilers.yolo_train)</a>
-</li>
-        <li><a href="autoapi/utils/minio/index.html#utils.minio.presigned_url">presigned_url() (in module utils.minio)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.prometheus_port">prometheus_port (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/transport/base/index.html#transport.base.TransportBase.publish">publish() (transport.base.TransportBase method)</a>
-
-        <ul>
-          <li><a href="autoapi/transport/mqtt/index.html#transport.mqtt.MQTTTransport.publish">(transport.mqtt.MQTTTransport method)</a>
-</li>
-        </ul></li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="Q" class="genindex-section">
-  <h2>Q</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/worker/index.html#app.worker.WorkerSettings.queue_name">queue_name (app.worker.WorkerSettings attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceCreate.others">others (api_gateway_service.routers.devices.DeviceCreate attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -2299,52 +728,24 @@
   <h2>R</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/mqtt/listener/index.html#app.mqtt.listener.RAM_GAUGE">RAM_GAUGE (in module app.mqtt.listener)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.redis_url">redis_url (api_gateway_service.config.Settings attribute)</a>
 </li>
-        <li><a href="autoapi/app/mqtt/listener/index.html#app.mqtt.listener.RAM_MB_GAUGE">RAM_MB_GAUGE (in module app.mqtt.listener)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.replace_dataset_file">replace_dataset_file() (in module api_gateway_service.routers.datasets)</a>
 </li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/index.html#aura_hw.backends.devices.actuator.ActuatorBackend.read">read() (aura_hw.backends.devices.actuator.ActuatorBackend method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.router">router (in module api_gateway_service.routers.datasets)</a>
 
         <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/base/index.html#aura_hw.backends.devices.actuator.base.ActuatorBackend.read">(aura_hw.backends.devices.actuator.base.ActuatorBackend method)</a>
+          <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.router">(in module api_gateway_service.routers.deployments)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/base/index.html#aura_hw.backends.devices.base.DeviceBackend.read">(aura_hw.backends.devices.base.DeviceBackend method)</a>
+          <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.router">(in module api_gateway_service.routers.devices)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/base/index.html#aura_hw.backends.devices.camera.base.CameraBackend.read">(aura_hw.backends.devices.camera.base.CameraBackend method)</a>
+          <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.router">(in module api_gateway_service.routers.models)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/camera/index.html#aura_hw.backends.devices.camera.CameraBackend.read">(aura_hw.backends.devices.camera.CameraBackend method)</a>
+          <li><a href="autoapi/api_gateway_service/routers/monitoring/index.html#api_gateway_service.routers.monitoring.router">(in module api_gateway_service.routers.monitoring)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/devices/index.html#aura_hw.backends.devices.DeviceBackend.read">(aura_hw.backends.devices.DeviceBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/base/index.html#aura_hw.backends.devices.sensor.base.SensorBackend.read">(aura_hw.backends.devices.sensor.base.SensorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.SensorBackend.read">(aura_hw.backends.devices.sensor.SensorBackend method)</a>
+          <li><a href="autoapi/api_gateway_service/routers/scripts/index.html#api_gateway_service.routers.scripts.router">(in module api_gateway_service.routers.scripts)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/worker/index.html#app.worker.WorkerSettings.redis_settings">redis_settings (app.worker.WorkerSettings attribute)</a>
-</li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.redis_url">redis_url (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.replace_dataset_file">replace_dataset_file() (in module app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.router">router (in module app.routers.datasets)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.router">(in module app.routers.deployments)</a>
-</li>
-          <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.router">(in module app.routers.devices)</a>
-</li>
-          <li><a href="autoapi/app/routers/models/index.html#app.routers.models.router">(in module app.routers.models)</a>
-</li>
-          <li><a href="autoapi/app/routers/monitoring/index.html#app.routers.monitoring.router">(in module app.routers.monitoring)</a>
-</li>
-          <li><a href="autoapi/app/routers/scripts/index.html#app.routers.scripts.router">(in module app.routers.scripts)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.running_at">running_at (app.models.orm.Deployment attribute)</a>
-</li>
     </ul></td>
   </tr></table>
 </section>
@@ -2353,142 +754,24 @@
   <h2>S</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/repositories/compilation/index.html#app.repositories.compilation.CompilationRepository.s">s (app.repositories.compilation.CompilationRepository attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/repositories/deployments/index.html#app.repositories.deployments.DeploymentRepository.s">(app.repositories.deployments.DeploymentRepository attribute)</a>
+        <li><a href="autoapi/api_gateway_service/main/index.html#api_gateway_service.main.s">s (in module api_gateway_service.main)</a>
 </li>
-          <li><a href="autoapi/devices/index.html#devices.DeviceRepository.s">(devices.DeviceRepository attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.DeployRequest.script_id">script_id (api_gateway_service.routers.deployments.DeployRequest attribute)</a>
 </li>
-          <li><a href="autoapi/models/index.html#models.DatasetRepository.s">(models.DatasetRepository attribute)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.script_service_grpc">script_service_grpc (api_gateway_service.config.Settings attribute)</a>
 </li>
-          <li><a href="autoapi/models/index.html#models.ModelRepository.s">(models.ModelRepository attribute)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.secret_key">secret_key (api_gateway_service.config.Settings attribute)</a>
 </li>
-          <li><a href="autoapi/scripts/index.html#scripts.ScriptRepository.s">(scripts.ScriptRepository attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/orm/index.html#orm.Script">Script (class in orm)</a>
-</li>
-        <li>
-    script_handler
-
-        <ul>
-          <li><a href="autoapi/script_handler/index.html#module-script_handler">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.script_id">script_id (app.models.orm.Deployment attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/routers/deployments/index.html#app.routers.deployments.DeployRequest.script_id">(app.routers.deployments.DeployRequest attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ScriptRef.script_key">script_key (app.models.orm.ScriptRef attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Script.script_key">(orm.Script attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.script_service_grpc">script_service_grpc (app.config.Settings attribute)</a>
-</li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ScriptRef.script_sha256">script_sha256 (app.models.orm.ScriptRef attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Script.script_sha256">(orm.Script attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ScriptRef">ScriptRef (class in app.models.orm)</a>
-</li>
-        <li><a href="autoapi/scripts/index.html#scripts.ScriptRepository">ScriptRepository (class in scripts)</a>
-</li>
-        <li>
-    scripts
-
-        <ul>
-          <li><a href="autoapi/scripts/index.html#module-scripts">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/script_handler/index.html#script_handler.ScriptServiceHandler">ScriptServiceHandler (class in script_handler)</a>
-</li>
-        <li><a href="autoapi/aura_hw/backends/devices/sensor/index.html#aura_hw.backends.devices.sensor.SensorBackend">SensorBackend (class in aura_hw.backends.devices.sensor)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/sensor/base/index.html#aura_hw.backends.devices.sensor.base.SensorBackend">(class in aura_hw.backends.devices.sensor.base)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/devices/index.html#app.routers.devices.DeviceCreate.sensors">sensors (app.routers.devices.DeviceCreate attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Device.sensors">(orm.Device attribute)</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.sent_at">sent_at (app.models.orm.Deployment attribute)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.DeviceCreate.sensors">sensors (api_gateway_service.routers.devices.DeviceCreate attribute)</a>
 </li>
-        <li><a href="autoapi/utils/grpc_server/index.html#utils.grpc_server.serve">serve() (in module utils.grpc_server)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings">Settings (class in api_gateway_service.config)</a>
 </li>
-        <li><a href="autoapi/models/index.html#models.DatasetRepository.set_file">set_file() (models.DatasetRepository method)</a>
+        <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.Config">Settings.Config (class in api_gateway_service.config)</a>
 </li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.SetDatasetFile">SetDatasetFile() (ai_handler.AIServiceHandler method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.stream_model_logs">stream_model_logs() (in module api_gateway_service.routers.models)</a>
 </li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings">Settings (class in app.config)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings">(class in config)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/config/index.html#app.config.Settings.Config">Settings.Config (class in app.config)</a>
-
-        <ul>
-          <li><a href="autoapi/config/index.html#config.Settings.Config">(class in config)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/orm/index.html#orm.Dataset.sha256">sha256 (orm.Dataset attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.DatasetVersion.sha256">(orm.DatasetVersion attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/orm/index.html#orm.Dataset.size_bytes">size_bytes (orm.Dataset attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.DatasetVersion.size_bytes">(orm.DatasetVersion attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.ModelRef.source_key">source_key (app.models.orm.ModelRef attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/orm/index.html#orm.Model.source_key">(orm.Model attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/orm/index.html#orm.Model.source_sha256">source_sha256 (orm.Model attribute)</a>
-</li>
-        <li><a href="autoapi/app/mqtt/listener/index.html#app.mqtt.listener.EdgeConnectorMQTTListener.start">start() (app.mqtt.listener.EdgeConnectorMQTTListener method)</a>
-</li>
-        <li><a href="autoapi/app/models/orm/index.html#app.models.orm.Deployment.status">status (app.models.orm.Deployment attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/models/orm/index.html#app.models.orm.DeviceRef.status">(app.models.orm.DeviceRef attribute)</a>
-</li>
-          <li><a href="autoapi/orm/index.html#orm.Device.status">(orm.Device attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.stream_model_logs">stream_model_logs() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/transport/base/index.html#transport.base.TransportBase.subscribe">subscribe() (transport.base.TransportBase method)</a>
-
-        <ul>
-          <li><a href="autoapi/transport/mqtt/index.html#transport.mqtt.MQTTTransport.subscribe">(transport.mqtt.MQTTTransport method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilationResult.success">success (app.compilers.base.CompilationResult attribute)</a>, <a href="autoapi/app/compilers/base/index.html#id0">[1]</a>
-</li>
-        <li><a href="autoapi/app/compilers/base/index.html#app.compilers.base.CompilerBase.SUPPORTED_HARDWARE">SUPPORTED_HARDWARE (app.compilers.base.CompilerBase attribute)</a>
-
-        <ul>
-          <li><a href="autoapi/app/compilers/index.html#app.compilers.CompilerBase.SUPPORTED_HARDWARE">(app.compilers.CompilerBase attribute)</a>
-</li>
-        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -2497,40 +780,11 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/transport/base/index.html#id2">timestamp (transport.base.MessageEnvelope attribute)</a>, <a href="autoapi/transport/base/index.html#transport.base.MessageEnvelope.timestamp">[1]</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.train_model">train_model() (in module api_gateway_service.routers.models)</a>
 </li>
-        <li><a href="autoapi/transport/base/index.html#id0">topic (transport.base.MessageEnvelope attribute)</a>, <a href="autoapi/transport/base/index.html#transport.base.MessageEnvelope.topic">[1]</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.train_model">train_model() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/app/grpc_handlers/compilation_handler/index.html#app.grpc_handlers.compilation_handler.CompilationServiceHandler.TrainModel">TrainModel() (app.grpc_handlers.compilation_handler.CompilationServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.TrainModelRequestSchema">TrainModelRequestSchema (class in app.routers.models)</a>
-</li>
-        <li>
-    transport
-
-        <ul>
-          <li><a href="autoapi/transport/index.html#module-transport">module</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li>
-    transport.base
-
-        <ul>
-          <li><a href="autoapi/transport/base/index.html#module-transport.base">module</a>
-</li>
-        </ul></li>
-        <li>
-    transport.mqtt
-
-        <ul>
-          <li><a href="autoapi/transport/mqtt/index.html#module-transport.mqtt">module</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/transport/base/index.html#transport.base.TransportBase">TransportBase (class in transport.base)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema">TrainModelRequestSchema (class in api_gateway_service.routers.models)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -2540,99 +794,22 @@
   <h2>U</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/aura_hw/backends/base/index.html#aura_hw.backends.base.InferenceBackend.unload">unload() (aura_hw.backends.base.InferenceBackend method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/inference/base/index.html#aura_hw.backends.inference.base.InferenceBackend.unload">(aura_hw.backends.inference.base.InferenceBackend method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.update_dataset">update_dataset() (in module api_gateway_service.routers.datasets)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/inference/general/index.html#aura_hw.backends.inference.general.GeneralInferenceBackend.unload">(aura_hw.backends.inference.general.GeneralInferenceBackend method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/devices/index.html#api_gateway_service.routers.devices.update_device">update_device() (in module api_gateway_service.routers.devices)</a>
 </li>
-          <li><a href="autoapi/aura_hw/backends/inference/index.html#aura_hw.backends.inference.InferenceBackend.unload">(aura_hw.backends.inference.InferenceBackend method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/aura_hw/index.html#aura_hw.unload_model">unload_model() (in module aura_hw)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/runtime/index.html#aura_hw.runtime.unload_model">(in module aura_hw.runtime)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/models/index.html#models.DatasetRepository.update">update() (models.DatasetRepository method)</a>
-
-        <ul>
-          <li><a href="autoapi/models/index.html#models.ModelRepository.update">(models.ModelRepository method)</a>
-</li>
-        </ul></li>
-        <li><a href="autoapi/models/index.html#models.ModelRepository.update_compiled">update_compiled() (models.ModelRepository method)</a>
-</li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.update_dataset">update_dataset() (in module app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.update_model">update_model() (in module app.routers.models)</a>
-</li>
-        <li><a href="autoapi/devices/index.html#devices.DeviceRepository.update_status">update_status() (devices.DeviceRepository method)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.UpdateDataset">UpdateDataset() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.UpdateDatasetRequestSchema">UpdateDatasetRequestSchema (class in app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/device_handler/index.html#device_handler.DeviceServiceHandler.UpdateDeviceStatus">UpdateDeviceStatus() (device_handler.DeviceServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.UpdateModel">UpdateModel() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.UpdateModelCompiled">UpdateModelCompiled() (ai_handler.AIServiceHandler method)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.update_model">update_model() (in module api_gateway_service.routers.models)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.UpdateModelRequestSchema">UpdateModelRequestSchema (class in app.routers.models)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.UpdateDatasetRequestSchema">UpdateDatasetRequestSchema (class in api_gateway_service.routers.datasets)</a>
 </li>
-        <li><a href="autoapi/utils/minio/index.html#utils.minio.upload_bytes">upload_bytes() (in module utils.minio)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.UpdateModelRequestSchema">UpdateModelRequestSchema (class in api_gateway_service.routers.models)</a>
 </li>
-        <li><a href="autoapi/app/routers/models/index.html#app.routers.models.upload_model">upload_model() (in module app.routers.models)</a>
+        <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.upload_model">upload_model() (in module api_gateway_service.routers.models)</a>
 </li>
-        <li><a href="autoapi/app/routers/scripts/index.html#app.routers.scripts.upload_script">upload_script() (in module app.routers.scripts)</a>
+        <li><a href="autoapi/api_gateway_service/routers/scripts/index.html#api_gateway_service.routers.scripts.upload_script">upload_script() (in module api_gateway_service.routers.scripts)</a>
 </li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.UploadDataset">UploadDataset() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/ai_handler/index.html#ai_handler.AIServiceHandler.UploadModel">UploadModel() (ai_handler.AIServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/script_handler/index.html#script_handler.ScriptServiceHandler.UploadScript">UploadScript() (script_handler.ScriptServiceHandler method)</a>
-</li>
-        <li><a href="autoapi/app/repositories/monitoring/index.html#app.repositories.monitoring.MonitoringRepository.upsert_device_state">upsert_device_state() (app.repositories.monitoring.MonitoringRepository method)</a>
-</li>
-        <li>
-    utils
-
-        <ul>
-          <li><a href="autoapi/utils/index.html#module-utils">module</a>
-</li>
-        </ul></li>
-        <li>
-    utils.database
-
-        <ul>
-          <li><a href="autoapi/utils/database/index.html#module-utils.database">module</a>
-</li>
-        </ul></li>
-        <li>
-    utils.grpc_server
-
-        <ul>
-          <li><a href="autoapi/utils/grpc_server/index.html#module-utils.grpc_server">module</a>
-</li>
-        </ul></li>
-        <li>
-    utils.logging
-
-        <ul>
-          <li><a href="autoapi/utils/logging/index.html#module-utils.logging">module</a>
-</li>
-        </ul></li>
-        <li>
-    utils.minio
-
-        <ul>
-          <li><a href="autoapi/utils/minio/index.html#module-utils.minio">module</a>
-</li>
-        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -2641,40 +818,12 @@
   <h2>V</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/routers/datasets/index.html#app.routers.datasets.validate_dataset_zip">validate_dataset_zip() (in module app.routers.datasets)</a>
-</li>
-        <li><a href="autoapi/app/auth/jwt/index.html#app.auth.jwt.verify_token">verify_token() (in module app.auth.jwt)</a>
+        <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.validate_dataset_zip">validate_dataset_zip() (in module api_gateway_service.routers.datasets)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/orm/index.html#orm.DatasetVersion.version">version (orm.DatasetVersion attribute)</a>
+        <li><a href="autoapi/api_gateway_service/auth/jwt/index.html#api_gateway_service.auth.jwt.verify_token">verify_token() (in module api_gateway_service.auth.jwt)</a>
 </li>
-        <li><a href="autoapi/orm/index.html#orm.Dataset.versions">versions (orm.Dataset attribute)</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="W" class="genindex-section">
-  <h2>W</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/app/worker/index.html#app.worker.WorkerSettings">WorkerSettings (class in app.worker)</a>
-</li>
-        <li><a href="autoapi/aura_hw/backends/devices/actuator/index.html#aura_hw.backends.devices.actuator.ActuatorBackend.write">write() (aura_hw.backends.devices.actuator.ActuatorBackend method)</a>
-
-        <ul>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/base/index.html#aura_hw.backends.devices.actuator.base.ActuatorBackend.write">(aura_hw.backends.devices.actuator.base.ActuatorBackend method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/buzzer/index.html#aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator.write">(aura_hw.backends.devices.actuator.buzzer.GeneralBuzzerActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/led/index.html#aura_hw.backends.devices.actuator.led.GeneralLEDActuator.write">(aura_hw.backends.devices.actuator.led.GeneralLEDActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/relay/index.html#aura_hw.backends.devices.actuator.relay.GeneralRelayActuator.write">(aura_hw.backends.devices.actuator.relay.GeneralRelayActuator method)</a>
-</li>
-          <li><a href="autoapi/aura_hw/backends/devices/actuator/servo/index.html#aura_hw.backends.devices.actuator.servo.GeneralServoActuator.write">(aura_hw.backends.devices.actuator.servo.GeneralServoActuator method)</a>
-</li>
-        </ul></li>
     </ul></td>
   </tr></table>
 </section>

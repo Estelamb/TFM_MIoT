@@ -212,7 +212,7 @@
 <li class="toctree-l2"><a class="reference internal" href="hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imx500.html">Tutorial: Raspberry Pi 5 + AI Camera (IMX500)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - TFLite)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rpi_cpu.html">Tutorial: Raspberry Pi 5 (CPU - ONNX)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jetson_orin.html">Tutorial: NVIDIA Jetson Orin Nano</a></li>
 </ul>
 </li>
@@ -224,116 +224,25 @@
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/app/index.html">app</a><input aria-label="Toggle navigation of app" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/app/actuators/index.html">app.actuators</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/auth/index.html">app.auth</a><input aria-label="Toggle navigation of app.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/auth/jwt/index.html">app.auth.jwt</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/compilers/index.html">app.compilers</a><input aria-label="Toggle navigation of app.compilers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/compilers/base/index.html">app.compilers.base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/compilers/yolo_train/index.html">app.compilers.yolo_train</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/api_gateway_service/config/index.html">api_gateway_service.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/api_gateway_service/main/index.html">api_gateway_service.main</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/api_gateway_service/routers/index.html">api_gateway_service.routers</a><input aria-label="Toggle navigation of api_gateway_service.routers" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/api_gateway_service/routers/datasets/index.html">api_gateway_service.routers.datasets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/api_gateway_service/routers/deployments/index.html">api_gateway_service.routers.deployments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/api_gateway_service/routers/devices/index.html">api_gateway_service.routers.devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/api_gateway_service/routers/models/index.html">api_gateway_service.routers.models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/api_gateway_service/routers/monitoring/index.html">api_gateway_service.routers.monitoring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/api_gateway_service/routers/scripts/index.html">api_gateway_service.routers.scripts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/app/config/index.html">app.config</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/grpc_handlers/index.html">app.grpc_handlers</a><input aria-label="Toggle navigation of app.grpc_handlers" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/grpc_handlers/compilation_handler/index.html">app.grpc_handlers.compilation_handler</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/grpc_handlers/deployment_handler/index.html">app.grpc_handlers.deployment_handler</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/grpc_handlers/monitoring_handler/index.html">app.grpc_handlers.monitoring_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/app/main/index.html">app.main</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/models/index.html">app.models</a><input aria-label="Toggle navigation of app.models" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/models/mongo/index.html">app.models.mongo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/models/orm/index.html">app.models.orm</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/mqtt/index.html">app.mqtt</a><input aria-label="Toggle navigation of app.mqtt" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/mqtt/listener/index.html">app.mqtt.listener</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/repositories/index.html">app.repositories</a><input aria-label="Toggle navigation of app.repositories" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/repositories/compilation/index.html">app.repositories.compilation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/repositories/deployments/index.html">app.repositories.deployments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/repositories/monitoring/index.html">app.repositories.monitoring</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/app/routers/index.html">app.routers</a><input aria-label="Toggle navigation of app.routers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/routers/datasets/index.html">app.routers.datasets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/routers/deployments/index.html">app.routers.deployments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/routers/devices/index.html">app.routers.devices</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/routers/models/index.html">app.routers.models</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/routers/monitoring/index.html">app.routers.monitoring</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/app/routers/scripts/index.html">app.routers.scripts</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/app/sensors/index.html">app.sensors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/app/stubs/index.html">app.stubs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/app/worker/index.html">app.worker</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../autoapi/orm/index.html">orm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../autoapi/main/index.html">main</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/utils/index.html">utils</a><input aria-label="Toggle navigation of utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/utils/database/index.html">utils.database</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/utils/grpc_server/index.html">utils.grpc_server</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/utils/logging/index.html">utils.logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/utils/minio/index.html">utils.minio</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../autoapi/config/index.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../autoapi/models/index.html">models</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/aura_hw/index.html">aura_hw</a><input aria-label="Toggle navigation of aura_hw" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/index.html">aura_hw.backends</a><input aria-label="Toggle navigation of aura_hw.backends" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/aura_hw/backends/base/index.html">aura_hw.backends.base</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/index.html">aura_hw.backends.devices</a><input aria-label="Toggle navigation of aura_hw.backends.devices" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/index.html">aura_hw.backends.devices.actuator</a><input aria-label="Toggle navigation of aura_hw.backends.devices.actuator" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/base/index.html">aura_hw.backends.devices.actuator.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/buzzer/index.html">aura_hw.backends.devices.actuator.buzzer</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/led/index.html">aura_hw.backends.devices.actuator.led</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/relay/index.html">aura_hw.backends.devices.actuator.relay</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/actuator/servo/index.html">aura_hw.backends.devices.actuator.servo</a></li>
-</ul>
-</li>
-<li class="toctree-l5"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/base/index.html">aura_hw.backends.devices.base</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/camera/index.html">aura_hw.backends.devices.camera</a><input aria-label="Toggle navigation of aura_hw.backends.devices.camera" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/camera/base/index.html">aura_hw.backends.devices.camera.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/camera/general/index.html">aura_hw.backends.devices.camera.general</a></li>
-</ul>
-</li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/index.html">aura_hw.backends.devices.sensor</a><input aria-label="Toggle navigation of aura_hw.backends.devices.sensor" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/base/index.html">aura_hw.backends.devices.sensor.base</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/distance/index.html">aura_hw.backends.devices.sensor.distance</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/general/index.html">aura_hw.backends.devices.sensor.general</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/imu/index.html">aura_hw.backends.devices.sensor.imu</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../autoapi/aura_hw/backends/devices/sensor/temperature/index.html">aura_hw.backends.devices.sensor.temperature</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/aura_hw/backends/inference/index.html">aura_hw.backends.inference</a><input aria-label="Toggle navigation of aura_hw.backends.inference" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../autoapi/aura_hw/backends/inference/base/index.html">aura_hw.backends.inference.base</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../autoapi/aura_hw/backends/inference/general/index.html">aura_hw.backends.inference.general</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/aura_hw/detect/index.html">aura_hw.detect</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/aura_hw/device_manager/index.html">aura_hw.device_manager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/aura_hw/loader/index.html">aura_hw.loader</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/aura_hw/runtime/index.html">aura_hw.runtime</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../autoapi/devices/index.html">devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../autoapi/scripts/index.html">scripts</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/transport/index.html">transport</a><input aria-label="Toggle navigation of transport" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/transport/base/index.html">transport.base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../autoapi/transport/mqtt/index.html">transport.mqtt</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../autoapi/ai_handler/index.html">ai_handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../autoapi/device_handler/index.html">device_handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../autoapi/script_handler/index.html">script_handler</a></li>
 </ul>
 </li>
 </ul>
@@ -344,7 +253,6 @@
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
 </ul>
 
 </div>

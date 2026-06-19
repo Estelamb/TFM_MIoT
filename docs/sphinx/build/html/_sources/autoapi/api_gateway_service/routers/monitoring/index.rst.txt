@@ -1,0 +1,41 @@
+api_gateway_service.routers.monitoring
+======================================
+
+.. py:module:: api_gateway_service.routers.monitoring
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   api_gateway_service.routers.monitoring.router
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   api_gateway_service.routers.monitoring.list_device_states
+   api_gateway_service.routers.monitoring.get_device_state
+   api_gateway_service.routers.monitoring.get_inference_results
+
+
+Module Contents
+---------------
+
+.. py:data:: router
+
+.. py:function:: list_device_states(_=Depends(verify_token))
+   :async:
+
+
+.. py:function:: get_device_state(device_id: str, _=Depends(verify_token))
+   :async:
+
+
+.. py:function:: get_inference_results(device_id: str, limit: int = Query(20, ge=1, le=100), _=Depends(verify_token))
+   :async:
+
+
