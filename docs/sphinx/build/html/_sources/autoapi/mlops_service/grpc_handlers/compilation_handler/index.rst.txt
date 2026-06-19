@@ -1,0 +1,114 @@
+mlops_service.grpc_handlers.compilation_handler
+===============================================
+
+.. py:module:: mlops_service.grpc_handlers.compilation_handler
+
+.. autoapi-nested-parse::
+
+   Compilation Service Handler
+   ============================
+   Orquesta la compilación de modelos .pt para cada hardware:
+
+     hailo8 / hailo8l  → HailoCompiler  (lanza Docker con Hailo AI SW Suite)
+     rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter en Python)
+     rpi               → RPiCPUCompiler (exportación a ONNX en Docker)
+     jetson_orin_nano  → stub (TensorRT, pendiente)
+
+   El handler es no-bloqueante: CompileModel lanza la compilación como tarea
+   asyncio y devuelve status="compiling" inmediatamente. El cliente puede
+   hacer polling con GetCompilationStatus.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   mlops_service.grpc_handlers.compilation_handler.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   mlops_service.grpc_handlers.compilation_handler.CompilationServiceHandler
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   mlops_service.grpc_handlers.compilation_handler.extract_classes_from_dataset
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:function:: extract_classes_from_dataset(bucket: str, dataset_key: str) -> list[str]
+   :async:
+
+
+   Downloads the dataset zip and extracts class names ordered by index from classes.json.
+
+
+.. py:class:: CompilationServiceHandler(ai_service_grpc: str, minio_bucket_models: str, minio_bucket_compiled: str, redis_url: str)
+
+   Bases: :py:obj:`shared.proto_gen.compilation_pb2_grpc.CompilationServiceServicer`
+
+
+   Missing associated documentation comment in .proto file.
+
+
+   .. py:method:: CompileModel(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: TrainModel(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: GetCompilationStatus(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: GetSupportedHardware(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: GetSupportedSensors(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: GetSupportedActuators(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+

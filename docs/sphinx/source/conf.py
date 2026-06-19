@@ -5,20 +5,45 @@ import shutil
 
 # ── Path setup ────────────────────────────────────────────────────────────────
 _root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-temp_api_dir = os.path.join(os.path.dirname(__file__), "api_gateway_service")
 
-# Dynamic copy of api-gateway/app to api_gateway_service for clean namespace API docs
-if os.path.exists(temp_api_dir):
-    try:
-        shutil.rmtree(temp_api_dir)
-    except Exception:
-        pass
+dynamic_packages = {
+    "api_gateway_service": os.path.join(_root, "services/api-gateway/app"),
+    "registry_service": os.path.join(_root, "services/registry-service/app"),
+    "mlops_service": os.path.join(_root, "services/mlops-service/app"),
+    "edge_connector_service": os.path.join(_root, "services/edge-connector-service/app"),
+    "edge_runtime": os.path.join(_root, "edge-runtime"),
+    "shared": os.path.join(_root, "shared"),
+}
 
-src_app = os.path.join(_root, "services/api-gateway/app")
-shutil.copytree(src_app, temp_api_dir)
+autoapi_dirs = []
+
+for name, src in dynamic_packages.items():
+    dest = os.path.join(os.path.dirname(__file__), name)
+    if os.path.exists(dest):
+        try:
+            shutil.rmtree(dest)
+        except Exception:
+            pass
+    shutil.copytree(src, dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "build", "dist", ".doctrees", "html"))
+    
+    # Ensure __init__.py exists recursively in all subdirectories under dest
+    for root_dir, dirs, files in os.walk(dest):
+        init_file = os.path.join(root_dir, "__init__.py")
+        if not os.path.exists(init_file):
+            with open(init_file, "w", encoding="utf-8") as f:
+                f.write("# Auto-generated package init\n")
+            
+    autoapi_dirs.append(dest)
 
 sys.path.insert(0, _root)
-sys.path.insert(0, os.path.join(_root, "services/api-gateway"))
+for svc in [
+    "services/api-gateway",
+    "services/registry-service",
+    "services/mlops-service",
+    "services/edge-connector-service",
+    "edge-runtime",
+]:
+    sys.path.insert(0, os.path.join(_root, svc))
 sys.path.insert(0, os.path.dirname(__file__))
 
 # ── Project info ──────────────────────────────────────────────────────────────
@@ -40,7 +65,7 @@ extensions = [
 
 # ── autoapi ───────────────────────────────────────────────────────────────────
 autoapi_type              = "python"
-autoapi_dirs              = [temp_api_dir]
+autoapi_dirs              = autoapi_dirs
 autoapi_keep_files        = False
 autoapi_options           = [
     "members",

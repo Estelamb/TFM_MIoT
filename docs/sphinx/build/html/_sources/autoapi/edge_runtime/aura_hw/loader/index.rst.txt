@@ -1,0 +1,58 @@
+edge_runtime.aura_hw.loader
+===========================
+
+.. py:module:: edge_runtime.aura_hw.loader
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   edge_runtime.aura_hw.loader.logger
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   edge_runtime.aura_hw.loader.get_hardware_dir
+   edge_runtime.aura_hw.loader.load_class_from_module
+   edge_runtime.aura_hw.loader.load_component_class
+   edge_runtime.aura_hw.loader.load_inference_class
+   edge_runtime.aura_hw.loader.get_libraries_hash
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:function:: get_hardware_dir() -> pathlib.Path
+
+   Resolve the absolute path to the root 'hardware' directory.
+
+
+.. py:function:: load_class_from_module(module, module_name: str)
+
+   Utility to inspect a dynamically loaded module and find the main class.
+
+
+.. py:function:: load_component_class(category: str, subcategory: str, driver: str)
+
+   Dynamically loads the library class for a custom sensor or actuator.
+   Example: load_component_class("sensors", "camera", "rpi_camera_module_3")
+
+
+.. py:function:: load_inference_class(hw: str)
+
+   Dynamically loads the inference class for a custom hardware type.
+   Example: load_inference_class("test_arch") -> loaded from hardware/hw_arch/test_arch/inference/library.py
+
+
+.. py:function:: get_libraries_hash() -> str
+
+   Calculates a deterministic SHA256 hash of the local hardware directory.
+
+

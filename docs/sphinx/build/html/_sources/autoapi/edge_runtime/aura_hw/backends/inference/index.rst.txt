@@ -1,0 +1,25 @@
+edge_runtime.aura_hw.backends.inference
+=======================================
+
+.. py:module:: edge_runtime.aura_hw.backends.inference
+
+.. autoapi-nested-parse::
+
+   Inference backends for AURA HAL.
+
+   Each backend targets a specific hardware accelerator architecture.
+   Import the concrete class you need, or let :mod:`aura_hw.runtime`
+   select the right one automatically via hardware detection.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/edge_runtime/aura_hw/backends/inference/base/index
+   /autoapi/edge_runtime/aura_hw/backends/inference/general/index
+
+

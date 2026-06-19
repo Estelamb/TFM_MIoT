@@ -1,0 +1,36 @@
+edge_connector_service.models.mongo
+===================================
+
+.. py:module:: edge_connector_service.models.mongo
+
+.. autoapi-nested-parse::
+
+   MongoDB collections para monitoring.
+   No usamos ORM — documentos directos via motor.
+
+   Collections:
+     device_states     — estado actual por device_id (upsert)
+     inference_results  — resultados de inferencia (append-only, TTL opcional)
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   edge_connector_service.models.mongo.DEVICE_STATES_COL
+   edge_connector_service.models.mongo.INFERENCE_RESULTS_COL
+
+
+Module Contents
+---------------
+
+.. py:data:: DEVICE_STATES_COL
+   :value: 'device_states'
+
+
+.. py:data:: INFERENCE_RESULTS_COL
+   :value: 'inference_results'
+
+

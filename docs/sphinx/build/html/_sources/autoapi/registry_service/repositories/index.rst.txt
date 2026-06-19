@@ -1,0 +1,17 @@
+registry_service.repositories
+=============================
+
+.. py:module:: registry_service.repositories
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/registry_service/repositories/devices/index
+   /autoapi/registry_service/repositories/models/index
+   /autoapi/registry_service/repositories/scripts/index
+
+

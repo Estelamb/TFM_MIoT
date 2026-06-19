@@ -1,0 +1,139 @@
+registry_service.grpc_handlers.ai_handler
+=========================================
+
+.. py:module:: registry_service.grpc_handlers.ai_handler
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   registry_service.grpc_handlers.ai_handler.ALLOWED_BASE_MODELS
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   registry_service.grpc_handlers.ai_handler.AIServiceHandler
+
+
+Module Contents
+---------------
+
+.. py:data:: ALLOWED_BASE_MODELS
+
+.. py:class:: AIServiceHandler(sf: sqlalchemy.ext.asyncio.async_sessionmaker)
+
+   Bases: :py:obj:`shared.proto_gen.ai_pb2_grpc.AIServiceServicer`
+
+
+   Missing associated documentation comment in .proto file.
+
+
+   .. py:method:: UploadModel(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: GetModel(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: ListModels(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: DeleteModel(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: UpdateModelCompiled(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: UploadDataset(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: GetDataset(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: ListDatasets(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: DeleteDataset(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: SetDatasetFile(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: AssociateModelDataset(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: UpdateModel(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+
+   .. py:method:: UpdateDataset(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+

@@ -1,0 +1,98 @@
+edge_runtime.pal.ota_handler
+============================
+
+.. py:module:: edge_runtime.pal.ota_handler
+
+.. autoapi-nested-parse::
+
+   PAL — OTA Handler
+   ==================
+   Responsible for downloading and validating Over-The-Air deployment
+   artefacts (model + user script) sent via MQTT ``deploy`` commands.
+
+   Workflow
+   --------
+   1. Receive a ``deploy`` payload with model URL + SHA-256 and script
+      URL + SHA-256.
+   2. Stream-download each artefact to the work directory.
+   3. Verify the SHA-256 digest of each downloaded file.
+   4. Call ``aura_hw.load_model()`` with the new model path.
+   5. Hot-reload the user script module.
+   6. Update the in-memory deployment state and notify via MQTT events.
+
+   On any failure the partial state is **not** committed — the previous
+   model and script remain active.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   edge_runtime.pal.ota_handler.logger
+   edge_runtime.pal.ota_handler.EventPublisher
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   edge_runtime.pal.ota_handler.OTAHandler
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:data:: EventPublisher
+
+.. py:class:: OTAHandler(work_dir: pathlib.Path, on_event: Callable, on_deploy_success: Callable, device_manager: Any = None)
+
+   Handles OTA deployment of model + script artefacts.
+
+   Parameters
+   ----------
+   work_dir:
+       Directory where artefacts are stored on disk.
+   on_event:
+       Async callable used to publish MQTT events. Signature:
+       ``async def on_event(event: str, **extra) -> None``
+   on_deploy_success:
+       Async callable invoked after a successful deploy. Receives the
+       new deployment state dict.
+
+
+   .. py:method:: handle_deploy(payload: dict) -> None
+      :async:
+
+
+      Process a ``deploy`` command payload.
+
+      Expected payload keys
+      ---------------------
+      deployment_id : str
+      model_url     : str
+      model_sha256  : str
+      script_url    : str
+      script_sha256 : str
+      model_id      : str  (optional)
+      script_id     : str  (optional)
+
+
+
+   .. py:method:: handle_update_libraries(payload: dict) -> None
+      :async:
+
+
+      Process an ``update_libraries`` command payload.
+
+      Expected payload keys
+      ---------------------
+      libraries_url     : str
+      libraries_sha256  : str
+
+
+

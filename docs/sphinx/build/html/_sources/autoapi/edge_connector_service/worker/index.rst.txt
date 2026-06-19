@@ -1,0 +1,90 @@
+edge_connector_service.worker
+=============================
+
+.. py:module:: edge_connector_service.worker
+
+.. autoapi-nested-parse::
+
+   ARQ worker for deployment-service.
+
+   Defines compile_and_deploy_job: triggers compilation via compilation-service
+   gRPC, then waits for the model to become ready by polling Redis (published
+   by the compilation worker) rather than polling Postgres in a busy loop.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   edge_connector_service.worker.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   edge_connector_service.worker.WorkerSettings
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   edge_connector_service.worker.compile_and_deploy_job
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:function:: compile_and_deploy_job(ctx, *, dep_id, model_id, device_id, script_id, hardware_type, source_key, dataset_id, script_key, script_sha256, base_architecture, input_size)
+   :async:
+
+
+.. py:class:: WorkerSettings
+
+   .. py:attribute:: functions
+
+
+   .. py:attribute:: redis_settings
+
+
+   .. py:attribute:: queue_name
+      :value: 'deployment_queue'
+
+
+
+   .. py:attribute:: max_jobs
+      :value: 10
+
+
+
+   .. py:attribute:: job_timeout
+      :value: 14400
+
+
+
+   .. py:attribute:: keep_result
+      :value: 3600
+
+
+
+   .. py:method:: on_startup(ctx)
+      :staticmethod:
+
+      :async:
+
+
+
+   .. py:method:: on_shutdown(ctx)
+      :staticmethod:
+
+      :async:
+
+
+

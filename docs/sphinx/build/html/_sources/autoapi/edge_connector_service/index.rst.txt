@@ -1,0 +1,21 @@
+edge_connector_service
+======================
+
+.. py:module:: edge_connector_service
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/edge_connector_service/config/index
+   /autoapi/edge_connector_service/grpc_handlers/index
+   /autoapi/edge_connector_service/main/index
+   /autoapi/edge_connector_service/models/index
+   /autoapi/edge_connector_service/mqtt/index
+   /autoapi/edge_connector_service/repositories/index
+   /autoapi/edge_connector_service/worker/index
+
+

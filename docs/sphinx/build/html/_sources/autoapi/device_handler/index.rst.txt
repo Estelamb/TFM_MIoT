@@ -63,3 +63,11 @@ Module Contents
 
 
 
+   .. py:method:: UpdateDevice(req, ctx)
+      :async:
+
+
+      Missing associated documentation comment in .proto file.
+
+
+

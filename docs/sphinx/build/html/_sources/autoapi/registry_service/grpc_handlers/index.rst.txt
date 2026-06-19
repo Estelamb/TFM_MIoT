@@ -1,0 +1,17 @@
+registry_service.grpc_handlers
+==============================
+
+.. py:module:: registry_service.grpc_handlers
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/registry_service/grpc_handlers/ai_handler/index
+   /autoapi/registry_service/grpc_handlers/device_handler/index
+   /autoapi/registry_service/grpc_handlers/script_handler/index
+
+

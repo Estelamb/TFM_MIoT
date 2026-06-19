@@ -1,0 +1,6 @@
+shared.proto
+============
+
+.. py:module:: shared.proto
+
+

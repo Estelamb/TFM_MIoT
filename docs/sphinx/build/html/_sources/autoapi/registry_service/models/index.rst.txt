@@ -1,0 +1,15 @@
+registry_service.models
+=======================
+
+.. py:module:: registry_service.models
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/registry_service/models/orm/index
+
+

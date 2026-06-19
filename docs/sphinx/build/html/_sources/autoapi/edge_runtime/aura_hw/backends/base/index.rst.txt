@@ -1,0 +1,15 @@
+edge_runtime.aura_hw.backends.base
+==================================
+
+.. py:module:: edge_runtime.aura_hw.backends.base
+
+.. autoapi-nested-parse::
+
+   Compatibility re-export — InferenceBackend base class.
+
+   New code should import directly from:
+
+       from aura_hw.backends.inference.base import InferenceBackend
+
+
+

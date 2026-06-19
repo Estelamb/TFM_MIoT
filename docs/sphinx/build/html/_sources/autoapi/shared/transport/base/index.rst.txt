@@ -1,0 +1,120 @@
+shared.transport.base
+=====================
+
+.. py:module:: shared.transport.base
+
+.. autoapi-nested-parse::
+
+   Abstract transport layer for AURA cloud-to-edge communication.
+
+   Defines the :class:`TransportBase` interface and :class:`MessageEnvelope`
+   data class so that MQTT can be swapped for WebSocket, AMQP or any other
+   broker without changing business logic.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   shared.transport.base.MessageEnvelope
+   shared.transport.base.TransportBase
+
+
+Module Contents
+---------------
+
+.. py:class:: MessageEnvelope
+
+   A normalised message independent of the underlying transport.
+
+   .. attribute:: topic
+
+      The topic or routing key the message was sent to / received from.
+
+   .. attribute:: payload
+
+      Decoded JSON payload as a Python dict.
+
+   .. attribute:: timestamp
+
+      ISO 8601 UTC timestamp set at construction time.
+
+
+   .. py:attribute:: topic
+      :type:  str
+
+
+   .. py:attribute:: payload
+      :type:  dict
+
+
+   .. py:attribute:: timestamp
+      :type:  str
+
+
+.. py:class:: TransportBase
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Abstract base class for pluggable transport implementations.
+
+   Concrete implementations must override all four abstract methods.
+   The intended usage pattern is::
+
+       transport = MQTTTransport("mosquitto", 1883)
+       await transport.connect()
+       await transport.publish("device/abc/commands", {"command": "deploy"})
+       async for msg in transport.subscribe("device/+/events"):
+           print(msg.topic, msg.payload)
+
+
+   .. py:method:: connect() -> None
+      :abstractmethod:
+
+      :async:
+
+
+      Establish a connection to the broker.
+
+
+
+   .. py:method:: disconnect() -> None
+      :abstractmethod:
+
+      :async:
+
+
+      Close the connection and release resources.
+
+
+
+   .. py:method:: publish(topic: str, payload: dict) -> None
+      :abstractmethod:
+
+      :async:
+
+
+      Publish a message.
+
+      :param topic: Destination topic or routing key.
+      :param payload: Python dict that will be serialised to JSON.
+
+
+
+   .. py:method:: subscribe(topic_filter: str) -> AsyncIterator[MessageEnvelope]
+      :abstractmethod:
+
+      :async:
+
+
+      Subscribe to a topic filter and yield incoming messages.
+
+      :param topic_filter: Topic or wildcard filter, e.g. ``"device/+/events"``.
+
+      :Yields: :class:`MessageEnvelope` for each received message.
+
+
+

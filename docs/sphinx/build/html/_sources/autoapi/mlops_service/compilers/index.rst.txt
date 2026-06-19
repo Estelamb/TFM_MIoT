@@ -1,0 +1,51 @@
+mlops_service.compilers
+=======================
+
+.. py:module:: mlops_service.compilers
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/mlops_service/compilers/base/index
+   /autoapi/mlops_service/compilers/yolo_train/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   mlops_service.compilers.logger
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   mlops_service.compilers.get_hardware_dir
+   mlops_service.compilers.get_label_from_file
+   mlops_service.compilers.discover_compilers
+   mlops_service.compilers.get_architectures_data
+   mlops_service.compilers.get_architectures
+
+
+Package Contents
+----------------
+
+.. py:data:: logger
+
+.. py:function:: get_hardware_dir() -> pathlib.Path
+
+.. py:function:: get_label_from_file(file_path: pathlib.Path) -> str | None
+
+.. py:function:: discover_compilers(minio_bucket_models: str, minio_bucket_compiled: str) -> dict
+
+.. py:function:: get_architectures_data() -> dict[str, str]
+
+.. py:function:: get_architectures() -> list[str]
+

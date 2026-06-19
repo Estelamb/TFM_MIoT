@@ -40,6 +40,11 @@ Module Contents
 
 
 
+   .. py:method:: update(id: str, name: str, description: str | None) -> app.models.orm.Device | None
+      :async:
+
+
+
    .. py:method:: delete(id: str) -> bool
       :async:
 

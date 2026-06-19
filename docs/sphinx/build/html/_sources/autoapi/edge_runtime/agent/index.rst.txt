@@ -1,0 +1,46 @@
+edge_runtime.agent
+==================
+
+.. py:module:: edge_runtime.agent
+
+.. autoapi-nested-parse::
+
+   AURA Edge Agent — Entrypoint
+   =============================
+   Minimal entrypoint that wires together the PAL components:
+
+   * :class:`~pal.comm_client.CommunicationClient` — MQTT publish/subscribe
+   * :class:`~pal.ota_handler.OTAHandler`          — OTA deploy handler
+   * :class:`~pal.orchestrator.Orchestrator`        — inference + telemetry loops
+   * :class:`~aura_hw.device_manager.DeviceManager` — connected device backends
+
+   Configuration (priority order)
+   -------------------------------
+   1. Environment variables
+   2. ``config/device_config.yaml``
+   3. Built-in defaults
+
+   MQTT Topics
+   -----------
+   Subscribe:  device/{DEVICE_ID}/commands
+   Publish:    device/{DEVICE_ID}/events
+               device/{DEVICE_ID}/telemetry
+               device/{DEVICE_ID}/inference
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   edge_runtime.agent.main
+
+
+Module Contents
+---------------
+
+.. py:function:: main() -> None
+   :async:
+
+

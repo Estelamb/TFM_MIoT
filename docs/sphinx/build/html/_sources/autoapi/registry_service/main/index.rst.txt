@@ -1,0 +1,30 @@
+registry_service.main
+=====================
+
+.. py:module:: registry_service.main
+
+.. autoapi-nested-parse::
+
+   Registry Service entry point.
+
+   Consolidates Device, AI, and Script metadata management.
+   Starts a single async gRPC server on port 50051 that hosts
+   DeviceServiceHandler, AIServiceHandler, and ScriptServiceHandler.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   registry_service.main.main
+
+
+Module Contents
+---------------
+
+.. py:function:: main()
+   :async:
+
+

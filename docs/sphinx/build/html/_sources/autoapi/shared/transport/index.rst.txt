@@ -1,0 +1,210 @@
+shared.transport
+================
+
+.. py:module:: shared.transport
+
+.. autoapi-nested-parse::
+
+   Capa de transporte abstracta.
+   Implementada sobre MQTT. Diseñada para ser intercambiable (WebSocket, AMQP, etc.)
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/shared/transport/base/index
+   /autoapi/shared/transport/mqtt/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   shared.transport.TransportBase
+   shared.transport.MessageEnvelope
+   shared.transport.MQTTTransport
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   shared.transport.init_transport
+   shared.transport.get_transport
+
+
+Package Contents
+----------------
+
+.. py:class:: TransportBase
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Abstract base class for pluggable transport implementations.
+
+   Concrete implementations must override all four abstract methods.
+   The intended usage pattern is::
+
+       transport = MQTTTransport("mosquitto", 1883)
+       await transport.connect()
+       await transport.publish("device/abc/commands", {"command": "deploy"})
+       async for msg in transport.subscribe("device/+/events"):
+           print(msg.topic, msg.payload)
+
+
+   .. py:method:: connect() -> None
+      :abstractmethod:
+
+      :async:
+
+
+      Establish a connection to the broker.
+
+
+
+   .. py:method:: disconnect() -> None
+      :abstractmethod:
+
+      :async:
+
+
+      Close the connection and release resources.
+
+
+
+   .. py:method:: publish(topic: str, payload: dict) -> None
+      :abstractmethod:
+
+      :async:
+
+
+      Publish a message.
+
+      :param topic: Destination topic or routing key.
+      :param payload: Python dict that will be serialised to JSON.
+
+
+
+   .. py:method:: subscribe(topic_filter: str) -> AsyncIterator[MessageEnvelope]
+      :abstractmethod:
+
+      :async:
+
+
+      Subscribe to a topic filter and yield incoming messages.
+
+      :param topic_filter: Topic or wildcard filter, e.g. ``"device/+/events"``.
+
+      :Yields: :class:`MessageEnvelope` for each received message.
+
+
+
+.. py:class:: MessageEnvelope
+
+   A normalised message independent of the underlying transport.
+
+   .. attribute:: topic
+
+      The topic or routing key the message was sent to / received from.
+
+   .. attribute:: payload
+
+      Decoded JSON payload as a Python dict.
+
+   .. attribute:: timestamp
+
+      ISO 8601 UTC timestamp set at construction time.
+
+
+   .. py:attribute:: topic
+      :type:  str
+
+
+   .. py:attribute:: payload
+      :type:  dict
+
+
+   .. py:attribute:: timestamp
+      :type:  str
+
+
+.. py:class:: MQTTTransport(host: str, port: int = 1883)
+
+   Bases: :py:obj:`shared.transport.base.TransportBase`
+
+
+   Async MQTT transport backed by ``aiomqtt``.
+
+   :param host: MQTT broker hostname, e.g. ``"mosquitto"`` or ``"localhost"``.
+   :param port: MQTT broker port. Defaults to ``1883`` (plain TCP, no TLS).
+
+   .. rubric:: Example
+
+   >>> transport = MQTTTransport("localhost", 1883)
+   >>> await transport.connect()
+   >>> await transport.publish("device/abc/commands", {"command": "deploy"})
+
+
+   .. py:attribute:: host
+
+
+   .. py:attribute:: port
+      :value: 1883
+
+
+
+   .. py:method:: connect() -> None
+      :async:
+
+
+      Connect to the MQTT broker.
+
+
+
+   .. py:method:: disconnect() -> None
+      :async:
+
+
+      Disconnect from the MQTT broker and release the client.
+
+
+
+   .. py:method:: publish(topic: str, payload: dict) -> None
+      :async:
+
+
+      Publish a JSON-serialised payload to a topic.
+
+      :param topic: MQTT topic string, e.g. ``"device/abc/commands"``.
+      :param payload: Python dict serialised to JSON before publishing.
+
+      :raises RuntimeError: If :meth:`connect` has not been called.
+
+
+
+   .. py:method:: subscribe(topic_filter: str) -> AsyncIterator[shared.transport.base.MessageEnvelope]
+      :async:
+
+
+      Subscribe and yield decoded messages.
+
+      :param topic_filter: MQTT topic or wildcard, e.g. ``"device/+/events"``.
+
+      :Yields: :class:`~shared.transport.base.MessageEnvelope` for each
+               successfully decoded message. Malformed JSON is silently skipped.
+
+      :raises RuntimeError: If :meth:`connect` has not been called.
+
+
+
+.. py:function:: init_transport(t: base.TransportBase) -> None
+
+.. py:function:: get_transport() -> base.TransportBase
+

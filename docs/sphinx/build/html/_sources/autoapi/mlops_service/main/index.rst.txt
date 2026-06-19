@@ -1,0 +1,30 @@
+mlops_service.main
+==================
+
+.. py:module:: mlops_service.main
+
+.. autoapi-nested-parse::
+
+   Compilation Service entry point.
+
+   Starts an async gRPC server on port 50054 that exposes
+   :class:`~app.grpc_handlers.compilation_handler.CompilationServiceHandler`.
+   Compilation jobs run as background asyncio tasks so the RPC returns immediately.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   mlops_service.main.main
+
+
+Module Contents
+---------------
+
+.. py:function:: main()
+   :async:
+
+

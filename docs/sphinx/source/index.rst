@@ -30,7 +30,7 @@ Edge AI deployment platform for IoT devices.
    :maxdepth: 3
    :caption: API Reference
 
-   autoapi/index
+   autoapi/api_gateway_service/index
 
 .. toctree::
    :maxdepth: 2

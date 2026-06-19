@@ -1,0 +1,35 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# AURA Edge Runtime — Device Configuration
+# ─────────────────────────────────────────────────────────────────────────────
+# All values can be overridden by environment variables (see each key comment).
+# Env vars always take precedence over this file.
+
+# ── Identity ──────────────────────────────────────────────────────────────────
+device_id: IoT-Edge-Device-01           # env: AURA_DEVICE_ID
+
+# ── MQTT Broker ───────────────────────────────────────────────────────────────
+mqtt_host: localhost                 # env: AURA_MQTT_HOST
+mqtt_port: 1883                      # env: AURA_MQTT_PORT
+mqtt_reconnect_interval_s: 5        # seconds to wait before reconnecting
+
+# ── Hardware ──────────────────────────────────────────────────────────────────
+# Possible values: hailo8 | hailo8l | rpi | rpi_ai_cam | jetson_orin_nano | simulated
+# env: AURA_HARDWARE_TYPE
+hardware_type: auto
+
+# ── Loop intervals ────────────────────────────────────────────────────────────
+telemetry_interval_s: 10            # env: AURA_TELEMETRY_INTERVAL
+inference_interval_s: 0.1           # env: AURA_INFERENCE_INTERVAL
+
+# ── Filesystem ────────────────────────────────────────────────────────────────
+work_dir: /tmp/aura                  # env: AURA_WORK_DIR
+config_dir: /app/config              # directory containing this file and components_config.yaml
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+# Possible values: DEBUG | INFO | WARNING | ERROR | CRITICAL
+log_level: INFO                      # env: AURA_LOG_LEVEL
+
+# ── Location (GPS) ────────────────────────────────────────────────────────────
+# Format: [longitude, latitude]
+coordinates: [-3.628806299685091, 40.38993349011386]      # env: AURA_COORDINATES (JSON array style)
+

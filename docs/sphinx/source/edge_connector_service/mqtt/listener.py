@@ -1,0 +1,263 @@
+"""
+Unified MQTT event and telemetry listener for the Edge Connector Service.
+
+Subscribes to:
+* ``device/+/events`` to update deployment status (deploy_ack, deploy_failed).
+* ``device/+/telemetry`` to sync hardware libraries and update device state + Prometheus metrics.
+* ``device/+/inference`` to store runtime neural network predictions in MongoDB.
+"""
+import io
+import os
+import json
+import logging
+import zipfile
+import hashlib
+import asyncio
+import aiomqtt
+from pathlib import Path
+from prometheus_client import Gauge
+from sqlalchemy.ext.asyncio import async_sessionmaker
+from app.repositories.deployments import DeploymentRepository
+from app.repositories.monitoring import MonitoringRepository
+from shared.utils.minio import upload_bytes, presigned_url
+
+logger = logging.getLogger(__name__)
+
+# Prometheus gauges (labels: device_id)
+CPU_GAUGE = Gauge("aura_device_cpu_percent",    "CPU usage %",    ["device_id"])
+RAM_GAUGE = Gauge("aura_device_ram_percent",    "RAM usage %",    ["device_id"])
+RAM_MB_GAUGE = Gauge("aura_device_ram_used_mb", "RAM used MB",    ["device_id"])
+
+# Cache parameters to avoid zipping on every single telemetry tick
+_PLATFORM_HW_MTIME_CACHE = 0.0
+_LIBRARIES_DIR_HASH_CACHE = ""
+_LIBRARIES_ZIP_HASH_CACHE = ""
+_LIBRARIES_ZIP_CACHE = b""
+
+def get_platform_hardware_hash_and_zip() -> tuple[str, str, bytes]:
+    """
+    Deterministically walk the platform's hardware directory,
+    compute its directory content SHA256 hash, and package it into a ZIP file in-memory.
+    Caches the results based on maximum file modification times.
+    
+    Returns:
+        tuple[str, str, bytes]: (directory_content_hash, zip_file_hash, zip_bytes)
+    """
+    global _PLATFORM_HW_MTIME_CACHE, _LIBRARIES_DIR_HASH_CACHE, _LIBRARIES_ZIP_HASH_CACHE, _LIBRARIES_ZIP_CACHE
+    
+    hw_dir = Path("/app/hardware")
+    if not hw_dir.exists():
+        hw_dir = Path("hardware").resolve()
+
+    if not hw_dir.exists():
+        return "", "", b""
+
+    # Calculate maximum modification time of files to check cache validity
+    max_mtime = 0.0
+    for root, dirs, files in os.walk(hw_dir):
+        for file in files:
+            if "__pycache__" in root or file.endswith(".pyc") or file.endswith(".pyo"):
+                continue
+            try:
+                mtime = os.path.getmtime(os.path.join(root, file))
+                if mtime > max_mtime:
+                    max_mtime = mtime
+            except OSError:
+                pass
+
+    # Return cached hash and zip bytes if no file has been modified
+    if max_mtime == _PLATFORM_HW_MTIME_CACHE and _LIBRARIES_DIR_HASH_CACHE:
+        return _LIBRARIES_DIR_HASH_CACHE, _LIBRARIES_ZIP_HASH_CACHE, _LIBRARIES_ZIP_CACHE
+
+    logger.info("[get_platform_hardware_hash_and_zip] Changes detected or initial run. Packaging hardware folder...")
+    sha_hash = hashlib.sha256()
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        for root, dirs, files in os.walk(hw_dir):
+            dirs.sort()
+            files.sort()
+            for file in files:
+                if "__pycache__" in root or file.endswith(".pyc") or file.endswith(".pyo"):
+                    continue
+                file_path = Path(root) / file
+                rel_path = file_path.relative_to(hw_dir)
+                
+                # Write to zip archive
+                zip_file.write(file_path, rel_path)
+                
+                # Update hash digest of directory contents
+                sha_hash.update(str(rel_path).encode("utf-8"))
+                with open(file_path, "rb") as f:
+                    for chunk in iter(lambda: f.read(65536), b""):
+                        sha_hash.update(chunk)
+
+    zip_bytes = zip_buffer.getvalue()
+    dir_hash = sha_hash.hexdigest()
+    zip_hash = hashlib.sha256(zip_bytes).hexdigest()
+
+    _LIBRARIES_DIR_HASH_CACHE = dir_hash
+    _LIBRARIES_ZIP_HASH_CACHE = zip_hash
+    _LIBRARIES_ZIP_CACHE = zip_bytes
+    _PLATFORM_HW_MTIME_CACHE = max_mtime
+
+    return dir_hash, zip_hash, zip_bytes
+
+
+class EdgeConnectorMQTTListener:
+    def __init__(self, mqtt_host: str, mqtt_port: int, sf: async_sessionmaker, mongo_repo_factory):
+        self._host = mqtt_host
+        self._port = mqtt_port
+        self._sf = sf
+        self._mongo_repo_factory = mongo_repo_factory
+
+    async def start(self):
+        logger.info("EdgeConnectorMQTTListener starting")
+        while True:
+            try:
+                async with aiomqtt.Client(hostname=self._host, port=self._port) as client:
+                    await client.subscribe("device/+/events")
+                    await client.subscribe("device/+/telemetry")
+                    await client.subscribe("device/+/inference")
+                    await client.subscribe("device/+/status")
+                    async for msg in client.messages:
+                        await self._handle(msg)
+            except aiomqtt.MqttError as e:
+                logger.warning(f"MQTT error: {e} — retrying in 5s")
+                await asyncio.sleep(5)
+
+    async def _handle(self, msg):
+        try:
+            payload = json.loads(msg.payload)
+        except Exception:
+            return
+
+        topic = str(msg.topic)
+        parts = topic.split("/")
+        device_id = parts[1]
+
+        if topic.endswith("/telemetry"):
+            await self._handle_telemetry(device_id, payload)
+        elif topic.endswith("/inference"):
+            await self._handle_inference(device_id, payload)
+        elif topic.endswith("/events"):
+            await self._handle_event(payload)
+        elif topic.endswith("/status"):
+            await self._handle_status(device_id, payload)
+
+    async def _handle_telemetry(self, device_id: str, payload: dict):
+        # 1. Update the current state and append historical stats in MongoDB
+        mongo_repo = self._mongo_repo_factory()
+        await mongo_repo.upsert_device_state(device_id, {
+            "status": "online",
+            "cpu_percent": payload.get("cpu_percent", 0.0),
+            "ram_percent": payload.get("ram_percent", 0.0),
+            "ram_used_mb": payload.get("ram_used_mb", 0.0),
+            "active_model_id": payload.get("active_model_id", ""),
+            "active_script_id": payload.get("active_script_id", ""),
+            "active_deployment_id": payload.get("active_deployment_id", ""),
+            "coordinates": payload.get("coordinates", []),
+        })
+
+        # Update device status to online in PostgreSQL (via registry-service gRPC)
+        try:
+            from shared.proto_gen import device_pb2, device_pb2_grpc
+            from app.config import get_settings
+            import grpc
+            s_cfg = get_settings()
+            target_grpc = getattr(s_cfg, "device_service_grpc", s_cfg.ai_service_grpc)
+            async with grpc.aio.insecure_channel(target_grpc) as channel:
+                stub = device_pb2_grpc.DeviceServiceStub(channel)
+                await stub.UpdateDeviceStatus(
+                    device_pb2.UpdateDeviceStatusRequest(id=device_id, status="online")
+                )
+        except Exception as e:
+            logger.error(f"Failed to update device status in registry for '{device_id}': {e}")
+
+        # 2. Update Prometheus metrics
+        CPU_GAUGE.labels(device_id=device_id).set(payload.get("cpu_percent", 0.0))
+        RAM_GAUGE.labels(device_id=device_id).set(payload.get("ram_percent", 0.0))
+        RAM_MB_GAUGE.labels(device_id=device_id).set(payload.get("ram_used_mb", 0.0))
+
+        # 3. Dynamic hardware libraries sync (OTA library sync)
+        device_hash = payload.get("libraries_hash", "")
+        platform_dir_hash, platform_zip_hash, zip_bytes = get_platform_hardware_hash_and_zip()
+
+        if not platform_dir_hash:
+            return
+
+        if device_hash != platform_dir_hash:
+            logger.info(
+                f"Device '{device_id}' libraries hash mismatch. "
+                f"Device: '{device_hash}', Platform: '{platform_dir_hash}'. Triggering sync."
+            )
+            object_key = f"libraries/{platform_zip_hash}.zip"
+            try:
+                # Upload zip to MinIO
+                await upload_bytes("compiled", object_key, zip_bytes)
+                url = await presigned_url("compiled", object_key)
+
+                # Publish update_libraries command to the device
+                command = {
+                    "command": "update_libraries",
+                    "libraries_url": url,
+                    "libraries_sha256": platform_zip_hash,
+                    "directory_sha256": platform_dir_hash
+                }
+                async with aiomqtt.Client(hostname=self._host, port=self._port) as client:
+                    await client.publish(f"device/{device_id}/commands", json.dumps(command))
+                logger.info(f"Published update_libraries command to device '{device_id}' successfully")
+            except Exception as e:
+                logger.error(f"Failed to trigger libraries sync for device '{device_id}': {e}")
+
+    async def _handle_inference(self, device_id: str, payload: dict):
+        mongo_repo = self._mongo_repo_factory()
+        await mongo_repo.insert_inference_result(
+            device_id,
+            payload.get("deployment_id", ""),
+            payload.get("result_json", "{}"),
+        )
+
+    async def _handle_event(self, payload: dict):
+        event = payload.get("event")
+        dep_id = payload.get("deployment_id")
+        if not event or not dep_id:
+            return
+
+        async with self._sf() as s:
+            repo = DeploymentRepository(s)
+            dep = await repo.get(dep_id)
+            if not dep:
+                logger.warning(f"Unknown deployment_id: {dep_id}")
+                return
+            if event == "deploy_ack":
+                await repo.mark_running(dep)
+                logger.info(f"Deployment {dep_id} → running")
+            elif event == "deploy_failed":
+                await repo.mark_failed(dep, payload.get("error", "unknown"))
+                logger.warning(f"Deployment {dep_id} → failed")
+
+    async def _handle_status(self, device_id: str, payload: dict):
+        status = payload.get("status", "offline")
+        logger.info(f"Device '{device_id}' status update received: {status}")
+        
+        # 1. Update MongoDB status
+        mongo_repo = self._mongo_repo_factory()
+        await mongo_repo.upsert_device_state(device_id, {
+            "status": status
+        })
+        
+        # 2. Update PostgreSQL status
+        try:
+            from shared.proto_gen import device_pb2, device_pb2_grpc
+            from app.config import get_settings
+            import grpc
+            s_cfg = get_settings()
+            target_grpc = getattr(s_cfg, "device_service_grpc", s_cfg.ai_service_grpc)
+            async with grpc.aio.insecure_channel(target_grpc) as channel:
+                stub = device_pb2_grpc.DeviceServiceStub(channel)
+                await stub.UpdateDeviceStatus(
+                    device_pb2.UpdateDeviceStatusRequest(id=device_id, status=status)
+                )
+        except Exception as e:
+            logger.error(f"Failed to update device status in registry for '{device_id}': {e}")

@@ -1,0 +1,17 @@
+edge_runtime.aura_hw.backends
+=============================
+
+.. py:module:: edge_runtime.aura_hw.backends
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/edge_runtime/aura_hw/backends/base/index
+   /autoapi/edge_runtime/aura_hw/backends/devices/index
+   /autoapi/edge_runtime/aura_hw/backends/inference/index
+
+

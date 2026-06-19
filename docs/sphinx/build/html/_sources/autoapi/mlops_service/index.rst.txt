@@ -1,0 +1,23 @@
+mlops_service
+=============
+
+.. py:module:: mlops_service
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/mlops_service/actuators/index
+   /autoapi/mlops_service/compilers/index
+   /autoapi/mlops_service/config/index
+   /autoapi/mlops_service/grpc_handlers/index
+   /autoapi/mlops_service/main/index
+   /autoapi/mlops_service/models/index
+   /autoapi/mlops_service/repositories/index
+   /autoapi/mlops_service/sensors/index
+   /autoapi/mlops_service/worker/index
+
+

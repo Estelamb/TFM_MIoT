@@ -1,0 +1,57 @@
+mlops_service.models.orm
+========================
+
+.. py:module:: mlops_service.models.orm
+
+.. autoapi-nested-parse::
+
+   Mirror readonly de la tabla models para tracking de compilación.
+   El compilation-service no es owner de la tabla, solo lee y actualiza
+   compile_status via gRPC al ai-service.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   mlops_service.models.orm.ModelRef
+
+
+Module Contents
+---------------
+
+.. py:class:: ModelRef
+
+   Bases: :py:obj:`shared.utils.database.Base`
+
+
+   Declarative base class for all SQLAlchemy ORM models in AURA.
+
+
+   .. py:attribute:: __tablename__
+      :value: 'models'
+
+
+
+   .. py:attribute:: id
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: source_key
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: compile_status
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: hardware_type
+      :type:  sqlalchemy.orm.Mapped[str | None]
+
+
+   .. py:attribute:: created_at
+      :type:  sqlalchemy.orm.Mapped[datetime.datetime]
+
+

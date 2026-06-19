@@ -1,0 +1,90 @@
+shared.utils.minio
+==================
+
+.. py:module:: shared.utils.minio
+
+.. autoapi-nested-parse::
+
+   MinIO async client helpers for AURA services.
+
+   Wraps ``miniopy-async`` to provide initialisation, bucket bootstrapping,
+   binary upload and presigned URL generation as simple module-level calls
+   shared across all services.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   shared.utils.minio.init_minio
+   shared.utils.minio.get_minio
+   shared.utils.minio.ensure_buckets
+   shared.utils.minio.upload_bytes
+   shared.utils.minio.presigned_url
+
+
+Module Contents
+---------------
+
+.. py:function:: init_minio(endpoint: str, access_key: str, secret_key: str, secure: bool, buckets: dict[str, str]) -> None
+
+   Initialise the global MinIO client and register logical bucket names.
+
+   Must be called once during application startup before any other
+   function in this module is used.
+
+   :param endpoint: MinIO host and port, e.g. ``"minio:9000"``.
+   :param access_key: MinIO root / access key.
+   :param secret_key: MinIO root / secret key.
+   :param secure: Whether to use TLS (``False`` for local development).
+   :param buckets: Mapping from logical bucket key (used in code) to the
+                   actual bucket name, e.g.
+                   ``{"models": "models", "compiled": "compiled"}``.
+
+
+.. py:function:: get_minio()
+
+   Return the initialised MinIO client.
+
+   :raises RuntimeError: If :func:`init_minio` has not been called yet.
+
+
+.. py:function:: ensure_buckets() -> None
+   :async:
+
+
+   Create all registered buckets if they do not already exist.
+
+   Should be called once during application startup after
+   :func:`init_minio`.
+
+
+.. py:function:: upload_bytes(bucket_key: str, object_key: str, data: bytes) -> str
+   :async:
+
+
+   Upload raw bytes to MinIO and return the SHA-256 hex digest.
+
+   :param bucket_key: Logical bucket key as registered in :func:`init_minio`.
+   :param object_key: Object path inside the bucket, e.g.
+                      ``"{model_id}/source.pt"``.
+   :param data: Raw bytes to upload.
+
+   :returns: Hex-encoded SHA-256 digest of ``data``.
+
+
+.. py:function:: presigned_url(bucket_key: str, object_key: str, expiry_seconds: int = 3600) -> str
+   :async:
+
+
+   Generate a presigned GET URL for a MinIO object.
+
+   :param bucket_key: Logical bucket key.
+   :param object_key: Object path inside the bucket.
+   :param expiry_seconds: URL validity in seconds. Defaults to 3600 (1 hour).
+
+   :returns: A presigned HTTPS/HTTP URL string valid for ``expiry_seconds``.
+
+

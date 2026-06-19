@@ -1,0 +1,72 @@
+edge_connector_service.repositories.deployments
+===============================================
+
+.. py:module:: edge_connector_service.repositories.deployments
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   edge_connector_service.repositories.deployments.DeploymentRepository
+
+
+Module Contents
+---------------
+
+.. py:class:: DeploymentRepository(s: sqlalchemy.ext.asyncio.AsyncSession)
+
+   .. py:attribute:: s
+
+
+   .. py:method:: create(device_id: str, model_id: str, script_id: str, name: str | None = None) -> app.models.orm.Deployment
+      :async:
+
+
+
+   .. py:method:: get(id: str) -> app.models.orm.Deployment | None
+      :async:
+
+
+
+   .. py:method:: list_all() -> list[app.models.orm.Deployment]
+      :async:
+
+
+
+   .. py:method:: list_for_device(device_id: str) -> list[app.models.orm.Deployment]
+      :async:
+
+
+
+   .. py:method:: mark_sent(d: app.models.orm.Deployment)
+      :async:
+
+
+
+   .. py:method:: mark_running(d: app.models.orm.Deployment)
+      :async:
+
+
+
+   .. py:method:: mark_failed(d: app.models.orm.Deployment, error: str)
+      :async:
+
+
+
+   .. py:method:: get_device(id: str) -> app.models.orm.DeviceRef | None
+      :async:
+
+
+
+   .. py:method:: get_model(id: str) -> app.models.orm.ModelRef | None
+      :async:
+
+
+
+   .. py:method:: get_script(id: str) -> app.models.orm.ScriptRef | None
+      :async:
+
+
+
