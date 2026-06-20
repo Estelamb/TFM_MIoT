@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { getDevices } from "@/lib/api";
 import { MapPin, Server, Activity, AlertTriangle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface EdgeMapProps {
   states?: any[];
@@ -24,7 +25,7 @@ const createTacticalIcon = (status: string, isDark: boolean) => {
   const isOffline = status === "offline";
 
   const htmlString = `
-    <div class="relative flex items-center justify-center w-full h-full">
+    <div class="relative flex items-center justify-center w-full h-full cursor-pointer">
       ${!isOffline ? `
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div class="w-8 h-8 rounded-full border border-current absolute animate-ping opacity-30 ${colorClass}"></div>
@@ -48,6 +49,7 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
   const { theme, systemTheme } = useTheme();
   const [activeNode, setActiveNode] = useState<any | null>(null);
   const [markers, setMarkers] = useState<any[]>([]);
+  const router = useRouter();
 
   const { data: devices = [] } = useQuery({
     queryKey: ["devices"],
@@ -144,6 +146,7 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
             eventHandlers={{
               mouseover: () => setActiveNode(marker),
               mouseout: () => setActiveNode(null),
+              click: () => router.push(`/devices/${marker.id}`),
             }}
           />
         ))}

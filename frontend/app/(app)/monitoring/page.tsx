@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMonitoringStates, getDevices } from "@/lib/api";
 import { useDataMode } from "@/hooks/useDataMode";
+import Link from "next/link";
 import { EdgeMap } from "@/components/monitoring/EdgeMap";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatBar } from "@/components/ui/StatBar";
@@ -32,7 +33,14 @@ export default function MonitoringPage() {
     ? demoData.monitoring
     : {
       activeNodes: `${states.filter((s: any) => s.status === "online").length} / ${states.length || 0}`,
-      avgLatency: states.length > 0 ? "— ms" : "0 ms",
+      avgLatency: (() => {
+        const validLatencies = states
+          .filter((s: any) => s.status === "online" && typeof s.latency_ms === "number" && s.latency_ms > 0)
+          .map((s: any) => s.latency_ms);
+        if (validLatencies.length === 0) return "— ms";
+        const sum = validLatencies.reduce((acc: number, val: number) => acc + val, 0);
+        return `${Math.round(sum / validLatencies.length)} ms`;
+      })(),
       alerts: states.filter((s: any) => s.cpu_percent > 90).length,
       cpuLoad: states.length > 0
         ? Math.round(states.reduce((acc: number, s: any) => acc + s.cpu_percent, 0) / states.length)
@@ -133,14 +141,18 @@ export default function MonitoringPage() {
               <div className="space-y-3 mt-2">
                 {states.map((s: any) => (
                   <div key={s.device_id} className="border-b border-gray-100 dark:border-gray-800/50 pb-3 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
                         <StatusDot status={s.status} />
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300 truncate max-w-[120px]" title={s.device_id}>
+                        <Link 
+                          href={`/devices/${s.device_id}`}
+                          className="text-xs font-bold text-gray-700 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 hover:underline truncate transition-colors" 
+                          title={devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
+                        >
                           {devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
-                        </span>
+                        </Link>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                      <div className="flex items-center gap-1 shrink-0 text-xs text-gray-400">
                         <MemoryStick size={10} />
                         {s.ram_used_mb?.toFixed ? s.ram_used_mb.toFixed(0) : s.ram_used_mb} MB
                       </div>

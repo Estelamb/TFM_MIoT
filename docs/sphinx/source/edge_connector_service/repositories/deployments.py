@@ -6,8 +6,8 @@ from app.models.orm import Deployment, DeviceRef, ModelRef, ScriptRef
 class DeploymentRepository:
     def __init__(self, s: AsyncSession): self.s = s
 
-    async def create(self, device_id: str, model_id: str, script_id: str, name: str | None = None) -> Deployment:
-        d = Deployment(device_id=device_id, model_id=model_id, script_id=script_id, name=name)
+    async def create(self, device_id: str, model_id: str, script_id: str, name: str | None = None, status: str = "pending") -> Deployment:
+        d = Deployment(device_id=device_id, model_id=model_id, script_id=script_id, name=name, status=status)
         self.s.add(d); await self.s.commit(); await self.s.refresh(d); return d
 
     async def get(self, id: str) -> Deployment | None:
@@ -28,6 +28,16 @@ class DeploymentRepository:
         await self.s.commit()
 
     async def mark_running(self, d: Deployment):
+        from sqlalchemy import update
+        await self.s.execute(
+            update(Deployment)
+            .where(
+                Deployment.device_id == d.device_id,
+                Deployment.id != d.id,
+                Deployment.status.in_(["running", "sent", "pending", "compiling"])
+            )
+            .values(status="stopped")
+        )
         d.status = "running"; d.running_at = datetime.now(timezone.utc)
         await self.s.commit()
 

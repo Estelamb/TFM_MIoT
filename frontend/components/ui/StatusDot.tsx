@@ -1,12 +1,10 @@
 import { cn } from "@/lib/utils";
 
 const statusStyles: Record<string, string> = {
-  // Emerald for healthy/ready states
+  // Emerald for healthy/ready/running states
   online: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]",
   ready: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]",
-  
-  // Blue for active processing
-  running: "bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]",
+  running: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]",
   
   // Yellow/Pulse for in-progress states
   compiling: "bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)] animate-pulse",
@@ -14,8 +12,9 @@ const statusStyles: Record<string, string> = {
   // Sky Blue for sent/transmitting
   sent: "bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.6)]",
   
-  // Red for errors
+  // Red for errors and stopped states
   failed: "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]",
+  stopped: "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]",
   
   // Flat grays for inactive states (no glow)
   offline: "bg-gray-400 dark:bg-gray-600",

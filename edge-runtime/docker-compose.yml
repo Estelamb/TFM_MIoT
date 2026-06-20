@@ -18,20 +18,19 @@ services:
     #   # Monta la cámara de la Raspberry Pi (USB o módulo de cámara CSI)
     #   - "/dev/video0:/dev/video0"
     volumes:
-      - edge-agent-data:/tmp/aura
+      - ./data:/tmp/aura
       # Configuración local desde el host (solo lectura)
       - ./config:/app/config:ro
       # Librerías de hardware — persistente entre reinicios.
       # Se llena vía OTA (update_libraries) al conectarse a la plataforma.
       - edge-agent-hardware:/app/hardware
-    # networks: # Only needed if the edge runtime is running on the same host as the platform
-    #   - aura-net
+    networks: # Only needed if the edge runtime is running on the same host as the platform
+      - aura-net
 
 volumes:
-  edge-agent-data:
   edge-agent-hardware:
 
-# networks: # Only needed if the edge runtime is running on the same host as the platform
-#   aura-net:
-#     name: aura_aura-net
-#     external: true
+networks: # Only needed if the edge runtime is running on the same host as the platform
+  aura-net:
+    name: aura_aura-net
+    external: true

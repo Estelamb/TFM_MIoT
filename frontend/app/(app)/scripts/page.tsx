@@ -34,7 +34,7 @@ Demonstrates importing the generic camera library and inference runtime.
 """
 from __future__ import annotations
 import numpy as np
-from aura_hw import execute_inference
+from aura_hw import execute_inference, get_model_classes
 from hardware.sensors.camera.library import take_photo
 
 # Example template library imports:
@@ -62,6 +62,11 @@ def post_inference(raw_output) -> list[dict]:
     outputs = list(raw_output.values())[0] if isinstance(raw_output, dict) else raw_output
     if outputs is None or len(outputs) == 0:
         return detections
+    
+    classes = get_model_classes()
+    if not classes:
+        classes = CLASSES
+
     for box in outputs[0].T:
         scores = box[4:]
         class_id = int(np.argmax(scores))
@@ -70,7 +75,7 @@ def post_inference(raw_output) -> list[dict]:
             continue
         cx, cy, w, h = box[:4]
         detections.append({
-            "class": CLASSES[class_id] if class_id < len(CLASSES) else str(class_id),
+            "class": classes[class_id] if class_id < len(classes) else str(class_id),
             "confidence": round(confidence, 3),
             "bbox": [float(cx), float(cy), float(w), float(h)],
         })

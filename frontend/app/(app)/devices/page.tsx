@@ -10,6 +10,7 @@ import { Input, Select } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { HW_LABELS } from "@/lib/utils";
+import Link from "next/link";
 import {
   Cpu, Plus, Trash2, Zap, Radio, Layers, Server, Check, Info, ChevronDown, ChevronRight,
   Camera, Thermometer, Ruler, Compass, Power, Disc, Volume2, Lightbulb, Edit2, Activity, Play
@@ -275,22 +276,24 @@ export default function DevicesPage() {
             <div className="grid gap-4">
               {devices.map((d: any) => (
                 <Card key={d.id} className="p-5 flex items-center justify-between hover:border-blue-500 transition-all">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-blue-50 dark:bg-gray-800 rounded-xl">
+                  <Link href={`/devices/${d.id}`} className="flex items-center gap-4 flex-1 group">
+                    <div className="p-3 bg-blue-50 dark:bg-gray-800 rounded-xl group-hover:scale-105 transition-all">
                       <Cpu size={22} className="text-blue-500" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900 dark:text-white text-lg">{d.name}</h3>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-lg group-hover:text-blue-500 transition-colors">{d.name}</h3>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="default">{HW_LABELS[d.hardware_type] || d.hardware_type}</Badge>
                         <span className="text-xs text-gray-400 font-mono">{d.id}</span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                   <div className="flex items-center gap-3">
-                    <Button variant="ghost" size="sm" onClick={() => setSelectedDevice(d)}>
-                      Specs & Stack
-                    </Button>
+                    <Link href={`/devices/${d.id}`}>
+                      <Button variant="ghost" size="sm">
+                        Specs & Stack
+                      </Button>
+                    </Link>
                     <button
                       onClick={() => removeDevice.mutate(d.id)}
                       className="p-2 text-gray-400 hover:text-red-500 transition-colors"

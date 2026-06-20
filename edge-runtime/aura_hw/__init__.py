@@ -4,6 +4,7 @@ from aura_hw.runtime import (
     get_last_inference,
     load_model,
     unload_model,
+    get_model_classes,
 )
 from aura_hw.device_manager import DeviceManager
 
@@ -13,5 +14,6 @@ __all__ = [
     "get_last_inference",
     "load_model",
     "unload_model",
+    "get_model_classes",
     "DeviceManager",
 ]

@@ -192,6 +192,7 @@ export const useDataMode = create<DataStore>((set) => ({
         cpu_percent: 45,
         ram_percent: 60,
         ram_used_mb: 2048,
+        latency_ms: 14,
         last_seen_at: new Date().toISOString(),
         coordinates: [-3.7038, 40.4168] // Madrid
       },
@@ -201,6 +202,7 @@ export const useDataMode = create<DataStore>((set) => ({
         cpu_percent: 82,
         ram_percent: 85,
         ram_used_mb: 4096,
+        latency_ms: 22,
         last_seen_at: new Date().toISOString(),
         coordinates: [-74.0060, 40.7128] // New York
       }

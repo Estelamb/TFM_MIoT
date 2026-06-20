@@ -18,6 +18,7 @@ class RPiCPUBackend:
         self._input_shape = None
         self._output_names = []
         self._num_classes = None
+        self._class_names = []
 
     def load(self, model_path: str) -> None:
         if not os.path.exists(model_path):
@@ -44,8 +45,9 @@ class RPiCPUBackend:
             if "names" in meta:
                 import ast
                 names_dict = ast.literal_eval(meta["names"])
+                self._class_names = [names_dict[i] for i in sorted(names_dict.keys())]
                 self._num_classes = len(names_dict)
-                logger.info(f"Detected {self._num_classes} classes from ONNX metadata.")
+                logger.info(f"Detected {self._num_classes} classes from ONNX metadata: {self._class_names}")
         except Exception as e:
             logger.warning(f"Could not parse class names from metadata: {e}")
 
@@ -92,25 +94,37 @@ class RPiCPUBackend:
         ort_outputs = self._session.run(None, {self._input_name: inputs})
 
         # Reconstruct outputs to fit format expected by post-inference user scripts if model contains embedded NMS
-        if len(self._output_names) > 1:
+        is_nms_output = False
+        if len(self._output_names) == 1:
+            out_val = ort_outputs[0]
+            if len(out_val.shape) == 3 and out_val.shape[2] == 6:
+                is_nms_output = True
+
+        if len(self._output_names) > 1 or is_nms_output:
             try:
                 bboxes = None
                 scores = None
                 classes = None
                 
-                # Locate bboxes, scores, and classes outputs
-                for i, name in enumerate(self._output_names):
-                    out_val = ort_outputs[i]
-                    shape = out_val.shape
-                    if len(shape) == 3 and shape[2] == 4:
-                        bboxes = out_val
-                    elif len(shape) == 2:
-                        if scores is None:
+                if is_nms_output:
+                    # Single output contains [x1, y1, x2, y2, confidence, class_id]
+                    bboxes = ort_outputs[0][..., :4]
+                    scores = ort_outputs[0][..., 4]
+                    classes = ort_outputs[0][..., 5]
+                else:
+                    # Locate bboxes, scores, and classes outputs
+                    for i, name in enumerate(self._output_names):
+                        out_val = ort_outputs[i]
+                        shape = out_val.shape
+                        if len(shape) == 3 and shape[2] == 4:
+                            bboxes = out_val
+                        elif len(shape) == 2:
+                            if scores is None:
+                                scores = out_val
+                            else:
+                                classes = out_val
+                        elif len(shape) == 3 and shape[2] != 4:
                             scores = out_val
-                        else:
-                            classes = out_val
-                    elif len(shape) == 3 and shape[2] != 4:
-                        scores = out_val
                 
                 if bboxes is not None and scores is not None:
                     if classes is None:
@@ -167,5 +181,6 @@ class RPiCPUBackend:
             "hardware_type": "rpi",
             "accelerator": "RPi CPU (ONNX)",
             "sdk": "onnxruntime",
-            "sdk_version": getattr(ort, "__version__", "unknown")
+            "sdk_version": getattr(ort, "__version__", "unknown"),
+            "class_names": getattr(self, "_class_names", [])
         }

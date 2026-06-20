@@ -13,6 +13,7 @@ def _state_to_proto(s: dict) -> monitoring_pb2.DeviceStateResponse:
         ram_percent=float(s.get("ram_percent", 0.0)),
         ram_used_mb=float(s.get("ram_used_mb", 0.0)),
         last_seen_at=s.get("last_seen_at", ""),
+        latency_ms=float(s.get("latency_ms", 0.0)),
     )
     if "coordinates" in s and s["coordinates"]:
         res.coordinates.extend(s["coordinates"])

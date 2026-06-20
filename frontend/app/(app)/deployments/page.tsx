@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDeployments, getDevices, getModels, getScripts, createDeployment, deleteDeployment } from "@/lib/api";
+import { getDeployments, getDevices, getModels, getScripts, createDeployment, deleteDeployment, getMonitoringStates } from "@/lib/api";
+import Link from "next/link";
 import { useDataMode } from "@/hooks/useDataMode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -11,13 +12,15 @@ import { StatusDot } from "@/components/ui/StatusDot";
 import { Modal } from "@/components/ui/Modal";
 import { HW_LABELS, fmtRelative } from "@/lib/utils";
 import { Rocket, Plus, Check, AlertTriangle, Trash2, Edit } from "lucide-react";
+import { DeploymentMap } from "@/components/monitoring/DeploymentMap";
 
-const STATUS_BADGE: Record<string, "accent" | "success" | "danger" | "muted" | "info"> = {
-  running: "accent", sent: "info", pending: "muted", failed: "danger",
-};
-
-const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-  running: "default", sent: "outline", pending: "secondary", failed: "destructive",
+const STATUS_VARIANT: Record<string, any> = {
+  running: "success",
+  sent: "info",
+  pending: "secondary",
+  compiling: "warning",
+  failed: "destructive",
+  stopped: "destructive",
 };
 
 export default function DeploymentsPage() {
@@ -29,11 +32,13 @@ export default function DeploymentsPage() {
   const { data: realDevices = [] } = useQuery({ queryKey: ["devices"], queryFn: getDevices });
   const { data: realModels = [] } = useQuery({ queryKey: ["models"], queryFn: getModels });
   const { data: realScripts = [] } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
+  const { data: realStates = [] } = useQuery({ queryKey: ["monitoring"], queryFn: getMonitoringStates, refetchInterval: 5000 });
 
   const deployments = isDemo ? demoData.deployments : realDeployments;
   const devices = isDemo ? demoData.devices : realDevices;
   const models = isDemo ? demoData.models : realModels;
   const scripts = isDemo ? demoData.scripts : realScripts;
+  const states = isDemo ? demoData.monitoringStates : realStates;
 
   const [open, setOpen] = useState(false);
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
@@ -109,82 +114,98 @@ export default function DeploymentsPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4">
-        {isLoading && !isDemo ? (
-          <div className="text-center py-10 text-gray-500">Loading deployments...</div>
-        ) : deployments.length === 0 ? (
-          <Card className="border-dashed border-2 bg-transparent shadow-none opacity-60">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-start gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Column: Map */}
+        <div className="lg:col-span-7 flex flex-col relative w-full">
+          <DeploymentMap
+            states={states}
+            deployments={deployments}
+            devices={devices}
+            models={models}
+            scripts={scripts}
+            isDemo={isDemo}
+          />
+        </div>
+
+        {/* Right Column: Deployments list */}
+        <div className="lg:col-span-5 space-y-4 max-h-[500px] overflow-y-auto pr-1">
+          {isLoading && !isDemo ? (
+            <div className="text-center py-10 text-gray-500">Loading deployments...</div>
+          ) : deployments.length === 0 ? (
+            <Card className="border-dashed border-2 bg-transparent shadow-none opacity-60">
+              <div className="flex flex-col items-center justify-center p-6 text-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700">
                   <Rocket size={20} className="text-gray-400" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center justify-center gap-2 mb-1">
                     <span className="text-base font-bold text-gray-500 dark:text-gray-400">Empty Deployment Slot</span>
                     <Badge variant="muted">N/A</Badge>
                   </div>
                   <p className="text-xs text-gray-400">No active deployments</p>
                 </div>
-              </div>
-              <Button variant="outline" size="sm" className="gap-2" onClick={() => setOpen(true)}>
-                <Plus size={14} /> Create First Deployment
-              </Button>
-            </div>
-          </Card>
-        ) : (
-          deployments.map((d: any) => (
-            <Card key={d.id} className={`hover:border-blue-400 transition-all ${d.status === "failed" ? "border-red-300 dark:border-red-900/50" : ""}`}>
-              <div className="flex items-center justify-between p-1">
-                <div className="flex items-center gap-4">
-                  <StatusDot status={d.status} />
-                  <div>
-                    <p className="font-bold text-gray-900 dark:text-white">
-                      {d.name || `Deployment ${d.id.slice(0, 8)}`}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      <span className="font-semibold text-blue-600 dark:text-blue-400">{getDeviceName(d.device_id)}</span>
-                      {" · "}
-                      <span className="font-mono text-gray-400">{d.id.slice(0, 8)}…</span>
-                      {" · "}
-                      <span>{getModelName(d.model_id)}</span>
-                      {" · "}
-                      <span>{getScriptName(d.script_id)}</span>
-                    </p>
-                    {d.error_msg && (
-                      <div className="flex items-start gap-1.5 mt-2 p-2 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-lg max-w-xl" title={d.error_msg}>
-                        <AlertTriangle size={13} className="text-red-500 shrink-0 mt-0.5" />
-                        <p className="text-xs text-red-600 dark:text-red-400 font-mono break-all line-clamp-2">{d.error_msg}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col items-end gap-1">
-                    <Badge variant={STATUS_VARIANT[d.status] || "default"}>{d.status}</Badge>
-                    <span className="text-[10px] text-gray-400">{fmtRelative(d.created_at)}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => handleEdit(d)}
-                      className="p-2 text-gray-400 hover:text-blue-500 transition-colors"
-                      title="Modify / Edit Deployment"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      onClick={() => cancelDeploymentMutation.mutate(d.id)}
-                      className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                      title="Delete Deployment"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
+                <Button variant="outline" size="sm" className="gap-2 w-full" onClick={() => setOpen(true)}>
+                  <Plus size={14} /> Create First Deployment
+                </Button>
               </div>
             </Card>
-          ))
-        )}
+          ) : (
+            deployments.map((d: any) => (
+              <Card key={d.id} className={`hover:border-blue-400 transition-all ${d.status === "failed" ? "border-red-300 dark:border-red-900/50" : ""}`}>
+                <div className="flex items-center justify-between p-1">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <StatusDot status={d.status} />
+                    <div className="min-w-0">
+                      <p className="font-bold text-gray-900 dark:text-white truncate">
+                        {d.name || `Deployment ${d.id.slice(0, 8)}`}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5 truncate">
+                        <Link href={`/devices/${d.device_id}`} className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-350 hover:underline transition-colors">
+                          {getDeviceName(d.device_id)}
+                        </Link>
+                        {" · "}
+                        <span className="font-mono text-gray-400">{d.id.slice(0, 8)}</span>
+                      </p>
+                      <p className="text-[10px] text-gray-400 mt-0.5 truncate">
+                        <span>{getModelName(d.model_id)}</span>
+                        {" · "}
+                        <span>{getScriptName(d.script_id)}</span>
+                      </p>
+                      {d.error_msg && (
+                        <div className="flex items-start gap-1.5 mt-2 p-2 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-lg max-w-full" title={d.error_msg}>
+                          <AlertTriangle size={13} className="text-red-500 shrink-0 mt-0.5" />
+                          <p className="text-[10px] text-red-600 dark:text-red-400 font-mono break-all line-clamp-2">{d.error_msg}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge variant={STATUS_VARIANT[d.status] || "default"}>{d.status}</Badge>
+                      <span className="text-[9px] text-gray-400">{fmtRelative(d.created_at)}</span>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={() => handleEdit(d)}
+                        className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"
+                        title="Modify / Edit Deployment"
+                      >
+                        <Edit size={14} />
+                      </button>
+                      <button
+                        onClick={() => cancelDeploymentMutation.mutate(d.id)}
+                        className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                        title="Delete Deployment"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
 
       <Modal open={open} onClose={() => { setOpen(false); setDeployErr(""); setName(""); }} title="New Deployment" size="lg">

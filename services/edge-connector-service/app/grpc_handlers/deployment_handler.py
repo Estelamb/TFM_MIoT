@@ -92,8 +92,8 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                     )
                     return
 
-                # Create the deployment in pending state
-                dep = await repo.create(req.device_id, req.model_id, req.script_id, name=req.name)
+                # Create the deployment in compiling state
+                dep = await repo.create(req.device_id, req.model_id, req.script_id, name=req.name, status="compiling")
 
                 # Spawn background task to trigger compilation and wait
                 pool = await self._get_pool()

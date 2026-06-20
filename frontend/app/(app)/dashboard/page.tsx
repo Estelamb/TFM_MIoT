@@ -10,6 +10,15 @@ import { fmtRelative } from "@/lib/utils";
 import { Cpu, Brain, Code2, Rocket, Activity, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 
+const STATUS_VARIANT: Record<string, any> = {
+  running: "success",
+  sent: "info",
+  pending: "secondary",
+  compiling: "warning",
+  failed: "destructive",
+  stopped: "destructive",
+};
+
 function StatCard({
   label, value, icon: Icon, href, iconColor,
 }: { label: string; value: number; icon: React.ElementType; href: string; iconColor: string }) {
@@ -143,7 +152,7 @@ export default function DashboardPage() {
                     <span className="text-sm font-mono text-gray-600 dark:text-gray-300">{d.id.slice(0, 8)}...</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={d.status === "running" ? "accent" : d.status === "failed" ? "danger" : "muted"}>
+                    <Badge variant={STATUS_VARIANT[d.status] || "default"}>
                       {d.status}
                     </Badge>
                     <span className="text-xs text-gray-400 font-mono">{fmtRelative(d.created_at)}</span>

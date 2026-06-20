@@ -73,6 +73,15 @@ export const getDevices = async (): Promise<Device[]> => {
   return api.get<Device[]>("/api/devices").then(r => r.data);
 };
 
+export const getDevice = async (id: string): Promise<Device> => {
+  if (useDataMode.getState().mode === "demo") {
+    const dev = useDataMode.getState().demoData.devices.find((d: any) => d.id === id);
+    if (!dev) throw new Error("Device not found");
+    return dev;
+  }
+  return api.get<Device>(`/api/devices/${id}`).then(r => r.data);
+};
+
 export const createDevice = (body: {
   name: string;
   hardware_type: string;
@@ -417,7 +426,7 @@ export const getLibraries = async (): Promise<LibraryGroup[]> => {
 };
 
 // ── Deployments ───────────────────────────────────────────────────────────────
-export type DeployStatus = "pending" | "sent" | "running" | "failed";
+export type DeployStatus = "pending" | "compiling" | "sent" | "running" | "failed" | "stopped";
 
 export interface Deployment {
   id: string; device_id: string; model_id: string; script_id: string;
@@ -447,7 +456,7 @@ export const deleteDeployment = (id: string) => api.delete(`/api/deployments/${i
 // ── Monitoring ────────────────────────────────────────────────────────────────
 export interface DeviceState {
   device_id: string; status: string; cpu_percent: number; ram_percent: number;
-  ram_used_mb: number; active_model_id: string; active_script_id: string;
+  ram_used_mb: number; latency_ms: number; active_model_id: string; active_script_id: string;
   active_deployment_id: string; last_seen_at: string; coordinates?: [number, number];
 }
 
@@ -460,8 +469,14 @@ export const getMonitoringStates = async (): Promise<DeviceState[]> => {
   return api.get<DeviceState[]>("/api/monitoring/devices").then(r => r.data);
 };
 
-export const getDeviceState = (id: string) =>
-  api.get<DeviceState>(`/api/monitoring/devices/${id}`).then(r => r.data);
+export const getDeviceState = async (id: string): Promise<DeviceState> => {
+  if (useDataMode.getState().mode === "demo") {
+    const state = useDataMode.getState().demoData.monitoringStates.find((s: any) => s.device_id === id);
+    if (!state) throw new Error("Device state not found");
+    return state;
+  }
+  return api.get<DeviceState>(`/api/monitoring/devices/${id}`).then(r => r.data);
+};
 
 export const getInferenceResults = async (device_id: string, limit = 20): Promise<InferenceResult[]> => {
   if (useDataMode.getState().mode === "demo") {

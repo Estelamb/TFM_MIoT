@@ -163,3 +163,10 @@ def get_last_inference() -> Any:
         run yet in this session.
     """
     return _last_inference
+
+
+def get_model_classes() -> list[str]:
+    """Return the list of class names loaded from the current model's metadata."""
+    if _backend:
+        return _backend.device_info().get("class_names", [])
+    return []

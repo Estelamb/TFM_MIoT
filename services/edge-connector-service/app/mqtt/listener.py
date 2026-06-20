@@ -153,6 +153,7 @@ class EdgeConnectorMQTTListener:
             "cpu_percent": payload.get("cpu_percent", 0.0),
             "ram_percent": payload.get("ram_percent", 0.0),
             "ram_used_mb": payload.get("ram_used_mb", 0.0),
+            "latency_ms": payload.get("latency_ms", 0.0),
             "active_model_id": payload.get("active_model_id", ""),
             "active_script_id": payload.get("active_script_id", ""),
             "active_deployment_id": payload.get("active_deployment_id", ""),
@@ -212,10 +213,16 @@ class EdgeConnectorMQTTListener:
 
     async def _handle_inference(self, device_id: str, payload: dict):
         mongo_repo = self._mongo_repo_factory()
+        result_val = payload.get("result")
+        if result_val is not None:
+            result_json = json.dumps(result_val)
+        else:
+            result_json = payload.get("result_json", "{}")
+
         await mongo_repo.insert_inference_result(
             device_id,
             payload.get("deployment_id", ""),
-            payload.get("result_json", "{}"),
+            result_json,
         )
 
     async def _handle_event(self, payload: dict):
