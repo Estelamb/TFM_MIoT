@@ -167,7 +167,7 @@ export default function DeploymentMapInternal({
             eventHandlers={{
               mouseover: () => setActiveNode(marker),
               mouseout: () => setActiveNode(null),
-              click: () => router.push(`/devices/${marker.id}`),
+              click: () => router.push(`/devices/${marker.id}?from=deployments`),
             }}
           />
         ))}

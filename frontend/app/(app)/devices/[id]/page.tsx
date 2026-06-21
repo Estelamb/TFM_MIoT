@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getDevice,
@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/Badge";
 import { StatBar } from "@/components/ui/StatBar";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { HW_LABELS, fmtRelative } from "@/lib/utils";
+import { DeviceMiniMap } from "@/components/monitoring/DeviceMiniMap";
 import {
   ArrowLeft, Cpu, Layers, Radio, Zap, Server, Activity, Edit2, Check,
   Play, Info, Camera, Thermometer, Ruler, Compass, Power, Disc,
@@ -46,6 +47,20 @@ const getPeripheralIcon = (name: string, defaultIcon: any) => {
 export default function DeviceDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+
+  let backLabel = "Back to Devices";
+  let backUrl = "/devices";
+
+  if (from === "monitoring") {
+    backLabel = "Back to Monitoring";
+    backUrl = "/monitoring";
+  } else if (from === "deployments") {
+    backLabel = "Back to Deployments";
+    backUrl = "/deployments";
+  }
+
   const qc = useQueryClient();
   const { mode } = useDataMode();
   const isDemo = mode === "demo";
@@ -163,11 +178,11 @@ export default function DeviceDetailPage() {
       {/* Header with Navigation */}
       <div className="flex flex-col gap-4">
         <button
-          onClick={() => router.push("/devices")}
+          onClick={() => router.push(backUrl)}
           className="flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors w-fit group"
         >
           <ArrowLeft size={16} className="transform group-hover:-translate-x-1 transition-transform" />
-          Back to Devices
+          {backLabel}
         </button>
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-6">
@@ -245,7 +260,7 @@ export default function DeviceDetailPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Layers size={18} className="text-blue-500" />
-                  Hardware Specs & Stack
+                  See more
                 </CardTitle>
               </CardHeader>
               
@@ -457,6 +472,19 @@ export default function DeviceDetailPage() {
                   </div>
                 </div>
               )}
+            </div>
+          </Card>
+
+          {/* Geospatial Deployment Map */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2">
+                <Compass size={18} className="text-blue-500" />
+                Geospatial Location
+              </CardTitle>
+            </CardHeader>
+            <div className="mt-2">
+              <DeviceMiniMap coordinates={deviceState?.coordinates} status={status} />
             </div>
           </Card>
         </div>

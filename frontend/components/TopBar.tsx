@@ -29,7 +29,7 @@ export function TopBar() {
   return (
     <header className={cn(
       "sticky top-0 z-40 flex h-16 w-full items-center justify-between",
-      "bg-white/60 dark:bg-gray-950/40 backdrop-blur-xl", // Frosted glass effect
+      "bg-slate-100/60 dark:bg-gray-950/40 backdrop-blur-xl", // Frosted glass effect
       "border-b border-slate-200/60 dark:border-gray-800/50", // Soft matte border
       "px-4 md:px-8 transition-all duration-300"
     )}>

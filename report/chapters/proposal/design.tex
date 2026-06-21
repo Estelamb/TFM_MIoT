@@ -1,0 +1,39 @@
+The system is organised into two clearly differentiated, yet highly integrated, environments: the Central Platform  and the Edge (\gls{IoT} Edge Devices). These components are physically separated and communicate securely to synchronise operations. The architecture aims to be highly modular, hardware-agnostic, and capable of managing the entire lifecycle of an \gls{AI} model.
+
+The Central Platform acts as the system's core, accessed by the user via a comprehensive User Interface. It encompasses three main functional blocks: Device Management (handling device information, hardware architectures, and sensor registries), Data Storage (accommodating various databases), and \gls{AI} Management. 
+
+The \gls{AI} Management module oversees the complete \gls{ML} pipeline, divided into \gls{AI} Data Management (models and datasets), Training and Retraining orchestration, and \gls{AI} Deployment (managing data adaptation, model compilation, and the final deployment to the edge).
+
+The \gls{IoT} Edge Device operates in the field. It is governed by a Runtime Engine (\gls{PAL}), which features an Orchestrator to coordinate local processes, an Inference module to run the models, and a Metrics collector. 
+
+The edge device architecture also includes dedicated components for Connectivity and Resource Management, alongside abstraction layers for the specific Hardware Architecture and a Sensor/Actuator/Others Registry. This design allows the device to interface seamlessly with physical external elements, such as Sensors, Actuators, and auxiliary Nodes.
+
+This master's thesis specifically focuses on the development of this cloud-to-edge \gls{MLOps} framework. The system captures frames via the connected sensors, processes distinct seating regions independently at the edge via the Inference module, and transmits aggregated telemetry back to the platform, enabling reliable, hardware-agnostic \gls{AI} deployments.
+
+\autoref{fig:general_architecture} illustrates the overall architecture of the project:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/General_Architecture.png}
+    \caption{General Architecture of the \acrshort{AURA} System}
+    \label{fig:general_architecture}
+\end{figure}
+
+\clearpage
+
+\subsection{System Design}\label{sec:proposal:system_design}
+
+\input{chapters/proposal/system_design}
+
+\clearpage
+
+\subsection{Information Model}
+
+\input{chapters/proposal/information_model}
+
+\clearpage
+
+
+\subsection{System Workflows}\label{sec:workflows}
+
+\input{chapters/proposal/workflows}

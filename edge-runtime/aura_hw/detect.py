@@ -50,7 +50,39 @@ def detect_hardware() -> str:
     if override:
         return override.lower()
 
-    # Hailo PCIe accelerator
+    # Probe Host Hardware Daemon for hardware_type
+    try:
+        import socket
+        import urllib.request
+        import json
+        
+        gw_ip = "172.18.0.1"
+        try:
+            with open("/proc/net/route") as f:
+                for line in f:
+                    fields = line.strip().split()
+                    if len(fields) >= 3 and fields[1] == '00000000':
+                        hex_gw = fields[2]
+                        gw_ip = socket.inet_ntoa(bytes.fromhex(hex_gw)[::-1])
+                        break
+        except Exception:
+            pass
+            
+        mqtt_host = os.environ.get("AURA_MQTT_HOST")
+        if mqtt_host and mqtt_host not in ("mosquitto", "aura-mosquitto", "localhost", "127.0.0.1"):
+            gw_ip = mqtt_host
+            
+        daemon_url = f"http://{gw_ip}:8008"
+        with urllib.request.urlopen(f"{daemon_url}/status", timeout=2.0) as resp:
+            if resp.status == 200:
+                status_data = json.loads(resp.read().decode("utf-8"))
+                detected_hw = status_data.get("hardware_type")
+                if detected_hw:
+                    return detected_hw
+    except Exception:
+        pass
+
+    # Hailo PCIe accelerator (local fallback if running on host/standalone)
     try:
         result = subprocess.run(
             ["hailortcli", "fw-control", "identify"],

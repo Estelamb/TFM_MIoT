@@ -72,7 +72,8 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
         status: s.status,
         coordinates: [s.coordinates[1], s.coordinates[0]], 
         cpu: s.cpu_percent,
-        ram: s.ram_percent
+        ram: s.ram_percent,
+        latency: s.latency_ms
       }));
       setMarkers(demoMarkers);
     } else {
@@ -86,7 +87,8 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
             status: s.status,
             coordinates: [s.coordinates[1], s.coordinates[0]], 
             cpu: s.cpu_percent,
-            ram: s.ram_percent
+            ram: s.ram_percent,
+            latency: s.latency_ms
           };
         });
       setMarkers(realMarkers);
@@ -146,7 +148,7 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
             eventHandlers={{
               mouseover: () => setActiveNode(marker),
               mouseout: () => setActiveNode(null),
-              click: () => router.push(`/devices/${marker.id}`),
+              click: () => router.push(`/devices/${marker.id}?from=monitoring`),
             }}
           />
         ))}
@@ -184,6 +186,14 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
                 <div className="h-full bg-emerald-500" style={{ width: `${activeNode.ram}%` }} />
               </div>
             </div>
+            {typeof activeNode.latency === "number" && activeNode.latency >= 0 && (
+              <div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-500 dark:text-slate-400">Latency</span>
+                  <span className="text-gray-950 dark:text-white font-bold font-mono">{Math.round(activeNode.latency)} ms</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

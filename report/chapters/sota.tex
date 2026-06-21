@@ -1,0 +1,80 @@
+\chapter{State of the Art}\label{ch:sota}
+
+This chapter reviews the theoretical foundation, key architectural concepts, and technological frameworks that underpin this Master's Thesis. It begins by examining the paradigm of Edge \gls{MLOps}. Following this, it defines the role of the \gls{HAL} in embedded AI environments. Finally, it surveys the current landscape of candidate edge hardware platforms and the specific tools used for model compilation and execution.
+
+\section{Edge \acrshort{MLOps}}\label{sec:sota:mlops}
+
+\todo{sota}
+
+\section{Hardware Abstraction Layer (\acrshort{HAL})}\label{sec:sota:hal}
+
+In embedded systems, a \gls{HAL} serves as a software layer that decouples application-level logic from target-specific physical registers and drivers. In the context of embedded \gls{AI}, a \gls{HAL} is essential due to the extreme hardware heterogeneity characterizing edge devices, which utilize diverse processing cores like \glspl{CPU}, \glspl{GPU}, and specialized \glspl{NPU} or accelerators.
+
+Without a unified interface, software developers would need to write, compile, and maintain device-specific codebases for every unique target. Inference \glspl{HAL} address this by exposing standardized function calls (e.g., loading models, preprocessing frames, and running forward passes) while delegating execution to hardware-specific backends under the hood. 
+
+This abstraction relies on specialized compilation and runtime environments designed by hardware vendors. Examples include the Hailo \gls{AI} Software Suite and HailoRT runtime, which translate models into Dataflow Compiler instructions for Hailo-8 accelerators or the Sony Model Compression Toolkit (MCT) for the IMX500 vision sensor. By defining a consistent boundary layer, a unified framework can compile a generic model into hardware-native formats and run it dynamically on any target device without modifying the core orchestrator.
+
+
+\section{Hardware Devices for Embedded \texorpdfstring{\acrshort{AI}}{AI}}\label{sec:sota:boards}
+
+The deployment of \gls{AI} models on the edge requires a careful balance between computational throughput, architectural paradigms, power efficiency, and hardware availability. As a foundational starting point for this research, a preliminary evaluation of edge computing platforms was conducted during the author's previous Electronics Bachelor's Thesis \cite{morabarbaDeviceGeneratingPrescription2025}, establishing the initial technical requirements for embedded \gls{AI} at the edge.
+
+To validate the deployment automation and runtime abstraction capabilities of the framework proposed in this Master's Thesis, this analysis was expanded and updated to account for current market availability, \gls{SDK} maturity, and architectural diversity. The complete technical evaluation is detailed in \autoref{ap:hardware_comparison}.
+
+Although high-end automotive and industrial \gls{SoC} (such as the NXP i.MX 95 \cite{IMX95} and the NXP S32N74 \cite{S32N7SuperIntegrationProcessor}) offer robust heterogeneous processing with real-time functional safety domains, their current pre-production status and limited commercial availability present significant risks for immediate prototype deployment. 
+
+In contrast, solutions targeting ultra-low-power, "always-on" edge sensing (such as the NXP i.MX 93 \cite{IMX93}), fall short of the high-throughput processing demands required by the complex vision pipelines built into this work.
+
+Consequently, to rigorously test the framework's cross-platform portability against drastically different hardware backends, a heterogeneous subset of highly mature, commercially available platforms was selected as the final deployment targets:
+
+\begin{itemize}
+    \item \textbf{Raspberry Pi 5 \cite{ltdBuyRaspberryPib}  + Hailo-8 \cite{AIAcceleratorHailo8} / Hailo-8L \cite{Hailo8LEntryLevelAIa} \gls{AI} HAT+ \cite{AIHATsRaspberry}}: Selected to evaluate modular \gls{AI} acceleration via \gls{PCIe} expansion. Combining the Raspberry Pi 5's Broadcom BCM2712 CPU with the high-efficiency Hailo-8 / Hailo-8L coprocessor provides a scalable mid-range performance tier (13 to 26 \gls{TOPS}).
+    
+    \item \textbf{Raspberry Pi 5 \cite{ltdBuyRaspberryPib} + \gls{RPi} \gls{AI} Camera \cite{AICameraRaspberry}}: Selected to explore integrated, sensor-level edge intelligence. Using the Sony IMX500 Intelligent Vision Sensor, this configuration offloads neural network inference directly onto camera hardware. This allows the capability of the framework to operate under tight host \gls{CPU} constraints to be thoroughly assessed, minimising data transfer overhead.
+    
+    \item \textbf{NVIDIA Jetson Orin Nano \cite{NVIDIAJetsonAGX}}: Selected as a high-performance baseline. It uses a 1024-core NVIDIA Ampere \gls{GPU} and a unified memory architecture, delivering up to 40 \gls{TOPS} of \gls{AI} throughput.
+\end{itemize}
+
+By deploying the unified framework across these specific backends, the runtime abstraction layer can be verified against a \gls{GPU}-bound architecture (NVIDIA Jetson Orin Nano), a dedicated \gls{PCIe}-attached \gls{AI} accelerator (Hailo-8 and Hailo-8L), and an edge-intelligent vision sensor (\gls{AI} Camera), ensuring true hardware-agnostic deployment automation.
+
+\section{Technological Landscape}\label{sec:sota:technologies}
+
+Modern software architectures, particularly those involving \gls{IoT} and \gls{ML}, rely on specialized tools to achieve efficiency and scalability. \autoref{tab:tech_landscape} summarizes the core technologies selected for the proposal.
+
+\begin{table}[H]
+    \centering
+    \caption{Detailed Summary of the Core Technological Landscape}
+    \label{tab:tech_landscape}
+    \renewcommand{\arraystretch}{1.1}
+    \footnotesize
+    \rotatebox{90}{
+    \begin{tabular}{p{0.2\textwidth}
+                    p{0.22\textwidth}
+                    p{0.2\textwidth}
+                    p{0.5\textwidth}}
+    \toprule
+    \textbf{Category} & \textbf{Selected Tools} & \textbf{Context} & \textbf{Primary Role} \\ \midrule
+    
+    \acrshort{API} Framework & FastAPI \cite{FastAPIFastAPI} & RESTful Backend Architecture & High-performance \gls{API} layer featuring automatic data validation and OpenAPI documentation generation \cite{OpenAPIInitiativeOpenAPI}. \\ \midrule
+    
+    Inter-service Communication & \gls{gRPC} \cite{GRPC} \& Protobuf & Service-to-Service \gls{RPC} & Low-latency, binary-serialized communication that strictly enforces data contracts within microservices. \\ \midrule
+    
+    Relational Database \& \gls{ORM} & PostgreSQL \cite{groupPostgreSQL2026} / SQLAlchemy \cite{SQLAlchemy} & Structured Data Management & \gls{SQL}-compliant relational store with native \gls{JSONB} support, abstracted via an object-relational mapper to improve maintainability. \\ \midrule
+    
+    NoSQL Database & MongoDB \cite{MongoDBWorldsLeading} & Document-Oriented Store & Schema-less data storage optimized for rapidly evolving data models, unstructured datasets, or time-series data. \\ \midrule
+
+    Object Storage & MinIO \cite{HighPerformanceData} & Unstructured Binary Storage & High-performance, efficiently store and serve massive files, such as images, videos, and \gls{ML} datasets. \\ \midrule
+
+    Asynchronous Queue & Celery \cite{CeleryDistributedTask} \& Redis \cite{redisRedisRealtimeData} & Background Task Processing & Offloads heavy, resource-intensive, or long-running tasks asynchronously to worker processes via an in-memory message broker queue. \\ \midrule
+
+    \gls{IoT} Messaging & \acrshort{MQTT} \cite{MQTTStandardIoT} / Mosquitto \cite{EclipseMosquitto2018} & Publish-Subscribe Transport & Lightweight telemetry transport protocol explicitly optimized for resource-constrained edge devices and low-bandwidth networks. \\ \midrule
+
+    Containerization & Docker \cite{DockerAcceleratedContainer} / Compose \cite{DockerCompose} & Environment Virtualization & Wraps services into isolated containers to guarantee absolute \gls{OS} parity across development and production. \\ \midrule
+
+    Monitoring & Prometheus \cite{PrometheusMonitoringSystem} & Cloud-Native Observability & Real-time time-series metric collection and automated alerting leveraging an active \gls{HTTP} pull architectural model. \\ \midrule
+
+    Web Interface & Next.js \cite{NextjsVercelReact} \& React \cite{React} & Component-Based Frontend & Component-driven frontend stack used to construct highly interactive, responsive, and server-side rendered application dashboards. \\ 
+    \bottomrule
+    \end{tabular}
+    }
+\end{table}

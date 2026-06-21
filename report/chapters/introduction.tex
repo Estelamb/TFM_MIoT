@@ -1,0 +1,78 @@
+\chapter{Introduction}\label{ch:introduction}
+
+This chapter establishes the foundational context and structural roadmap of this Master's Thesis. It begins by highlighting the core motivations and technical challenges that drive this work, followed by the specific research framework that encompasses the project. In addition, it defines the primary and specific technical objectives of the thesis, delineates the overall scope and architectural deliverables, and concludes with a comprehensive outline of the remaining chapters in this document.
+
+\section{Project Framework and Motivation}\label{sec:int:motivation} \todo{añadir referencias al principio}
+
+The \gls{IoT} is no longer just a collection of smart sensors, it has become the digital nervous system of modern infrastructure, running everything from autonomous city grids to critical industrial plants. However, the way we built this connected world is hitting a wall. 
+
+The traditional setup, where small, resource-constrained nodes act as passive data gatherers that blindly stream raw data to a distant cloud, is breaking down under the pressure of strict latency demands, skyrocketing bandwidth costs, and the absolute need for real-time autonomy. 
+
+To keep up with next-generation applications, the network edge can no longer just connect, it has to think. This pressure has forced a major evolution: the transition from old, cloud-dependent \gls{IoT} architectures to the \gls{AIoT}, a shift that requires us to build intelligence directly into the network's periphery.
+
+Deploying \gls{AI} models on the edge mitigates the inherent limitations of pure cloud computing, such as high latency, heavy bandwidth consumption, and reliance on persistent network connectivity. However, executing complex machine learning inference within the Edge-Cloud Continuum introduces significant technical challenges. 
+
+The edge landscape is highly fragmented, characterised by extreme hardware heterogeneity, spanning diverse architectures like \gls{ARM}, x86, and specialised \gls{AI} accelerators, along with severe resource constraints in terms of memory, computational power, and energy efficiency. Consequently, there is a critical need for frameworks capable of decoupling \gls{AI} applications from the underlying hardware complexities, ensuring seamless portability, automated deployment, and efficient orchestration.
+
+To address these pressing challenges within the European technological landscape, the \gls{GRyS} \cite{GrupoRedesServicios} actively participates in cutting-edge international research initiatives. \gls{GRyS} focuses on the design and implementation of distributed cyber-physical systems, advanced network protocols, and intelligent software architectures that bridge the gap between low-level hardware and high-level cloud service coordination.
+
+This brings us to NexTArc \cite{NexTArc}. NexTArc is a European project born specifically to address these challenges by creating a unified framework for sustainable and smart environments across Europe. The project operates across three distinct domains: "Smart and Liveable Urban Spaces", "Transparent Industrial Logistics", and finally, "Eco-Friendly Multimodal Mobility." 
+
+Within the framework of the NexTArc project, the \gls{GRyS} research group plays a vital role in shaping the core technological architecture, semantic ontologies, and embedded \gls{AI} capabilities at the network edge. Rather than just participating in an isolated scenario, \gls{GRyS} focuses on building the foundational frameworks that allow intelligent edge devices to communicate, understand data through shared ontologies, and execute complex machine learning models locally. 
+
+This fundamental research and technological stack are directly implemented and validated through a concrete proof of concept within the "Eco-Friendly Multimodal Mobility" domain. This specific use case focuses on autonomous vehicles and smart city mobility, involving the management and coordination of thousands of heterogeneous edge devices deployed both within vehicles and throughout urban environments. 
+
+In this scenario, autonomous cars and infrastructure nodes must process multimodal data on the fly to ensure safe navigation, real-time decision-making, and optimised traffic flow. It serves as the ultimate testing ground for a robust system capable of distributing and managing \gls{AI} inference dynamically and securely across a highly diverse hardware ecosystem.
+
+This Master's Thesis builds directly upon these foundational requirements. It proposes a novel unified framework designed to overcome the barriers of hardware heterogeneity and deployment automation, positioning itself as a core software-hardware contribution to the Edge-Cloud Continuum within the NexTArc ecosystem.
+
+
+\section{Thesis Objectives}\label{sec:int:objectives}
+
+The main objective of this Master's Thesis is to design, develop, and evaluate a distributed \gls{MLOps} platform in the Edge-Cloud Continuum for the orchestration and automated management of \gls{AI} models in \gls{IoT} edge nodes regardless of the underlying hardware architecture, optimising efficiency and portability across different environments.
+
+To achieve this main goal, the following specific objectives have been established:
+
+\begin{itemize}
+    \item \textbf{\gls{PAL} Infrastructure}: Create a hardware-agnostic software layer to decouple model inference from the specific physical hardware, ensuring seamless deployment across diverse \gls{AI} accelerators.
+    \item \textbf{Automated \gls{MLOps} Pipeline}: Develop a robust system for the compilation and \gls{OTA} deployment of \gls{AI} models, enabling dynamic updates without physical device access.
+    \item \textbf{Edge Optimization}: Enable safety-critical local computation to eliminate dependence on cloud connectivity and reduce latency.
+    \item \textbf{Information Privacy \& Customization}: Guarantee data privacy by transmitting only aggregated telemetry instead of raw images, supported by secure sandboxed edge scripts for local post-processing.
+    \item \textbf{Cyber-Resilience and Security}: Protect the system by establishing secure, authenticated communication protocols to ensure continuous operation in mobility environments.
+    \item \textbf{System Evaluation}: Analyse system footprint, overhead, and operational efficiency across the Edge-Cloud Continuum.
+\end{itemize}
+
+\section{Project Description and Scope}\label{sec:int:scope}
+
+This thesis addresses the architectural and technological transition from simple, interconnected \gls{IoT} telemetry devices to high-performance \gls{AIoT} nodes operating within a coordinated Edge-Cloud Continuum. Focused on the "Eco-Friendly Multimodal Mobility" domain of the \textbf{NexTArc} European project, this work involves the structural design and software engineering of a framework capable of managing a fleet of distributed vehicle edge devices. 
+
+The scope of this project encompasses the entire lifecycle of an \gls{AI} model within the Edge-Cloud Continuum. Using microservices paradigms, containerisation, and hardware abstraction interfaces, the proposed system ensures that infrastructure administrators can deploy specialised \gls{AI} models to heterogeneous nodes seamlessly, without requiring manual firmware reconfiguration or device-specific recompilations.
+
+The main architectural deliverables and outcomes of this Master's Thesis include:
+
+\begin{itemize}
+    \item A fully operational, \gls{MLOps} orchestration framework tailored for the edge-cloud continuum.
+    \item A functional \gls{AI} compilation module that supports various \gls{AI} hardware accelerators and target architectures natively.
+    \item Automated, reliable \gls{OTA} deployment pipelines featuring atomic swaps and automatic rollbacks.
+    \item Local edge computing microservices featuring embedded data privacy mechanisms and sandboxed post-processing capabilities.
+    \item An intuitive, web-based user interface for simplified device monitoring, telemetry visualisation, and model deployment management.
+    \item A comprehensive benchmarking suite analysing the framework's overhead, footprint, and performance under real-world hardware conditions.
+\end{itemize}
+
+\section{Manuscript Outline}\label{sec:int:outline}
+
+The remainder of this document is organised as follows:
+
+\begin{itemize}
+    \item \textbf{\nameref{ch:sota}}: Reviews the current state of the art in embedded \gls{AI} hardware platforms, and surveys the core technologies used to build the platform. \todo{actualizar sota en intro}
+    \item \textbf{\nameref{ch:proposal}}: Details the design and implementation of the proposed \gls{MLOps} framework (AURA), covering its cloud/server platform components, the edge \gls{PAL}, custom processing scripts, the \gls{HAL} backends, and the auto-synchronisation mechanisms.
+    \item \textbf{\nameref{ch:experiments}}: Presents the experimental setup, validation testbeds, and a comparative performance analysis targeting latency, resilience, and resource efficiency.
+    \item \textbf{\nameref{ch:conclusions}}: Summarises the main contributions of this work, technical limitations encountered, and suggestions for future research in the \gls{AIoT} domain.
+    \item \textbf{\nameref{ap:budget}}: Outlines the economic feasibility study, engineering hour costs, and the budget for the technological infrastructure associated with development.
+    \item \textbf{\nameref{ap:impact}}: Analyses the academic, technological, economic, social, and environmental impacts of the framework, mapping them against the United Nations \gls{SDG}.
+    \item \textbf{\nameref{ap:hardware_comparison}}: Details a technical comparison of candidate embedded hardware boards for edge \gls{AI}.
+    \item \textbf{\nameref{app:relational_database}}: Specifies the schema definitions, types, and constraints of the platform's relational database model.
+    \item \textbf{\nameref{ap:ui}}: Shows the visual views, layouts, and page mockups of the web-based user interface.
+    \item \textbf{\nameref{ap:boards_pipelines}}: Explores the hardware-specific compilation, quantization, and packaging pipelines required for each target device.
+\end{itemize}
+

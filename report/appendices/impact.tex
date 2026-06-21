@@ -1,0 +1,47 @@
+\chapter{Impact Analysis}\label{ap:impact}
+
+This appendix provides a comprehensive assessment of the broader implications of the unified framework developed in this Master's Thesis. Beyond its core technical contributions, the proposed orchestration and automated deployment system yields significant effects across technological, academic, economic, social, and environmental dimensions, particularly within the context of the NexTArc European project.
+
+\section{Technological Impact}\label{sec:impact:technological}
+
+The technological impact of this work centers on overcoming the severe hardware heterogeneity and deployment fragmentation that characterizes the current \gls{AIoT} landscape. By designing a robust \gls{HAL} and an automated containerised microservices pipeline, this framework decouples edge applications from device-specific constraints. 
+
+The framework delivers a standardised runtime environment capable of seamlessly operating across drastically different architectures, as demonstrated by the seamless execution on the specific targets (NVIDIA Jetson Orin Nano, Hailo-8/8L, and \gls{RPi} \gls{AI} Camera). This introduces a scalable architectural paradigm for future edge computing infrastructure, significantly reducing the engineering friction associated with firmware reconfiguration, device-specific cross-compilation, and manual node onboarding.
+
+\section{Research Impact}\label{sec:impact:research}
+
+This thesis directly contributes to the European research ecosystem through its active alignment with the NexTArc project under the coordination of the \gls{GRyS}. By developing semantic ontologies and a unified runtime abstraction, this work bridges the existing gap between low-level hardware constraints and high-level cloud orchestration within the Edge-Cloud Continuum. 
+
+The system engineered in this study establishes a formal open-source baseline for dynamic \gls{AI} model packaging, local optimisation, and real-time node monitoring. This opens new avenues for academic and industrial research in embedded \gls{AI} across the Edge-Cloud Continuum.
+
+\section{Economic and Business Impact}\label{sec:impact:economic}
+
+From an economic perspective, the framework introduces a highly cost-effective paradigm for smart city operators and industrial logistics. By maximising the hardware use of affordable and commercially available edge nodes, businesses can avoid the prohibitive \gls{CapEx} associated with high-end, proprietary industrial \glspl{SoC}. 
+
+Furthermore, automated deployment pipelines drastically reduce \gls{OpEx}. Fleet administrators can deploy, update, and monitor specialised \gls{AI} models across thousands of geographically distributed heterogeneous devices simultaneously through an intuitive web interface, eliminating the need for expensive, localised, and manual technical interventions on-site.
+
+\section{Social and Ethical Impact}\label{sec:impact:social}
+
+The ethical dimensions of distributed \gls{AI} deployment are explicitly addressed in this framework through a strict "Privacy by Design" approach. By enforcing local edge computing and data anonymisation microservices directly at the source, the transmission of raw audio, video, or sensitive telemetry to centralised cloud servers is completely eliminated. 
+
+This technical choice guarantees the privacy of citizens and regulatory compliance in highly sensitive urban deployment environments. Socially, the deployment of this framework within autonomous transport and traffic coordination grids enhances public safety, drastically reduces traffic congestion, and fosters the equitable integration of intelligent public infrastructure in modern smart cities.
+
+\section{Environmental Impact}\label{sec:impact:environmental}
+
+The environmental impact of this framework is dual-fold, encompassing direct optimisation of compute energy and indirect optimisation of urban resource consumption. Directly, the framework evaluates and leverages highly energy-efficient dataflow architectures, which drastically minimise thermal footprint and power draw compared to power-heavy cloud infrastructures or traditional edge \glspl{GPU}. 
+
+Indirectly, by serving as the core software and hardware stack for the "Eco-Friendly Multimodal Mobility" domain of the NexTArc project, the real-time processing of vision pipelines allows for dynamic traffic management, optimised vehicle routing, and decreased idle times, directly translating into a net reduction of greenhouse gas emissions in urban ecosystems.
+
+\section{United Nations \texorpdfstring{\acrshort{SDG}}{SDG} Impact}\label{sec:impact:sdg}
+
+The United Nations \gls{SDG} define a global framework for sustainable development. The proposed unified framework contributes directly to multiple goals by driving technological innovation, protecting data privacy, and optimising urban efficiency.
+
+\begin{itemize}
+    \item \textbf{\gls{SDG} 9 - Industry, Innovation and Infrastructure}: The framework fosters resilient infrastructure and fuels technological innovation by providing a hardware-agnostic, scalable platform for \gls{AIoT} deployment. It reduces the barrier to entry for integrating intelligent edge nodes into industrial logistics and distributed cyber-physical networks.
+    
+    \item \textbf{\gls{SDG} 11 - Sustainable Cities and Communities}: Implemented directly within the NexTArc multimodal mobility framework, the system enables intelligent and autonomous coordination of urban transport networks. By processing data locally to dynamically manage information obtained from cities, it directly contributes to making cities safer, more resilient, inclusive, and environmentally sustainable.
+    
+    \item \textbf{\gls{SDG} 12 - Responsible Consumption and Production}: The framework explicitly promotes material resource efficiency by extending the lifecycle of diverse edge hardware through software-driven runtime abstraction. By enabling low-power processors and preventing premature hardware obsolescence, it minimises electronic waste and promotes sustainable computing resource allocation.
+
+    \item \textbf{\gls{SDG} 17 - Partnerships for goals}: This work is natively embedded within the NexTArc European research project, executed under the coordination of \gls{GRyS}. It exemplifies the multi-stakeholder partnerships between academic institutions, public entities, and industrial partners across Europe needed to share knowledge, develop standardised semantic ontologies, and build sustainable technology stacks for smart cities.
+\end{itemize}

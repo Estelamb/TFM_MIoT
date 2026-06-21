@@ -107,7 +107,8 @@ class OTAHandler:
             from aura_hw import load_model, unload_model
             logger.info(f"[{dep_id}] Loading model into HAL backend")
             unload_model()
-            load_model(str(self._model_path))
+            class_names = payload.get("class_names", [])
+            load_model(str(self._model_path), class_names=class_names)
 
             # 4. Hot-reload user script
             logger.info(f"[{dep_id}] Reloading user script")

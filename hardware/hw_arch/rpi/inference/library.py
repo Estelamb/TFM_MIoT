@@ -20,7 +20,7 @@ class RPiCPUBackend:
         self._num_classes = None
         self._class_names = []
 
-    def load(self, model_path: str) -> None:
+    def load(self, model_path: str, class_names: list[str] = None) -> None:
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model path does not exist: {model_path}")
 
@@ -40,16 +40,21 @@ class RPiCPUBackend:
         
         # Try to parse class count from model metadata
         self._num_classes = None
-        try:
-            meta = self._session.get_modelmeta().custom_metadata_map
-            if "names" in meta:
-                import ast
-                names_dict = ast.literal_eval(meta["names"])
-                self._class_names = [names_dict[i] for i in sorted(names_dict.keys())]
-                self._num_classes = len(names_dict)
-                logger.info(f"Detected {self._num_classes} classes from ONNX metadata: {self._class_names}")
-        except Exception as e:
-            logger.warning(f"Could not parse class names from metadata: {e}")
+        if class_names:
+            self._class_names = class_names
+            self._num_classes = len(class_names)
+            logger.info(f"Using {self._num_classes} classes from explicit deploy payload: {self._class_names}")
+        else:
+            try:
+                meta = self._session.get_modelmeta().custom_metadata_map
+                if "names" in meta:
+                    import ast
+                    names_dict = ast.literal_eval(meta["names"])
+                    self._class_names = [names_dict[i] for i in sorted(names_dict.keys())]
+                    self._num_classes = len(names_dict)
+                    logger.info(f"Detected {self._num_classes} classes from ONNX metadata: {self._class_names}")
+            except Exception as e:
+                logger.warning(f"Could not parse class names from metadata: {e}")
 
         # Fallback to output shape dimension if nms=False
         if self._num_classes is None:

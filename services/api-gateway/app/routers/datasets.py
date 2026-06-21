@@ -12,14 +12,14 @@ from shared.utils.minio import upload_bytes, presigned_url
 router = APIRouter(prefix="/api/datasets", tags=["datasets"])
 
 
-def validate_dataset_zip(file_bytes: bytes) -> tuple[bool, str, int]:
+def validate_dataset_zip(file_bytes: bytes) -> tuple[bool, str, int, list[str]]:
     """Validate that the ZIP contains images/, labels/ and classes.json (can be inside a subfolder)."""
     try:
         with zipfile.ZipFile(io.BytesIO(file_bytes)) as z:
             namelist = z.namelist()
             classes_paths = [p for p in namelist if p.endswith("classes.json")]
             if not classes_paths:
-                return False, "Missing 'classes.json' in the zip file.", 0
+                return False, "Missing 'classes.json' in the zip file.", 0, []
 
             classes_path = classes_paths[0]
             base_dir = classes_path[:-len("classes.json")]
@@ -31,24 +31,42 @@ def validate_dataset_zip(file_bytes: bytes) -> tuple[bool, str, int]:
             has_labels = any(p.startswith(labels_prefix) and p != labels_prefix for p in namelist)
 
             if not has_images:
-                return False, f"Missing 'images/' directory or it is empty under '{base_dir}'.", 0
+                return False, f"Missing 'images/' directory or it is empty under '{base_dir}'.", 0, []
             if not has_labels:
-                return False, f"Missing 'labels/' directory or it is empty under '{base_dir}'.", 0
+                return False, f"Missing 'labels/' directory or it is empty under '{base_dir}'.", 0, []
 
             try:
                 classes_content = z.read(classes_path)
                 classes_data = json.loads(classes_content)
-                if not isinstance(classes_data, dict):
-                    return False, "'classes.json' must be a JSON object mapping indices to class names.", 0
-                num_classes = len(classes_data)
+                
+                if isinstance(classes_data, list):
+                    class_names = [str(x) for x in classes_data]
+                elif isinstance(classes_data, dict):
+                    try:
+                        # Format A: {"0": "alert", "1": "drowsy"} (index -> name)
+                        first_key = next(iter(classes_data.keys()))
+                        int(first_key)
+                        sorted_keys = sorted(classes_data.keys(), key=lambda k: int(k))
+                        class_names = [str(classes_data[k]) for k in sorted_keys]
+                    except (ValueError, TypeError):
+                        try:
+                            # Format B: {"alert": 0, "drowsy": 1} (name -> index)
+                            sorted_keys = sorted(classes_data.keys(), key=lambda k: int(classes_data[k]))
+                            class_names = [str(k) for k in sorted_keys]
+                        except (ValueError, TypeError):
+                            class_names = sorted([str(k) for k in classes_data.keys()])
+                else:
+                    return False, "'classes.json' must be a JSON list or dictionary.", 0, []
+                
+                num_classes = len(class_names)
             except Exception as je:
-                return False, f"Failed to parse 'classes.json': {je}", 0
+                return False, f"Failed to parse 'classes.json': {je}", 0, []
 
-            return True, "", num_classes
+            return True, "", num_classes, class_names
     except zipfile.BadZipFile:
-        return False, "The uploaded file is not a valid zip file.", 0
+        return False, "The uploaded file is not a valid zip file.", 0, []
     except Exception as e:
-        return False, f"Error validating zip file: {e}", 0
+        return False, f"Error validating zip file: {e}", 0, []
 
 
 @router.post("", status_code=201)
@@ -63,9 +81,10 @@ async def create_dataset(
     """Create a new dataset, optionally uploading a ZIP file immediately."""
     file_bytes = None
     num_classes = 0
+    class_names = []
     if file:
         file_bytes = await file.read()
-        is_valid, err_msg, num_classes = validate_dataset_zip(file_bytes)
+        is_valid, err_msg, num_classes, class_names = validate_dataset_zip(file_bytes)
         if not is_valid:
             raise HTTPException(status_code=400, detail=err_msg)
 
@@ -83,7 +102,7 @@ async def create_dataset(
                 object_key=object_key,
                 sha256=sha,
                 size_bytes=len(file_bytes),
-                metadata=json.dumps({"num_classes": num_classes}),
+                metadata=json.dumps({"num_classes": num_classes, "class_names": class_names}),
                 version=version,
                 description=version_description,
             )
@@ -119,7 +138,7 @@ async def replace_dataset_file(
 ):
     """Replace the ZIP file of an existing dataset (submits a new version)."""
     data = await file.read()
-    is_valid, err_msg, num_classes = validate_dataset_zip(data)
+    is_valid, err_msg, num_classes, class_names = validate_dataset_zip(data)
     if not is_valid:
         raise HTTPException(status_code=400, detail=err_msg)
 
@@ -132,7 +151,7 @@ async def replace_dataset_file(
             object_key=object_key,
             sha256=sha,
             size_bytes=len(data),
-            metadata=json.dumps({"num_classes": num_classes}),
+            metadata=json.dumps({"num_classes": num_classes, "class_names": class_names}),
             version=version,
             description=version_description,
         )

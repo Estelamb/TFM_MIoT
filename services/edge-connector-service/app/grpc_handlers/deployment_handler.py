@@ -64,6 +64,16 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                 model_url = await presigned_url("compiled", model.compiled_key)
                 script_url = await presigned_url("scripts", script.script_key)
 
+                class_names = []
+                if model.dataset_id:
+                    try:
+                        ds_resp = await self._ai_stub.GetDataset(ai_pb2.GetDatasetRequest(id=model.dataset_id))
+                        if ds_resp.metadata:
+                            ds_meta = json.loads(ds_resp.metadata)
+                            class_names = ds_meta.get("class_names", [])
+                    except Exception as ex:
+                        logger.warning(f"Could not retrieve dataset metadata for class names: {ex}")
+
                 command = {
                     "command": "deploy",
                     "deployment_id": dep.id,
@@ -71,6 +81,7 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                     "model_sha256": model.compiled_sha256,
                     "script_url": script_url,
                     "script_sha256": script.script_sha256,
+                    "class_names": class_names,
                 }
                 try:
                     async with aiomqtt.Client(hostname=self._mqtt_host, port=self._mqtt_port) as client:

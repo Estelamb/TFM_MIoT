@@ -30,7 +30,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       "fixed left-0 top-0 h-screen transition-all duration-300",
       "z-30", // BAJADO de z-50 a z-30 para que los modales y popups queden por encima
       "flex flex-col",
-      "bg-white dark:bg-gray-950",
+      "bg-slate-100/85 dark:bg-gray-950/85 backdrop-blur-md",
       "border-r border-slate-200/60 dark:border-gray-800/50",
       collapsed ? "w-20" : "w-56"
     )}>

@@ -276,7 +276,7 @@ export default function DevicesPage() {
             <div className="grid gap-4">
               {devices.map((d: any) => (
                 <Card key={d.id} className="p-5 flex items-center justify-between hover:border-blue-500 transition-all">
-                  <Link href={`/devices/${d.id}`} className="flex items-center gap-4 flex-1 group">
+                  <Link href={`/devices/${d.id}?from=devices`} className="flex items-center gap-4 flex-1 group">
                     <div className="p-3 bg-blue-50 dark:bg-gray-800 rounded-xl group-hover:scale-105 transition-all">
                       <Cpu size={22} className="text-blue-500" />
                     </div>
@@ -289,9 +289,9 @@ export default function DevicesPage() {
                     </div>
                   </Link>
                   <div className="flex items-center gap-3">
-                    <Link href={`/devices/${d.id}`}>
+                    <Link href={`/devices/${d.id}?from=devices`}>
                       <Button variant="ghost" size="sm">
-                        Specs & Stack
+                        See more
                       </Button>
                     </Link>
                     <button
@@ -623,7 +623,7 @@ export default function DevicesPage() {
                 : "border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             }`}
           >
-            Specs & Stack
+            See more
           </button>
           <button
             type="button"

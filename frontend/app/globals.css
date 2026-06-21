@@ -8,7 +8,7 @@
 
 @layer base {
   body {
-    @apply bg-slate-100 dark:bg-gray-950 text-slate-800 dark:text-gray-200 antialiased;
+    @apply bg-slate-200/40 dark:bg-gray-950 text-slate-800 dark:text-gray-200 antialiased;
   }
 }
 
@@ -24,7 +24,7 @@
 
 /* Filtro para convertir mapas claros detallados en tácticos oscuros */
 .dark-tactical-tiles {
-  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(105%);
+  filter: invert(100%) hue-rotate(180deg) saturate(350%) brightness(110%) contrast(95%);
 }
 
 /* Soft matte dot grid */

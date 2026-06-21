@@ -1,0 +1,59 @@
+\chapter{Experiments \& Validation}\label{ch:experiments}
+
+This chapter presents the verification and validation (\gls{VV}) activities and the proof of concept for the designed architecture, adhering to \acrshort{IEEE} 1012 \cite{IEEEStandardSystem} and \acrshort{ISO}/\acrshort{IEC}/\acrshort{IEEE} 29119:2020 \cite{ISOIECIEEEa}\cite{ISOIECIEEE}\cite{IEEEISOIECa}\cite{IEEEISOIEC}. The \gls{AURA} Platform is evaluated against functional and non-functional requirements.
+
+First, \autoref{sec:exp:objectives} establishes the \gls{VV} objectives. \autoref{sec:exp:scenario} outlines a smart mobility scenario featuring vehicle monitoring, edge \gls{AI} inference, and secure \gls{MQTT} telemetry. Then, the test campaign layout (\autoref{sec:exp:tests}) details functional (\autoref{sec:exp:functional}) and non-functional (\autoref{sec:exp:non-functional}) performance metrics. Finally, \autoref{sec:exp:system} evaluates the end-to-end cloud-to-edge integration, followed by conclusions in \autoref{sec:exp:conclusions}.
+
+
+\section{Definition of \texorpdfstring{\acrfull{VV}}{VV} Objectives}\label{sec:exp:objectives}
+
+Aligned with \gls{IEEE} 1012, \gls{VV} processes ensure the system meets technical specifications and user requirements across the Central Platform and \gls{IoT} Edge Devices (\autoref{ch:proposal}).
+
+\begin{itemize}
+    \item \textbf{Verification} (building the system correctly): Ensures each development phase aligns with input specifications, confirming compliance, completeness, and structural integrity.
+    \item \textbf{Validation} (building the correct system): Assesses whether the integrated system fulfills user needs and functions effectively under realistic conditions.
+\end{itemize}
+
+\textbf{Verification objectives} confirm that modules conform to design and implementation specs (\autoref{sec:proposal:design}, \autoref{sec:proposal:implementation}), microservices communicate reliably via \gls{gRPC}, and the compilation worker safely interfaces with Docker. They also ensure \gls{OTA} commands are correctly parsed/dispatched via \gls{MQTT}, the model lifecycle preserves task sequencing, and telemetry data is accurately serialized, transmitted, and ingested.
+
+\textbf{Validation objectives} confirm that the end-to-end \gls{AI} model deployment pipeline is seamless for the final user, and edge devices execute atomic updates with automatic rollbacks upon health check failures. Additionally, they verify that the \gls{PAL} successfully abstracts underlying hardware to optimize inference across \glspl{CPU} and accelerators, sandboxed scripts execute securely within edge constraints, and the system remains robust under hardware constraints, network instability, or partial failures.
+
+
+\section{\texorpdfstring{\acrshort{VV}}{VV} Scenario}\label{sec:exp:scenario}
+
+Testing environments were established alongside representative \gls{AI} model deployment scenarios to execute the \gls{VV} tests.
+
+\subsection{\texorpdfstring{\acrshort{IoT}}{IoT} Edge Devices (Testing Environments)}
+
+Four hardware configurations function as the physical nodes for the \gls{AURA} \gls{PoC}:
+
+\begin{itemize}
+    \item \gls{RPi}5 Model B equipped with the Hailo-8 \gls{AI} HAT+, Camera Module 3, and running \gls{RPi} \gls{OS}.
+    \item \gls{RPi}5 Model B equipped with the Hailo-8L \gls{AI} HAT+, Camera Module 3, and running \gls{RPi} \gls{OS}.
+    \item \gls{RPi}5 Model B equipped with the \gls{RPi} \gls{AI} Cam, and running \gls{RPi} \gls{OS}.
+    \item \gls{RPi}5 Model B running \gls{RPi} \gls{OS}.
+    \item Jetson Orin Nano Developer Kit. \todo{pedir info jetson}
+\end{itemize}
+
+\subsection{\texorpdfstring{\acrshort{AI}}{AI} Models}\label{subsec:models}
+
+To validate the \gls{AURA} platform, two in-cabin safety \gls{AI} models were trained, deployed, and tested on the edge devices:
+
+\begin{itemize}
+    \item \textbf{Model 1 (Driver Drowsiness Detection):} Monitors the driver and detects signs of drowsiness or distraction \cite{dataset}. 
+    \item \textbf{Model 2 (Left Object \& Infant Detection):} Identifies items left behind in the vehicle cabin, differentiating between inanimate objects and unattended infants \cite{dataset}.
+\end{itemize}
+
+\todo{añadir fotos modelos}
+
+\subsection{Deployment Scenarios}\label{subsec:scenarios}
+
+\section{\texorpdfstring{\acrshort{VV}}{VV} Tests Based on \texorpdfstring{\acrshort{ISO}}{ISO}/\texorpdfstring{\acrshort{IEC}}{IEC}/\texorpdfstring{\acrshort{IEEE}}{IEEE} 29119}\label{sec:exp:tests}
+
+\section{Functional Tests}\label{sec:exp:functional}
+
+\section{Non-Functional Tests}\label{sec:exp:non-functional}
+
+\section{System Testing}\label{sec:exp:system}
+
+\section{Conclusions}\label{sec:exp:conclusions}

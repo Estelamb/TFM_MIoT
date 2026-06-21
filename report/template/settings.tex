@@ -1,0 +1,78 @@
+\usepackage{todonotes}
+\usepackage{nameref}
+\usepackage[edges]{forest}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{listingsutf8}
+\usepackage{siunitx}
+
+% TColorBox Configuration
+\newtcblisting{codeblock}{
+    listing only,
+    colback=gray!10,
+    colframe=gray!80,
+    sharp corners,
+    listing options={
+        style=,
+        frame=none,
+        caption={},
+        language=bash,
+        backgroundcolor=\color{gray!10},
+        basicstyle=\ttfamily\small,
+        breaklines=true,
+        breakatwhitespace=false,
+        postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space}
+    },
+    left=2mm, right=0mm, top=1mm, bottom=1mm,
+    boxsep=1mm, arc=2mm, outer arc=2mm
+}
+
+% Listings Configuration
+\lstset{
+  basicstyle=\ttfamily\footnotesize,    
+  breaklines=true,                      
+  breakatwhitespace=false,              
+  prebreak=\mbox{\textcolor{red}{$\hookleftarrow$}}, 
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}}, 
+  columns=fullflexible,                 
+  frame=single,                         
+  framesep=3pt,                         
+  xleftmargin=10pt,                     
+  xrightmargin=10pt,                    
+  resetmargins=true,                    
+  showstringspaces=false,               
+  tabsize=2,                            
+  backgroundcolor=\color{gray!5},       
+  linewidth=\linewidth,                 
+}
+
+\lstdefinelanguage{json}{
+  basicstyle=\ttfamily\footnotesize,
+  stringstyle=\color{black},
+  numberstyle=\color{black},
+  identifierstyle=\color{black},
+  keywordstyle=\color{black},
+  morekeywords={true,false,null},
+  sensitive=false,
+  morestring=[b]",
+  morestring=[b]',
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+}
+
+\lstdefinelanguage{yml}{
+  keywords={true,false,null,yes,no,on,off},
+  basicstyle=\ttfamily\small,
+  sensitive=true,
+  comment=[l]{\#},
+  morecomment=[l]{\#},
+  morestring=[b]",
+  morestring=[b]'
+}
+
+% SI Unit Configuration
+\sisetup{
+  per-mode=symbol, 
+  output-decimal-marker={.}, 
+  detect-all = true 
+}

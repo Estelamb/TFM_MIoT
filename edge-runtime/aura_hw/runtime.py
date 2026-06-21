@@ -67,12 +67,12 @@ def _get_backend(hw: str) -> InferenceBackend:
     return GeneralInferenceBackend(hw)
 
 
-def load_model(model_path: str) -> None:
+def load_model(model_path: str, class_names: list[str] = None) -> None:
     global _backend
     hw = detect_hardware()
     logger.info(f"Hardware detected: {hw}")
     backend = _get_backend(hw)
-    backend.load(model_path)
+    backend.load(model_path, class_names=class_names)
     _backend = backend
 
 

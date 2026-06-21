@@ -6,14 +6,16 @@ services:
     container_name: aura-edge-agent
     restart: unless-stopped
     environment:
-      - AURA_DEVICE_ID=a7b02342-4d3e-412a-b821-81194fc46f7a # ID of the device
-      - AURA_MQTT_HOST=aura-mosquitto # IP of the MQTT Broker
-      - AURA_MQTT_PORT=1883
-      - AURA_HARDWARE_TYPE=rpi
-      - AURA_TELEMETRY_INTERVAL=10
-      - AURA_INFERENCE_INTERVAL=0.1
-      - AURA_LOG_LEVEL=INFO
-      - AURA_WORK_DIR=/tmp/aura
+      - AURA_DEVICE_ID=${AURA_DEVICE_ID:-4c38065e-3c2d-4e44-8ca8-9c30a08059d0}
+      - AURA_MQTT_HOST=${AURA_MQTT_HOST:-aura-mosquitto}
+      - AURA_MQTT_PORT=${AURA_MQTT_PORT:-1883}
+      - AURA_HARDWARE_TYPE=${AURA_HARDWARE_TYPE:-hailo8}
+      - AURA_TELEMETRY_INTERVAL=${AURA_TELEMETRY_INTERVAL:-10}
+      - AURA_INFERENCE_INTERVAL=${AURA_INFERENCE_INTERVAL:-0.1}
+      - AURA_LOG_LEVEL=${AURA_LOG_LEVEL:-INFO}
+      - AURA_WORK_DIR=${AURA_WORK_DIR:-/tmp/aura}
+      - AURA_HARDWARE_DAEMON_HOST=${AURA_HARDWARE_DAEMON_HOST:-172.18.0.1}
+      - AURA_CAMERA_ENABLED=${AURA_CAMERA_ENABLED:-true}
     # devices:
     #   # Monta la cámara de la Raspberry Pi (USB o módulo de cámara CSI)
     #   - "/dev/video0:/dev/video0"
@@ -24,13 +26,7 @@ services:
       # Librerías de hardware — persistente entre reinicios.
       # Se llena vía OTA (update_libraries) al conectarse a la plataforma.
       - edge-agent-hardware:/app/hardware
-    networks: # Only needed if the edge runtime is running on the same host as the platform
-      - aura-net
 
 volumes:
   edge-agent-hardware:
 
-networks: # Only needed if the edge runtime is running on the same host as the platform
-  aura-net:
-    name: aura_aura-net
-    external: true

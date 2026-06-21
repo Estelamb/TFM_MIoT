@@ -171,6 +171,14 @@ async def compile_and_deploy_job(
         model_url = await presigned_url("compiled", compiled_key)
         script_url = await presigned_url("scripts", script_key)
 
+        class_names = []
+        if dv and dv.metadata:
+            try:
+                ds_meta = json.loads(dv.metadata)
+                class_names = ds_meta.get("class_names", [])
+            except Exception as ex:
+                logger.warning(f"Could not parse dataset metadata for class names: {ex}")
+
         command = {
             "command": "deploy",
             "deployment_id": dep_id,
@@ -178,6 +186,7 @@ async def compile_and_deploy_job(
             "model_sha256": compiled_sha256,
             "script_url": script_url,
             "script_sha256": script_sha256,
+            "class_names": class_names,
         }
 
         s_conf = get_settings()

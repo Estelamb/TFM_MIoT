@@ -60,7 +60,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <DynamicLabelsLoader />
-      <div className="flex h-screen overflow-hidden bg-slate-100 dark:bg-gray-950">
+      <div className="flex h-screen overflow-hidden bg-slate-200/40 dark:bg-gray-950">
         
         {/* ... Sidebar y Main ... */}
         <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />

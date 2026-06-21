@@ -35,7 +35,7 @@ export default function MonitoringPage() {
       activeNodes: `${states.filter((s: any) => s.status === "online").length} / ${states.length || 0}`,
       avgLatency: (() => {
         const validLatencies = states
-          .filter((s: any) => s.status === "online" && typeof s.latency_ms === "number" && s.latency_ms > 0)
+          .filter((s: any) => s.status === "online" && typeof s.latency_ms === "number" && s.latency_ms >= 0)
           .map((s: any) => s.latency_ms);
         if (validLatencies.length === 0) return "— ms";
         const sum = validLatencies.reduce((acc: number, val: number) => acc + val, 0);
@@ -152,9 +152,17 @@ export default function MonitoringPage() {
                           {devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
                         </Link>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0 text-xs text-gray-400">
-                        <MemoryStick size={10} />
-                        {s.ram_used_mb?.toFixed ? s.ram_used_mb.toFixed(0) : s.ram_used_mb} MB
+                      <div className="flex items-center gap-2.5 shrink-0 text-xs text-gray-400">
+                        {typeof s.latency_ms === "number" && s.latency_ms >= 0 && (
+                          <span className="flex items-center gap-1 text-[11px] font-mono text-gray-500 dark:text-gray-400">
+                            <Wifi size={10} className="text-blue-500 dark:text-blue-400" />
+                            {Math.round(s.latency_ms)} ms
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1">
+                          <MemoryStick size={10} />
+                          {s.ram_used_mb?.toFixed ? s.ram_used_mb.toFixed(0) : s.ram_used_mb} MB
+                        </span>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">

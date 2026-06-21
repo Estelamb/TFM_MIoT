@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <body className="bg-slate-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 antialiased selection:bg-blue-200 selection:text-blue-900">
+      <body className="bg-slate-200/40 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 antialiased selection:bg-blue-200 selection:text-blue-900">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

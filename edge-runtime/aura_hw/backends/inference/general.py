@@ -20,11 +20,17 @@ class GeneralInferenceBackend(InferenceBackend):
     def hardware_type(self) -> str:
         return self._hardware_type
 
-    def load(self, model_path: str) -> None:
+    def load(self, model_path: str, class_names: list[str] = None) -> None:
         logger.info(f"[GeneralInferenceBackend] Dynamically loading custom inference runtime for '{self._hardware_type}'")
         cls = load_inference_class(self._hardware_type)
         self._delegate = cls()
-        self._delegate.load(model_path)
+        
+        import inspect
+        sig = inspect.signature(self._delegate.load)
+        if "class_names" in sig.parameters:
+            self._delegate.load(model_path, class_names=class_names)
+        else:
+            self._delegate.load(model_path)
 
     def infer(self, inputs: Any) -> Any:
         if self._delegate is None:

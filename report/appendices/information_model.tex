@@ -1,0 +1,145 @@
+\chapter{Relational Database Information Model}\label{app:relational_database}
+
+This appendix details the physical schema of the platform's relational database. For each table, the columns, data types, constraints, and a brief description of their purpose are provided.
+
+\section{Table \texttt{devices} (\texorpdfstring{\gls{IoT}}{IoT} Edge Devices)}
+Stores registration and connectivity status of \gls{IoT} Edge nodes.
+
+\begin{table}[H]
+    \centering
+    \caption{Structure of the \texttt{devices} table}
+    \label{tab:devices}
+    \begin{tabular}{p{0.17\textwidth}
+                    p{0.15\textwidth}
+                    p{0.13\textwidth}
+                    p{0.4\textwidth}}
+        \hline
+        \textbf{Column} & \textbf{Data Type} & \textbf{Constraint} & \textbf{Description} \\
+        \hline
+        \textbf{\texttt{id}} & \texttt{UUID} & \gls{PK} & Unique identifier of the device. \\
+        \textbf{\texttt{name}} & \texttt{TEXT} & NOT NULL & Descriptive name of the device. \\
+        \textbf{\texttt{hardware\_type}} & \texttt{TEXT} & NOT NULL & Hardware type (e.g., \texttt{hailo8}, \texttt{rpi}). \\
+        \textbf{\texttt{description}} & \texttt{TEXT} & NULLABLE & Additional details of the device. \\
+        \textbf{\texttt{status}} & \texttt{TEXT} & NOT NULL & Current status of the device (\texttt{online} / \texttt{offline}). \\
+        \textbf{\texttt{sensors}} & \texttt{TEXT[]} & NOT NULL & Sensors configured on the device. \\
+        \textbf{\texttt{actuators}} & \texttt{TEXT[]} & NOT NULL & Actuators configured on the device. \\
+        \textbf{\texttt{last\_seen\_at}} & \texttt{TIMESTAMPTZ} & NULLABLE & Timestamp of the last active heartbeat. \\
+        \textbf{\texttt{created\_at}} & \texttt{TIMESTAMPTZ} & NOT NULL & Record creation timestamp. \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\clearpage
+
+\section{Table \texttt{datasets} (Datasets)}
+Registers datasets uploaded by users for training or calibration.
+
+\begin{table}[H]
+    \centering
+    \caption{Structure of the \texttt{datasets} table}
+    \label{tab:datasets}
+    \begin{tabular}{p{0.17\textwidth}
+                    p{0.15\textwidth}
+                    p{0.13\textwidth}
+                    p{0.4\textwidth}}
+        \hline
+        \textbf{Column} & \textbf{Data Type} & \textbf{Constraint} & \textbf{Description} \\
+        \hline
+        \textbf{\texttt{id}} & \texttt{UUID} & \gls{PK} & Unique identifier of the dataset. \\
+        \textbf{\texttt{name}} & \texttt{TEXT} & NOT NULL & Descriptive name of the dataset. \\
+        \textbf{\texttt{description}} & \texttt{TEXT} & NULLABLE & Additional notes on the dataset. \\
+        \textbf{\texttt{object\_key}} & \texttt{TEXT} & NULLABLE & Base folder or file path in MinIO. \\
+        \textbf{\texttt{sha256}} & \texttt{TEXT} & NULLABLE & Hash of the main dataset file. \\
+        \textbf{\texttt{size\_bytes}} & \texttt{BIGINT} & NULLABLE & Total size in bytes. \\
+        \textbf{\texttt{meta\_info}} & \texttt{JSON} & NULLABLE & Additional structured metadata. \\
+        \textbf{\texttt{created\_at}} & \texttt{TIMESTAMPTZ} & NOT NULL & Dataset registration timestamp. \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{Table \texttt{models} (\texorpdfstring{\gls{AI}}{AI} Models)}
+Contains metadata for both original models and compiled binaries for target hardware.
+
+\begin{table}[H]
+    \centering
+    \caption{Structure of the \texttt{models} table}
+    \label{tab:models}
+    \begin{tabular}{p{0.21\textwidth}
+                    p{0.15\textwidth}
+                    p{0.13\textwidth}
+                    p{0.4\textwidth}}
+        \hline
+        \textbf{Column} & \textbf{Data Type} & \textbf{Constraint} & \textbf{Description} \\
+        \hline
+        \textbf{\texttt{id}} & \texttt{UUID} & \gls{PK} & Unique identifier of the model. \\
+        \textbf{\texttt{name}} & \texttt{TEXT} & NOT NULL & Descriptive name of the AI model. \\
+        \textbf{\texttt{description}} & \texttt{TEXT} & NULLABLE & Notes or description of the model. \\
+        \textbf{\texttt{source\_key}} & \texttt{TEXT} & NOT NULL & Path of the original model (MinIO). \\
+        \textbf{\texttt{source\_sha256}} & \texttt{TEXT} & NOT NULL & SHA256 hash of the original model. \\
+        \textbf{\texttt{compiled\_key}} & \texttt{TEXT} & NULLABLE & Path of the compiled model (MinIO). \\
+        \textbf{\texttt{compiled\_sha256}} & \texttt{TEXT} & NULLABLE & Hash of the compiled model. \\
+        \textbf{\texttt{hardware\_type}} & \texttt{TEXT} & NULLABLE & Target hardware for compilation. \\
+        \textbf{\texttt{compile\_status}} & \texttt{TEXT} & NOT NULL & Compilation status. \\
+        \textbf{\texttt{compile\_error}} & \texttt{TEXT} & NULLABLE & Compilation error message details. \\
+        \textbf{\texttt{dataset\_id}} & \texttt{UUID} & \gls{FK} & Associated dataset. \\
+        \textbf{\texttt{base\_architecture}} & \texttt{TEXT} & NULLABLE & Baseline YOLO architecture. \\
+        \textbf{\texttt{epochs}} & \texttt{INTEGER} & NULLABLE & Configured training epochs count. \\
+        \textbf{\texttt{input\_size}} & \texttt{TEXT} & NULLABLE & Expected input resolution. \\
+        \textbf{\texttt{batch\_size}} & \texttt{INTEGER} & NULLABLE & Training batch size used. \\
+        \textbf{\texttt{created\_at}} & \texttt{TIMESTAMPTZ} & NOT NULL & Record creation timestamp. \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{Table \texttt{scripts}}
+Stores references to scripts executed along with the models on edge nodes for custom processing.
+
+\begin{table}[H]
+    \centering
+    \caption{Structure of the \texttt{scripts} table}
+    \label{tab:scripts}
+    \begin{tabular}{p{0.17\textwidth}
+                    p{0.15\textwidth}
+                    p{0.13\textwidth}
+                    p{0.4\textwidth}}
+        \hline
+        \textbf{Column} & \textbf{Data Type} & \textbf{Constraint} & \textbf{Description} \\
+        \hline
+        \textbf{\texttt{id}} & \texttt{UUID} & \gls{PK} & Unique identifier of the script. \\
+        \textbf{\texttt{name}} & \texttt{TEXT} & NOT NULL & Name of the script. \\
+        \textbf{\texttt{description}} & \texttt{TEXT} & NULLABLE & Additional script description notes. \\
+        \textbf{\texttt{script\_key}} & \texttt{TEXT} & NOT NULL & Path of the script file in MinIO. \\
+        \textbf{\texttt{script\_sha256}} & \texttt{TEXT} & NOT NULL & Verification hash of the script file. \\
+        \textbf{\texttt{hardware\_type}} & \texttt{TEXT} & NOT NULL & Hardware compatible. \\
+        \textbf{\texttt{created\_at}} & \texttt{TIMESTAMPTZ} & NOT NULL & Record creation timestamp. \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{Table \texttt{deployments} (Deployments)}
+Orchestrates and tracks the deployment lifecycle of a model and script combination onto a targeted \gls{IoT} Edge device.
+
+\begin{table}[H]
+    \centering
+    \caption{Structure of the \texttt{deployments} table}
+    \label{tab:deployments}
+    \begin{tabular}{p{0.17\textwidth}
+                    p{0.15\textwidth}
+                    p{0.13\textwidth}
+                    p{0.4\textwidth}}
+        \hline
+        \textbf{Column} & \textbf{Data Type} & \textbf{Constraint} & \textbf{Description} \\
+        \hline
+        \textbf{\texttt{id}} & \texttt{UUID} & \gls{PK} & Unique identifier of the deployment. \\
+        \textbf{\texttt{device\_id}} & \texttt{UUID} & \gls{FK} & Target device. \\
+        \textbf{\texttt{model\_id}} & \texttt{UUID} & \gls{FK} & Model to be deployed. \\
+        \textbf{\texttt{script\_id}} & \texttt{UUID} & \gls{FK} & Script to be deployed. \\
+        \textbf{\texttt{status}} & \texttt{TEXT} & NOT NULL & Deployment status. \\
+        \textbf{\texttt{sent\_at}} & \texttt{TIMESTAMPTZ} & NULLABLE & Instruction sent timestamp. \\
+        \textbf{\texttt{running\_at}} & \texttt{TIMESTAMPTZ} & NULLABLE & Confirmed execution timestamp. \\
+        \textbf{\texttt{error\_msg}} & \texttt{TEXT} & NULLABLE & Error details in case of failure. \\
+        \textbf{\texttt{created\_at}} & \texttt{TIMESTAMPTZ} & NOT NULL & Deployment creation timestamp. \\
+        \hline
+    \end{tabular}
+\end{table}
+
