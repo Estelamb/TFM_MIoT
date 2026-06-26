@@ -28,7 +28,7 @@ class GeneralCameraBackend(CameraBackend):
     def open(self, params: dict) -> None:
         # All camera drivers are loaded dynamically from hardware/sensors/camera/<driver>/library.py
         driver = self._driver
-        if driver in ("opencv", "libcamera", "imx500", "template"):
+        if driver in ("opencv", "libcamera", "template"):
             driver = "rpi_camera_module_3"
         logger.info(f"[GeneralCameraBackend] Dynamically loading camera driver '{driver}' (configured: '{self._driver}')")
         cls = load_component_class("sensors", "camera", driver)

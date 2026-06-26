@@ -74,3 +74,18 @@ CREATE TABLE IF NOT EXISTS deployments (
 CREATE INDEX IF NOT EXISTS idx_deployments_device ON deployments(device_id);
 CREATE INDEX IF NOT EXISTS idx_deployments_status ON deployments(status);
 CREATE INDEX IF NOT EXISTS idx_models_compile_status ON models(compile_status);
+
+CREATE TABLE IF NOT EXISTS model_compilations (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    model_id        UUID NOT NULL REFERENCES models(id) ON DELETE CASCADE,
+    hardware_type   TEXT NOT NULL,
+    compiled_key    TEXT NOT NULL,
+    compiled_sha256 TEXT NOT NULL,
+    compile_status  TEXT NOT NULL DEFAULT 'pending',
+    compile_error   TEXT,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(model_id, hardware_type)
+);
+
+CREATE INDEX IF NOT EXISTS idx_model_compilations_model ON model_compilations(model_id);
+CREATE INDEX IF NOT EXISTS idx_model_compilations_hw ON model_compilations(hardware_type);

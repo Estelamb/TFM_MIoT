@@ -110,73 +110,73 @@ export default function MonitoringPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Map */}
-        <div className="lg:col-span-2 flex flex-col relative">
+        <div className={`flex flex-col relative ${states.length > 0 ? "lg:col-span-2" : "lg:col-span-3"}`}>
           <EdgeMap states={states} isDemo={isDemo} />
         </div>
 
-        {/* Resource panel */}
-        <div className="flex flex-col gap-6">
-          <Card className="flex-1">
-            <CardHeader>
-              <CardTitle>Global Edge Resources</CardTitle>
+        {/* Per-device breakdown (Same height as Map, with vertical scrollbar) */}
+        {states.length > 0 && (
+          <Card className="h-[500px] flex flex-col overflow-hidden">
+            <CardHeader className="shrink-0 mb-4">
+              <CardTitle>Device Breakdown</CardTitle>
             </CardHeader>
-            <div className="space-y-6 mt-4">
-              <StatBar label="Aggregated CPU Load" value={stats.cpuLoad} color="blue-500" unit="%" />
-              <StatBar label="Global Memory Usage" value={stats.memory} color="orange-500" unit="%" />
-              {(stats.bandwidth > 0 || isDemo) && (
-                <StatBar label="Network Bandwidth" value={stats.bandwidth} color="emerald-500" unit="%" />
-              )}
-              {(stats.storage > 0 || isDemo) && (
-                <StatBar label="Storage Capacity" value={stats.storage} color="red-500" unit="%" />
-              )}
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1 scrollbar-thin">
+              {states.map((s: any) => (
+                <div key={s.device_id} className="border-b border-gray-100 dark:border-gray-800/50 pb-3 last:border-0 last:pb-0">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <StatusDot status={s.status} />
+                      <Link 
+                        href={`/devices/${s.device_id}`}
+                        className="text-xs font-bold text-gray-700 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 hover:underline truncate transition-colors" 
+                        title={devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
+                      >
+                        {devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
+                      </Link>
+                    </div>
+                    <div className="flex items-center gap-2.5 shrink-0 text-xs text-gray-400">
+                      {typeof s.latency_ms === "number" && s.latency_ms >= 0 && (
+                        <span className="flex items-center gap-1 text-[11px] font-mono text-gray-500 dark:text-gray-400">
+                          <Wifi size={10} className="text-blue-500 dark:text-blue-400" />
+                          {Math.round(s.latency_ms)} ms
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1">
+                        <MemoryStick size={10} />
+                        {s.ram_used_mb?.toFixed ? s.ram_used_mb.toFixed(0) : s.ram_used_mb} MB
+                      </span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <StatBar value={s.cpu_percent} label="CPU" color={s.cpu_percent > 80 ? "red-500" : "blue-500"} />
+                    <StatBar value={s.ram_percent} label="RAM" color={s.ram_percent > 80 ? "orange-500" : "emerald-500"} />
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1">{fmtRelative(s.last_seen_at)}</p>
+                </div>
+              ))}
             </div>
           </Card>
+        )}
+      </div>
 
-          {/* Per-device breakdown */}
-          {states.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Device Breakdown</CardTitle>
-              </CardHeader>
-              <div className="space-y-3 mt-2">
-                {states.map((s: any) => (
-                  <div key={s.device_id} className="border-b border-gray-100 dark:border-gray-800/50 pb-3 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <StatusDot status={s.status} />
-                        <Link 
-                          href={`/devices/${s.device_id}`}
-                          className="text-xs font-bold text-gray-700 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 hover:underline truncate transition-colors" 
-                          title={devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
-                        >
-                          {devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
-                        </Link>
-                      </div>
-                      <div className="flex items-center gap-2.5 shrink-0 text-xs text-gray-400">
-                        {typeof s.latency_ms === "number" && s.latency_ms >= 0 && (
-                          <span className="flex items-center gap-1 text-[11px] font-mono text-gray-500 dark:text-gray-400">
-                            <Wifi size={10} className="text-blue-500 dark:text-blue-400" />
-                            {Math.round(s.latency_ms)} ms
-                          </span>
-                        )}
-                        <span className="flex items-center gap-1">
-                          <MemoryStick size={10} />
-                          {s.ram_used_mb?.toFixed ? s.ram_used_mb.toFixed(0) : s.ram_used_mb} MB
-                        </span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <StatBar value={s.cpu_percent} label="CPU" color={s.cpu_percent > 80 ? "red-500" : "blue-500"} />
-                      <StatBar value={s.ram_percent} label="RAM" color={s.ram_percent > 80 ? "orange-500" : "emerald-500"} />
-                    </div>
-                    <p className="text-[10px] text-gray-400 mt-1">{fmtRelative(s.last_seen_at)}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
+      <hr className="border-slate-200/60 dark:border-gray-800/50 my-4" />
+
+      {/* Global Edge Resources at the bottom, horizontal */}
+      <Card>
+        <CardHeader className="mb-4">
+          <CardTitle>Global Edge Resources</CardTitle>
+        </CardHeader>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatBar label="Aggregated CPU Load" value={stats.cpuLoad} color="blue-500" unit="%" />
+          <StatBar label="Global Memory Usage" value={stats.memory} color="orange-500" unit="%" />
+          {(stats.bandwidth > 0 || isDemo) && (
+            <StatBar label="Network Bandwidth" value={stats.bandwidth} color="emerald-500" unit="%" />
+          )}
+          {(stats.storage > 0 || isDemo) && (
+            <StatBar label="Storage Capacity" value={stats.storage} color="red-500" unit="%" />
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

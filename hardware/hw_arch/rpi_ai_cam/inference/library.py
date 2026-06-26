@@ -1,0 +1,188 @@
+import logging
+import os
+import urllib.request
+import json
+from typing import Any
+import numpy as np
+
+logger = logging.getLogger(__name__)
+
+def _get_gateway_ip() -> str:
+    # 1. Environment variable override
+    env_gw = os.environ.get("AURA_HARDWARE_DAEMON_HOST")
+    if env_gw:
+        return env_gw
+        
+    # 2. Dynamically resolve gateway IP by reading /proc/net/route
+    try:
+        import socket
+        with open("/proc/net/route") as f:
+            for line in f:
+                fields = line.strip().split()
+                if len(fields) >= 3 and fields[1] == '00000000':
+                    hex_gw = fields[2]
+                    return socket.inet_ntoa(bytes.fromhex(hex_gw)[::-1])
+    except Exception:
+        pass
+        
+    # 3. Fallback to AURA_MQTT_HOST if not standard container names
+    mqtt_host = os.environ.get("AURA_MQTT_HOST")
+    if mqtt_host and mqtt_host not in ("mosquitto", "aura-mosquitto", "localhost", "127.0.0.1"):
+        return mqtt_host
+        
+    # 4. Standard default gateway fallback
+    return "172.18.0.1"
+
+
+class RPiAICamBackend:
+    """RPi AI Camera (Sony IMX500) inference backend communicating with Host Hardware Daemon."""
+
+    def __init__(self) -> None:
+        self._daemon_url = ""
+        self._num_classes = 80
+        self._class_names = []
+
+    def load(self, model_path: str, class_names: list[str] = None) -> None:
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model path does not exist: {model_path}")
+
+        if class_names:
+            self._class_names = class_names
+            self._num_classes = len(class_names)
+        else:
+            self._class_names = []
+            self._num_classes = 80
+
+        # Resolve RPK path
+        rpk_path = None
+        
+        # 1. If it's a zip file (packerOut.zip), package it locally to network.rpk using imx500-package if available
+        if model_path.endswith(".zip"):
+            out_dir = os.path.dirname(model_path)
+            import subprocess
+            try:
+                cmd = ["imx500-package", "-i", model_path, "-o", out_dir]
+                logger.info(f"Running local packaging: {' '.join(cmd)}")
+                subprocess.run(cmd, check=True)
+                rpk_path = os.path.join(out_dir, "network.rpk")
+            except (subprocess.SubprocessError, FileNotFoundError) as e:
+                logger.warning(f"Could not package model locally using imx500-package ({e}). Checking for existing network.rpk in directory...")
+                possible_rpk = os.path.join(out_dir, "network.rpk")
+                if os.path.exists(possible_rpk):
+                    rpk_path = possible_rpk
+                else:
+                    possible_rpk = os.path.join(out_dir, "model.rpk")
+                    if os.path.exists(possible_rpk):
+                        rpk_path = possible_rpk
+                    else:
+                        rpk_path = os.path.join(out_dir, "mock_network.rpk")
+                        with open(rpk_path, "wb") as f:
+                            f.write(b"MOCK_RPK_DATA")
+        elif model_path.endswith(".rpk") or model_path.endswith(".bin"):
+            rpk_path = model_path
+        else:
+            rpk_path = model_path
+
+        gw_ip = _get_gateway_ip()
+        self._daemon_url = f"http://{gw_ip}:8008"
+        logger.info(f"Loading Sony IMX500 model on Host Daemon: {rpk_path} (URL: {self._daemon_url})")
+
+        # Read the compiled .rpk file bytes
+        with open(rpk_path, "rb") as f:
+            rpk_bytes = f.read()
+
+        # POST the model bytes to the daemon's /load endpoint
+        req = urllib.request.Request(
+            f"{self._daemon_url}/load",
+            data=rpk_bytes,
+            headers={"Content-Type": "application/octet-stream"}
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15.0) as resp:
+                res = json.loads(resp.read().decode("utf-8"))
+                if res.get("status") != "success":
+                    raise RuntimeError(f"Daemon failed to load model: {res.get('error')}")
+                logger.info("Sony IMX500 model loaded successfully on Host Daemon.")
+        except Exception as e:
+            logger.error(f"Failed to communicate with Host Hardware Daemon to load model: {e}")
+            raise RuntimeError(f"Failed to load model on Host Daemon: {e}")
+
+    def infer(self, inputs: Any) -> Any:
+        if not self._daemon_url:
+            raise RuntimeError("Model is not loaded. Call load() first.")
+
+        # POST the request to the daemon's /infer endpoint
+        req = urllib.request.Request(
+            f"{self._daemon_url}/infer",
+            data=b"",  # No input image sent over the network (sensor-driven onboard inference)
+            headers={"Content-Type": "application/octet-stream"}
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10.0) as resp:
+                res = json.loads(resp.read().decode("utf-8"))
+                if res.get("status") != "success":
+                    raise RuntimeError(f"Daemon inference failed: {res.get('error')}")
+                outputs = res.get("detections", [])
+        except Exception as e:
+            logger.error(f"Failed to run inference on Host Hardware Daemon: {e}")
+            return {"output0": np.zeros((1, 4 + self._num_classes, 0), dtype=np.float32)}
+
+        # Reconstruct outputs to fit the YOLOv8 format (1, 4 + num_classes, num_detections)
+        if not outputs or len(outputs) < 3:
+            return {"output0": np.zeros((1, 4 + self._num_classes, 0), dtype=np.float32)}
+
+        boxes = np.array(outputs[0], dtype=np.float32)
+        classes = np.array(outputs[1], dtype=np.float32)
+        scores = np.array(outputs[2], dtype=np.float32)
+
+        if len(outputs) >= 4 and outputs[3] is not None and len(outputs[3]) > 0:
+            num_detections = int(outputs[3][0])
+        else:
+            num_detections = boxes.shape[0]
+
+        boxes = boxes[:num_detections]
+        classes = classes[:num_detections]
+        scores = scores[:num_detections]
+
+        num_classes = self._num_classes
+        mock_out = np.zeros((1, 4 + num_classes, num_detections), dtype=np.float32)
+
+        for idx in range(num_detections):
+            if idx >= boxes.shape[0] or idx >= classes.shape[0] or idx >= scores.shape[0]:
+                break
+
+            xmin, ymin, xmax, ymax = boxes[idx]
+            score = scores[idx]
+            class_id = int(round(classes[idx] * 256.0))
+
+            w_box = xmax - xmin
+            h_box = ymax - ymin
+            cx = xmin + w_box / 2.0
+            cy = ymin + h_box / 2.0
+
+            mock_out[0, 0, idx] = cx
+            mock_out[0, 1, idx] = cy
+            mock_out[0, 2, idx] = w_box
+            mock_out[0, 3, idx] = h_box
+            if 0 <= class_id < num_classes:
+                mock_out[0, 4 + class_id, idx] = score
+
+        return {"output0": mock_out}
+
+    def unload(self) -> None:
+        if self._daemon_url:
+            req = urllib.request.Request(f"{self._daemon_url}/unload", method="POST")
+            try:
+                with urllib.request.urlopen(req, timeout=5.0) as resp:
+                    pass
+            except Exception as e:
+                logger.warning(f"Failed to unload model on Host Hardware Daemon: {e}")
+            self._daemon_url = ""
+
+    def device_info(self) -> dict:
+        return {
+            "hardware_type": "rpi_ai_cam",
+            "accelerator": "Sony IMX500 AI Camera (via Host Daemon)",
+            "sdk": "imx500-tools",
+            "class_names": self._class_names
+        }

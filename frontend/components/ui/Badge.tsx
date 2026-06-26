@@ -14,18 +14,21 @@ const variants = {
 };
 
 export function Badge({
-  children, variant = "default", className = "",
+  children, variant = "default", className = "", ...props
 }: {
   children: React.ReactNode;
   variant?: keyof typeof variants;
   className?: string;
-}) {
+} & React.HTMLAttributes<HTMLSpanElement>) {
   return (
-    <span className={cn(
-      "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium",
-      variants[variant],
-      className
-    )}>
+    <span 
+      {...props}
+      className={cn(
+        "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium",
+        variants[variant],
+        className
+      )}
+    >
       {children}
     </span>
   );

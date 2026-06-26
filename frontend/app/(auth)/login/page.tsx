@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image"; // <-- Importamos Next Image
+import Image from "next/image";
 import { login } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -21,14 +21,14 @@ export default function LoginPage() {
   }, [router]);
 
   // --- ADD THIS BLOCK TO SKIP LOGIN ---
-  //useEffect(() => {
-  //  if (mounted) {
-  //    // Set a dummy token (or a real one if you generated one via Postman)
-  //    localStorage.setItem("aura_token", "dev_bypass_token");
-  //    document.cookie = "aura_token=dev_bypass_token; path=/; max-age=604800; SameSite=Lax;";
-  //    router.push("/dashboard");
-  //  }
-  //}, [router, mounted]);
+  ///useEffect(() => {
+  ///  if (mounted) {
+  ///    // Set a dummy token (or a real one if you generated one via Postman)
+  ///    localStorage.setItem("aura_token", "dev_bypass_token");
+  ///    document.cookie = "aura_token=dev_bypass_token; path=/; max-age=604800; SameSite=Lax;";
+  ///    router.push("/dashboard");
+  ///  }
+  ///}, [router, mounted]);
   // ------------------------------------
 
   async function handleSubmit(e: React.FormEvent) {

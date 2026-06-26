@@ -143,7 +143,37 @@ export const useDataMode = create<DataStore>((set) => ({
         base_architecture: 'yolov8n.yaml',
         epochs: 100,
         input_size: '640x640',
-        batch_size: 16
+        batch_size: 16,
+        compilations: [
+          {
+            id: 'comp-1',
+            model_id: 'mod-101',
+            hardware_type: 'hailo8',
+            compiled_key: 'compiled/mod-101/model.hef',
+            compiled_sha256: 'sha256-hailo8-compilation-mock-hash-value-12345',
+            compile_status: 'ready',
+            created_at: new Date().toISOString(),
+          },
+          {
+            id: 'comp-2',
+            model_id: 'mod-101',
+            hardware_type: 'rpi',
+            compiled_key: 'compiled/mod-101/model.onnx',
+            compiled_sha256: 'sha256-rpi-compilation-mock-hash-value-67890',
+            compile_status: 'ready',
+            created_at: new Date().toISOString(),
+          },
+          {
+            id: 'comp-3',
+            model_id: 'mod-101',
+            hardware_type: 'jetson_orin_nano',
+            compiled_key: '',
+            compiled_sha256: '',
+            compile_status: 'failed',
+            compile_error: 'TensorRT compilation timeout: CUDA out of memory',
+            created_at: new Date().toISOString(),
+          }
+        ]
       },
       {
         id: 'mod-102',

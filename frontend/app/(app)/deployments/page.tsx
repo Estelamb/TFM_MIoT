@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/Badge";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { Modal } from "@/components/ui/Modal";
 import { HW_LABELS, fmtRelative } from "@/lib/utils";
-import { Rocket, Plus, Check, AlertTriangle, Trash2, Edit } from "lucide-react";
+import { Rocket, Plus, Check, AlertTriangle, Trash2, Edit, RotateCcw } from "lucide-react";
 import { DeploymentMap } from "@/components/monitoring/DeploymentMap";
 
 const STATUS_VARIANT: Record<string, any> = {
@@ -47,6 +47,7 @@ export default function DeploymentsPage() {
   const [name, setName] = useState("");
   const [deployErr, setDeployErr] = useState("");
   const [deployingCount, setDeployingCount] = useState(0);
+  const [repeatingId, setRepeatingId] = useState<string | null>(null);
 
   const readyModels = models.filter((m: any) => m.compile_status === "ready");
 
@@ -70,6 +71,31 @@ export default function DeploymentsPage() {
     mutationFn: (id: string) => deleteDeployment(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["deployments"] }),
   });
+
+  const repeatMutation = useMutation({
+    mutationFn: (d: any) =>
+      createDeployment({
+        device_ids: [d.device_id],
+        model_id: d.model_id,
+        script_id: d.script_id,
+        name: d.name || undefined,
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["deployments"] });
+    },
+  });
+
+  const handleRepeat = async (d: any) => {
+    setRepeatingId(d.id);
+    setDeployErr("");
+    try {
+      await repeatMutation.mutateAsync(d);
+    } catch (err: any) {
+      setDeployErr(err?.response?.data?.detail || "Failed to repeat deployment");
+    } finally {
+      setRepeatingId(null);
+    }
+  };
 
   const handleDeploy = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,6 +140,18 @@ export default function DeploymentsPage() {
         </Button>
       </div>
 
+      {deployErr && !open && (
+        <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-xl flex items-center justify-between gap-3 text-sm text-red-650 dark:text-red-400">
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={18} className="text-red-500 shrink-0" />
+            <span>{deployErr}</span>
+          </div>
+          <button type="button" onClick={() => setDeployErr("")} className="text-xs font-semibold text-gray-450 hover:text-gray-700 dark:hover:text-gray-250 transition-colors underline">
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Map */}
         <div className="lg:col-span-7 flex flex-col relative w-full">
@@ -128,11 +166,11 @@ export default function DeploymentsPage() {
         </div>
 
         {/* Right Column: Deployments list */}
-        <div className="lg:col-span-5 space-y-4 max-h-[500px] overflow-y-auto pr-1">
+        <div className="lg:col-span-5 space-y-4 h-[500px] overflow-y-auto pr-1">
           {isLoading && !isDemo ? (
             <div className="text-center py-10 text-gray-500">Loading deployments...</div>
           ) : deployments.length === 0 ? (
-            <Card className="border-dashed border-2 bg-transparent shadow-none opacity-60">
+            <Card className="border-dashed border-2 bg-transparent shadow-none opacity-60 h-full flex flex-col justify-center">
               <div className="flex flex-col items-center justify-center p-6 text-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700">
                   <Rocket size={20} className="text-gray-400" />
@@ -185,6 +223,14 @@ export default function DeploymentsPage() {
                       <span className="text-[9px] text-gray-400">{fmtRelative(d.created_at)}</span>
                     </div>
                     <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={() => handleRepeat(d)}
+                        disabled={repeatingId !== null}
+                        className="p-1.5 text-gray-400 hover:text-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Repeat Deployment"
+                      >
+                        <RotateCcw size={14} className={repeatingId === d.id ? "animate-spin" : ""} />
+                      </button>
                       <button
                         onClick={() => handleEdit(d)}
                         className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors"

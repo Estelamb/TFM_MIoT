@@ -567,10 +567,34 @@ export default function ModelsPage() {
                         <StatusIcon size={20} className={cfg.color} />
                       </div>
                       <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-base font-bold text-gray-900 dark:text-white">{m.name}</span>
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span className="text-base font-bold text-gray-900 dark:text-white mr-1">{m.name}</span>
                           <Badge variant={cfg.badge}>{normalizedStatus}</Badge>
-                          {m.hardware_type ? (
+                          {m.compilations && m.compilations.length > 0 ? (
+                            m.compilations.map((c: any) => {
+                              const cStatus = normalizeStatus(c.compile_status);
+                              if (cStatus === "compiling") {
+                                return (
+                                  <Badge key={c.id} variant="warning" className="bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/30 animate-pulse" title={c.compile_error || undefined}>
+                                    Compiling: {HW_LABELS[c.hardware_type] || c.hardware_type}
+                                  </Badge>
+                                );
+                              } else if (cStatus === "failed") {
+                                return (
+                                  <Badge key={c.id} variant="danger" className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900/30 font-semibold" title={c.compile_error || undefined}>
+                                    Compile Failed: {HW_LABELS[c.hardware_type] || c.hardware_type}
+                                  </Badge>
+                                );
+                              } else if (cStatus === "ready") {
+                                return (
+                                  <Badge key={c.id} variant="success" className="bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30">
+                                    Compiled: {HW_LABELS[c.hardware_type] || c.hardware_type}
+                                  </Badge>
+                                );
+                              }
+                              return null;
+                            })
+                          ) : m.hardware_type ? (
                             normalizedStatus === "compiling" ? (
                               <Badge variant="warning" className="bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/30 animate-pulse">
                                 Compiling: {HW_LABELS[m.hardware_type] || m.hardware_type}
@@ -623,11 +647,18 @@ export default function ModelsPage() {
                             ) : null}
                           </div>
                         )}
-                        {m.compile_error && (
+                        {m.compilations && m.compilations.some((c: any) => c.compile_status === "failed" && c.compile_error) ? (
+                          m.compilations.filter((c: any) => c.compile_status === "failed" && c.compile_error).map((c: any) => (
+                            <p key={c.id} className="text-xs text-red-500 mt-2 font-mono bg-red-50 dark:bg-red-950/20 p-2 rounded border border-red-100 dark:border-red-900/30 max-w-xl animate-fade-in">
+                              <span className="font-bold">{HW_LABELS[c.hardware_type] || c.hardware_type} error: </span>
+                              {c.compile_error}
+                            </p>
+                          ))
+                        ) : m.compile_error ? (
                           <p className="text-xs text-red-500 mt-2 font-mono bg-red-50 dark:bg-red-950/20 p-2 rounded border border-red-100 dark:border-red-900/30 max-w-xl animate-fade-in">
                             {m.compile_error}
                           </p>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">

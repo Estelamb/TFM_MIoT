@@ -38,6 +38,8 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
         self._compilation_service_grpc = compilation_service_grpc
         self._redis_settings = RedisSettings.from_dsn(redis_url)
         self._redis_pool = None
+        self._ai_channel = grpc.aio.insecure_channel(ai_service_grpc)
+        self._ai_stub = ai_pb2_grpc.AIServiceStub(self._ai_channel)
 
     async def _get_pool(self):
         if self._redis_pool is None:
@@ -58,10 +60,33 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                 await ctx.abort(grpc.StatusCode.NOT_FOUND, "Script not found"); return
 
             # Check if model is already compiled for the device's target hardware architecture
+            compilation_ready = False
+            compiled_key = ""
+            compiled_sha256 = ""
+
             if model.hardware_type == device.hardware_type and model.compile_status == "ready":
+                compilation_ready = True
+                compiled_key = model.compiled_key
+                compiled_sha256 = model.compiled_sha256
+            else:
+                from app.models.orm import ModelCompilationRef
+                from sqlalchemy import select
+                res = await s.execute(
+                    select(ModelCompilationRef)
+                    .where(ModelCompilationRef.model_id == req.model_id)
+                    .where(ModelCompilationRef.hardware_type == device.hardware_type)
+                    .where(ModelCompilationRef.compile_status == "ready")
+                )
+                comp = res.scalar_one_or_none()
+                if comp:
+                    compilation_ready = True
+                    compiled_key = comp.compiled_key
+                    compiled_sha256 = comp.compiled_sha256
+
+            if compilation_ready:
                 # Already compiled! Deploy immediately
                 dep = await repo.create(req.device_id, req.model_id, req.script_id, name=req.name)
-                model_url = await presigned_url("compiled", model.compiled_key)
+                model_url = await presigned_url("compiled", compiled_key)
                 script_url = await presigned_url("scripts", script.script_key)
 
                 class_names = []
@@ -78,7 +103,7 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                     "command": "deploy",
                     "deployment_id": dep.id,
                     "model_url": model_url,
-                    "model_sha256": model.compiled_sha256,
+                    "model_sha256": compiled_sha256,
                     "script_url": script_url,
                     "script_sha256": script.script_sha256,
                     "class_names": class_names,

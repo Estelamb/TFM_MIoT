@@ -97,6 +97,17 @@ export const deleteDevice = (id: string) => api.delete(`/api/devices/${id}`);
 // ── Models ────────────────────────────────────────────────────────────────────
 export type CompileStatus = "pending" | "compiling" | "ready" | "failed" | "training";
 
+export interface ModelCompilation {
+  id: string;
+  model_id: string;
+  hardware_type: string;
+  compiled_key: string;
+  compiled_sha256: string;
+  compile_status: CompileStatus;
+  compile_error?: string;
+  created_at: string;
+}
+
 export interface Model {
   id: string; name: string; description?: string; hardware_type?: string;
   compile_status: CompileStatus; compile_error?: string; created_at: string;
@@ -107,6 +118,7 @@ export interface Model {
   input_size?: string;
   batch_size?: number;
   source_key?: string;
+  compilations?: ModelCompilation[];
 }
 
 export const getModels = async (): Promise<Model[]> => {
@@ -441,7 +453,43 @@ export const getDeployments = async (): Promise<Deployment[]> => {
 
 // Backend expects { device_id, model_id, script_id } (singular device_id)
 // The page handles multi-device by calling this once per device
-export const createDeployment = (body: { device_ids: string[]; model_id: string; script_id: string; name?: string }) => {
+export const createDeployment = async (body: { device_ids: string[]; model_id: string; script_id: string; name?: string }): Promise<Deployment> => {
+  if (useDataMode.getState().mode === "demo") {
+    const device_id = body.device_ids[0];
+    const newDep: Deployment = {
+      id: `demo-dep-${Date.now()}`,
+      device_id,
+      model_id: body.model_id,
+      script_id: body.script_id,
+      status: "pending",
+      created_at: new Date().toISOString(),
+      name: body.name || `Deployment ${Date.now().toString().slice(-4)}`
+    };
+    const currentDeps = useDataMode.getState().demoData.deployments;
+    useDataMode.setState({
+      demoData: {
+        ...useDataMode.getState().demoData,
+        deployments: [newDep, ...currentDeps]
+      }
+    });
+
+    // Simulate updating status from pending to compiling to sent to running
+    setTimeout(() => {
+      const state = useDataMode.getState().demoData;
+      const deps = state.deployments.map((d: any) =>
+        d.id === newDep.id ? { ...d, status: "running" as const } : d
+      );
+      useDataMode.setState({
+        demoData: {
+          ...state,
+          deployments: deps
+        }
+      });
+    }, 2000);
+
+    return newDep;
+  }
+
   const device_id = body.device_ids[0];
   return api.post<Deployment>("/api/deployments", {
     device_id,
@@ -451,7 +499,19 @@ export const createDeployment = (body: { device_ids: string[]; model_id: string;
   }).then(r => r.data);
 };
 
-export const deleteDeployment = (id: string) => api.delete(`/api/deployments/${id}`);
+export const deleteDeployment = async (id: string): Promise<any> => {
+  if (useDataMode.getState().mode === "demo") {
+    const state = useDataMode.getState().demoData;
+    useDataMode.setState({
+      demoData: {
+        ...state,
+        deployments: state.deployments.filter((d: any) => d.id !== id)
+      }
+    });
+    return;
+  }
+  return api.delete(`/api/deployments/${id}`);
+};
 
 // ── Monitoring ────────────────────────────────────────────────────────────────
 export interface DeviceState {

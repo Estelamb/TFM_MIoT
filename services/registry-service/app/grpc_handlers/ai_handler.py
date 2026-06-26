@@ -24,6 +24,20 @@ ALLOWED_BASE_MODELS = {
 
 
 def _to_proto(m) -> ai_pb2.ModelResponse:
+    compilations_proto = []
+    if hasattr(m, "compilations") and m.compilations:
+        for c in m.compilations:
+            compilations_proto.append(ai_pb2.ModelCompilationResponse(
+                id=c.id,
+                model_id=c.model_id,
+                hardware_type=c.hardware_type,
+                compiled_key=c.compiled_key or "",
+                compiled_sha256=c.compiled_sha256 or "",
+                compile_status=c.compile_status,
+                compile_error=c.compile_error or "",
+                created_at=c.created_at.isoformat() if c.created_at else ""
+            ))
+
     return ai_pb2.ModelResponse(
         id=m.id, name=m.name, description=m.description or "",
         source_key=m.source_key, source_sha256=m.source_sha256,
@@ -36,6 +50,7 @@ def _to_proto(m) -> ai_pb2.ModelResponse:
         input_size=m.input_size or "",
         batch_size=m.batch_size or 0,
         dataset_version_id=m.dataset_version_id or "",
+        compilations=compilations_proto,
     )
 
 

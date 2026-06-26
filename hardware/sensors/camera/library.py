@@ -8,7 +8,7 @@ class Camera:
     def __init__(self, **kwargs):
         driver, params = get_active_driver("camera")
         # Map built-in drivers to rpi_camera_module_3 for local simulation/scripts
-        if driver in ("opencv", "libcamera", "imx500", "template"):
+        if driver in ("opencv", "libcamera", "template"):
             driver = "rpi_camera_module_3"
         merged_params = {**params, **kwargs}
         driver_cls = load_specific_driver("sensors", "camera", driver)

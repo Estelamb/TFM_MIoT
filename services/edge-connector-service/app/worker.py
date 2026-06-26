@@ -68,9 +68,23 @@ async def compile_and_deploy_job(
         skip_compile = False
         async with ctx["session_factory"]() as s:
             model = await s.get(ModelRef, model_id)
-            if model and model.hardware_type == hardware_type and model.compile_status in ("compiling", "ready"):
-                skip_compile = True
-                logger.info(f"Model {model_id} is already {model.compile_status} for {hardware_type}. Skipping CompileModel.")
+            if model:
+                if model.hardware_type == hardware_type and model.compile_status in ("compiling", "ready"):
+                    skip_compile = True
+                else:
+                    from app.models.orm import ModelCompilationRef
+                    from sqlalchemy import select
+                    res = await s.execute(
+                        select(ModelCompilationRef)
+                        .where(ModelCompilationRef.model_id == model_id)
+                        .where(ModelCompilationRef.hardware_type == hardware_type)
+                        .where(ModelCompilationRef.compile_status.in_(["compiling", "ready"]))
+                    )
+                    comp = res.scalar_one_or_none()
+                    if comp:
+                        skip_compile = True
+                if skip_compile:
+                    logger.info(f"Model {model_id} is already compiling/ready for {hardware_type}. Skipping CompileModel.")
 
         if not skip_compile:
             # Delete old redis key before triggering compilation to prevent reading obsolete "ready" state
@@ -149,8 +163,22 @@ async def compile_and_deploy_job(
         async with ctx["session_factory"]() as s:
             model = await s.get(ModelRef, model_id)
             if model:
-                compiled_key = model.compiled_key
-                compiled_sha256 = model.compiled_sha256
+                if model.hardware_type == hardware_type and model.compiled_key:
+                    compiled_key = model.compiled_key
+                    compiled_sha256 = model.compiled_sha256
+                else:
+                    from app.models.orm import ModelCompilationRef
+                    from sqlalchemy import select
+                    res = await s.execute(
+                        select(ModelCompilationRef)
+                        .where(ModelCompilationRef.model_id == model_id)
+                        .where(ModelCompilationRef.hardware_type == hardware_type)
+                        .where(ModelCompilationRef.compile_status == "ready")
+                    )
+                    comp = res.scalar_one_or_none()
+                    if comp:
+                        compiled_key = comp.compiled_key
+                        compiled_sha256 = comp.compiled_sha256
             else:
                 logger.error(f"Model {model_id} not found in DB after compilation")
                 dep = await s.get(Deployment, dep_id)

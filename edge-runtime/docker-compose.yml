@@ -16,9 +16,8 @@ services:
       - AURA_WORK_DIR=${AURA_WORK_DIR:-/tmp/aura}
       - AURA_HARDWARE_DAEMON_HOST=${AURA_HARDWARE_DAEMON_HOST:-172.18.0.1}
       - AURA_CAMERA_ENABLED=${AURA_CAMERA_ENABLED:-true}
-    # devices:
-    #   # Monta la cámara de la Raspberry Pi (USB o módulo de cámara CSI)
-    #   - "/dev/video0:/dev/video0"
+    networks:
+      - aura-net
     volumes:
       - ./data:/tmp/aura
       # Configuración local desde el host (solo lectura)
@@ -26,6 +25,11 @@ services:
       # Librerías de hardware — persistente entre reinicios.
       # Se llena vía OTA (update_libraries) al conectarse a la plataforma.
       - edge-agent-hardware:/app/hardware
+
+networks:
+  aura-net:
+    name: aura_aura-net
+    external: true
 
 volumes:
   edge-agent-hardware:
