@@ -48,9 +48,9 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 # ── Project info ──────────────────────────────────────────────────────────────
 project   = "AURA Platform"
-copyright = "2025, AURA Project"
-author    = "AURA Team"
-release   = "0.1.0"
+copyright = "2026, Estela Mora Barba"
+author    = "Estela Mora Barba"
+release   = "1.0"
 
 # ── Extensions ────────────────────────────────────────────────────────────────
 extensions = [

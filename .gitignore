@@ -1,3 +1,4 @@
+# General
 .env
 __pycache__/
 *.pyc
@@ -9,17 +10,10 @@ frontend/node_modules/
 frontend/.next/
 frontend/.env.local
 
-
-shared/proto_gen/__pycache__/
-*.egg-info/
-.DS_Store
-/tmp/aura-compilation/
-
+# Training
 .vscode/
 .venv/
 .venv_ubuntu/
-
-# YOLO / Ultralytics outputs & weights
 runs/
 run/
 *.pt
@@ -37,3 +31,10 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Others
+shared/proto_gen/__pycache__/
+*.egg-info/
+.DS_Store
+/tmp/aura-compilation/
+report/
