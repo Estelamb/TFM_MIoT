@@ -1,7 +1,7 @@
 """
-Repositorio de compilación.
-Nota: el estado se actualiza via gRPC al ai-service (que es owner de la tabla models).
-Este repo solo se usa para lecturas locales de diagnóstico.
+Compilation repository.
+Note: Status is updated via gRPC to the ai-service (which is the owner of the models table).
+This repository is only used for local diagnostic reads.
 """
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.orm import ModelRef

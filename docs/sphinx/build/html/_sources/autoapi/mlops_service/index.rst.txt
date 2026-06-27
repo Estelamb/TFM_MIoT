@@ -16,6 +16,7 @@ Submodules
    /autoapi/mlops_service/grpc_handlers/index
    /autoapi/mlops_service/main/index
    /autoapi/mlops_service/models/index
+   /autoapi/mlops_service/others/index
    /autoapi/mlops_service/repositories/index
    /autoapi/mlops_service/sensors/index
    /autoapi/mlops_service/worker/index

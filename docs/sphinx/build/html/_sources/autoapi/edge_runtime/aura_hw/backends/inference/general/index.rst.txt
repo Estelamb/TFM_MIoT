@@ -44,7 +44,7 @@ Module Contents
                 ``"rpi"``, ``"jetson_orin_nano"``.
 
 
-   .. py:method:: load(model_path: str) -> None
+   .. py:method:: load(model_path: str, class_names: list[str] = None) -> None
 
       Load a compiled model file into the accelerator.
 

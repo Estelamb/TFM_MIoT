@@ -1,7 +1,7 @@
 AURA Platform Documentation
 ============================
 
-Edge AI deployment platform for IoT devices.
+AI deployment platform for IoT Edge devices.
 
 .. toctree::
    :maxdepth: 2
@@ -9,8 +9,6 @@ Edge AI deployment platform for IoT devices.
 
    introduction
    architecture
-   overview
-   quickstart
 
 .. toctree::
    :maxdepth: 2
@@ -18,6 +16,9 @@ Edge AI deployment platform for IoT devices.
 
    tutorials/run_platform
    tutorials/use_platform
+   tutorials/edge_runtime
+   tutorials/add_hardware
+   tutorials/create_script
    tutorials/hardware/index
 
 .. toctree::
@@ -25,24 +26,7 @@ Edge AI deployment platform for IoT devices.
    :caption: Code Explanation
 
    code_explanation
-
-.. toctree::
-   :maxdepth: 3
-   :caption: API Reference
-
    autoapi/api_gateway_service/index
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Edge Runtime
-
-   edge_runtime
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Development
-
-   contributing
 
 Indices and tables
 ==================

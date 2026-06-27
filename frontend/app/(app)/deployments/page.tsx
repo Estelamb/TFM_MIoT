@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getDeployments, getDevices, getModels, getScripts, createDeployment, deleteDeployment, getMonitoringStates } from "@/lib/api";
 import Link from "next/link";
-import { useDataMode } from "@/hooks/useDataMode";
+
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
@@ -25,20 +25,11 @@ const STATUS_VARIANT: Record<string, any> = {
 
 export default function DeploymentsPage() {
   const qc = useQueryClient();
-  const { mode, demoData } = useDataMode();
-  const isDemo = mode === "demo";
-
-  const { data: realDeployments = [], isLoading } = useQuery({ queryKey: ["deployments"], queryFn: getDeployments, refetchInterval: 5000 });
-  const { data: realDevices = [] } = useQuery({ queryKey: ["devices"], queryFn: getDevices });
-  const { data: realModels = [] } = useQuery({ queryKey: ["models"], queryFn: getModels });
-  const { data: realScripts = [] } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
-  const { data: realStates = [] } = useQuery({ queryKey: ["monitoring"], queryFn: getMonitoringStates, refetchInterval: 5000 });
-
-  const deployments = isDemo ? demoData.deployments : realDeployments;
-  const devices = isDemo ? demoData.devices : realDevices;
-  const models = isDemo ? demoData.models : realModels;
-  const scripts = isDemo ? demoData.scripts : realScripts;
-  const states = isDemo ? demoData.monitoringStates : realStates;
+  const { data: deployments = [], isLoading } = useQuery({ queryKey: ["deployments"], queryFn: getDeployments, refetchInterval: 5000 });
+  const { data: devices = [] } = useQuery({ queryKey: ["devices"], queryFn: getDevices });
+  const { data: models = [] } = useQuery({ queryKey: ["models"], queryFn: getModels });
+  const { data: scripts = [] } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
+  const { data: states = [] } = useQuery({ queryKey: ["monitoring"], queryFn: getMonitoringStates, refetchInterval: 5000 });
 
   const [open, setOpen] = useState(false);
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
@@ -152,22 +143,22 @@ export default function DeploymentsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch min-h-[750px]">
         {/* Left Column: Map */}
-        <div className="lg:col-span-7 flex flex-col relative w-full">
+        <div className="lg:col-span-7 flex flex-col relative w-full h-full">
           <DeploymentMap
             states={states}
             deployments={deployments}
             devices={devices}
             models={models}
             scripts={scripts}
-            isDemo={isDemo}
+
           />
         </div>
 
         {/* Right Column: Deployments list */}
-        <div className="lg:col-span-5 space-y-4 h-[500px] overflow-y-auto pr-1">
-          {isLoading && !isDemo ? (
+        <div className="lg:col-span-5 space-y-4 overflow-y-auto pr-1">
+          {isLoading ? (
             <div className="text-center py-10 text-gray-500">Loading deployments...</div>
           ) : deployments.length === 0 ? (
             <Card className="border-dashed border-2 bg-transparent shadow-none opacity-60 h-full flex flex-col justify-center">

@@ -1,4 +1,4 @@
-"""gRPC stubs singleton para el gateway."""
+"""gRPC stubs singleton for the gateway."""
 import grpc
 from shared.proto_gen import (
     device_pb2_grpc, ai_pb2_grpc, script_pb2_grpc,

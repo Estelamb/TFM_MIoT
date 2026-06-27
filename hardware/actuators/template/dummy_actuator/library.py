@@ -2,9 +2,10 @@
 AURA Actuator Library: Dummy Template Actuator
 ==============================================
 """
-LABEL = "Template Actuator"
 
 class TemplateActuatorLibrary:
+    LABEL = "Template Actuator"
+    
     def __init__(self, **kwargs):
         self.params = kwargs
 

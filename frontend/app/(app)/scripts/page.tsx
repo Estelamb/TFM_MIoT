@@ -3,7 +3,6 @@ import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { getScripts, deleteScript, uploadScript, getHardwareTypes, getLibraries, LibraryGroup } from "@/lib/api";
-import { useDataMode } from "@/hooks/useDataMode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
@@ -23,8 +22,6 @@ const Editor = dynamic(() => import("@monaco-editor/react"), {
     </div>
   ),
 });
-
-
 
 const SCRIPT_TEMPLATE = `"""
 AURA Edge Script Template
@@ -108,8 +105,6 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export default function ScriptsPage() {
-  const { mode, demoData } = useDataMode();
-  const isDemo = mode === "demo";
   const qc = useQueryClient();
 
   const { data: hardwareTypes = [] } = useQuery({
@@ -119,22 +114,19 @@ export default function ScriptsPage() {
 
   const hwOptions = hardwareTypes.map(v => ({ value: v, label: HW_LABELS[v] || v }));
 
-  const { data: realScripts = [], isLoading } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
-  const scripts = isDemo ? demoData.scripts : realScripts;
+  const { data: scripts = [], isLoading } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
 
-  // Fetch dynamic hardware libraries (real mode)
+  // Fetch dynamic hardware libraries
   const { data: hwLibraries = [] } = useQuery<LibraryGroup[]>({
     queryKey: ["libraries"],
     queryFn: getLibraries,
-    enabled: !isDemo,
   });
 
   const [editingScript, setEditingScript] = useState<any | null>(null);
   const [code, setCode] = useState("");
   const [lang, setLang] = useState("python");
-  const [refLang, setRefLang] = useState("python");
 
-  // Upload modal state (real mode only)
+  // Upload modal state
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadForm, setUploadForm] = useState({ name: "", description: "", language: "python" });
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -148,57 +140,62 @@ export default function ScriptsPage() {
   });
 
   const uploadMutation = useMutation({
-    mutationFn: () =>
-      uploadScript(uploadForm.name, uploadForm.description, uploadFile!, uploadForm.language),
+    mutationFn: () => {
+      if (!uploadFile) throw new Error("No file selected");
+      return uploadScript(uploadForm.name, uploadForm.description, uploadFile, uploadForm.language);
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["scripts"] });
       setUploadOpen(false);
       setUploadFile(null);
-      setUploadForm({ name: "", description: "", language: "python" });
-      setEditingScript(null); // Te devuelve a la lista principal al terminar de subir
     },
   });
 
-  // Descarga local
-  const saveFromEditor = () => {
-    const ext = lang === "python" ? "py" : lang === "java" ? "java" : "cpp";
-    const blob = new Blob([code], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${editingScript?.name?.replace(/\.[^.]+$/, "") || "script"}.${ext}`;
-    a.click();
-  };
-
-  // Cargar archivo local al editor
+  // Local editor file loaders
   const handleEditorFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = ev => setCode(ev.target?.result as string);
+      reader.onload = (evt) => {
+        setCode(evt.target?.result as string || "");
+      };
       reader.readAsText(file);
     }
   };
 
-  const openNewScript = () => {
-    setEditingScript({ name: "New Script", hardware_type: "hailo8" });
-    setCode(SCRIPT_TEMPLATE);
+  const saveFromEditor = () => {
+    const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = editingScript.name || "script.py";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
-  // Coge el código en memoria, crea un archivo virtual y abre el modal de confirmación
   const handleSaveToPlatformClick = () => {
-    const ext = lang === "python" ? "py" : lang === "java" ? "java" : "cpp";
-    const baseName = editingScript.name === "New Script" ? "script" : editingScript.name;
     const blob = new Blob([code], { type: "text/plain" });
-    const file = new File([blob], `${baseName}.${ext}`, { type: "text/plain" });
-
-    setUploadFile(file);
+    const file = new File([blob], editingScript.name, { type: "text/plain" });
     setUploadForm({
-      name: editingScript.name === "New Script" ? "" : `${editingScript.name}_v2`,
+      name: editingScript.name.replace(/\.[^/.]+$/, ""),
       description: editingScript.description || "",
       language: lang
     });
+    setUploadFile(file);
     setUploadOpen(true);
+  };
+
+  const openNewScript = () => {
+    setCode(SCRIPT_TEMPLATE);
+    setLang("python");
+    setEditingScript({
+      id: "new",
+      name: "new_inference_script.py",
+      description: "Custom pre/post inference pipeline",
+      content: SCRIPT_TEMPLATE,
+    });
   };
 
   // Auto-detect language from extension
@@ -216,9 +213,7 @@ export default function ScriptsPage() {
 
   // EDITOR VIEW
   if (editingScript) {
-    const activeDocs = demoData.halDocs[lang] || [];
-    const showDemoDocs = isDemo && activeDocs.length > 0;
-    const showRealDocs = !isDemo && hwLibraries.length > 0;
+    const showRealDocs = hwLibraries.length > 0;
     return (
       <div className="h-[calc(100vh-80px)] flex flex-col animate-fade-in">
         <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-800 bg-white/50 dark:bg-gray-950/50 backdrop-blur-md">
@@ -231,11 +226,9 @@ export default function ScriptsPage() {
             </div>
           </div>
           <div className="flex gap-2 items-center">
-            {!isDemo && (
-              <div className="hidden md:flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800/50 mr-2">
-                <Info size={12} /> Save to Platform creates a new script version
-              </div>
-            )}
+            <div className="hidden md:flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800/50 mr-2">
+              <Info size={12} /> Save to Platform creates a new script version
+            </div>
             <input type="file" ref={editorFileRef} className="hidden" accept=".py,.cpp,.java" onChange={handleEditorFileUpload} />
             <Button variant="outline" size="sm" onClick={() => editorFileRef.current?.click()}>
               <Upload size={14} className="mr-2" /> Load Local
@@ -243,12 +236,9 @@ export default function ScriptsPage() {
             <Button variant="outline" size="sm" onClick={saveFromEditor}>
               <Download size={14} className="mr-2" /> Download
             </Button>
-            {/* Solo mostramos el guardado en plataforma si estamos en el modo real */}
-            {!isDemo && (
-              <Button size="sm" className="bg-orange-600 hover:bg-orange-700" onClick={handleSaveToPlatformClick}>
-                <Save size={14} className="mr-2" /> Save to Platform
-              </Button>
-            )}
+            <Button size="sm" className="bg-orange-600 hover:bg-orange-700" onClick={handleSaveToPlatformClick}>
+              <Save size={14} className="mr-2" /> Save to Platform
+            </Button>
           </div>
         </div>
 
@@ -256,58 +246,42 @@ export default function ScriptsPage() {
           <div className="flex-1 border-r dark:border-gray-800">
             <Editor height="100%" language={lang} theme="vs-dark" value={code} onChange={v => setCode(v || "")} />
           </div>
-          {(showDemoDocs || showRealDocs) && (
+          {showRealDocs && (
             <div className="w-80 bg-gray-50 dark:bg-gray-950 p-6 overflow-y-auto hidden lg:block">
               <div className="flex items-center gap-2 mb-6 text-orange-500 font-bold">
-                <BookOpen size={20} /> {isDemo ? `HAL API: ${lang.toUpperCase()}` : "Hardware Libraries"}
+                <BookOpen size={20} /> Hardware Libraries
               </div>
-              {isDemo ? (
-                <div className="space-y-6">
-                  {activeDocs.map((fn: any, i: number) => (
-                    <div key={i} className="space-y-1">
-                      <code className="text-sm font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded">
-                        {fn.name}
-                      </code>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{fn.desc}</p>
+              <div className="space-y-5">
+                {hwLibraries.map((lib, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Package size={14} className="text-orange-400" />
+                      <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        {CATEGORY_LABELS[lib.category] || lib.category} / {lib.subcategory}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  {hwLibraries.map((lib, i) => (
-                    <div key={i} className="space-y-2">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Package size={14} className="text-orange-400" />
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                          {CATEGORY_LABELS[lib.category] || lib.category} / {lib.subcategory}
-                        </span>
+                    <code className="block text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded break-all">
+                      from {lib.import_path} import ...
+                    </code>
+                    {lib.api.map((fn, j) => (
+                      <div key={j} className="space-y-0.5 pl-2 border-l-2 border-gray-200 dark:border-gray-700">
+                        <code className="text-xs font-mono text-blue-600 dark:text-blue-400">
+                          {fn.name}
+                        </code>
+                        {fn.desc && (
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">{fn.desc}</p>
+                        )}
                       </div>
-                      <code className="block text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded break-all">
-                        from {lib.import_path} import ...
-                      </code>
-                      {lib.api.map((fn, j) => (
-                        <div key={j} className="space-y-0.5 pl-2 border-l-2 border-gray-200 dark:border-gray-700">
-                          <code className="text-xs font-mono text-blue-600 dark:text-blue-400">
-                            {fn.name}
-                          </code>
-                          {fn.desc && (
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">{fn.desc}</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
       </div>
     );
   }
-
-  // MAIN VIEW
-  const mainViewDocs = demoData.halDocs[refLang] || [];
 
   return (
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-fade-in px-4 sm:px-6 lg:px-12 py-8">
@@ -321,13 +295,11 @@ export default function ScriptsPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          {!isDemo && (
-            <Button variant="outline" onClick={() => setUploadOpen(true)} className="gap-2 shrink-0 border-gray-200 dark:border-gray-800">
-              <Upload size={16} /> Upload File
-            </Button>
-          )}
+          <Button variant="outline" onClick={() => setUploadOpen(true)} className="gap-2 shrink-0 border-gray-200 dark:border-gray-800">
+            <Upload size={16} /> Upload File
+          </Button>
           <Button onClick={openNewScript} className="gap-2 shrink-0">
-            <Code2 size={16} /> {isDemo ? "New Script" : "Write Script"}
+            <Code2 size={16} /> Write Script
           </Button>
         </div>
       </div>
@@ -335,7 +307,7 @@ export default function ScriptsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Scripts list */}
         <div className="lg:col-span-2 space-y-4">
-          {isLoading && !isDemo ? (
+          {isLoading ? (
             <div className="text-center py-10 text-gray-500">Loading scripts...</div>
           ) : scripts.length === 0 ? (
             <Card className="border-dashed border-2 bg-transparent shadow-none opacity-60">
@@ -353,13 +325,11 @@ export default function ScriptsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  {!isDemo && (
-                    <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto" onClick={() => setUploadOpen(true)}>
-                      <Upload size={14} /> Upload File
-                    </Button>
-                  )}
+                  <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto" onClick={() => setUploadOpen(true)}>
+                    <Upload size={14} /> Upload File
+                  </Button>
                   <Button size="sm" className="gap-2 w-full sm:w-auto" onClick={openNewScript}>
-                    <Code2 size={14} /> {isDemo ? "Create First Script" : "Write Script"}
+                    <Code2 size={14} /> Write Script
                   </Button>
                 </div>
               </div>
@@ -401,74 +371,47 @@ export default function ScriptsPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold flex items-center gap-2 text-gray-900 dark:text-white">
                 <BookOpen size={18} className="text-orange-500" />
-                {isDemo ? "HAL API" : "Hardware Libraries"}
+                Hardware Libraries
               </h2>
             </div>
-            {isDemo && (
-              <div className="mb-6">
-                <Select
-                  label="Language Reference"
-                  value={refLang}
-                  onChange={e => setRefLang(e.target.value)}
-                  options={[{ value: "python", label: "Python" }, { value: "cpp", label: "C++" }, { value: "java", label: "Java" }]}
-                />
-              </div>
-            )}
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-              {isDemo ? (
-                /* Demo mode: show hardcoded halDocs */
-                mainViewDocs.length === 0 ? (
-                  <p className="text-sm text-gray-500 italic">
-                    No documentation available for this language.
-                  </p>
-                ) : (
-                  mainViewDocs.map((fn: any, i: number) => (
-                    <div key={i} className="space-y-1 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-800">
-                      <code className="text-xs font-mono text-blue-600 dark:text-blue-400">{fn.name}</code>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mt-1">{fn.desc}</p>
-                    </div>
-                  ))
-                )
+              {hwLibraries.length === 0 ? (
+                <p className="text-sm text-gray-500 italic">
+                  No hardware libraries found. Libraries are scanned from the hardware/ directory.
+                </p>
               ) : (
-                /* Real mode: show dynamic hardware libraries */
-                hwLibraries.length === 0 ? (
-                  <p className="text-sm text-gray-500 italic">
-                    No hardware libraries found. Libraries are scanned from the hardware/ directory.
-                  </p>
-                ) : (
-                  hwLibraries.map((lib, i) => (
-                    <div key={i} className="space-y-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-800">
-                      <div className="flex items-center gap-2">
-                        <Package size={14} className="text-orange-400 shrink-0" />
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                          {CATEGORY_LABELS[lib.category] || lib.category} / {lib.subcategory}
-                        </span>
-                      </div>
-                      <code className="block text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1.5 rounded break-all">
-                        from {lib.import_path} import ...
-                      </code>
-                      <div className="space-y-2 mt-1">
-                        {lib.api.map((fn, j) => (
-                          <div key={j} className="pl-2 border-l-2 border-gray-200 dark:border-gray-700">
-                            <code className="text-xs font-mono text-blue-600 dark:text-blue-400">
-                              {fn.name}
-                            </code>
-                            {fn.desc && (
-                              <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed mt-0.5">{fn.desc}</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                hwLibraries.map((lib, i) => (
+                  <div key={i} className="space-y-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center gap-2">
+                      <Package size={14} className="text-orange-400 shrink-0" />
+                      <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        {CATEGORY_LABELS[lib.category] || lib.category} / {lib.subcategory}
+                      </span>
                     </div>
-                  ))
-                )
+                    <code className="block text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1.5 rounded break-all">
+                      from {lib.import_path} import ...
+                    </code>
+                    <div className="space-y-2 mt-1">
+                      {lib.api.map((fn, j) => (
+                        <div key={j} className="pl-2 border-l-2 border-gray-200 dark:border-gray-700">
+                          <code className="text-xs font-mono text-blue-600 dark:text-blue-400">
+                            {fn.name}
+                          </code>
+                          {fn.desc && (
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed mt-0.5">{fn.desc}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           </Card>
         </div>
       </div>
 
-      {/* Upload modal (real mode) */}
+      {/* Upload modal */}
       <Modal open={uploadOpen} onClose={() => { setUploadOpen(false); setUploadFile(null); }} title="Save Script">
         <form onSubmit={e => { e.preventDefault(); if (uploadFile) uploadMutation.mutate(); }} className="flex flex-col gap-5 pt-4">
           <Input

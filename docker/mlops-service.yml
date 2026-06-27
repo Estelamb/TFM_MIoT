@@ -1,5 +1,5 @@
 # Run from project root: docker compose -f docker/mlops-service.yml up -d
-# Requiere ai-service corriendo en localhost:50052 (o ajustar AI_SERVICE_GRPC)
+# Requires ai-service running at localhost:50052 (or adjust AI_SERVICE_GRPC)
 name: aura
 networks:
   aura-net:

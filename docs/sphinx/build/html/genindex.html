@@ -199,13 +199,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -218,9 +217,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -240,14 +236,6 @@
 <li class="toctree-l2"><a class="reference internal" href="autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -294,6 +282,8 @@
         <ul>
           <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.DeviceRef.__tablename__">(edge_connector_service.models.orm.DeviceRef attribute)</a>
 </li>
+          <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelCompilationRef.__tablename__">(edge_connector_service.models.orm.ModelCompilationRef attribute)</a>
+</li>
           <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef.__tablename__">(edge_connector_service.models.orm.ModelRef attribute)</a>
 </li>
           <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ScriptRef.__tablename__">(edge_connector_service.models.orm.ScriptRef attribute)</a>
@@ -307,6 +297,8 @@
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Device.__tablename__">(registry_service.models.orm.Device attribute)</a>
 </li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model.__tablename__">(registry_service.models.orm.Model attribute)</a>
+</li>
+          <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.__tablename__">(registry_service.models.orm.ModelCompilation attribute)</a>
 </li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Script.__tablename__">(registry_service.models.orm.Script attribute)</a>
 </li>
@@ -490,11 +482,13 @@
   <h2>C</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.camera_manager">camera_manager (in module edge_runtime.hardware_daemon)</a>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.camera_manager">camera_manager (in module edge_runtime.daemon.camera)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/imx500/index.html#edge_runtime.daemon.imx500.IMX500Manager.camera_mgr">camera_mgr (edge_runtime.daemon.imx500.IMX500Manager attribute)</a>
 </li>
         <li><a href="autoapi/edge_runtime/aura_hw/backends/devices/camera/base/index.html#edge_runtime.aura_hw.backends.devices.camera.base.CameraBackend">CameraBackend (class in edge_runtime.aura_hw.backends.devices.camera.base)</a>
 </li>
-        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.CameraManager">CameraManager (class in edge_runtime.hardware_daemon)</a>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager">CameraManager (class in edge_runtime.daemon.camera)</a>
 </li>
         <li><a href="autoapi/edge_runtime/aura_hw/backends/devices/camera/base/index.html#edge_runtime.aura_hw.backends.devices.camera.base.CameraBackend.capture_frame">capture_frame() (edge_runtime.aura_hw.backends.devices.camera.base.CameraBackend method)</a>
 
@@ -502,9 +496,11 @@
           <li><a href="autoapi/edge_runtime/aura_hw/backends/devices/camera/general/index.html#edge_runtime.aura_hw.backends.devices.camera.general.GeneralCameraBackend.capture_frame">(edge_runtime.aura_hw.backends.devices.camera.general.GeneralCameraBackend method)</a>
 </li>
         </ul></li>
-        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.CameraManager.capture_raw">capture_raw() (edge_runtime.hardware_daemon.CameraManager method)</a>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.capture_raw">capture_raw() (edge_runtime.daemon.camera.CameraManager method)</a>
 </li>
         <li><a href="autoapi/mlops_service/worker/index.html#mlops_service.worker.check_cancellation">check_cancellation() (in module mlops_service.worker)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/data/script/index.html#edge_runtime.data.script.CLASSES">CLASSES (in module edge_runtime.data.script)</a>
 </li>
         <li><a href="autoapi/edge_runtime/aura_hw/backends/devices/actuator/general/index.html#edge_runtime.aura_hw.backends.devices.actuator.general.GeneralActuatorBackend.close">close() (edge_runtime.aura_hw.backends.devices.actuator.general.GeneralActuatorBackend method)</a>
 
@@ -532,6 +528,8 @@
 </li>
         <li><a href="autoapi/mlops_service/compilers/base/index.html#mlops_service.compilers.base.CompilationResult">CompilationResult (class in mlops_service.compilers.base)</a>
 </li>
+        <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model.compilations">compilations (registry_service.models.orm.Model attribute)</a>
+</li>
         <li><a href="autoapi/mlops_service/grpc_handlers/compilation_handler/index.html#mlops_service.grpc_handlers.compilation_handler.CompilationServiceHandler">CompilationServiceHandler (class in mlops_service.grpc_handlers.compilation_handler)</a>
 </li>
         <li><a href="autoapi/mlops_service/compilers/base/index.html#mlops_service.compilers.base.CompilerBase.compile">compile() (mlops_service.compilers.base.CompilerBase method)</a>
@@ -539,33 +537,49 @@
         <li><a href="autoapi/edge_connector_service/worker/index.html#edge_connector_service.worker.compile_and_deploy_job">compile_and_deploy_job() (in module edge_connector_service.worker)</a>
 </li>
         <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model.compile_error">compile_error (registry_service.models.orm.Model attribute)</a>
-</li>
-        <li><a href="autoapi/mlops_service/worker/index.html#mlops_service.worker.compile_job">compile_job() (in module mlops_service.worker)</a>
-</li>
-        <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef.compile_status">compile_status (edge_connector_service.models.orm.ModelRef attribute)</a>
 
         <ul>
+          <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.compile_error">(registry_service.models.orm.ModelCompilation attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="autoapi/mlops_service/worker/index.html#mlops_service.worker.compile_job">compile_job() (in module mlops_service.worker)</a>
+</li>
+        <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelCompilationRef.compile_status">compile_status (edge_connector_service.models.orm.ModelCompilationRef attribute)</a>
+
+        <ul>
+          <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef.compile_status">(edge_connector_service.models.orm.ModelRef attribute)</a>
+</li>
           <li><a href="autoapi/mlops_service/models/orm/index.html#mlops_service.models.orm.ModelRef.compile_status">(mlops_service.models.orm.ModelRef attribute)</a>
 </li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model.compile_status">(registry_service.models.orm.Model attribute)</a>
 </li>
+          <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.compile_status">(registry_service.models.orm.ModelCompilation attribute)</a>
+</li>
         </ul></li>
-        <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef.compiled_key">compiled_key (edge_connector_service.models.orm.ModelRef attribute)</a>
+        <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelCompilationRef.compiled_key">compiled_key (edge_connector_service.models.orm.ModelCompilationRef attribute)</a>
 
         <ul>
+          <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef.compiled_key">(edge_connector_service.models.orm.ModelRef attribute)</a>
+</li>
           <li><a href="autoapi/mlops_service/compilers/base/index.html#id1">(mlops_service.compilers.base.CompilationResult attribute)</a>, <a href="autoapi/mlops_service/compilers/base/index.html#mlops_service.compilers.base.CompilationResult.compiled_key">[1]</a>
 </li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model.compiled_key">(registry_service.models.orm.Model attribute)</a>
 </li>
+          <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.compiled_key">(registry_service.models.orm.ModelCompilation attribute)</a>
+</li>
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef.compiled_sha256">compiled_sha256 (edge_connector_service.models.orm.ModelRef attribute)</a>
+        <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelCompilationRef.compiled_sha256">compiled_sha256 (edge_connector_service.models.orm.ModelCompilationRef attribute)</a>
 
         <ul>
+          <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef.compiled_sha256">(edge_connector_service.models.orm.ModelRef attribute)</a>
+</li>
           <li><a href="autoapi/mlops_service/compilers/base/index.html#id2">(mlops_service.compilers.base.CompilationResult attribute)</a>, <a href="autoapi/mlops_service/compilers/base/index.html#mlops_service.compilers.base.CompilationResult.compiled_sha256">[1]</a>
 </li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model.compiled_sha256">(registry_service.models.orm.Model attribute)</a>
+</li>
+          <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.compiled_sha256">(registry_service.models.orm.ModelCompilation attribute)</a>
 </li>
         </ul></li>
         <li><a href="autoapi/mlops_service/grpc_handlers/compilation_handler/index.html#mlops_service.grpc_handlers.compilation_handler.CompilationServiceHandler.CompileModel">CompileModel() (mlops_service.grpc_handlers.compilation_handler.CompilationServiceHandler method)</a>
@@ -573,6 +587,8 @@
         <li><a href="autoapi/mlops_service/compilers/base/index.html#mlops_service.compilers.base.CompilerBase">CompilerBase (class in mlops_service.compilers.base)</a>
 </li>
         <li><a href="autoapi/edge_runtime/aura_hw/backends/devices/base/index.html#edge_runtime.aura_hw.backends.devices.base.DeviceBackend.component_id">component_id (edge_runtime.aura_hw.backends.devices.base.DeviceBackend property)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/data/script/index.html#edge_runtime.data.script.CONF_THRESHOLD">CONF_THRESHOLD (in module edge_runtime.data.script)</a>
 </li>
         <li><a href="autoapi/shared/utils/logging/index.html#shared.utils.logging.configure_logging">configure_logging() (in module shared.utils.logging)</a>
 </li>
@@ -620,6 +636,8 @@
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Device.created_at">(registry_service.models.orm.Device attribute)</a>
 </li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model.created_at">(registry_service.models.orm.Model attribute)</a>
+</li>
+          <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.created_at">(registry_service.models.orm.ModelCompilation attribute)</a>
 </li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Script.created_at">(registry_service.models.orm.Script attribute)</a>
 </li>
@@ -726,10 +744,10 @@
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Script.description">(registry_service.models.orm.Script attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="autoapi/edge_runtime/aura_hw/detect/index.html#edge_runtime.aura_hw.detect.detect_hardware">detect_hardware() (in module edge_runtime.aura_hw.detect)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.TrainModelRequestSchema.device">device (api_gateway_service.routers.models.TrainModelRequestSchema attribute)</a>
 </li>
         <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Device">Device (class in registry_service.models.orm)</a>
@@ -795,6 +813,8 @@
         <li><a href="autoapi/mlops_service/compilers/index.html#mlops_service.compilers.discover_compilers">discover_compilers() (in module mlops_service.compilers)</a>
 </li>
         <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.HardwareHTTPHandler.do_GET">do_GET() (edge_runtime.hardware_daemon.HardwareHTTPHandler method)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.HardwareHTTPHandler.do_POST">do_POST() (edge_runtime.hardware_daemon.HardwareHTTPHandler method)</a>
 </li>
         <li><a href="autoapi/mlops_service/compilers/base/index.html#mlops_service.compilers.base.CompilerBase.DOCKER_IMAGE">DOCKER_IMAGE (mlops_service.compilers.base.CompilerBase attribute)</a>
 </li>
@@ -1012,8 +1032,6 @@
           <li><a href="autoapi/edge_runtime/aura_hw/backends/devices/camera/index.html#module-edge_runtime.aura_hw.backends.devices.camera">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     edge_runtime.aura_hw.backends.devices.camera.base
 
@@ -1042,6 +1060,8 @@
           <li><a href="autoapi/edge_runtime/aura_hw/backends/devices/sensor/base/index.html#module-edge_runtime.aura_hw.backends.devices.sensor.base">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     edge_runtime.aura_hw.backends.devices.sensor.general
 
@@ -1103,6 +1123,55 @@
 
         <ul>
           <li><a href="autoapi/edge_runtime/config/index.html#module-edge_runtime.config">module</a>
+</li>
+        </ul></li>
+        <li>
+    edge_runtime.daemon
+
+        <ul>
+          <li><a href="autoapi/edge_runtime/daemon/index.html#module-edge_runtime.daemon">module</a>
+</li>
+        </ul></li>
+        <li>
+    edge_runtime.daemon.camera
+
+        <ul>
+          <li><a href="autoapi/edge_runtime/daemon/camera/index.html#module-edge_runtime.daemon.camera">module</a>
+</li>
+        </ul></li>
+        <li>
+    edge_runtime.daemon.hailo
+
+        <ul>
+          <li><a href="autoapi/edge_runtime/daemon/hailo/index.html#module-edge_runtime.daemon.hailo">module</a>
+</li>
+        </ul></li>
+        <li>
+    edge_runtime.daemon.imx500
+
+        <ul>
+          <li><a href="autoapi/edge_runtime/daemon/imx500/index.html#module-edge_runtime.daemon.imx500">module</a>
+</li>
+        </ul></li>
+        <li>
+    edge_runtime.daemon.shared
+
+        <ul>
+          <li><a href="autoapi/edge_runtime/daemon/shared/index.html#module-edge_runtime.daemon.shared">module</a>
+</li>
+        </ul></li>
+        <li>
+    edge_runtime.data
+
+        <ul>
+          <li><a href="autoapi/edge_runtime/data/index.html#module-edge_runtime.data">module</a>
+</li>
+        </ul></li>
+        <li>
+    edge_runtime.data.script
+
+        <ul>
+          <li><a href="autoapi/edge_runtime/data/script/index.html#module-edge_runtime.data.script">module</a>
 </li>
         </ul></li>
         <li>
@@ -1173,6 +1242,8 @@
         <li><a href="autoapi/mlops_service/compilers/base/index.html#mlops_service.compilers.base.CompilerBase.EXECUTION_STRATEGY">EXECUTION_STRATEGY (mlops_service.compilers.base.CompilerBase attribute)</a>
 </li>
         <li><a href="autoapi/mlops_service/grpc_handlers/compilation_handler/index.html#mlops_service.grpc_handlers.compilation_handler.extract_classes_from_dataset">extract_classes_from_dataset() (in module mlops_service.grpc_handlers.compilation_handler)</a>
+</li>
+        <li><a href="autoapi/registry_service/update_existing_datasets/index.html#registry_service.update_existing_datasets.extract_classes_from_zip">extract_classes_from_zip() (in module registry_service.update_existing_datasets)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1294,6 +1365,8 @@
           <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.get_model">(in module api_gateway_service.routers.models)</a>
 </li>
         </ul></li>
+        <li><a href="autoapi/edge_runtime/aura_hw/runtime/index.html#edge_runtime.aura_hw.runtime.get_model_classes">get_model_classes() (in module edge_runtime.aura_hw.runtime)</a>
+</li>
         <li><a href="autoapi/mlops_service/repositories/compilation/index.html#mlops_service.repositories.compilation.CompilationRepository.get_model_ref">get_model_ref() (mlops_service.repositories.compilation.CompilationRepository method)</a>
 </li>
         <li><a href="autoapi/edge_connector_service/mqtt/listener/index.html#edge_connector_service.mqtt.listener.get_platform_hardware_hash_and_zip">get_platform_hardware_hash_and_zip() (in module edge_connector_service.mqtt.listener)</a>
@@ -1366,6 +1439,12 @@
   <h2>H</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="autoapi/edge_runtime/daemon/hailo/index.html#edge_runtime.daemon.hailo.HailoManager.hailo">hailo (edge_runtime.daemon.hailo.HailoManager attribute)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/hailo/index.html#edge_runtime.daemon.hailo.hailo_manager">hailo_manager (in module edge_runtime.daemon.hailo)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/hailo/index.html#edge_runtime.daemon.hailo.HailoManager">HailoManager (class in edge_runtime.daemon.hailo)</a>
+</li>
         <li><a href="autoapi/edge_runtime/pal/ota_handler/index.html#edge_runtime.pal.ota_handler.OTAHandler.handle_deploy">handle_deploy() (edge_runtime.pal.ota_handler.OTAHandler method)</a>
 </li>
         <li><a href="autoapi/edge_runtime/pal/ota_handler/index.html#edge_runtime.pal.ota_handler.OTAHandler.handle_update_libraries">handle_update_libraries() (edge_runtime.pal.ota_handler.OTAHandler method)</a>
@@ -1374,6 +1453,8 @@
 
         <ul>
           <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.DeviceRef.hardware_type">(edge_connector_service.models.orm.DeviceRef attribute)</a>
+</li>
+          <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelCompilationRef.hardware_type">(edge_connector_service.models.orm.ModelCompilationRef attribute)</a>
 </li>
           <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef.hardware_type">(edge_connector_service.models.orm.ModelRef attribute)</a>
 </li>
@@ -1387,14 +1468,14 @@
 </li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model.hardware_type">(registry_service.models.orm.Model attribute)</a>
 </li>
+          <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.hardware_type">(registry_service.models.orm.ModelCompilation attribute)</a>
+</li>
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.HardwareHTTPHandler">HardwareHTTPHandler (class in edge_runtime.hardware_daemon)</a>
 </li>
-        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.HAS_PICAMERA">HAS_PICAMERA (in module edge_runtime.hardware_daemon)</a>
-</li>
-        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.HAS_PILLOW">HAS_PILLOW (in module edge_runtime.hardware_daemon)</a>
+        <li><a href="autoapi/edge_runtime/daemon/shared/index.html#edge_runtime.daemon.shared.HAS_PILLOW">HAS_PILLOW (in module edge_runtime.daemon.shared)</a>
 </li>
         <li><a href="autoapi/api_gateway_service/main/index.html#api_gateway_service.main.health">health() (in module api_gateway_service.main)</a>
 </li>
@@ -1417,6 +1498,8 @@
         <ul>
           <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.DeviceRef.id">(edge_connector_service.models.orm.DeviceRef attribute)</a>
 </li>
+          <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelCompilationRef.id">(edge_connector_service.models.orm.ModelCompilationRef attribute)</a>
+</li>
           <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef.id">(edge_connector_service.models.orm.ModelRef attribute)</a>
 </li>
           <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ScriptRef.id">(edge_connector_service.models.orm.ScriptRef attribute)</a>
@@ -1431,19 +1514,31 @@
 </li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model.id">(registry_service.models.orm.Model attribute)</a>
 </li>
+          <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.id">(registry_service.models.orm.ModelCompilation attribute)</a>
+</li>
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Script.id">(registry_service.models.orm.Script attribute)</a>
 </li>
         </ul></li>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.imx500">imx500 (edge_runtime.daemon.camera.CameraManager attribute)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/imx500/index.html#edge_runtime.daemon.imx500.imx500_manager">imx500_manager (in module edge_runtime.daemon.imx500)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/imx500/index.html#edge_runtime.daemon.imx500.IMX500Manager">IMX500Manager (class in edge_runtime.daemon.imx500)</a>
+</li>
         <li><a href="autoapi/edge_runtime/aura_hw/backends/inference/base/index.html#edge_runtime.aura_hw.backends.inference.base.InferenceBackend.infer">infer() (edge_runtime.aura_hw.backends.inference.base.InferenceBackend method)</a>
 
         <ul>
           <li><a href="autoapi/edge_runtime/aura_hw/backends/inference/general/index.html#edge_runtime.aura_hw.backends.inference.general.GeneralInferenceBackend.infer">(edge_runtime.aura_hw.backends.inference.general.GeneralInferenceBackend method)</a>
 </li>
-        </ul></li>
-        <li><a href="autoapi/edge_connector_service/models/mongo/index.html#edge_connector_service.models.mongo.INFERENCE_RESULTS_COL">INFERENCE_RESULTS_COL (in module edge_connector_service.models.mongo)</a>
+          <li><a href="autoapi/edge_runtime/daemon/hailo/index.html#edge_runtime.daemon.hailo.HailoManager.infer">(edge_runtime.daemon.hailo.HailoManager method)</a>
 </li>
+          <li><a href="autoapi/edge_runtime/daemon/imx500/index.html#edge_runtime.daemon.imx500.IMX500Manager.infer">(edge_runtime.daemon.imx500.IMX500Manager method)</a>
+</li>
+        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="autoapi/edge_connector_service/models/mongo/index.html#edge_connector_service.models.mongo.INFERENCE_RESULTS_COL">INFERENCE_RESULTS_COL (in module edge_connector_service.models.mongo)</a>
+</li>
         <li><a href="autoapi/edge_runtime/aura_hw/backends/inference/base/index.html#edge_runtime.aura_hw.backends.inference.base.InferenceBackend">InferenceBackend (class in edge_runtime.aura_hw.backends.inference.base)</a>
 </li>
         <li><a href="autoapi/edge_runtime/aura_hw/backends/devices/actuator/general/index.html#edge_runtime.aura_hw.backends.devices.actuator.general.GeneralActuatorBackend.info">info() (edge_runtime.aura_hw.backends.devices.actuator.general.GeneralActuatorBackend method)</a>
@@ -1474,7 +1569,7 @@
         </ul></li>
         <li><a href="autoapi/edge_connector_service/repositories/monitoring/index.html#edge_connector_service.repositories.monitoring.MonitoringRepository.insert_inference_result">insert_inference_result() (edge_connector_service.repositories.monitoring.MonitoringRepository method)</a>
 </li>
-        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.CameraManager.is_active">is_active (edge_runtime.hardware_daemon.CameraManager attribute)</a>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.is_active">is_active (edge_runtime.daemon.camera.CameraManager attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1519,6 +1614,10 @@
 </li>
         </ul></li>
         <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Device.last_seen_at">last_seen_at (registry_service.models.orm.Device attribute)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.latest_frame">latest_frame (edge_runtime.daemon.camera.CameraManager attribute)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.latest_outputs">latest_outputs (edge_runtime.daemon.camera.CameraManager attribute)</a>
 </li>
         <li><a href="autoapi/api_gateway_service/main/index.html#api_gateway_service.main.lifespan">lifespan() (in module api_gateway_service.main)</a>
 </li>
@@ -1577,16 +1676,26 @@
         <ul>
           <li><a href="autoapi/edge_runtime/aura_hw/backends/inference/general/index.html#edge_runtime.aura_hw.backends.inference.general.GeneralInferenceBackend.load">(edge_runtime.aura_hw.backends.inference.general.GeneralInferenceBackend method)</a>
 </li>
+          <li><a href="autoapi/edge_runtime/daemon/hailo/index.html#edge_runtime.daemon.hailo.HailoManager.load">(edge_runtime.daemon.hailo.HailoManager method)</a>
+</li>
+          <li><a href="autoapi/edge_runtime/daemon/imx500/index.html#edge_runtime.daemon.imx500.IMX500Manager.load">(edge_runtime.daemon.imx500.IMX500Manager method)</a>
+</li>
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="autoapi/edge_runtime/aura_hw/loader/index.html#edge_runtime.aura_hw.loader.load_class_from_module">load_class_from_module() (in module edge_runtime.aura_hw.loader)</a>
 </li>
+        <li><a href="autoapi/edge_runtime/data/script/index.html#edge_runtime.data.script.load_classes_from_json">load_classes_from_json() (in module edge_runtime.data.script)</a>
+</li>
         <li><a href="autoapi/edge_runtime/aura_hw/loader/index.html#edge_runtime.aura_hw.loader.load_component_class">load_component_class() (in module edge_runtime.aura_hw.loader)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/shared/index.html#edge_runtime.daemon.shared.load_config">load_config() (in module edge_runtime.daemon.shared)</a>
 </li>
         <li><a href="autoapi/edge_runtime/aura_hw/loader/index.html#edge_runtime.aura_hw.loader.load_inference_class">load_inference_class() (in module edge_runtime.aura_hw.loader)</a>
 </li>
         <li><a href="autoapi/edge_runtime/aura_hw/runtime/index.html#edge_runtime.aura_hw.runtime.load_model">load_model() (in module edge_runtime.aura_hw.runtime)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.lock">lock (edge_runtime.daemon.camera.CameraManager attribute)</a>
 </li>
         <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.log_level">log_level (api_gateway_service.config.Settings attribute)</a>
 
@@ -1623,7 +1732,7 @@
 </li>
           <li><a href="autoapi/edge_runtime/aura_hw/runtime/index.html#edge_runtime.aura_hw.runtime.logger">(in module edge_runtime.aura_hw.runtime)</a>
 </li>
-          <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.logger">(in module edge_runtime.hardware_daemon)</a>
+          <li><a href="autoapi/edge_runtime/daemon/shared/index.html#edge_runtime.daemon.shared.logger">(in module edge_runtime.daemon.shared)</a>
 </li>
           <li><a href="autoapi/edge_runtime/pal/comm_client/index.html#edge_runtime.pal.comm_client.logger">(in module edge_runtime.pal.comm_client)</a>
 </li>
@@ -1636,6 +1745,8 @@
           <li><a href="autoapi/mlops_service/grpc_handlers/compilation_handler/index.html#mlops_service.grpc_handlers.compilation_handler.logger">(in module mlops_service.grpc_handlers.compilation_handler)</a>
 </li>
           <li><a href="autoapi/mlops_service/worker/index.html#mlops_service.worker.logger">(in module mlops_service.worker)</a>
+</li>
+          <li><a href="autoapi/registry_service/update_existing_datasets/index.html#registry_service.update_existing_datasets.logger">(in module registry_service.update_existing_datasets)</a>
 </li>
           <li><a href="autoapi/shared/transport/mqtt/index.html#shared.transport.mqtt.logger">(in module shared.transport.mqtt)</a>
 </li>
@@ -1664,6 +1775,8 @@
           <li><a href="autoapi/mlops_service/main/index.html#mlops_service.main.main">(in module mlops_service.main)</a>
 </li>
           <li><a href="autoapi/registry_service/main/index.html#registry_service.main.main">(in module registry_service.main)</a>
+</li>
+          <li><a href="autoapi/registry_service/update_existing_datasets/index.html#registry_service.update_existing_datasets.main">(in module registry_service.update_existing_datasets)</a>
 </li>
         </ul></li>
         <li><a href="autoapi/edge_connector_service/repositories/deployments/index.html#edge_connector_service.repositories.deployments.DeploymentRepository.mark_failed">mark_failed() (edge_connector_service.repositories.deployments.DeploymentRepository method)</a>
@@ -1696,7 +1809,7 @@
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.DatasetVersion.meta_info">(registry_service.models.orm.DatasetVersion attribute)</a>
 </li>
         </ul></li>
-        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.MINIMAL_JPEG">MINIMAL_JPEG (in module edge_runtime.hardware_daemon)</a>
+        <li><a href="autoapi/edge_runtime/daemon/shared/index.html#edge_runtime.daemon.shared.MINIMAL_JPEG">MINIMAL_JPEG (in module edge_runtime.daemon.shared)</a>
 </li>
         <li><a href="autoapi/api_gateway_service/config/index.html#api_gateway_service.config.Settings.minio_access_key">minio_access_key (api_gateway_service.config.Settings attribute)</a>
 
@@ -1854,6 +1967,13 @@
 </li>
         </ul></li>
         <li>
+    mlops_service.others
+
+        <ul>
+          <li><a href="autoapi/mlops_service/others/index.html#module-mlops_service.others">module</a>
+</li>
+        </ul></li>
+        <li>
     mlops_service.repositories
 
         <ul>
@@ -1883,12 +2003,28 @@
         </ul></li>
         <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Model">Model (class in registry_service.models.orm)</a>
 </li>
+        <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.model">model (registry_service.models.orm.ModelCompilation attribute)</a>
+</li>
         <li><a href="autoapi/api_gateway_service/routers/deployments/index.html#api_gateway_service.routers.deployments.DeployRequest.model_id">model_id (api_gateway_service.routers.deployments.DeployRequest attribute)</a>
 
         <ul>
           <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.Deployment.model_id">(edge_connector_service.models.orm.Deployment attribute)</a>
 </li>
+          <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelCompilationRef.model_id">(edge_connector_service.models.orm.ModelCompilationRef attribute)</a>
+</li>
+          <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation.model_id">(registry_service.models.orm.ModelCompilation attribute)</a>
+</li>
         </ul></li>
+        <li><a href="autoapi/edge_runtime/daemon/hailo/index.html#edge_runtime.daemon.hailo.HailoManager.model_path">model_path (edge_runtime.daemon.hailo.HailoManager attribute)</a>
+
+        <ul>
+          <li><a href="autoapi/edge_runtime/daemon/imx500/index.html#edge_runtime.daemon.imx500.IMX500Manager.model_path">(edge_runtime.daemon.imx500.IMX500Manager attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.ModelCompilation">ModelCompilation (class in registry_service.models.orm)</a>
+</li>
+        <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelCompilationRef">ModelCompilationRef (class in edge_connector_service.models.orm)</a>
+</li>
         <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.ModelRef">ModelRef (class in edge_connector_service.models.orm)</a>
 
         <ul>
@@ -2007,6 +2143,20 @@
 </li>
           <li><a href="autoapi/edge_runtime/config/index.html#module-edge_runtime.config">edge_runtime.config</a>
 </li>
+          <li><a href="autoapi/edge_runtime/daemon/index.html#module-edge_runtime.daemon">edge_runtime.daemon</a>
+</li>
+          <li><a href="autoapi/edge_runtime/daemon/camera/index.html#module-edge_runtime.daemon.camera">edge_runtime.daemon.camera</a>
+</li>
+          <li><a href="autoapi/edge_runtime/daemon/hailo/index.html#module-edge_runtime.daemon.hailo">edge_runtime.daemon.hailo</a>
+</li>
+          <li><a href="autoapi/edge_runtime/daemon/imx500/index.html#module-edge_runtime.daemon.imx500">edge_runtime.daemon.imx500</a>
+</li>
+          <li><a href="autoapi/edge_runtime/daemon/shared/index.html#module-edge_runtime.daemon.shared">edge_runtime.daemon.shared</a>
+</li>
+          <li><a href="autoapi/edge_runtime/data/index.html#module-edge_runtime.data">edge_runtime.data</a>
+</li>
+          <li><a href="autoapi/edge_runtime/data/script/index.html#module-edge_runtime.data.script">edge_runtime.data.script</a>
+</li>
           <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#module-edge_runtime.hardware_daemon">edge_runtime.hardware_daemon</a>
 </li>
           <li><a href="autoapi/edge_runtime/pal/index.html#module-edge_runtime.pal">edge_runtime.pal</a>
@@ -2038,6 +2188,8 @@
           <li><a href="autoapi/mlops_service/models/index.html#module-mlops_service.models">mlops_service.models</a>
 </li>
           <li><a href="autoapi/mlops_service/models/orm/index.html#module-mlops_service.models.orm">mlops_service.models.orm</a>
+</li>
+          <li><a href="autoapi/mlops_service/others/index.html#module-mlops_service.others">mlops_service.others</a>
 </li>
           <li><a href="autoapi/mlops_service/repositories/index.html#module-mlops_service.repositories">mlops_service.repositories</a>
 </li>
@@ -2072,6 +2224,8 @@
           <li><a href="autoapi/registry_service/repositories/models/index.html#module-registry_service.repositories.models">registry_service.repositories.models</a>
 </li>
           <li><a href="autoapi/registry_service/repositories/scripts/index.html#module-registry_service.repositories.scripts">registry_service.repositories.scripts</a>
+</li>
+          <li><a href="autoapi/registry_service/update_existing_datasets/index.html#module-registry_service.update_existing_datasets">registry_service.update_existing_datasets</a>
 </li>
           <li><a href="autoapi/shared/index.html#module-shared">shared</a>
 </li>
@@ -2212,13 +2366,15 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="autoapi/mlops_service/compilers/yolo_train/index.html#mlops_service.compilers.yolo_train.parse_arguments">parse_arguments() (in module mlops_service.compilers.yolo_train)</a>
 </li>
+        <li><a href="autoapi/edge_runtime/data/script/index.html#edge_runtime.data.script.parser">parser (in module edge_runtime.data.script)</a>
+</li>
         <li><a href="autoapi/shared/transport/base/index.html#id1">payload (shared.transport.base.MessageEnvelope attribute)</a>, <a href="autoapi/shared/transport/base/index.html#shared.transport.base.MessageEnvelope.payload">[1]</a>
 
         <ul>
           <li><a href="autoapi/shared/transport/index.html#id1">(shared.transport.MessageEnvelope attribute)</a>, <a href="autoapi/shared/transport/index.html#shared.transport.MessageEnvelope.payload">[1]</a>
 </li>
         </ul></li>
-        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.CameraManager.picam2">picam2 (edge_runtime.hardware_daemon.CameraManager attribute)</a>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.picam2">picam2 (edge_runtime.daemon.camera.CameraManager attribute)</a>
 </li>
         <li><a href="autoapi/shared/transport/mqtt/index.html#shared.transport.mqtt.MQTTTransport.port">port (shared.transport.mqtt.MQTTTransport attribute)</a>
 
@@ -2226,6 +2382,8 @@
           <li><a href="autoapi/shared/transport/index.html#shared.transport.MQTTTransport.port">(shared.transport.MQTTTransport attribute)</a>
 </li>
         </ul></li>
+        <li><a href="autoapi/edge_runtime/data/script/index.html#edge_runtime.data.script.post_inference">post_inference() (in module edge_runtime.data.script)</a>
+</li>
         <li><a href="autoapi/edge_connector_service/config/index.html#edge_connector_service.config.Settings.postgres_dsn">postgres_dsn (edge_connector_service.config.Settings attribute)</a>
 
         <ul>
@@ -2236,9 +2394,13 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="autoapi/edge_runtime/data/script/index.html#edge_runtime.data.script.pre_inference">pre_inference() (in module edge_runtime.data.script)</a>
+</li>
         <li><a href="autoapi/mlops_service/compilers/yolo_train/index.html#mlops_service.compilers.yolo_train.prepare_dataset">prepare_dataset() (in module mlops_service.compilers.yolo_train)</a>
 </li>
         <li><a href="autoapi/shared/utils/minio/index.html#shared.utils.minio.presigned_url">presigned_url() (in module shared.utils.minio)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/data/script/index.html#edge_runtime.data.script.project_root">project_root (in module edge_runtime.data.script)</a>
 </li>
         <li><a href="autoapi/edge_connector_service/config/index.html#edge_connector_service.config.Settings.prometheus_port">prometheus_port (edge_connector_service.config.Settings attribute)</a>
 </li>
@@ -2352,8 +2514,6 @@
           <li><a href="autoapi/registry_service/grpc_handlers/script_handler/index.html#module-registry_service.grpc_handlers.script_handler">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     registry_service.main
 
@@ -2361,6 +2521,8 @@
           <li><a href="autoapi/registry_service/main/index.html#module-registry_service.main">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     registry_service.models
 
@@ -2403,6 +2565,13 @@
           <li><a href="autoapi/registry_service/repositories/scripts/index.html#module-registry_service.repositories.scripts">module</a>
 </li>
         </ul></li>
+        <li>
+    registry_service.update_existing_datasets
+
+        <ul>
+          <li><a href="autoapi/registry_service/update_existing_datasets/index.html#module-registry_service.update_existing_datasets">module</a>
+</li>
+        </ul></li>
         <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.replace_dataset_file">replace_dataset_file() (in module api_gateway_service.routers.datasets)</a>
 </li>
         <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.router">router (in module api_gateway_service.routers.datasets)</a>
@@ -2420,7 +2589,11 @@
 </li>
         </ul></li>
         <li><a href="autoapi/edge_runtime/pal/comm_client/index.html#edge_runtime.pal.comm_client.CommunicationClient.run">run() (edge_runtime.pal.comm_client.CommunicationClient method)</a>
+
+        <ul>
+          <li><a href="autoapi/edge_runtime/data/script/index.html#edge_runtime.data.script.run">(in module edge_runtime.data.script)</a>
 </li>
+        </ul></li>
         <li><a href="autoapi/edge_runtime/pal/orchestrator/index.html#edge_runtime.pal.orchestrator.Orchestrator.run_inference_loop">run_inference_loop() (edge_runtime.pal.orchestrator.Orchestrator method)</a>
 </li>
         <li><a href="autoapi/edge_runtime/pal/orchestrator/index.html#edge_runtime.pal.orchestrator.Orchestrator.run_telemetry_loop">run_telemetry_loop() (edge_runtime.pal.orchestrator.Orchestrator method)</a>
@@ -2618,7 +2791,7 @@
         <li><a href="autoapi/edge_connector_service/mqtt/listener/index.html#edge_connector_service.mqtt.listener.EdgeConnectorMQTTListener.start">start() (edge_connector_service.mqtt.listener.EdgeConnectorMQTTListener method)</a>
 
         <ul>
-          <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.CameraManager.start">(edge_runtime.hardware_daemon.CameraManager method)</a>
+          <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.start">(edge_runtime.daemon.camera.CameraManager method)</a>
 </li>
         </ul></li>
         <li><a href="autoapi/edge_connector_service/models/orm/index.html#edge_connector_service.models.orm.Deployment.status">status (edge_connector_service.models.orm.Deployment attribute)</a>
@@ -2629,7 +2802,9 @@
           <li><a href="autoapi/registry_service/models/orm/index.html#registry_service.models.orm.Device.status">(registry_service.models.orm.Device attribute)</a>
 </li>
         </ul></li>
-        <li><a href="autoapi/edge_runtime/hardware_daemon/index.html#edge_runtime.hardware_daemon.CameraManager.stop">stop() (edge_runtime.hardware_daemon.CameraManager method)</a>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.stop">stop() (edge_runtime.daemon.camera.CameraManager method)</a>
+</li>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.stop_event">stop_event (edge_runtime.daemon.camera.CameraManager attribute)</a>
 </li>
         <li><a href="autoapi/api_gateway_service/routers/models/index.html#api_gateway_service.routers.models.stream_model_logs">stream_model_logs() (in module api_gateway_service.routers.models)</a>
 </li>
@@ -2655,6 +2830,8 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="autoapi/edge_runtime/daemon/camera/index.html#edge_runtime.daemon.camera.CameraManager.thread">thread (edge_runtime.daemon.camera.CameraManager attribute)</a>
+</li>
         <li><a href="autoapi/shared/transport/base/index.html#id2">timestamp (shared.transport.base.MessageEnvelope attribute)</a>, <a href="autoapi/shared/transport/base/index.html#shared.transport.base.MessageEnvelope.timestamp">[1]</a>
 
         <ul>
@@ -2671,10 +2848,10 @@
 </li>
         <li><a href="autoapi/edge_runtime/pal/comm_client/index.html#edge_runtime.pal.comm_client.CommunicationClient.topic_events">topic_events (edge_runtime.pal.comm_client.CommunicationClient property)</a>
 </li>
-        <li><a href="autoapi/edge_runtime/pal/comm_client/index.html#edge_runtime.pal.comm_client.CommunicationClient.topic_inference">topic_inference (edge_runtime.pal.comm_client.CommunicationClient property)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="autoapi/edge_runtime/pal/comm_client/index.html#edge_runtime.pal.comm_client.CommunicationClient.topic_inference">topic_inference (edge_runtime.pal.comm_client.CommunicationClient property)</a>
+</li>
         <li><a href="autoapi/edge_runtime/pal/comm_client/index.html#edge_runtime.pal.comm_client.CommunicationClient.topic_telemetry">topic_telemetry (edge_runtime.pal.comm_client.CommunicationClient property)</a>
 </li>
         <li><a href="autoapi/mlops_service/worker/index.html#mlops_service.worker.train_job">train_job() (in module mlops_service.worker)</a>
@@ -2704,6 +2881,10 @@
         <ul>
           <li><a href="autoapi/edge_runtime/aura_hw/backends/inference/general/index.html#edge_runtime.aura_hw.backends.inference.general.GeneralInferenceBackend.unload">(edge_runtime.aura_hw.backends.inference.general.GeneralInferenceBackend method)</a>
 </li>
+          <li><a href="autoapi/edge_runtime/daemon/hailo/index.html#edge_runtime.daemon.hailo.HailoManager.unload">(edge_runtime.daemon.hailo.HailoManager method)</a>
+</li>
+          <li><a href="autoapi/edge_runtime/daemon/imx500/index.html#edge_runtime.daemon.imx500.IMX500Manager.unload">(edge_runtime.daemon.imx500.IMX500Manager method)</a>
+</li>
         </ul></li>
         <li><a href="autoapi/edge_runtime/aura_hw/runtime/index.html#edge_runtime.aura_hw.runtime.unload_model">unload_model() (in module edge_runtime.aura_hw.runtime)</a>
 </li>
@@ -2725,10 +2906,10 @@
 </li>
         <li><a href="autoapi/registry_service/repositories/devices/index.html#registry_service.repositories.devices.DeviceRepository.update_status">update_status() (registry_service.repositories.devices.DeviceRepository method)</a>
 </li>
-        <li><a href="autoapi/registry_service/grpc_handlers/ai_handler/index.html#registry_service.grpc_handlers.ai_handler.AIServiceHandler.UpdateDataset">UpdateDataset() (registry_service.grpc_handlers.ai_handler.AIServiceHandler method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="autoapi/registry_service/grpc_handlers/ai_handler/index.html#registry_service.grpc_handlers.ai_handler.AIServiceHandler.UpdateDataset">UpdateDataset() (registry_service.grpc_handlers.ai_handler.AIServiceHandler method)</a>
+</li>
         <li><a href="autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.UpdateDatasetRequestSchema">UpdateDatasetRequestSchema (class in api_gateway_service.routers.datasets)</a>
 </li>
         <li><a href="autoapi/registry_service/grpc_handlers/device_handler/index.html#registry_service.grpc_handlers.device_handler.DeviceServiceHandler.UpdateDevice">UpdateDevice() (registry_service.grpc_handlers.device_handler.DeviceServiceHandler method)</a>
@@ -2811,7 +2992,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -2831,7 +3012,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=01f34227"></script>
+</div><script src="_static/documentation_options.js?v=f2a433a1"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

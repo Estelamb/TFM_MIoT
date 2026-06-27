@@ -1,7 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { getMonitoringStates, getDevices } from "@/lib/api";
-import { useDataMode } from "@/hooks/useDataMode";
 import Link from "next/link";
 import { EdgeMap } from "@/components/monitoring/EdgeMap";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -12,45 +11,35 @@ import { fmtRelative } from "@/lib/utils";
 import { Activity, ShieldAlert, Wifi, MemoryStick } from "lucide-react";
 
 export default function MonitoringPage() {
-  const { data: realStates = [] } = useQuery({
+  const { data: states = [] } = useQuery({
     queryKey: ["monitoring"],
     queryFn: getMonitoringStates,
     refetchInterval: 5000,
   });
 
-  const { mode, demoData } = useDataMode();
-  const isDemo = mode === "demo";
-
-  const { data: realDevices = [] } = useQuery({
+  const { data: devices = [] } = useQuery({
     queryKey: ["devices"],
     queryFn: getDevices,
   });
 
-  const devices = isDemo ? demoData.devices : realDevices;
-  const states = isDemo ? demoData.monitoringStates : realStates;
-
-  const stats = isDemo
-    ? demoData.monitoring
-    : {
-      activeNodes: `${states.filter((s: any) => s.status === "online").length} / ${states.length || 0}`,
-      avgLatency: (() => {
-        const validLatencies = states
-          .filter((s: any) => s.status === "online" && typeof s.latency_ms === "number" && s.latency_ms >= 0)
-          .map((s: any) => s.latency_ms);
-        if (validLatencies.length === 0) return "— ms";
-        const sum = validLatencies.reduce((acc: number, val: number) => acc + val, 0);
-        return `${Math.round(sum / validLatencies.length)} ms`;
-      })(),
-      alerts: states.filter((s: any) => s.cpu_percent > 90).length,
-      cpuLoad: states.length > 0
-        ? Math.round(states.reduce((acc: number, s: any) => acc + s.cpu_percent, 0) / states.length)
-        : 0,
-      memory: states.length > 0
-        ? Math.round(states.reduce((acc: number, s: any) => acc + s.ram_percent, 0) / states.length)
-        : 0,
-      bandwidth: 0,
-      storage: 0,
-    };
+  const stats = {
+    activeNodes: `${states.filter((s: any) => s.status === "online").length} / ${states.length || 0}`,
+    avgLatency: (() => {
+      const validLatencies = states
+        .filter((s: any) => s.status === "online" && typeof s.latency_ms === "number" && s.latency_ms >= 0)
+        .map((s: any) => s.latency_ms);
+      if (validLatencies.length === 0) return "— ms";
+      const sum = validLatencies.reduce((acc: number, val: number) => acc + val, 0);
+      return `${Math.round(sum / validLatencies.length)} ms`;
+    })(),
+    alerts: states.filter((s: any) => s.cpu_percent > 90).length,
+    cpuLoad: states.length > 0
+      ? Math.round(states.reduce((acc: number, s: any) => acc + s.cpu_percent, 0) / states.length)
+      : 0,
+    memory: states.length > 0
+      ? Math.round(states.reduce((acc: number, s: any) => acc + s.ram_percent, 0) / states.length)
+      : 0,
+  };
 
   return (
     <div className="w-full max-w-[1600px] mx-auto space-y-8 animate-fade-in px-4 sm:px-6 lg:px-12 py-8">
@@ -60,93 +49,64 @@ export default function MonitoringPage() {
             Device Set Monitoring
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Real-time telemetry and edge node status across all deployment zones.
+            Real-time health status, node telemetry and physical mapping.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 font-mono">
-          <Activity size={13} className="animate-pulse text-blue-500" />
-          Live · 5s refresh
-        </div>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
-              <Activity size={24} />
+      {/* Grid containing overview stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { label: "Active Gateways", value: stats.activeNodes, icon: Wifi, color: "text-blue-500" },
+          { label: "Avg Node Latency", value: stats.avgLatency, icon: Activity, color: "text-pink-500" },
+          { label: "Critical Alerts", value: stats.alerts, icon: ShieldAlert, color: stats.alerts > 0 ? "text-red-500 animate-pulse" : "text-gray-400" },
+        ].map((stat, i) => {
+          const Icon = stat.icon;
+          return (
+            <div key={i} className="p-6 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{stat.label}</p>
+              </div>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 shadow-sm ${stat.color}`}>
+                <Icon size={22} />
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Active Nodes</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.activeNodes}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
-              <Wifi size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Avg Latency</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.avgLatency}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl">
-              <ShieldAlert size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Critical Alerts</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.alerts}</p>
-            </div>
-          </div>
-        </Card>
+          );
+        })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Map */}
-        <div className={`flex flex-col relative ${states.length > 0 ? "lg:col-span-2" : "lg:col-span-3"}`}>
-          <EdgeMap states={states} isDemo={isDemo} />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Column: Map */}
+        <div className="lg:col-span-7 flex flex-col relative w-full">
+          <EdgeMap states={states} />
         </div>
 
-        {/* Per-device breakdown (Same height as Map, with vertical scrollbar) */}
-        {states.length > 0 && (
-          <Card className="h-[500px] flex flex-col overflow-hidden">
-            <CardHeader className="shrink-0 mb-4">
-              <CardTitle>Device Breakdown</CardTitle>
+        {/* Right Column: Node details list */}
+        {states.length === 0 ? (
+          <div className="lg:col-span-5 border border-dashed border-2 bg-transparent shadow-none opacity-60 rounded-3xl p-6 text-center italic text-gray-500">
+            No active telemetry connections reported.
+          </div>
+        ) : (
+          <Card className="lg:col-span-5 h-[500px] overflow-y-auto pr-1">
+            <CardHeader className="mb-4">
+              <CardTitle>Connected Edge Gateways</CardTitle>
             </CardHeader>
-            <div className="flex-1 overflow-y-auto space-y-4 pr-1 scrollbar-thin">
+            <div className="space-y-4">
               {states.map((s: any) => (
-                <div key={s.device_id} className="border-b border-gray-100 dark:border-gray-800/50 pb-3 last:border-0 last:pb-0">
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <StatusDot status={s.status} />
-                      <Link 
-                        href={`/devices/${s.device_id}`}
-                        className="text-xs font-bold text-gray-700 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 hover:underline truncate transition-colors" 
-                        title={devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
-                      >
+                <div key={s.device_id} className="p-4 bg-gray-50 dark:bg-gray-900/40 border border-gray-150 dark:border-gray-850 rounded-2xl space-y-3">
+                  <div className="flex justify-between items-start">
+                    <Link href={`/devices/${s.device_id}?from=monitoring`} className="hover:underline">
+                      <h4 className="font-bold text-sm text-gray-900 dark:text-white truncate max-w-[200px]">
                         {devices.find((d: any) => d.id === s.device_id)?.name || s.device_id}
-                      </Link>
-                    </div>
-                    <div className="flex items-center gap-2.5 shrink-0 text-xs text-gray-400">
-                      {typeof s.latency_ms === "number" && s.latency_ms >= 0 && (
-                        <span className="flex items-center gap-1 text-[11px] font-mono text-gray-500 dark:text-gray-400">
-                          <Wifi size={10} className="text-blue-500 dark:text-blue-400" />
-                          {Math.round(s.latency_ms)} ms
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1">
-                        <MemoryStick size={10} />
-                        {s.ram_used_mb?.toFixed ? s.ram_used_mb.toFixed(0) : s.ram_used_mb} MB
-                      </span>
+                      </h4>
+                    </Link>
+                    <div className="flex items-center gap-2">
+                      <StatusDot status={s.status} />
+                      <Badge variant="muted" className="font-mono text-[9px] uppercase">{s.status}</Badge>
                     </div>
                   </div>
+
                   <div className="grid grid-cols-2 gap-2">
                     <StatBar value={s.cpu_percent} label="CPU" color={s.cpu_percent > 80 ? "red-500" : "blue-500"} />
                     <StatBar value={s.ram_percent} label="RAM" color={s.ram_percent > 80 ? "orange-500" : "emerald-500"} />
@@ -159,24 +119,34 @@ export default function MonitoringPage() {
         )}
       </div>
 
-      <hr className="border-slate-200/60 dark:border-gray-800/50 my-4" />
-
-      {/* Global Edge Resources at the bottom, horizontal */}
-      <Card>
-        <CardHeader className="mb-4">
-          <CardTitle>Global Edge Resources</CardTitle>
-        </CardHeader>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatBar label="Aggregated CPU Load" value={stats.cpuLoad} color="blue-500" unit="%" />
-          <StatBar label="Global Memory Usage" value={stats.memory} color="orange-500" unit="%" />
-          {(stats.bandwidth > 0 || isDemo) && (
-            <StatBar label="Network Bandwidth" value={stats.bandwidth} color="emerald-500" unit="%" />
-          )}
-          {(stats.storage > 0 || isDemo) && (
-            <StatBar label="Storage Capacity" value={stats.storage} color="red-500" unit="%" />
-          )}
+      {/* Global Edge Resources: two separate stat cards with progress bars */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="p-6 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stats.cpuLoad}%</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Aggregated CPU Load</p>
+            </div>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 shadow-sm text-blue-500">
+              <Activity size={22} />
+            </div>
+          </div>
+          <StatBar value={stats.cpuLoad} color="blue-500" unit="%" />
         </div>
-      </Card>
+
+        <div className="p-6 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stats.memory}%</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Global Memory Usage</p>
+            </div>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 shadow-sm text-orange-500">
+              <MemoryStick size={22} />
+            </div>
+          </div>
+          <StatBar value={stats.memory} color="orange-500" unit="%" />
+        </div>
+      </div>
     </div>
   );
 }

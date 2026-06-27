@@ -107,129 +107,129 @@ def print_header():
     print(f"\n{BLUE}{BOLD}=== AURA PLATFORM - INFORMATION MODEL ==={RESET}\n")
 
 def print_entities():
-    print(f"{CYAN}{BOLD}1. ENTIDADES PRINCIPALES (POSTGRESQL & ORM){RESET}")
+    print(f"{CYAN}{BOLD}1. MAIN ENTITIES (POSTGRESQL & ORM){RESET}")
     print("-" * 70)
     
     entities = [
         {
             "name": "devices (IoT Edge Nodes)",
-            "desc": "Representa los nodos hardware que ejecutan inferencia y monitorización.",
+            "desc": "Represents hardware nodes executing inference and monitoring.",
             "orm": "registry-service/app/models/orm.py -> Device",
             "fields": [
-                ("id", "UUID (PK)", "Identificador único del dispositivo"),
-                ("name", "TEXT", "Nombre descriptivo del dispositivo"),
-                ("hardware_type", "TEXT", "Tipo de hardware (hailo8, hailo8l, rpi_ai_cam, rpi, jetson_orin_nano)"),
-                ("description", "TEXT (Null)", "Detalles adicionales del dispositivo"),
-                ("status", "TEXT", "Estado actual ('online' | 'offline')"),
-                ("sensors", "ARRAY(String)", "Sensores configurados en el dispositivo"),
-                ("actuators", "ARRAY(String)", "Actuadores configurados en el dispositivo"),
-                ("others", "ARRAY(String)", "Otros parámetros o metadatos de hardware"),
-                ("last_seen_at", "TIMESTAMPTZ", "Última vez que reportó actividad"),
-                ("created_at", "TIMESTAMPTZ", "Fecha de creación del registro"),
+                ("id", "UUID (PK)", "Unique device identifier"),
+                ("name", "TEXT", "Descriptive name of the device"),
+                ("hardware_type", "TEXT", "Hardware type (hailo8, hailo8l, rpi_ai_cam, rpi, jetson_orin_nano)"),
+                ("description", "TEXT (Null)", "Additional details of the device"),
+                ("status", "TEXT", "Current status ('online' | 'offline')"),
+                ("sensors", "ARRAY(String)", "Sensors configured on the device"),
+                ("actuators", "ARRAY(String)", "Actuators configured on the device"),
+                ("others", "ARRAY(String)", "Other hardware parameters or metadata"),
+                ("last_seen_at", "TIMESTAMPTZ", "Last time activity was reported"),
+                ("created_at", "TIMESTAMPTZ", "Creation date of the record"),
             ]
         },
         {
-            "name": "datasets (Conjuntos de Datos)",
-            "desc": "Almacena información sobre los conjuntos de datos subidos para entrenamiento.",
+            "name": "datasets (Datasets)",
+            "desc": "Stores information about uploaded datasets for training.",
             "orm": "registry-service/app/models/orm.py -> Dataset",
             "fields": [
-                ("id", "UUID (PK)", "Identificador único"),
-                ("name", "TEXT", "Nombre del dataset"),
-                ("description", "TEXT (Null)", "Descripción o notas"),
-                ("object_key", "TEXT", "Ruta en MinIO de la carpeta o archivo principal"),
-                ("sha256", "TEXT", "Hash de validación"),
-                ("size_bytes", "BIGINT", "Tamaño del archivo"),
-                ("meta_info", "JSON (Null)", "Metadatos adicionales del dataset"),
-                ("created_at", "TIMESTAMPTZ", "Fecha de creación"),
+                ("id", "UUID (PK)", "Unique identifier"),
+                ("name", "TEXT", "Dataset name"),
+                ("description", "TEXT (Null)", "Description or notes"),
+                ("object_key", "TEXT", "MinIO path of the main folder or file"),
+                ("sha256", "TEXT", "Validation hash"),
+                ("size_bytes", "BIGINT", "File size"),
+                ("meta_info", "JSON (Null)", "Additional dataset metadata"),
+                ("created_at", "TIMESTAMPTZ", "Creation date"),
             ]
         },
         {
-            "name": "models (Modelos de IA)",
-            "desc": "Contiene metadatos tanto de modelos PyTorch originales (.pt) como de los compilados (.hef).",
+            "name": "models (AI Models)",
+            "desc": "Contains metadata of both original PyTorch models (.pt) and compiled models (.hef).",
             "orm": "registry-service/app/models/orm.py -> Model",
             "fields": [
-                ("id", "UUID (PK)", "Identificador único del modelo"),
-                ("name", "TEXT", "Nombre descriptivo del modelo"),
-                ("description", "TEXT (Null)", "Notas del modelo"),
-                ("source_key", "TEXT", "Ruta del modelo original en MinIO (models/<id>/source.pt)"),
-                ("source_sha256", "TEXT", "SHA256 del modelo original"),
-                ("compiled_key", "TEXT (Null)", "Ruta del binario compilado en MinIO (compiled/<id>/model.hef)"),
-                ("compiled_sha256", "TEXT (Null)", "SHA256 del binario compilado"),
-                ("hardware_type", "TEXT (Null)", "Arquitectura para la que está compilado"),
-                ("compile_status", "TEXT", "Estado ('pending' | 'compiling' | 'ready' | 'failed')"),
-                ("compile_error", "TEXT (Null)", "Mensaje de error si la compilación falla"),
-                ("dataset_id", "UUID (FK, Null)", "Dataset asociado para el entrenamiento/compilación"),
-                ("base_architecture", "TEXT (Null)", "Arquitectura YOLO base utilizada (ej. 'yolov8n')"),
-                ("epochs", "INT (Null)", "Número de épocas entrenadas"),
-                ("input_size", "TEXT (Null)", "Resolución de entrada (ej. '640x640')"),
-                ("batch_size", "INT (Null)", "Tamaño de lote utilizado"),
-                ("created_at", "TIMESTAMPTZ", "Fecha de registro"),
+                ("id", "UUID (PK)", "Unique model identifier"),
+                ("name", "TEXT", "Descriptive name of the model"),
+                ("description", "TEXT (Null)", "Model notes"),
+                ("source_key", "TEXT", "Path of the original model in MinIO (models/<id>/source.pt)"),
+                ("source_sha256", "TEXT", "SHA256 of the original model"),
+                ("compiled_key", "TEXT (Null)", "Path of the compiled binary in MinIO (compiled/<id>/model.hef)"),
+                ("compiled_sha256", "TEXT (Null)", "SHA256 of the compiled binary"),
+                ("hardware_type", "TEXT (Null)", "Architecture for which it is compiled"),
+                ("compile_status", "TEXT", "Status ('pending' | 'compiling' | 'ready' | 'failed')"),
+                ("compile_error", "TEXT (Null)", "Error message if compilation fails"),
+                ("dataset_id", "UUID (FK, Null)", "Associated dataset for training/compilation"),
+                ("base_architecture", "TEXT (Null)", "Base YOLO architecture used (e.g. 'yolov8n')"),
+                ("epochs", "INT (Null)", "Number of trained epochs"),
+                ("input_size", "TEXT (Null)", "Input resolution (e.g. '640x640')"),
+                ("batch_size", "INT (Null)", "Batch size used"),
+                ("created_at", "TIMESTAMPTZ", "Registration date"),
             ]
         },
         {
-            "name": "scripts (Scripts de Inferencia)",
-            "desc": "Scripts de procesamiento de inferencia.",
+            "name": "scripts (Inference Scripts)",
+            "desc": "Inference processing scripts.",
             "orm": "registry-service/app/models/orm.py -> Script",
             "fields": [
-                ("id", "UUID (PK)", "Identificador único"),
-                ("name", "TEXT", "Nombre del script"),
-                ("description", "TEXT (Null)", "Notas o detalles del script"),
-                ("script_key", "TEXT", "Ruta del script en MinIO (scripts/<id>/script.py)"),
-                ("script_sha256", "TEXT", "SHA256 de verificación del script"),
-                ("language", "TEXT", "Lenguaje del script (python, c++, java)"),
-                ("created_at", "TIMESTAMPTZ", "Fecha de creación"),
+                ("id", "UUID (PK)", "Unique identifier"),
+                ("name", "TEXT", "Script name"),
+                ("description", "TEXT (Null)", "Script notes or details"),
+                ("script_key", "TEXT", "Path of the script in MinIO (scripts/<id>/script.py)"),
+                ("script_sha256", "TEXT", "Verification SHA256 of the script"),
+                ("language", "TEXT", "Script language (python, c++, java)"),
+                ("created_at", "TIMESTAMPTZ", "Creation date"),
             ]
         },
         {
-            "name": "deployments (Despliegues)",
-            "desc": "Tabla de unión que orquesta el despliegue de un modelo y un script en un dispositivo edge.",
+            "name": "deployments (Deployments)",
+            "desc": "Join table that orchestrates the deployment of a model and a script on an edge device.",
             "orm": "edge-connector-service/app/models/orm.py -> Deployment",
             "fields": [
-                ("id", "UUID (PK)", "Identificador único del despliegue"),
-                ("device_id", "UUID (FK)", "Dispositivo de destino (CASCADE)"),
-                ("model_id", "UUID (FK)", "Modelo de IA a desplegar (CASCADE)"),
-                ("script_id", "UUID (FK)", "Script a ejecutar (CASCADE)"),
-                ("status", "TEXT", "Estado del despliegue ('pending' | 'sent' | 'running' | 'failed')"),
-                ("sent_at", "TIMESTAMPTZ (Null)", "Marca de tiempo del envío MQTT al dispositivo"),
-                ("running_at", "TIMESTAMPTZ (Null)", "Confirmación de ejecución del Edge"),
-                ("error_msg", "TEXT (Null)", "Error reportado por el dispositivo"),
-                ("created_at", "TIMESTAMPTZ", "Fecha de creación del despliegue"),
+                ("id", "UUID (PK)", "Unique deployment identifier"),
+                ("device_id", "UUID (FK)", "Target device (CASCADE)"),
+                ("model_id", "UUID (FK)", "AI Model to deploy (CASCADE)"),
+                ("script_id", "UUID (FK)", "Script to execute (CASCADE)"),
+                ("status", "TEXT", "Deployment status ('pending' | 'sent' | 'running' | 'failed')"),
+                ("sent_at", "TIMESTAMPTZ (Null)", "Timestamp of MQTT send to device"),
+                ("running_at", "TIMESTAMPTZ (Null)", "Edge execution confirmation"),
+                ("error_msg", "TEXT (Null)", "Error reported by the device"),
+                ("created_at", "TIMESTAMPTZ", "Deployment creation date"),
             ]
         }
     ]
 
     for ent in entities:
         print(f"\n{GREEN}{BOLD}■ {ent['name']}{RESET}")
-        print(f"  {BOLD}Descripción:{RESET} {ent['desc']}")
-        print(f"  {BOLD}Definición ORM:{RESET} {BLUE}{ent['orm']}{RESET}")
-        print(f"  {BOLD}Atributos / Columnas:{RESET}")
+        print(f"  {BOLD}Description:{RESET} {ent['desc']}")
+        print(f"  {BOLD}ORM Definition:{RESET} {BLUE}{ent['orm']}{RESET}")
+        print(f"  {BOLD}Attributes / Columns:{RESET}")
         for field, ftype, fdesc in ent["fields"]:
             print(f"    - {YELLOW}{field:<20}{RESET} {ftype:<18} | {fdesc}")
         print("-" * 70)
 
 def print_minio_mapping():
-    print(f"\n{CYAN}{BOLD}2. ALMACENAMIENTO DE FICHEROS (MINIO OBJECT STORAGE){RESET}")
+    print(f"\n{CYAN}{BOLD}2. FILE STORAGE (MINIO OBJECT STORAGE){RESET}")
     print("-" * 70)
     mappings = [
-        ("Datasets originales/versionados", "datasets/<dataset_id>/<version>/<file>"),
-        ("Modelos originales PyTorch (.pt)", "models/<model_id>/source.pt"),
-        ("Modelos compilados (.hef, etc.)", "compiled/<model_id>/model.hef"),
-        ("Scripts de inferencia (.py)", "scripts/<script_id>/script.py")
+        ("Original/versioned datasets", "datasets/<dataset_id>/<version>/<file>"),
+        ("Original PyTorch models (.pt)", "models/<model_id>/source.pt"),
+        ("Compiled models (.hef, etc.)", "compiled/<model_id>/model.hef"),
+        ("Inference scripts (.py)", "scripts/<script_id>/script.py")
     ]
     for key, path in mappings:
         print(f"  * {BOLD}{key:<35}{RESET} -> {GREEN}{path}{RESET}")
     print("-" * 70)
 
 def print_grpc_contracts():
-    print(f"\n{CYAN}{BOLD}3. CONTRATOS gRPC (COMUNICACIÓN ENTRE SERVICIOS){RESET}")
+    print(f"\n{CYAN}{BOLD}3. gRPC CONTRACTS (COMMUNICATION BETWEEN SERVICES){RESET}")
     print("-" * 70)
     protos = [
-        ("device.proto", "Maneja registro y monitorización básica de dispositivos edge.", "aura.device.v1.DeviceService"),
-        ("ai.proto", "Maneja el registro, subida y asociación de modelos y datasets.", "aura.ai.v1.AIService"),
-        ("script.proto", "CRUD de scripts de pre/postprocesamiento en edge.", "aura.script.v1.ScriptService"),
-        ("deployment.proto", "Gestión y orquestación de despliegues a dispositivos edge.", "aura.deployment.v1.DeploymentService"),
-        ("compilation.proto", "Lanza tareas de compilación y entrenamiento de modelos YOLO.", "aura.compilation.v1.CompilationService"),
-        ("monitoring.proto", "Recupera métricas de CPU/RAM y resultados de inferencia en tiempo real.", "aura.monitoring.v1.MonitoringService")
+        ("device.proto", "Manages registration and basic monitoring of edge devices.", "aura.device.v1.DeviceService"),
+        ("ai.proto", "Manages registration, upload, and association of models and datasets.", "aura.ai.v1.AIService"),
+        ("script.proto", "CRUD of pre/postprocessing scripts on edge.", "aura.script.v1.ScriptService"),
+        ("deployment.proto", "Management and orchestration of deployments to edge devices.", "aura.deployment.v1.DeploymentService"),
+        ("compilation.proto", "Launches compilation and training tasks for YOLO models.", "aura.compilation.v1.CompilationService"),
+        ("monitoring.proto", "Retrieves CPU/RAM metrics and real-time inference results.", "aura.monitoring.v1.MonitoringService")
     ]
     for file, desc, package in protos:
         print(f"  * {YELLOW}{file:<20}{RESET} [{BLUE}{package}{RESET}]")
@@ -240,7 +240,7 @@ def print_raw_sql():
     root = get_project_root()
     sql_path = root / "infra" / "postgres" / "init.sql"
     
-    print(f"\n{CYAN}{BOLD}4. ESQUEMA SQL DETALLADO (infra/postgres/init.sql){RESET}")
+    print(f"\n{CYAN}{BOLD}4. DETAILED SQL SCHEMA (infra/postgres/init.sql){RESET}")
     print("-" * 70)
     
     if sql_path.exists():
@@ -259,14 +259,14 @@ def print_raw_sql():
                 else:
                     print(line)
         except Exception as e:
-            print(f"{RED}Error leyendo el archivo SQL: {e}{RESET}")
+            print(f"{RED}Error reading SQL file: {e}{RESET}")
     else:
-        print(f"{RED}Archivo SQL no encontrado en {sql_path}{RESET}")
+        print(f"{RED}SQL file not found at {sql_path}{RESET}")
     print("-" * 70)
 
 def download_diagram_png(output_path: Path):
     """Downloads the Mermaid diagram as a PNG using the mermaid.ink API."""
-    print(f"\n{CYAN}{BOLD}GENERANDO IMAGEN DEL DIAGRAMA (via mermaid.ink)...{RESET}")
+    print(f"\n{CYAN}{BOLD}GENERATING DIAGRAM IMAGE (via mermaid.ink)...{RESET}")
     print("-" * 70)
     
     try:
@@ -277,7 +277,7 @@ def download_diagram_png(output_path: Path):
         
         url = f"https://mermaid.ink/img/{base64_string}"
         
-        print(f"Estableciendo conexión con la API de Mermaid y descargando imagen...")
+        print(f"Connecting to Mermaid API and downloading image...")
         req = urllib.request.Request(
             url, 
             headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
@@ -285,16 +285,16 @@ def download_diagram_png(output_path: Path):
         with urllib.request.urlopen(req, timeout=15) as response:
             with open(output_path, "wb") as f:
                 f.write(response.read())
-        print(f"{GREEN}{BOLD}¡Éxito! Imagen del diagrama guardada en:{RESET} {output_path.resolve()}")
+        print(f"{GREEN}{BOLD}Success! Diagram image saved at:{RESET} {output_path.resolve()}")
     except urllib.error.URLError as e:
-        print(f"{RED}Error de red al intentar descargar la imagen: {e.reason}{RESET}")
-        print("Asegúrate de tener conexión a Internet para usar el generador de imágenes.")
+        print(f"{RED}Network error trying to download image: {e.reason}{RESET}")
+        print("Ensure you have an internet connection to use the image generator.")
     except Exception as e:
-        print(f"{RED}Error inesperado generando la imagen PNG: {e}{RESET}")
+        print(f"{RED}Unexpected error generating PNG image: {e}{RESET}")
     print("-" * 70)
 
 def print_diagram():
-    print(f"{CYAN}{BOLD}DIAGRAMA DE ENTIDAD-RELACIÓN (ASCII & MERMAID){RESET}")
+    print(f"{CYAN}{BOLD}ENTITY-RELATIONSHIP DIAGRAM (ASCII & MERMAID){RESET}")
     print("-" * 70)
     
     ascii_diagram = """
@@ -311,11 +311,11 @@ def print_diagram():
            |                                                                 |
            +-----------------------------------------------------------------+ 1:N (deployed)
 """
-    print(f"{YELLOW}{BOLD}Diagrama de Relaciones Conceptual:{RESET}")
+    print(f"{YELLOW}{BOLD}Conceptual Relationship Diagram:{RESET}")
     print(ascii_diagram)
     print("-" * 70)
 
-    print(f"{GREEN}{BOLD}Código Mermaid.js (Copiar para Markdown/Mermaid Live Editor):{RESET}")
+    print(f"{GREEN}{BOLD}Mermaid.js Code (Copy for Markdown/Mermaid Live Editor):{RESET}")
     print(MERMAID_DIAGRAM_CODE)
     print("-" * 70)
     
@@ -329,16 +329,16 @@ def print_diagram():
     try:
         with open(diagram_path, "w", encoding="utf-8") as f:
             f.write(MERMAID_DIAGRAM_CODE)
-        print(f"{BLUE}Diagrama exportado correctamente a:{RESET} {diagram_path.resolve()}")
+        print(f"{BLUE}Diagram successfully exported to:{RESET} {diagram_path.resolve()}")
     except Exception as e:
-        print(f"{RED}No se pudo escribir el diagrama .mermaid en disco: {e}{RESET}")
+        print(f"{RED}Could not write .mermaid diagram to disk: {e}{RESET}")
     
     # Save .png using mermaid.ink
     png_path = docs_dir / "model_diagram.png"
     download_diagram_png(png_path)
 
 def main():
-    # En Windows, puede que necesitemos activar los códigos de escape ANSI
+    # On Windows, we might need to enable ANSI escape codes
     if os.name == 'nt':
         import ctypes
         kernel32 = ctypes.windll.kernel32
@@ -364,18 +364,18 @@ def main():
         elif arg == "--png":
             download_diagram_png(png_path)
         elif arg == "--help":
-            print(f"Uso: python {sys.argv[0]} [opción]")
-            print("Opciones:")
-            print("  --entities  Imprime sólo las tablas relacionales y su mapeo ORM")
-            print("  --minio     Imprime sólo la estructura de claves de MinIO")
-            print("  --grpc      Imprime sólo las definiciones de servicios gRPC")
-            print("  --sql       Imprime el archivo SQL de inicialización crudo")
-            print("  --diagram   Muestra el diagrama ASCII, código Mermaid y genera/descarga la imagen PNG")
-            print("  --png       Descarga la imagen del diagrama como PNG en docs/")
-            print("  (sin args)  Imprime todo el modelo de información y genera los diagramas (.mermaid y .png)")
+            print(f"Usage: python {sys.argv[0]} [option]")
+            print("Options:")
+            print("  --entities  Prints only the relational tables and their ORM mapping")
+            print("  --minio     Prints only the MinIO key structure")
+            print("  --grpc      Prints only the gRPC service definitions")
+            print("  --sql       Prints the raw initialization SQL file")
+            print("  --diagram   Shows the ASCII diagram, Mermaid code, and generates/downloads the PNG image")
+            print("  --png       Downloads the diagram image as PNG in docs/")
+            print("  (without args)  Prints the entire information model and generates the diagrams (.mermaid and .png)")
         else:
-            print(f"{RED}Opción no reconocida: {sys.argv[1]}{RESET}")
-            print("Usa --help para ver las opciones disponibles.")
+            print(f"{RED}Unrecognized option: {sys.argv[1]}{RESET}")
+            print("Use --help to see available options.")
     else:
         print_entities()
         print_minio_mapping()

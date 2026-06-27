@@ -160,22 +160,22 @@ def main():
     png_file = docs_dir / "model_diagram_premium.png"
     svg_file = docs_dir / "model_diagram_premium.svg"
     
-    print(f"Escribiendo código Graphviz DOT en: {dot_file.resolve()}")
+    print(f"Writing Graphviz DOT code to: {dot_file.resolve()}")
     with open(dot_file, "w", encoding="utf-8") as f:
         f.write(DOT_CODE)
         
     # Attempt to compile using local graphviz command line 'dot'
     try:
-        print("Intentando compilar diagrama con Graphviz local ('dot')...")
+        print("Attempting to compile diagram using local Graphviz ('dot')...")
         # Generate SVG
         subprocess.run(["dot", "-Tsvg", str(dot_file), "-o", str(svg_file)], check=True)
-        print(f"¡Éxito! Diagrama SVG generado en: {svg_file.resolve()}")
+        print(f"Success! SVG diagram generated at: {svg_file.resolve()}")
         # Generate PNG
         subprocess.run(["dot", "-Tpng", str(dot_file), "-o", str(png_file)], check=True)
-        print(f"¡Éxito! Diagrama PNG generado en: {png_file.resolve()}")
+        print(f"Success! PNG diagram generated at: {png_file.resolve()}")
     except (subprocess.SubprocessError, FileNotFoundError):
-        print("\n[!] AVISO: El comando 'dot' de Graphviz no está disponible en tu sistema local.")
-        print("Para generar el PNG o SVG automáticamente, instala Graphviz y añádelo al PATH de Windows.")
+        print("\n[!] WARNING: Graphviz 'dot' command is not available on your local system.")
+        print("To generate the PNG or SVG automatically, install Graphviz and add it to your Windows PATH.")
         print("Also you can copy 'docs/model_diagram_premium.dot' contents into Graphviz Online.")
 
 if __name__ == "__main__":

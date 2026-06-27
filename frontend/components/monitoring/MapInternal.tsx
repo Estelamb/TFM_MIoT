@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useDataMode } from "@/hooks/useDataMode";
 import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { getDevices } from "@/lib/api";
@@ -12,7 +11,6 @@ import { useRouter } from "next/navigation";
 
 interface EdgeMapProps {
   states?: any[];
-  isDemo?: boolean;
 }
 
 const createTacticalIcon = (status: string, isDark: boolean) => {
@@ -44,8 +42,7 @@ const createTacticalIcon = (status: string, isDark: boolean) => {
   });
 };
 
-export default function MapInternal({ states = [], isDemo = false }: EdgeMapProps) {
-  const { demoData } = useDataMode();
+export default function MapInternal({ states = [] }: EdgeMapProps) {
   const { theme, systemTheme } = useTheme();
   const [activeNode, setActiveNode] = useState<any | null>(null);
   const [markers, setMarkers] = useState<any[]>([]);
@@ -54,48 +51,34 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
   const { data: devices = [] } = useQuery({
     queryKey: ["devices"],
     queryFn: getDevices,
-    enabled: !isDemo,
   });
 
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
 
-  // IMPORTANTE: Ahora usamos SIEMPRE el mapa detallado claro. 
-  // La magia oscura la hará el CSS.
+  // IMPORTANT: We now ALWAYS use the clean detailed map.
+  // The dark magic will be handled by CSS.
   const tileUrl = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 
   useEffect(() => {
-    if (isDemo) {
-      const demoMarkers = demoData.monitoringStates.map((s: any) => ({
-        id: s.device_id,
-        name: s.device_id,
-        status: s.status,
-        coordinates: [s.coordinates[1], s.coordinates[0]], 
-        cpu: s.cpu_percent,
-        ram: s.ram_percent,
-        latency: s.latency_ms
-      }));
-      setMarkers(demoMarkers);
-    } else {
-      const realMarkers = states
-        .filter(s => s.coordinates && s.coordinates.length === 2)
-        .map(s => {
-          const device = devices.find((d: any) => d.id === s.device_id);
-          return {
-            id: s.device_id,
-            name: device ? device.name : s.device_id,
-            status: s.status,
-            coordinates: [s.coordinates[1], s.coordinates[0]], 
-            cpu: s.cpu_percent,
-            ram: s.ram_percent,
-            latency: s.latency_ms
-          };
-        });
-      setMarkers(realMarkers);
-    }
-  }, [states, isDemo, demoData.monitoringStates, devices]);
+    const realMarkers = states
+      .filter(s => s.coordinates && s.coordinates.length === 2)
+      .map(s => {
+        const device = devices.find((d: any) => d.id === s.device_id);
+        return {
+          id: s.device_id,
+          name: device ? device.name : s.device_id,
+          status: s.status,
+          coordinates: [s.coordinates[1], s.coordinates[0]], 
+          cpu: s.cpu_percent,
+          ram: s.ram_percent,
+          latency: s.latency_ms
+        };
+      });
+    setMarkers(realMarkers);
+  }, [states, devices]);
 
-  if (markers.length === 0 && !isDemo) {
+  if (markers.length === 0) {
     return (
       <div className="w-full h-[500px] bg-gray-50 dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-800 p-8 relative overflow-hidden flex items-center justify-center">
         <div className="flex flex-col items-center text-center max-w-sm space-y-3 z-10">
@@ -128,16 +111,16 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
 
       <MapContainer 
         center={defaultCenter} 
-        zoom={isDemo ? 3 : 13} 
+        zoom={13} 
         scrollWheelZoom={true} 
         className="w-full h-full !bg-transparent" 
         zoomControl={false}
       >
         <TileLayer
-          key={isDark ? "dark" : "light"} // Fuerza el redibujado al cambiar de tema
+          key={isDark ? "dark" : "light"} // Forces redraw when changing themes
           attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
           url={tileUrl}
-          className={isDark ? "dark-tactical-tiles" : ""} // <--- Aquí aplicamos el filtro mágico
+          className={isDark ? "dark-tactical-tiles" : ""} // <--- Apply the magic filter here
         />
 
         {markers.map((marker) => (
@@ -190,7 +173,7 @@ export default function MapInternal({ states = [], isDemo = false }: EdgeMapProp
               <div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500 dark:text-slate-400">Latency</span>
-                  <span className="text-gray-950 dark:text-white font-bold font-mono">{Math.round(activeNode.latency)} ms</span>
+                  <span className="text-gray-955 dark:text-white font-bold font-mono">{Math.round(activeNode.latency)} ms</span>
                 </div>
               </div>
             )}

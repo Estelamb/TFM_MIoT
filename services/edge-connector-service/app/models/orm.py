@@ -7,7 +7,7 @@ from shared.utils.database import Base
 
 def _uuid(): return str(uuid.uuid4())
 
-# Readonly refs (solo para FK integrity, no gestiona estas tablas)
+# Readonly refs (only for FK integrity, does not manage these tables)
 class DeviceRef(Base):
     __tablename__ = "devices"
     id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)

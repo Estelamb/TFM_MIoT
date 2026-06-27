@@ -5,7 +5,7 @@ api_gateway_service.stubs
 
 .. autoapi-nested-parse::
 
-   gRPC stubs singleton para el gateway.
+   gRPC stubs singleton for the gateway.
 
 
 

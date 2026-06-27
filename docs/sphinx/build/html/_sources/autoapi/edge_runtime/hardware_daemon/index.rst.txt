@@ -7,26 +7,18 @@ edge_runtime.hardware_daemon
 
    AURA Hardware Daemon
    ====================
-   Exposes Raspberry Pi Camera Module 3 over a lightweight local HTTP API.
+   Exposes Raspberry Pi Camera Module 3 and Hailo-8/8L hardware accelerators
+   over a lightweight local HTTP API.
    Allows containerized edge agents to interact with native hardware without
    complex device mounts or privileged Docker flags.
 
    API Endpoints:
    * GET /capture - Returns the latest captured frame as 'image/jpeg' bytes.
    * GET /status  - Returns JSON status of the daemon (physical vs simulated).
+   * POST /load   - Accepts raw HEF bytes and initializes Hailo context.
+   * POST /infer  - Runs inference on the loaded Hailo model using raw RGB888 bytes.
+   * POST /unload - Releases the Hailo context and cleans up temporary HEFs.
 
-
-
-Attributes
-----------
-
-.. autoapisummary::
-
-   edge_runtime.hardware_daemon.logger
-   edge_runtime.hardware_daemon.HAS_PICAMERA
-   edge_runtime.hardware_daemon.HAS_PILLOW
-   edge_runtime.hardware_daemon.MINIMAL_JPEG
-   edge_runtime.hardware_daemon.camera_manager
 
 
 Classes
@@ -34,7 +26,6 @@ Classes
 
 .. autoapisummary::
 
-   edge_runtime.hardware_daemon.CameraManager
    edge_runtime.hardware_daemon.HardwareHTTPHandler
 
 
@@ -48,46 +39,6 @@ Functions
 
 Module Contents
 ---------------
-
-.. py:data:: logger
-
-.. py:data:: HAS_PICAMERA
-   :value: True
-
-
-.. py:data:: HAS_PILLOW
-   :value: True
-
-
-.. py:data:: MINIMAL_JPEG
-   :value: b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\xff\xff\xff\xff...
-
-
-.. py:class:: CameraManager
-
-   Manages camera lifecycle and captures frame to memory.
-
-
-   .. py:attribute:: picam2
-      :value: None
-
-
-
-   .. py:attribute:: is_active
-      :value: False
-
-
-
-   .. py:method:: start() -> None
-
-
-   .. py:method:: capture_raw() -> bytes
-
-
-   .. py:method:: stop() -> None
-
-
-.. py:data:: camera_manager
 
 .. py:class:: HardwareHTTPHandler(request, client_address, server)
 
@@ -120,6 +71,9 @@ Module Contents
 
 
    .. py:method:: do_GET() -> None
+
+
+   .. py:method:: do_POST() -> None
 
 
 .. py:function:: main() -> None

@@ -12,7 +12,7 @@ import {
   getModels,
   getScripts
 } from "@/lib/api";
-import { useDataMode } from "@/hooks/useDataMode";
+
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -62,8 +62,7 @@ export default function DeviceDetailPage() {
   }
 
   const qc = useQueryClient();
-  const { mode } = useDataMode();
-  const isDemo = mode === "demo";
+
   const deviceId = params.id as string;
 
   const [isEditingName, setIsEditingName] = useState(false);
@@ -320,18 +319,25 @@ export default function DeviceDetailPage() {
                   </div>
 
                   {/* Others */}
-                  {device.others && device.others.length > 0 && (
-                    <div className="space-y-2 pt-2">
-                      <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block">Components / Nodes</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {device.others.map((node: string, idx: number) => (
-                          <Badge key={idx} variant="info" className="font-semibold">
-                            {node}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <div className="space-y-2 pt-2">
+                    <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block">Other Components</span>
+                    {device.others && device.others.length > 0 ? (
+                      device.others.map((o: string, idx: number) => {
+                        const Icon = getPeripheralIcon(o, Server);
+                        return (
+                          <div key={idx} className="flex justify-between items-center p-2.5 bg-slate-50 dark:bg-gray-800/40 border border-slate-200/50 dark:border-gray-800/50 rounded-xl text-sm transition-all hover:bg-slate-100 dark:hover:bg-gray-800/60">
+                            <span className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium">
+                              <Icon size={16} className="text-blue-500" />
+                              {HW_LABELS[o] || o}
+                            </span>
+                            <Badge variant="default" className="text-[9px]">Other</Badge>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="text-xs text-gray-400 dark:text-gray-500 italic px-1">No other components linked.</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

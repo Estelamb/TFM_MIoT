@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 _backend: InferenceBackend | None = None
 _last_inference: Any = None
+_model_classes: list[str] = []
 
 
 def _get_backend(hw: str) -> InferenceBackend:
@@ -67,12 +68,28 @@ def _get_backend(hw: str) -> InferenceBackend:
     return GeneralInferenceBackend(hw)
 
 
-def load_model(model_path: str) -> None:
-    global _backend
+def load_model(model_path: str, class_names: list[str] = None) -> None:
+    global _backend, _model_classes
+    if class_names is not None:
+        _model_classes = class_names
+    else:
+        # Load from classes.json if it exists in the same directory as model_path
+        try:
+            import json
+            from pathlib import Path
+            classes_file = Path(model_path).parent / "classes.json"
+            if classes_file.exists():
+                _model_classes = json.loads(classes_file.read_text())
+            else:
+                _model_classes = []
+        except Exception as e:
+            logger.warning(f"Failed to load classes.json at load_model: {e}")
+            _model_classes = []
+
     hw = detect_hardware()
     logger.info(f"Hardware detected: {hw}")
     backend = _get_backend(hw)
-    backend.load(model_path)
+    backend.load(model_path, class_names=class_names)
     _backend = backend
 
 
@@ -117,11 +134,12 @@ def unload_model() -> None:
 
     Safe to call even if no model is loaded (no-op in that case).
     """
-    global _backend, _last_inference
+    global _backend, _last_inference, _model_classes
     if _backend:
         _backend.unload()
         _backend = None
     _last_inference = None
+    _model_classes = []
 
 
 def get_hardware_info() -> dict:
@@ -163,3 +181,13 @@ def get_last_inference() -> Any:
         run yet in this session.
     """
     return _last_inference
+
+
+def get_model_classes() -> list[str]:
+    """Return the list of class names loaded from the current model's metadata."""
+    global _model_classes
+    if _model_classes:
+        return _model_classes
+    if _backend:
+        return _backend.device_info().get("class_names", [])
+    return []

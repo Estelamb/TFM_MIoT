@@ -25,7 +25,7 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
         >
-          {/* Eliminamos el <header> antiguo con el ThemeToggle que estaba aquí */}
+          {/* We removed the old <header> with the ThemeToggle that was here */}
           {children}
         </ThemeProvider>
       </body>

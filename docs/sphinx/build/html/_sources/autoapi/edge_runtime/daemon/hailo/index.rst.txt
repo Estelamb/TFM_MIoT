@@ -1,0 +1,51 @@
+edge_runtime.daemon.hailo
+=========================
+
+.. py:module:: edge_runtime.daemon.hailo
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   edge_runtime.daemon.hailo.hailo_manager
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   edge_runtime.daemon.hailo.HailoManager
+
+
+Module Contents
+---------------
+
+.. py:class:: HailoManager
+
+   Manages dynamic loading and inference execution of Hailo HEF models on the host.
+
+
+   .. py:attribute:: hailo
+      :value: None
+
+
+
+   .. py:attribute:: model_path
+      :value: None
+
+
+
+   .. py:method:: load(hef_bytes: bytes) -> dict
+
+
+   .. py:method:: infer(img_bytes: bytes, w: int, h: int) -> dict
+
+
+   .. py:method:: unload() -> None
+
+
+.. py:data:: hailo_manager
+

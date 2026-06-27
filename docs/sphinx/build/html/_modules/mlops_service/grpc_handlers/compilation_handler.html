@@ -200,13 +200,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -219,9 +218,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -241,14 +237,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -285,16 +273,16 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Compilation Service Handler</span>
 <span class="sd">============================</span>
-<span class="sd">Orquesta la compilación de modelos .pt para cada hardware:</span>
+<span class="sd">Orchestrates the compilation of .pt models for each hardware target:</span>
 
-<span class="sd">  hailo8 / hailo8l  → HailoCompiler  (lanza Docker con Hailo AI SW Suite)</span>
-<span class="sd">  rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter en Python)</span>
-<span class="sd">  rpi               → RPiCPUCompiler (exportación a ONNX en Docker)</span>
-<span class="sd">  jetson_orin_nano  → stub (TensorRT, pendiente)</span>
+<span class="sd">  hailo8 / hailo8l  → HailoCompiler  (launches Docker with Hailo AI SW Suite)</span>
+<span class="sd">  rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter in Python)</span>
+<span class="sd">  rpi               → RPiCPUCompiler (ONNX export in Docker)</span>
+<span class="sd">  jetson_orin_nano  → stub (TensorRT, pending)</span>
 
-<span class="sd">El handler es no-bloqueante: CompileModel lanza la compilación como tarea</span>
-<span class="sd">asyncio y devuelve status=&quot;compiling&quot; inmediatamente. El cliente puede</span>
-<span class="sd">hacer polling con GetCompilationStatus.</span>
+<span class="sd">The handler is non-blocking: CompileModel launches the compilation as an</span>
+<span class="sd">asyncio task and returns status=&quot;compiling&quot; immediately. The client can</span>
+<span class="sd">poll status with GetCompilationStatus.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -335,10 +323,26 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">classes_file</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;classes.json not found in dataset zip&quot;</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">zip_ref</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">classes_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">classes_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-            <span class="c1"># Sort class names by their index value</span>
-            <span class="n">sorted_classes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">classes_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">classes_dict</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-            <span class="k">return</span> <span class="n">sorted_classes</span></div>
+                <span class="n">classes_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classes_data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">classes_data</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classes_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Format A: {&quot;0&quot;: &quot;alert&quot;, &quot;1&quot;: &quot;drowsy&quot;} (index -&gt; name)</span>
+                    <span class="n">first_key</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">classes_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">first_key</span><span class="p">)</span>
+                    <span class="n">sorted_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">classes_data</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">classes_data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">]</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># Format B: {&quot;alert&quot;: 0, &quot;drowsy&quot;: 1} (name -&gt; index)</span>
+                        <span class="n">sorted_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">classes_data</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">classes_data</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
+                        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="nb">sorted</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">classes_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;classes.json&#39; must be a JSON list or dictionary.&quot;</span><span class="p">)</span></div>
 
 
 
@@ -496,7 +500,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -516,7 +520,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

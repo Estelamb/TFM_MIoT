@@ -5,6 +5,8 @@ AURA Generic Other Library: Template Category
 from hardware.utils import get_active_driver, load_specific_driver
 
 class TemplateOther:
+    LABEL = "Template"
+    
     def __init__(self, **kwargs):
         driver, params = get_active_driver("template")
         if driver == "template":

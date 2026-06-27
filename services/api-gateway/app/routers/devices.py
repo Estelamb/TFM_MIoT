@@ -60,6 +60,14 @@ async def get_actuators(_=Depends(verify_token)):
     return list(r.actuators)
 
 
+@router.get("/others")
+async def get_others(_=Depends(verify_token)):
+    from shared.proto_gen import compilation_pb2
+    stub = get_stub("compilation")
+    r = await stub.GetSupportedOthers(compilation_pb2.GetSupportedOthersRequest())
+    return list(r.others)
+
+
 @router.get("/labels")
 async def get_all_labels(_=Depends(verify_token)):
     from shared.proto_gen import compilation_pb2
@@ -68,12 +76,15 @@ async def get_all_labels(_=Depends(verify_token)):
     hw_res = await stub.GetSupportedHardware(compilation_pb2.GetSupportedHardwareRequest())
     sensor_res = await stub.GetSupportedSensors(compilation_pb2.GetSupportedSensorsRequest())
     actuator_res = await stub.GetSupportedActuators(compilation_pb2.GetSupportedActuatorsRequest())
+    other_res = await stub.GetSupportedOthers(compilation_pb2.GetSupportedOthersRequest())
     
     merged = {}
     merged.update(dict(hw_res.labels))
     merged.update(dict(sensor_res.labels))
     merged.update(dict(actuator_res.labels))
+    merged.update(dict(other_res.labels))
     return merged
+
 
 
 

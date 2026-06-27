@@ -1,16 +1,16 @@
 """
 Compilation Service Handler
 ============================
-Orquesta la compilación de modelos .pt para cada hardware:
+Orchestrates the compilation of .pt models for each hardware target:
 
-  hailo8 / hailo8l  → HailoCompiler  (lanza Docker con Hailo AI SW Suite)
-  rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter en Python)
-  rpi               → RPiCPUCompiler (exportación a ONNX en Docker)
-  jetson_orin_nano  → stub (TensorRT, pendiente)
+  hailo8 / hailo8l  → HailoCompiler  (launches Docker with Hailo AI SW Suite)
+  rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter in Python)
+  rpi               → RPiCPUCompiler (ONNX export in Docker)
+  jetson_orin_nano  → stub (TensorRT, pending)
 
-El handler es no-bloqueante: CompileModel lanza la compilación como tarea
-asyncio y devuelve status="compiling" inmediatamente. El cliente puede
-hacer polling con GetCompilationStatus.
+The handler is non-blocking: CompileModel launches the compilation as an
+asyncio task and returns status="compiling" immediately. The client can
+poll status with GetCompilationStatus.
 """
 import asyncio
 import logging
@@ -46,10 +46,26 @@ async def extract_classes_from_dataset(bucket: str, dataset_key: str) -> list[st
             if not classes_file:
                 raise ValueError("classes.json not found in dataset zip")
             with zip_ref.open(classes_file) as f:
-                classes_dict = json.load(f)
-            # Sort class names by their index value
-            sorted_classes = sorted(classes_dict.keys(), key=lambda k: classes_dict[k])
-            return sorted_classes
+                classes_data = json.load(f)
+            
+            if isinstance(classes_data, list):
+                return [str(x) for x in classes_data]
+            elif isinstance(classes_data, dict):
+                try:
+                    # Format A: {"0": "alert", "1": "drowsy"} (index -> name)
+                    first_key = next(iter(classes_data.keys()))
+                    int(first_key)
+                    sorted_keys = sorted(classes_data.keys(), key=lambda k: int(k))
+                    return [str(classes_data[k]) for k in sorted_keys]
+                except (ValueError, TypeError):
+                    try:
+                        # Format B: {"alert": 0, "drowsy": 1} (name -> index)
+                        sorted_keys = sorted(classes_data.keys(), key=lambda k: int(classes_data[k]))
+                        return [str(k) for k in sorted_keys]
+                    except (ValueError, TypeError):
+                        return sorted([str(k) for k in classes_data.keys()])
+            else:
+                raise ValueError("'classes.json' must be a JSON list or dictionary.")
 
 
 def _build_registry(minio_bucket_models: str, minio_bucket_compiled: str) -> dict:

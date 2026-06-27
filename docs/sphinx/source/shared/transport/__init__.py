@@ -1,6 +1,6 @@
 """
-Capa de transporte abstracta.
-Implementada sobre MQTT. Diseñada para ser intercambiable (WebSocket, AMQP, etc.)
+Abstract transport layer.
+Implemented over MQTT. Designed to be interchangeable (WebSocket, AMQP, etc.)
 """
 from shared.transport.base import TransportBase, MessageEnvelope
 from shared.transport.mqtt import MQTTTransport

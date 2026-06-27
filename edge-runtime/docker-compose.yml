@@ -15,21 +15,21 @@ services:
       - AURA_LOG_LEVEL=${AURA_LOG_LEVEL:-INFO}
       - AURA_WORK_DIR=${AURA_WORK_DIR:-/tmp/aura}
       - AURA_HARDWARE_DAEMON_HOST=${AURA_HARDWARE_DAEMON_HOST:-172.18.0.1}
-      - AURA_CAMERA_ENABLED=${AURA_CAMERA_ENABLED:-true}
+      - AURA_PERIPHERALS=${AURA_PERIPHERALS:-camera_0}
     networks:
       - aura-net
     volumes:
       - ./data:/tmp/aura
-      # Configuración local desde el host (solo lectura)
-      - ./config:/app/config:ro
-      # Librerías de hardware — persistente entre reinicios.
-      # Se llena vía OTA (update_libraries) al conectarse a la plataforma.
+      # Local configuration from the host (read-only)
+      - ./config:/app/config
+      # Hardware libraries — persistent across reboots.
+      # Populated via OTA (update_libraries) upon connecting to the platform.
       - edge-agent-hardware:/app/hardware
 
 networks:
   aura-net:
-    name: aura_aura-net
-    external: true
+    name: ${AURA_DOCKER_NETWORK:-edge-net}
+    external: ${AURA_DOCKER_NETWORK_EXTERNAL:-false}
 
 volumes:
   edge-agent-hardware:

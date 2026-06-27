@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDevices, createDevice, deleteDevice, getHardwareTypes, getSensors, getActuators, updateDevice, getInferenceResults } from "@/lib/api";
-import { useDataMode } from "@/hooks/useDataMode";
+import { getDevices, createDevice, deleteDevice, getHardwareTypes, getSensors, getActuators, getOthers, getPeripheralLabels, updateDevice, getInferenceResults } from "@/lib/api";
+
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
@@ -13,7 +13,7 @@ import { HW_LABELS } from "@/lib/utils";
 import Link from "next/link";
 import {
   Cpu, Plus, Trash2, Zap, Radio, Layers, Server, Check, Info, ChevronDown, ChevronRight,
-  Camera, Thermometer, Ruler, Compass, Power, Disc, Volume2, Lightbulb, Edit2, Activity, Play
+  Camera, Thermometer, Ruler, Compass, Power, Disc, Volume2, Lightbulb, Edit2, Activity, Play, MapPin
 } from "lucide-react";
 
 type TabType = "devices" | "architectures" | "sensors" | "actuators" | "nodes";
@@ -27,6 +27,8 @@ const CATEGORY_ICONS: Record<string, any> = {
   servo: Disc,
   buzzer: Volume2,
   led: Lightbulb,
+  template: Server,
+  gps: MapPin,
 };
 
 const getPeripheralIcon = (name: string, defaultIcon: any) => {
@@ -37,8 +39,7 @@ const getPeripheralIcon = (name: string, defaultIcon: any) => {
 
 export default function DevicesPage() {
   const qc = useQueryClient();
-  const { mode, demoData } = useDataMode();
-  const isDemo = mode === "demo";
+
 
   const { data: hardwareTypes = [] } = useQuery({
     queryKey: ["hardwareTypes"],
@@ -55,7 +56,22 @@ export default function DevicesPage() {
     queryFn: getActuators,
   });
 
-  const hwOptions = hardwareTypes.map(v => ({ value: v, label: HW_LABELS[v] || v }));
+  const { data: others = [] } = useQuery({
+    queryKey: ["others"],
+    queryFn: getOthers,
+  });
+
+  const { data: peripheralLabels = {} } = useQuery({
+    queryKey: ["peripheralLabels"],
+    queryFn: getPeripheralLabels,
+    staleTime: 60_000, // labels change rarely
+  });
+
+  // Merge dynamic labels from backend (Python LABEL attrs) with static HW_LABELS fallback
+  const resolveLabel = (key: string): string =>
+    peripheralLabels[key] ?? HW_LABELS[key] ?? key;
+
+  const hwOptions = hardwareTypes.map(v => ({ value: v, label: resolveLabel(v) }));
 
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     camera: true,
@@ -66,6 +82,7 @@ export default function DevicesPage() {
     servo: true,
     buzzer: true,
     led: true,
+    template: true,
   });
 
   const toggleCategory = (cat: string) => {
@@ -107,13 +124,11 @@ export default function DevicesPage() {
     selected_nodes: [] as string[],
   });
 
-  const { data: realDevices = [], isLoading } = useQuery({
+  const { data: devices = [], isLoading } = useQuery({
     queryKey: ["devices"],
     queryFn: getDevices,
     refetchInterval: 5000,
   });
-
-  const devices = isDemo ? demoData.devices : realDevices;
 
   const { data: inferenceResults = [], isLoading: loadingInference } = useQuery({
     queryKey: ["device-inference", selectedDevice?.id],
@@ -122,10 +137,10 @@ export default function DevicesPage() {
     refetchInterval: modalTab === "inference" ? 2000 : false,
   });
 
-  const globalArchitectures = isDemo ? demoData.architectures : hardwareTypes;
-  const globalSensors = isDemo ? demoData.sensors : sensors;
-  const globalActuators = isDemo ? demoData.actuators : actuators;
-  const globalNodes = isDemo ? demoData.nodes : [];
+  const globalArchitectures = hardwareTypes;
+  const globalSensors = sensors;
+  const globalActuators = actuators;
+  const globalNodes = others;
 
   const groupedSensors = globalSensors.reduce((acc, sensor) => {
     const parts = sensor.split("/");
@@ -140,6 +155,14 @@ export default function DevicesPage() {
     const category = parts.length > 1 ? parts[0] : "other";
     if (!acc[category]) acc[category] = [];
     acc[category].push(actuator);
+    return acc;
+  }, {} as Record<string, string[]>);
+
+  const groupedNodes = globalNodes.reduce((acc, node) => {
+    const parts = node.split("/");
+    const category = parts.length > 1 ? parts[0] : "other";
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(node);
     return acc;
   }, {} as Record<string, string[]>);
 
@@ -183,7 +206,7 @@ export default function DevicesPage() {
       <div>
         <p className="text-sm font-semibold text-amber-800 dark:text-amber-400">Not Available in this PoC</p>
         <p className="text-xs text-amber-700 dark:text-amber-500 mt-0.5">
-          {feature} management is planned for a future iteration. Switch to Demo Mode to explore the UI with mock data.
+          {feature} management is planned for a future iteration.
         </p>
       </div>
     </div>
@@ -225,11 +248,7 @@ export default function DevicesPage() {
           <Button onClick={() => setOpenRegisterDevice(true)} className="gap-2 shrink-0">
             <Plus size={16} /> Register Device
           </Button>
-        ) : ["architectures", "sensors", "actuators"].includes(activeTab) ? null : (
-          <Button onClick={() => setOpenRegisterComponent(true)} className="gap-2 shrink-0 capitalize">
-            <Plus size={16} /> Register {activeTab === "nodes" ? "Other Component" : activeTab.slice(0, -1)}
-          </Button>
-        )}
+        ) : null}
       </div>
 
       {/* Tabs */}
@@ -262,7 +281,7 @@ export default function DevicesPage() {
       {/* TAB: DEVICES */}
       {activeTab === "devices" && (
         <div className="space-y-4">
-          {isLoading && !isDemo ? (
+          {isLoading ? (
             <div className="text-center py-10 text-gray-500">Loading devices...</div>
           ) : devices.length === 0 ? (
             <EmptySlotCard
@@ -283,7 +302,7 @@ export default function DevicesPage() {
                     <div>
                       <h3 className="font-bold text-gray-900 dark:text-white text-lg group-hover:text-blue-500 transition-colors">{d.name}</h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="default">{HW_LABELS[d.hardware_type] || d.hardware_type}</Badge>
+                        <Badge variant="default">{resolveLabel(d.hardware_type)}</Badge>
                         <span className="text-xs text-gray-400 font-mono">{d.id}</span>
                       </div>
                     </div>
@@ -321,7 +340,7 @@ export default function DevicesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {globalArchitectures.map((arch: string) => (
                 <Card key={arch} className="p-5 border-l-4 border-l-blue-500 flex items-center justify-between">
-                  <span className="font-bold text-gray-800 dark:text-gray-200">{HW_LABELS[arch] || arch}</span>
+                  <span className="font-bold text-gray-800 dark:text-gray-200">{resolveLabel(arch)}</span>
                   <Badge variant="default">Hardware Base</Badge>
                 </Card>
               ))}
@@ -353,7 +372,7 @@ export default function DevicesPage() {
                     >
                       <span className="flex items-center gap-2">
                         <CatIcon size={16} className="text-emerald-500" />
-                        {HW_LABELS[category] || category}
+                        {resolveLabel(category)}
                       </span>
                       {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                     </button>
@@ -363,7 +382,7 @@ export default function DevicesPage() {
                           <Card key={sensor} className="p-4 flex items-center justify-between border hover:border-emerald-500 transition-all bg-white dark:bg-gray-950">
                             <span className="font-semibold text-gray-850 dark:text-gray-150 flex items-center gap-2">
                               <CatIcon size={14} className="text-emerald-500/80" />
-                              {HW_LABELS[sensor] || sensor}
+                              {resolveLabel(sensor)}
                             </span>
                             <Badge variant="success">Input Peripheral</Badge>
                           </Card>
@@ -401,7 +420,7 @@ export default function DevicesPage() {
                     >
                       <span className="flex items-center gap-2">
                         <CatIcon size={16} className="text-yellow-500" />
-                        {HW_LABELS[category] || category}
+                        {resolveLabel(category)}
                       </span>
                       {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                     </button>
@@ -411,7 +430,7 @@ export default function DevicesPage() {
                           <Card key={actuator} className="p-4 flex items-center justify-between border hover:border-yellow-500 transition-all bg-white dark:bg-gray-950">
                             <span className="font-semibold text-gray-850 dark:text-gray-150 flex items-center gap-2">
                               <CatIcon size={14} className="text-yellow-500/80" />
-                              {HW_LABELS[actuator] || actuator}
+                              {resolveLabel(actuator)}
                             </span>
                             <Badge variant="warning">Output Relay</Badge>
                           </Card>
@@ -428,24 +447,47 @@ export default function DevicesPage() {
 
       {/* TAB: NODES */}
       {activeTab === "nodes" && (
-        <div className="space-y-4">
-          {!isDemo && <PoCNotice feature="Others Catalog components" />}
-          {globalNodes.length === 0 ? (
+        <div className="space-y-6">
+          {Object.keys(groupedNodes).length === 0 ? (
             <EmptySlotCard
               icon={Server}
-              title="No Components in Others Catalog"
-              description="Register additional peripheral components or other devices."
-              actionLabel="Add Component"
-              onAction={() => setOpenRegisterComponent(true)}
+              title="No Registered Other Components"
+              description="No other component libraries detected in the platform folders."
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {globalNodes.map((node: string) => (
-                <Card key={node} className="p-5 border-l-4 border-l-purple-500 flex items-center justify-between">
-                  <span className="font-bold text-gray-800 dark:text-gray-200">{node}</span>
-                  <Badge variant="info">Component</Badge>
-                </Card>
-              ))}
+            <div className="space-y-4">
+              {Object.entries(groupedNodes).map(([category, items]) => {
+                const isExpanded = expandedCategories[category] !== false;
+                const CatIcon = CATEGORY_ICONS[category] || Server;
+                return (
+                  <Card key={category} className="p-0 overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm">
+                    <button
+                      type="button"
+                      onClick={() => toggleCategory(category)}
+                      className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <span className="flex items-center gap-2">
+                        <CatIcon size={16} className="text-blue-500" />
+                        {resolveLabel(category)}
+                      </span>
+                      {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                    </button>
+                    {isExpanded && (
+                      <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border-t dark:border-gray-800 bg-white dark:bg-gray-950">
+                        {items.map((node: string) => (
+                          <Card key={node} className="p-4 flex items-center justify-between border hover:border-blue-500 transition-all bg-white dark:bg-gray-950">
+                            <span className="font-semibold text-gray-850 dark:text-gray-150 flex items-center gap-2">
+                              <CatIcon size={14} className="text-blue-500/80" />
+                              {resolveLabel(node)}
+                            </span>
+                            <Badge variant="default">Other Device</Badge>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
@@ -472,17 +514,7 @@ export default function DevicesPage() {
             options={hwOptions}
           />
 
-          {isDemo && (
-            <Select
-              label="Hardware Base Architecture (Optional)"
-              value={deviceForm.architecture_id}
-              onChange={e => setDeviceForm(prev => ({ ...prev, architecture_id: e.target.value }))}
-              options={[
-                { value: "", label: "Select base layer configuration..." },
-                ...globalArchitectures.map((arch: string) => ({ value: arch, label: arch })),
-              ]}
-            />
-          )}
+
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-t pt-4 dark:border-gray-800">
             {/* Sensors */}
@@ -495,12 +527,12 @@ export default function DevicesPage() {
                   Object.entries(groupedSensors).map(([category, items]) => {
                     const selectedValue = items.find(v => deviceForm.selected_sensors.includes(v)) || "";
                     const options = [
-                      { value: "", label: `Select ${HW_LABELS[category] || category}...` },
-                      ...items.map(v => ({ value: v, label: HW_LABELS[v] || v }))
+                      { value: "", label: `Select ${resolveLabel(category)}...` },
+                      ...items.map(v => ({ value: v, label: resolveLabel(v) }))
                     ];
                     return (
                       <div key={category} className="space-y-1">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{HW_LABELS[category] || category}</span>
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{resolveLabel(category)}</span>
                         <Select
                           value={selectedValue}
                           onChange={e => {
@@ -528,12 +560,12 @@ export default function DevicesPage() {
                   Object.entries(groupedActuators).map(([category, items]) => {
                     const selectedValue = items.find(v => deviceForm.selected_actuators.includes(v)) || "";
                     const options = [
-                      { value: "", label: `Select ${HW_LABELS[category] || category}...` },
-                      ...items.map(v => ({ value: v, label: HW_LABELS[v] || v }))
+                      { value: "", label: `Select ${resolveLabel(category)}...` },
+                      ...items.map(v => ({ value: v, label: resolveLabel(v) }))
                     ];
                     return (
                       <div key={category} className="space-y-1">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{HW_LABELS[category] || category}</span>
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{resolveLabel(category)}</span>
                         <Select
                           value={selectedValue}
                           onChange={e => {
@@ -551,21 +583,39 @@ export default function DevicesPage() {
               </div>
             </div>
 
-            {/* Nodes */}
-            {isDemo && (
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider block">Others Catalog Items</label>
-                <div className="border rounded-lg p-2 max-h-56 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-                  {globalNodes.map((node: string) => (
-                    <button key={node} type="button" onClick={() => toggleFormArray("selected_nodes", node)}
-                      className={`w-full text-left flex items-center justify-between p-1.5 rounded text-xs border mt-1 first:mt-0 ${deviceForm.selected_nodes.includes(node) ? "bg-purple-50 dark:bg-purple-950 border-purple-500 text-purple-700" : "border-transparent bg-white dark:bg-gray-800"}`}>
-                      <span>{node}</span>
-                      {deviceForm.selected_nodes.includes(node) && <Check size={12} />}
-                    </button>
-                  ))}
-                </div>
+            {/* Others */}
+            <div className="space-y-4">
+              <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider block">Other Components</label>
+              <div className="space-y-3">
+                {Object.keys(groupedNodes).length === 0 ? (
+                  <p className="text-xs text-gray-400 italic">No other components registered</p>
+                ) : (
+                  Object.entries(groupedNodes).map(([category, items]) => {
+                    const selectedValue = items.find(v => deviceForm.selected_nodes.includes(v)) || "";
+                    const options = [
+                      { value: "", label: `Select ${resolveLabel(category)}...` },
+                      ...items.map(v => ({ value: v, label: resolveLabel(v) }))
+                    ];
+                    return (
+                      <div key={category} className="space-y-1">
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{resolveLabel(category)}</span>
+                        <Select
+                          value={selectedValue}
+                          onChange={e => {
+                            const val = e.target.value;
+                            const filtered = deviceForm.selected_nodes.filter(v => !items.includes(v));
+                            const newSelection = val ? [...filtered, val] : filtered;
+                            setDeviceForm(prev => ({ ...prev, selected_nodes: newSelection }));
+                          }}
+                          options={options}
+                        />
+                      </div>
+                    );
+                  })
+                )}
               </div>
-            )}
+            </div>
+
           </div>
 
           <Button type="submit" className="w-full" loading={registerDevice.isPending}>
@@ -574,40 +624,24 @@ export default function DevicesPage() {
         </form>
       </Modal>
 
-      {/* MODAL: CATALOG COMPONENT REGISTRATION (demo only feedback in real mode) */}
+      {/* MODAL: CATALOG COMPONENT REGISTRATION (not available in PoC) */}
       <Modal
         open={openRegisterComponent}
         onClose={() => { setOpenRegisterComponent(false); setComponentName(""); }}
         title={`Register Global ${activeTab === "nodes" ? "Other Component" : activeTab.slice(0, -1)}`}
       >
-        {!isDemo ? (
-          <div className="pt-4">
-            <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl">
-              <Info size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-amber-800 dark:text-amber-400">Not Available in this PoC</p>
-                <p className="text-xs text-amber-700 dark:text-amber-500 mt-1">
-                  Catalog management is planned for a future iteration. Switch to Demo Mode to explore this feature with mock data.
-                </p>
-              </div>
+        <div className="pt-4">
+          <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl">
+            <Info size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-amber-800 dark:text-amber-400">Not Available in this PoC</p>
+              <p className="text-xs text-amber-700 dark:text-amber-500 mt-1">
+                Catalog management is planned for a future iteration.
+              </p>
             </div>
-            <Button variant="outline" className="w-full mt-4" onClick={() => setOpenRegisterComponent(false)}>Close</Button>
           </div>
-        ) : (
-          <form onSubmit={e => { e.preventDefault(); setOpenRegisterComponent(false); setComponentName(""); }} className="space-y-4 pt-4">
-            <Input
-              label="Component Model Name"
-              value={componentName}
-              onChange={e => setComponentName(e.target.value)}
-              placeholder={`e.g. Specialized ${activeTab.slice(0, -1)} model label...`}
-              required
-            />
-            <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" className="flex-1" onClick={() => setOpenRegisterComponent(false)}>Cancel</Button>
-              <Button type="submit" className="flex-1">Save to Catalog</Button>
-            </div>
-          </form>
-        )}
+          <Button variant="outline" className="w-full mt-4" onClick={() => setOpenRegisterComponent(false)}>Close</Button>
+        </div>
       </Modal>
 
       {/* MODAL: DEVICE SPEC VIEW */}
@@ -617,22 +651,20 @@ export default function DevicesPage() {
           <button
             type="button"
             onClick={() => setModalTab("specs")}
-            className={`pb-2.5 text-sm font-semibold border-b-2 transition-all ${
-              modalTab === "specs"
+            className={`pb-2.5 text-sm font-semibold border-b-2 transition-all ${modalTab === "specs"
                 ? "border-blue-500 text-blue-600 dark:text-blue-400 font-bold"
                 : "border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            }`}
+              }`}
           >
             See more
           </button>
           <button
             type="button"
             onClick={() => setModalTab("inference")}
-            className={`pb-2.5 text-sm font-semibold border-b-2 transition-all ${
-              modalTab === "inference"
+            className={`pb-2.5 text-sm font-semibold border-b-2 transition-all ${modalTab === "inference"
                 ? "border-blue-500 text-blue-600 dark:text-blue-400 font-bold"
                 : "border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            }`}
+              }`}
           >
             Live Inference
           </button>
@@ -667,9 +699,9 @@ export default function DevicesPage() {
 
             <div>
               <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Hardware Type</h4>
-              <Badge variant="default">{HW_LABELS[selectedDevice?.hardware_type] || selectedDevice?.hardware_type || "—"}</Badge>
+              <Badge variant="default">{selectedDevice?.hardware_type ? resolveLabel(selectedDevice.hardware_type) : "—"}</Badge>
             </div>
-            {(selectedDevice?.sensors?.length > 0 || selectedDevice?.actuators?.length > 0) && (
+            {(selectedDevice?.sensors?.length > 0 || selectedDevice?.actuators?.length > 0 || selectedDevice?.others?.length > 0) && (
               <div>
                 <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Attached Peripherals</h4>
                 <div className="space-y-2">
@@ -680,7 +712,7 @@ export default function DevicesPage() {
                       <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
                         <span className="flex items-center gap-2">
                           <Icon size={14} className="text-emerald-500" />
-                          {HW_LABELS[name] || name}
+                          {resolveLabel(name)}
                         </span>
                         <Badge variant="success">Sensor</Badge>
                       </div>
@@ -693,16 +725,29 @@ export default function DevicesPage() {
                       <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
                         <span className="flex items-center gap-2">
                           <Icon size={14} className="text-yellow-500" />
-                          {HW_LABELS[name] || name}
+                          {resolveLabel(name)}
                         </span>
                         <Badge variant="warning">Actuator</Badge>
+                      </div>
+                    );
+                  })}
+                  {selectedDevice?.others?.map((o: any, i: number) => {
+                    const name = o.name || o;
+                    const Icon = getPeripheralIcon(name, Server);
+                    return (
+                      <div key={i} className="flex justify-between items-center p-2 border rounded text-sm dark:border-gray-800">
+                        <span className="flex items-center gap-2">
+                          <Icon size={14} className="text-blue-500" />
+                          {resolveLabel(name)}
+                        </span>
+                        <Badge variant="default">Other</Badge>
                       </div>
                     );
                   })}
                 </div>
               </div>
             )}
-            {!selectedDevice?.sensors?.length && !selectedDevice?.actuators?.length && (
+            {!selectedDevice?.sensors?.length && !selectedDevice?.actuators?.length && !selectedDevice?.others?.length && (
               <p className="text-xs text-gray-500 italic">No peripheral components linked to this unit.</p>
             )}
           </div>
@@ -740,8 +785,8 @@ export default function DevicesPage() {
                   const detections = Array.isArray(parsedResult)
                     ? parsedResult
                     : parsedResult && typeof parsedResult === "object"
-                    ? Object.entries(parsedResult).map(([k, v]) => ({ class: k, value: v }))
-                    : [];
+                      ? Object.entries(parsedResult).map(([k, v]) => ({ class: k, value: v }))
+                      : [];
 
                   const hasDetections = detections.length > 0;
 

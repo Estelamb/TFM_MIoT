@@ -75,6 +75,14 @@ def _make_relay(cid: str, driver: str) -> DeviceBackend:
     from aura_hw.backends.devices.actuator.general import GeneralActuatorBackend
     return GeneralActuatorBackend(cid, "relay", driver)
 
+def _make_gps(cid: str, driver: str) -> DeviceBackend:
+    from aura_hw.backends.devices.sensor.general import GeneralSensorBackend
+    return GeneralSensorBackend(cid, "gps", driver)
+
+def _make_template(cid: str, driver: str) -> DeviceBackend:
+    from aura_hw.backends.devices.other.general import GeneralOtherBackend
+    return GeneralOtherBackend(cid, "template", driver)
+
 
 # Maps device type → dynamic factory
 _TYPE_FACTORIES: dict[str, callable] = {
@@ -87,6 +95,8 @@ _TYPE_FACTORIES: dict[str, callable] = {
     "buzzer": _make_buzzer,
     "servo": _make_servo,
     "relay": _make_relay,
+    "gps": _make_gps,
+    "template": _make_template,
 }
 
 
@@ -182,8 +192,9 @@ class DeviceManager:
 
     def _load_config(self) -> None:
         """Parse the YAML config and instantiate backends for enabled components."""
+        import os
         try:
-            with open(self._config_path) as fh:
+            with open(self._config_path, encoding="utf-8") as fh:
                 raw = yaml.safe_load(fh) or {}
         except FileNotFoundError:
             logger.warning(
@@ -195,15 +206,34 @@ class DeviceManager:
             logger.error(f"[DeviceManager] Failed to read config: {exc}")
             return
 
+        # Parse AURA_PERIPHERALS env var if available
+        peripherals_env = os.environ.get("AURA_PERIPHERALS")
+        active_peripherals = None
+        if peripherals_env:
+            try:
+                import json
+                if peripherals_env.strip().startswith("["):
+                    active_peripherals = set(json.loads(peripherals_env))
+                else:
+                    active_peripherals = set(p.strip() for p in peripherals_env.split(",") if p.strip())
+            except Exception as exc:
+                logger.error(f"[DeviceManager] Failed to parse AURA_PERIPHERALS environment variable: {exc}")
+
         components = raw.get("components", [])
         for entry in components:
-            if not entry.get("enabled", True):
+            component_id = entry.get("id", "<unnamed>")
+            
+            # Determine if enabled based on AURA_PERIPHERALS (if defined) or YAML
+            if active_peripherals is not None:
+                is_enabled = component_id in active_peripherals
+            else:
+                is_enabled = entry.get("enabled", True)
+
+            if not is_enabled:
                 logger.debug(
-                    f"[DeviceManager] Skipping disabled component: {entry.get('id')}"
+                    f"[DeviceManager] Skipping disabled component: {component_id}"
                 )
                 continue
-
-            component_id = entry.get("id", "<unnamed>")
             device_type  = entry.get("type", "")
             driver       = entry.get("driver", "")
             params       = entry.get("params", {})

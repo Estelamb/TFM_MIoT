@@ -15,7 +15,6 @@ const DynamicMap = dynamic(() => import("./MapInternal"), {
 
 interface EdgeMapProps {
   states?: any[];
-  isDemo?: boolean;
 }
 
 export function EdgeMap(props: EdgeMapProps) {

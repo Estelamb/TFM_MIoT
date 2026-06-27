@@ -201,13 +201,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -220,9 +219,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -242,14 +238,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -294,16 +282,16 @@
         <article role="main" id="furo-main-content">
           <section id="module-mlops_service.grpc_handlers.compilation_handler">
 <span id="mlops-service-grpc-handlers-compilation-handler"></span><h1>mlops_service.grpc_handlers.compilation_handler<a class="headerlink" href="#module-mlops_service.grpc_handlers.compilation_handler" title="Link to this heading">¶</a></h1>
-<p>Orquesta la compilación de modelos .pt para cada hardware:</p>
+<p>Orchestrates the compilation of .pt models for each hardware target:</p>
 <blockquote>
-<div><p>hailo8 / hailo8l  → HailoCompiler  (lanza Docker con Hailo AI SW Suite)
-rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter en Python)
-rpi               → RPiCPUCompiler (exportación a ONNX en Docker)
-jetson_orin_nano  → stub (TensorRT, pendiente)</p>
+<div><p>hailo8 / hailo8l  → HailoCompiler  (launches Docker with Hailo AI SW Suite)
+rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter in Python)
+rpi               → RPiCPUCompiler (ONNX export in Docker)
+jetson_orin_nano  → stub (TensorRT, pending)</p>
 </div></blockquote>
-<p>El handler es no-bloqueante: CompileModel lanza la compilación como tarea
-asyncio y devuelve status=”compiling” inmediatamente. El cliente puede
-hacer polling con GetCompilationStatus.</p>
+<p>The handler is non-blocking: CompileModel launches the compilation as an
+asyncio task and returns status=”compiling” immediately. The client can
+poll status with GetCompilationStatus.</p>
 <section id="attributes">
 <h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -410,7 +398,7 @@ hacer polling con GetCompilationStatus.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -465,7 +453,7 @@ hacer polling con GetCompilationStatus.</p>
       
     </aside>
   </div>
-</div><script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>

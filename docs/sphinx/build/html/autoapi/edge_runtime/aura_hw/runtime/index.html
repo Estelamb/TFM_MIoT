@@ -201,13 +201,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -220,9 +219,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -242,14 +238,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -339,6 +327,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#edge_runtime.aura_hw.runtime.get_last_inference" title="edge_runtime.aura_hw.runtime.get_last_inference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_last_inference</span></code></a>(→ Any)</p></td>
 <td><p>Return the result of the most recent <a class="reference internal" href="#edge_runtime.aura_hw.runtime.execute_inference" title="edge_runtime.aura_hw.runtime.execute_inference"><code class="xref py py-func docutils literal notranslate"><span class="pre">execute_inference()</span></code></a> call.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#edge_runtime.aura_hw.runtime.get_model_classes" title="edge_runtime.aura_hw.runtime.get_model_classes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_classes</span></code></a>(→ list[str])</p></td>
+<td><p>Return the list of class names loaded from the current model's metadata.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -352,7 +343,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="edge_runtime.aura_hw.runtime.load_model">
-<span class="sig-prename descclassname"><span class="pre">edge_runtime.aura_hw.runtime.</span></span><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/edge_runtime/aura_hw/runtime.html#load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.aura_hw.runtime.load_model" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">edge_runtime.aura_hw.runtime.</span></span><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/edge_runtime/aura_hw/runtime.html#load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.aura_hw.runtime.load_model" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -443,6 +434,12 @@ run yet in this session.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="edge_runtime.aura_hw.runtime.get_model_classes">
+<span class="sig-prename descclassname"><span class="pre">edge_runtime.aura_hw.runtime.</span></span><span class="sig-name descname"><span class="pre">get_model_classes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/edge_runtime/aura_hw/runtime.html#get_model_classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.aura_hw.runtime.get_model_classes" title="Link to this definition">¶</a></dt>
+<dd><p>Return the list of class names loaded from the current model’s metadata.</p>
+</dd></dl>
+
 </section>
 </section>
 
@@ -457,7 +454,7 @@ run yet in this session.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -493,6 +490,7 @@ run yet in this session.</p>
 <li><a class="reference internal" href="#edge_runtime.aura_hw.runtime.unload_model"><code class="docutils literal notranslate"><span class="pre">unload_model()</span></code></a></li>
 <li><a class="reference internal" href="#edge_runtime.aura_hw.runtime.get_hardware_info"><code class="docutils literal notranslate"><span class="pre">get_hardware_info()</span></code></a></li>
 <li><a class="reference internal" href="#edge_runtime.aura_hw.runtime.get_last_inference"><code class="docutils literal notranslate"><span class="pre">get_last_inference()</span></code></a></li>
+<li><a class="reference internal" href="#edge_runtime.aura_hw.runtime.get_model_classes"><code class="docutils literal notranslate"><span class="pre">get_model_classes()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -506,7 +504,7 @@ run yet in this session.</p>
       
     </aside>
   </div>
-</div><script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>

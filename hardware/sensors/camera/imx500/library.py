@@ -48,10 +48,38 @@ class IMX500CameraLibrary:
         self._mode = "mock"
         self._daemon_url = ""
 
-    def initialize(self) -> bool:
+    def initialize(self, model_path: str = None) -> bool:
         logger.info("Initializing Sony IMX500 AI Camera driver...")
+
+        # 1. Handle Model Packaging
+        if model_path and os.path.exists(model_path):
+            import zipfile
+            if zipfile.is_zipfile(model_path):
+                out_dir = os.path.dirname(model_path)
+                import subprocess
+                try:
+                    cmd = ["imx500-package", "-i", model_path, "-o", out_dir]
+                    logger.info(f"Running local packaging: {' '.join(cmd)}")
+                    subprocess.run(cmd, check=True)
+                    rpk_path = os.path.join(out_dir, "network.rpk")
+                except (subprocess.SubprocessError, FileNotFoundError) as e:
+                    logger.warning(f"Could not package model locally using imx500-package ({e}). Forwarding raw ZIP to Host Daemon...")
+                    rpk_path = model_path
+            elif model_path.endswith(".rpk") or model_path.endswith(".bin"):
+                rpk_path = model_path
+            else:
+                try:
+                    with open(model_path, "rb") as f:
+                        header = f.read(4)
+                    if header == b"PK\x03\x04":
+                        logger.info("Model file is a ZIP archive without extension. Forwarding raw ZIP to Host Daemon...")
+                        rpk_path = model_path
+                    else:
+                        rpk_path = model_path
+                except Exception:
+                    rpk_path = model_path
         
-        # 1. Try native initialization first (on a real Raspberry Pi running natively)
+        # 2. Try native initialization first (on a real Raspberry Pi running natively)
         try:
             from picamera2 import Picamera2
             self.picam2 = Picamera2()
@@ -66,11 +94,11 @@ class IMX500CameraLibrary:
         except (ImportError, Exception) as exc:
             logger.info(f"Native IMX500 not available ({exc}). Probing Host Hardware Daemon...")
 
-        # 2. Try to connect to Host Hardware Daemon
+        # 3. Try to connect to Host Hardware Daemon
         gw_ip = _get_gateway_ip()
         self._daemon_url = f"http://{gw_ip}:8008"
         try:
-            with urllib.request.urlopen(f"{self._daemon_url}/status", timeout=2.0) as resp:
+            with urllib.request.urlopen(f"{self._daemon_url}/status", timeout=5.0) as resp:
                 if resp.status == 200:
                     status_data = json.loads(resp.read().decode("utf-8"))
                     logger.info(f"Connected to Host Hardware Daemon at {self._daemon_url} for Sony IMX500.")
@@ -79,7 +107,7 @@ class IMX500CameraLibrary:
         except Exception as e:
             logger.warning(f"Could not connect to Host Hardware Daemon at {self._daemon_url}: {e}")
 
-        # 3. Fallback to Simulated/Mock mode
+        # 4. Fallback to Simulated/Mock mode
         logger.warning("Falling back to Sony IMX500 Simulated/Mock Camera mode.")
         self._mode = "mock"
         return True
@@ -122,6 +150,10 @@ class IMX500CameraLibrary:
         if mode == "native" and self.picam2 is not None:
             try:
                 self.picam2.stop()
+            except Exception:
+                pass
+            try:
+                self.picam2.close()
             except Exception:
                 pass
             self.picam2 = None

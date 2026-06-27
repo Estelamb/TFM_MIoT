@@ -1,7 +1,7 @@
 """
-Mirror readonly de la tabla models para tracking de compilación.
-El compilation-service no es owner de la tabla, solo lee y actualiza
-compile_status via gRPC al ai-service.
+Read-only mirror of the models table for compilation tracking.
+The compilation-service is not the owner of the table; it only reads and updates
+compile_status via gRPC to the ai-service.
 """
 import uuid
 from datetime import datetime

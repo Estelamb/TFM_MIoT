@@ -35,10 +35,19 @@ class ModelRepository:
         self.s.add(m); await self.s.commit(); await self.s.refresh(m); return m
 
     async def get(self, id: str) -> Model | None:
-        return await self.s.get(Model, id)
+        r = await self.s.execute(
+            select(Model)
+            .where(Model.id == id)
+            .options(selectinload(Model.compilations))
+        )
+        return r.scalar_one_or_none()
 
     async def list_all(self) -> list[Model]:
-        r = await self.s.execute(select(Model).order_by(Model.created_at.desc()))
+        r = await self.s.execute(
+            select(Model)
+            .options(selectinload(Model.compilations))
+            .order_by(Model.created_at.desc())
+        )
         return list(r.scalars().all())
 
     async def update_compiled(self, id: str, compiled_key: str, compiled_sha256: str,
@@ -46,16 +55,59 @@ class ModelRepository:
                                source_key: str | None = None, source_sha256: str | None = None) -> Model | None:
         m = await self.get(id)
         if not m: return None
-        m.compiled_key = compiled_key or None
-        m.compiled_sha256 = compiled_sha256 or None
-        m.hardware_type = hardware_type or None
-        m.compile_status = compile_status
-        m.compile_error = compile_error or None
+
         if source_key:
             m.source_key = source_key
         if source_sha256:
             m.source_sha256 = source_sha256
-        await self.s.commit(); await self.s.refresh(m); return m
+
+        if hardware_type:
+            # If compile_status is ready, update main model fields for backward compatibility.
+            # Do NOT update main model status to "compiling" or "failed" to prevent blocking it.
+            if compile_status == "ready":
+                m.compiled_key = compiled_key or None
+                m.compiled_sha256 = compiled_sha256 or None
+                m.hardware_type = hardware_type or None
+                m.compile_status = "ready"
+                m.compile_error = None
+            else:
+                if m.compile_status not in ("ready", "training"):
+                    m.compile_status = "ready"
+
+            from app.models.orm import ModelCompilation
+            res = await self.s.execute(
+                select(ModelCompilation)
+                .where(ModelCompilation.model_id == id)
+                .where(ModelCompilation.hardware_type == hardware_type)
+            )
+            comp = res.scalar_one_or_none()
+            if not comp:
+                comp = ModelCompilation(
+                    model_id=id,
+                    hardware_type=hardware_type,
+                    compiled_key=compiled_key or "",
+                    compiled_sha256=compiled_sha256 or "",
+                    compile_status=compile_status,
+                    compile_error=compile_error or None
+                )
+                self.s.add(comp)
+            else:
+                comp.compiled_key = compiled_key or ""
+                comp.compiled_sha256 = compiled_sha256 or ""
+                comp.compile_status = compile_status
+                comp.compile_error = compile_error or None
+        else:
+            if compile_status:
+                m.compile_status = compile_status
+            if compile_error:
+                m.compile_error = compile_error or None
+            if compiled_key:
+                m.compiled_key = compiled_key or None
+            if compiled_sha256:
+                m.compiled_sha256 = compiled_sha256 or None
+
+        await self.s.commit()
+        return await self.get(id)
 
     async def associate_dataset(self, model_id: str, dataset_id: str, dataset_version_id: str | None = None) -> Model | None:
         m = await self.get(model_id)

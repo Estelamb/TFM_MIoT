@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useDataMode } from "@/hooks/useDataMode";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export const api = axios.create({ baseURL: API_URL });
@@ -39,26 +38,24 @@ export async function login(username: string, password: string): Promise<string>
 export type HardwareType = string;
 
 export const getHardwareTypes = async (): Promise<string[]> => {
-  if (useDataMode.getState().mode === "demo") {
-    return ["hailo8", "hailo8l", "aicam", "rpi", "jetson_orin_nano"];
-  }
   return api.get<string[]>("/api/devices/hardware-types").then(r => r.data);
 };
 
 export const getSensors = async (): Promise<string[]> => {
-  if (useDataMode.getState().mode === "demo") {
-    return ["rpi_camera_module_3", "dht22_temperature", "ultrasonic_hcsr04", "imu_6dof"];
-  }
   return api.get<string[]>("/api/devices/sensors").then(r => r.data);
 };
 
 export const getActuators = async (): Promise<string[]> => {
-  if (useDataMode.getState().mode === "demo") {
-    return ["relay_5v_module", "servo_sg90", "buzzer_alarm", "led_status_rgb"];
-  }
   return api.get<string[]>("/api/devices/actuators").then(r => r.data);
 };
 
+export const getOthers = async (): Promise<string[]> => {
+  return api.get<string[]>("/api/devices/others").then(r => r.data);
+};
+
+export const getPeripheralLabels = async (): Promise<Record<string, string>> => {
+  return api.get<Record<string, string>>("/api/devices/labels").then(r => r.data);
+};
 
 export interface Device {
   id: string; name: string; hardware_type: HardwareType;
@@ -69,16 +66,10 @@ export interface Device {
 }
 
 export const getDevices = async (): Promise<Device[]> => {
-  if (useDataMode.getState().mode === "demo") return useDataMode.getState().demoData.devices;
   return api.get<Device[]>("/api/devices").then(r => r.data);
 };
 
 export const getDevice = async (id: string): Promise<Device> => {
-  if (useDataMode.getState().mode === "demo") {
-    const dev = useDataMode.getState().demoData.devices.find((d: any) => d.id === id);
-    if (!dev) throw new Error("Device not found");
-    return dev;
-  }
   return api.get<Device>(`/api/devices/${id}`).then(r => r.data);
 };
 
@@ -122,21 +113,10 @@ export interface Model {
 }
 
 export const getModels = async (): Promise<Model[]> => {
-  if (useDataMode.getState().mode === "demo") return useDataMode.getState().demoData.models;
   return api.get<Model[]>("/api/models").then(r => r.data);
 };
 
 export const deleteModel = async (id: string) => {
-  if (useDataMode.getState().mode === "demo") {
-    const currentModels = useDataMode.getState().demoData.models;
-    useDataMode.setState({
-      demoData: {
-        ...useDataMode.getState().demoData,
-        models: currentModels.filter((m: any) => m.id !== id),
-      },
-    });
-    return;
-  }
   return api.delete(`/api/models/${id}`);
 };
 
@@ -145,39 +125,15 @@ export async function uploadModel(
   base_architecture?: string, epochs?: number, input_size?: string,
   batch_size?: number, dataset_version_id?: string
 ): Promise<Model> {
-  if (useDataMode.getState().mode === "demo") {
-    const newModel: Model = {
-      id: `demo-model-${Date.now()}`,
-      name: name,
-      description: description,
-      compile_status: "ready",
-      created_at: new Date().toISOString(),
-      dataset_id: dataset_id,
-      dataset_version_id: dataset_version_id,
-      base_architecture: base_architecture || "yolov8n.pt",
-      epochs: epochs,
-      input_size: input_size,
-      batch_size: batch_size,
-    };
-    const currentModels = useDataMode.getState().demoData.models;
-    useDataMode.setState({
-      demoData: {
-        ...useDataMode.getState().demoData,
-        models: [newModel, ...currentModels],
-      },
-    });
-    return newModel;
-  }
   const fd = new FormData();
   fd.append("name", name); fd.append("description", description);
-  fd.append("compile", "false");
+  fd.append("file", file);
   if (dataset_id) fd.append("dataset_id", dataset_id);
   if (dataset_version_id) fd.append("dataset_version_id", dataset_version_id);
   if (base_architecture) fd.append("base_architecture", base_architecture);
   if (epochs) fd.append("epochs", epochs.toString());
   if (input_size) fd.append("input_size", input_size);
   if (batch_size) fd.append("batch_size", batch_size.toString());
-  fd.append("file", file);
   return api.post<Model>("/api/models", fd).then(r => r.data);
 }
 
@@ -194,76 +150,18 @@ export interface TrainModelRequest {
 }
 
 export const trainModel = async (body: TrainModelRequest): Promise<Model> => {
-  if (useDataMode.getState().mode === "demo") {
-    const newModel: Model = {
-      id: `demo-model-${Date.now()}`,
-      name: body.name,
-      description: body.description || "Demo trained model",
-      compile_status: "training",
-      created_at: new Date().toISOString(),
-      dataset_id: body.dataset_id,
-      base_architecture: body.base_model || "yolov8n.pt",
-      epochs: body.epochs,
-      input_size: body.input_size,
-      batch_size: 16
-    };
-    const currentModels = useDataMode.getState().demoData.models;
-    useDataMode.setState({
-      demoData: {
-        ...useDataMode.getState().demoData,
-        models: [newModel, ...currentModels]
-      }
-    });
-
-    // Simulate training completion after 5 seconds
-    setTimeout(() => {
-      const current = useDataMode.getState().demoData.models;
-      const updated = current.map((m: any) =>
-        m.id === newModel.id ? { ...m, compile_status: "ready" } : m
-      );
-      useDataMode.setState({
-        demoData: {
-          ...useDataMode.getState().demoData,
-          models: updated
-        }
-      });
-    }, 5000);
-
-    return newModel;
-  }
   return api.post<Model>("/api/models/train", body).then(r => r.data);
 };
 
 export const getModelDownloadUrl = async (modelId: string, type: "source" | "compiled"): Promise<{ url: string }> => {
-  if (useDataMode.getState().mode === "demo") return { url: "#" };
   return api.get<{ url: string }>(`/api/models/${modelId}/download/${type}`).then(r => r.data);
 };
 
 export const getBaseModelOptions = async (): Promise<string[]> => {
-  if (useDataMode.getState().mode === "demo") {
-    return [
-      "yolov10b.pt", "yolov10n.pt", "yolov10s.pt", "yolov10x.pt",
-      "yolov11l.pt", "yolov11m.pt", "yolov11n.pt", "yolov11s.pt", "yolov11x.pt",
-      "yolov3_416.pt", "yolov3_gluon_416.pt", "yolov3_gluon.pt", "yolov3.pt",
-      "yolov4_leaky.pt", "yolov5m_6.1.pt", "yolov5m6_6.1.pt",
-      "yolov5m_vehicles_nv12.pt", "yolov5m_vehicles.pt", "yolov5m_vehicles_yuy2.pt",
-      "yolov5m_wo_spp.pt", "yolov5m_wo_spp_yuy2.pt", "yolov5m.pt",
-      "yolov5s_bbox_decoding_only.pt", "yolov5s_c3tr.pt", "yolov5s_personface_nv12.pt",
-      "yolov5s_personface_rgbx.pt", "yolov5s_personface.pt", "yolov5s_wo_spp.pt",
-      "yolov5s.pt", "yolov5xs_wo_spp_nms_core.pt", "yolov5xs_wo_spp.pt",
-      "yolov6n_0.2.1_nms_core.pt", "yolov6n_0.2.1.pt", "yolov6n.pt",
-      "yolov7e6.pt", "yolov7_tiny.pt", "yolov7.pt", "yolov8l.pt",
-      "yolov8m.pt", "yolov8n.pt", "yolov8s_bbox_decoding_only.pt",
-      "yolov8s.pt", "yolov8x.pt", "yolov9c.pt",
-      "yolox_l_leaky.pt", "yolox_s_leaky.pt", "yolox_s_wide_leaky.pt",
-      "yolox_tiny.pt"
-    ];
-  }
   return api.get<string[]>("/api/models/base-model-options").then(r => r.data);
 };
 
 export const getBaseModelDownloadUrl = async (filename: string): Promise<{ url: string }> => {
-  if (useDataMode.getState().mode === "demo") return { url: "#" };
   return api.get<{ url: string }>(`/api/models/base-models/${filename}/download`).then(r => r.data);
 };
 
@@ -293,18 +191,6 @@ export interface Dataset {
 }
 
 export const getDatasets = async (): Promise<Dataset[]> => {
-  if (useDataMode.getState().mode === "demo") {
-    return useDataMode.getState().demoData.datasets.map((name, i) => ({
-      id: `ds-${i}`,
-      name,
-      description: `Demo dataset ${name}`,
-      created_at: new Date().toISOString(),
-      object_key: "demo-key",
-      sha256: "demo-sha",
-      size_bytes: 15420102,
-      metadata: { num_classes: 5 },
-    }));
-  }
   return api.get<Dataset[]>("/api/datasets").then(r => r.data);
 };
 
@@ -315,21 +201,6 @@ export const createDataset = async (body: {
   version?: string;
   version_description?: string;
 }) => {
-  if (useDataMode.getState().mode === "demo") {
-    const currentDatasets = useDataMode.getState().demoData.datasets;
-    useDataMode.setState({
-      demoData: {
-        ...useDataMode.getState().demoData,
-        datasets: [...currentDatasets, body.name],
-      },
-    });
-    return {
-      id: `ds-${currentDatasets.length}`,
-      name: body.name,
-      description: body.description || "Demo dataset",
-      created_at: new Date().toISOString(),
-    } as Dataset;
-  }
   const fd = new FormData();
   fd.append("name", body.name);
   if (body.description) fd.append("description", body.description);
@@ -345,9 +216,6 @@ export const replaceDatasetFile = async (
   version?: string,
   versionDescription?: string
 ): Promise<Dataset> => {
-  if (useDataMode.getState().mode === "demo") {
-    return { id: datasetId, name: "Demo", created_at: new Date().toISOString() };
-  }
   const fd = new FormData();
   fd.append("file", file);
   if (version) fd.append("version", version);
@@ -356,32 +224,14 @@ export const replaceDatasetFile = async (
 };
 
 export const getDatasetDownloadUrl = async (datasetId: string): Promise<{ url: string }> => {
-  if (useDataMode.getState().mode === "demo") return { url: "#" };
   return api.get<{ url: string }>(`/api/datasets/${datasetId}/download`).then(r => r.data);
 };
 
 export const getDatasetVersionDownloadUrl = async (datasetId: string, versionId: string): Promise<{ url: string }> => {
-  if (useDataMode.getState().mode === "demo") return { url: "#" };
   return api.get<{ url: string }>(`/api/datasets/${datasetId}/versions/${versionId}/download`).then(r => r.data);
 };
 
 export const deleteDataset = async (id: string) => {
-  if (useDataMode.getState().mode === "demo") {
-    const currentDatasets = useDataMode.getState().demoData.datasets;
-    const match = id.match(/^ds-(\d+)$/);
-    if (match) {
-      const idx = parseInt(match[1], 10);
-      const newDatasets = [...currentDatasets];
-      newDatasets.splice(idx, 1);
-      useDataMode.setState({
-        demoData: {
-          ...useDataMode.getState().demoData,
-          datasets: newDatasets,
-        },
-      });
-    }
-    return;
-  }
   return api.delete(`/api/datasets/${id}`);
 };
 
@@ -401,7 +251,6 @@ export interface Script {
 }
 
 export const getScripts = async (): Promise<Script[]> => {
-  if (useDataMode.getState().mode === "demo") return useDataMode.getState().demoData.scripts;
   return api.get<Script[]>("/api/scripts").then(r => r.data);
 };
 
@@ -431,9 +280,6 @@ export interface LibraryGroup {
 }
 
 export const getLibraries = async (): Promise<LibraryGroup[]> => {
-  if (useDataMode.getState().mode === "demo") {
-    return [];  // Demo mode uses hardcoded halDocs
-  }
   return api.get<{ libraries: LibraryGroup[] }>("/api/scripts/libraries").then(r => r.data.libraries);
 };
 
@@ -447,49 +293,10 @@ export interface Deployment {
 }
 
 export const getDeployments = async (): Promise<Deployment[]> => {
-  if (useDataMode.getState().mode === "demo") return useDataMode.getState().demoData.deployments;
   return api.get<Deployment[]>("/api/deployments").then(r => r.data);
 };
 
-// Backend expects { device_id, model_id, script_id } (singular device_id)
-// The page handles multi-device by calling this once per device
 export const createDeployment = async (body: { device_ids: string[]; model_id: string; script_id: string; name?: string }): Promise<Deployment> => {
-  if (useDataMode.getState().mode === "demo") {
-    const device_id = body.device_ids[0];
-    const newDep: Deployment = {
-      id: `demo-dep-${Date.now()}`,
-      device_id,
-      model_id: body.model_id,
-      script_id: body.script_id,
-      status: "pending",
-      created_at: new Date().toISOString(),
-      name: body.name || `Deployment ${Date.now().toString().slice(-4)}`
-    };
-    const currentDeps = useDataMode.getState().demoData.deployments;
-    useDataMode.setState({
-      demoData: {
-        ...useDataMode.getState().demoData,
-        deployments: [newDep, ...currentDeps]
-      }
-    });
-
-    // Simulate updating status from pending to compiling to sent to running
-    setTimeout(() => {
-      const state = useDataMode.getState().demoData;
-      const deps = state.deployments.map((d: any) =>
-        d.id === newDep.id ? { ...d, status: "running" as const } : d
-      );
-      useDataMode.setState({
-        demoData: {
-          ...state,
-          deployments: deps
-        }
-      });
-    }, 2000);
-
-    return newDep;
-  }
-
   const device_id = body.device_ids[0];
   return api.post<Deployment>("/api/deployments", {
     device_id,
@@ -500,16 +307,6 @@ export const createDeployment = async (body: { device_ids: string[]; model_id: s
 };
 
 export const deleteDeployment = async (id: string): Promise<any> => {
-  if (useDataMode.getState().mode === "demo") {
-    const state = useDataMode.getState().demoData;
-    useDataMode.setState({
-      demoData: {
-        ...state,
-        deployments: state.deployments.filter((d: any) => d.id !== id)
-      }
-    });
-    return;
-  }
   return api.delete(`/api/deployments/${id}`);
 };
 
@@ -525,43 +322,14 @@ export interface InferenceResult {
 }
 
 export const getMonitoringStates = async (): Promise<DeviceState[]> => {
-  if (useDataMode.getState().mode === "demo") return useDataMode.getState().demoData.monitoringStates;
   return api.get<DeviceState[]>("/api/monitoring/devices").then(r => r.data);
 };
 
 export const getDeviceState = async (id: string): Promise<DeviceState> => {
-  if (useDataMode.getState().mode === "demo") {
-    const state = useDataMode.getState().demoData.monitoringStates.find((s: any) => s.device_id === id);
-    if (!state) throw new Error("Device state not found");
-    return state;
-  }
   return api.get<DeviceState>(`/api/monitoring/devices/${id}`).then(r => r.data);
 };
 
 export const getInferenceResults = async (device_id: string, limit = 20): Promise<InferenceResult[]> => {
-  if (useDataMode.getState().mode === "demo") {
-    const now = new Date();
-    return Array.from({ length: 10 }).map((_, i) => {
-      const ts = new Date(now.getTime() - i * 5000).toISOString();
-      const mockResult = Math.random() > 0.2 ? [
-        {
-          class: i % 2 === 0 ? "person" : "dog",
-          confidence: parseFloat((0.8 + Math.random() * 0.18).toFixed(2)),
-          bbox: [Math.round(100 + Math.random() * 50), Math.round(150 + Math.random() * 50), 60, 110]
-        },
-        {
-          class: "car",
-          confidence: parseFloat((0.75 + Math.random() * 0.2).toFixed(2)),
-          bbox: [Math.round(300 + Math.random() * 50), Math.round(200 + Math.random() * 50), 120, 80]
-        }
-      ] : [];
-      return {
-        timestamp: ts,
-        deployment_id: "demo-dep-123",
-        result_json: JSON.stringify(mockResult)
-      };
-    });
-  }
   return api.get<InferenceResult[]>(`/api/monitoring/devices/${device_id}/inference?limit=${limit}`).then(r => r.data);
 };
 
@@ -576,21 +344,6 @@ export interface UpdateModelRequest {
 }
 
 export const updateModel = async (id: string, body: UpdateModelRequest): Promise<Model> => {
-  if (useDataMode.getState().mode === "demo") {
-    const currentModels = useDataMode.getState().demoData.models;
-    const updated = currentModels.map((m: any) =>
-      m.id === id ? { ...m, ...body } : m
-    );
-    useDataMode.setState({
-      demoData: {
-        ...useDataMode.getState().demoData,
-        models: updated,
-      },
-    });
-    const found = updated.find((m: any) => m.id === id);
-    if (!found) throw new Error("Model not found");
-    return found;
-  }
   return api.put<Model>(`/api/models/${id}`, body).then(r => r.data);
 };
 
@@ -600,28 +353,6 @@ export interface UpdateDatasetRequest {
 }
 
 export const updateDataset = async (id: string, body: UpdateDatasetRequest): Promise<Dataset> => {
-  if (useDataMode.getState().mode === "demo") {
-    const currentDatasets = useDataMode.getState().demoData.datasets;
-    const match = id.match(/^ds-(\d+)$/);
-    if (match) {
-      const idx = parseInt(match[1], 10);
-      const newDatasets = [...currentDatasets];
-      newDatasets[idx] = body.name;
-      useDataMode.setState({
-        demoData: {
-          ...useDataMode.getState().demoData,
-          datasets: newDatasets,
-        },
-      });
-      return {
-        id,
-        name: body.name,
-        description: body.description,
-        created_at: new Date().toISOString(),
-      };
-    }
-    throw new Error("Dataset not found");
-  }
   return api.put<Dataset>(`/api/datasets/${id}`, body).then(r => r.data);
 };
 
@@ -631,20 +362,5 @@ export interface UpdateDeviceRequest {
 }
 
 export const updateDevice = async (id: string, body: UpdateDeviceRequest): Promise<Device> => {
-  if (useDataMode.getState().mode === "demo") {
-    const currentDevices = useDataMode.getState().demoData.devices;
-    const updated = currentDevices.map((d: any) =>
-      d.id === id ? { ...d, ...body } : d
-    );
-    useDataMode.setState({
-      demoData: {
-        ...useDataMode.getState().demoData,
-        devices: updated,
-      },
-    });
-    const found = updated.find((d: any) => d.id === id);
-    if (!found) throw new Error("Device not found");
-    return found;
-  }
   return api.put<Device>(`/api/devices/${id}`, body).then(r => r.data);
 };

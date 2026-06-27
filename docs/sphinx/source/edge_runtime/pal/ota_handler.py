@@ -107,7 +107,18 @@ class OTAHandler:
             from aura_hw import load_model, unload_model
             logger.info(f"[{dep_id}] Loading model into HAL backend")
             unload_model()
-            load_model(str(self._model_path))
+            class_names = payload.get("class_names", [])
+            
+            # Save classes.json in the same directory as the model
+            classes_file = self._model_path.parent / "classes.json"
+            try:
+                import json
+                classes_file.write_text(json.dumps(class_names))
+                logger.info(f"[{dep_id}] Saved class names to {classes_file}")
+            except Exception as e:
+                logger.warning(f"[{dep_id}] Failed to save classes.json: {e}")
+                
+            load_model(str(self._model_path), class_names=class_names)
 
             # 4. Hot-reload user script
             logger.info(f"[{dep_id}] Reloading user script")

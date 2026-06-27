@@ -20,8 +20,3 @@ imx500
 rpi_cpu
 jetson_orin
 ```
-
----
-
-> [!TIP]
-> If you are developing a custom hardware backend not listed here, refer to the [Code Explanation](../../code_explanation) section to learn how to extend the `aura_hw` module and implement a new inference backend.

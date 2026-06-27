@@ -201,13 +201,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -220,9 +219,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -242,14 +238,6 @@
 <li class="toctree-l2"><a class="reference internal" href="api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -351,6 +339,17 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="edge_runtime/config/index.html">edge_runtime.config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_runtime/daemon/index.html">edge_runtime.daemon</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="edge_runtime/daemon/camera/index.html">edge_runtime.daemon.camera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="edge_runtime/daemon/hailo/index.html">edge_runtime.daemon.hailo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="edge_runtime/daemon/imx500/index.html">edge_runtime.daemon.imx500</a></li>
+<li class="toctree-l3"><a class="reference internal" href="edge_runtime/daemon/shared/index.html">edge_runtime.daemon.shared</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="edge_runtime/data/index.html">edge_runtime.data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="edge_runtime/data/script/index.html">edge_runtime.data.script</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="edge_runtime/hardware_daemon/index.html">edge_runtime.hardware_daemon</a></li>
 <li class="toctree-l2"><a class="reference internal" href="edge_runtime/pal/index.html">edge_runtime.pal</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="edge_runtime/pal/comm_client/index.html">edge_runtime.pal.comm_client</a></li>
@@ -377,6 +376,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mlops_service/models/orm/index.html">mlops_service.models.orm</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="mlops_service/others/index.html">mlops_service.others</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mlops_service/repositories/index.html">mlops_service.repositories</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mlops_service/repositories/compilation/index.html">mlops_service.repositories.compilation</a></li>
 </ul>
@@ -404,6 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="registry_service/repositories/scripts/index.html">registry_service.repositories.scripts</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="registry_service/update_existing_datasets/index.html">registry_service.update_existing_datasets</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api_gateway_service/index.html">api_gateway_service</a><ul>
@@ -471,7 +472,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -491,7 +492,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -83,7 +83,7 @@ class RPiCameraLibrary:
         import urllib.request
         import json
         try:
-            with urllib.request.urlopen(f"{self._daemon_url}/status", timeout=2.0) as resp:
+            with urllib.request.urlopen(f"{self._daemon_url}/status", timeout=5.0) as resp:
                 if resp.status == 200:
                     status_data = json.loads(resp.read().decode("utf-8"))
                     logger.info(f"Connected to Host Hardware Daemon at {self._daemon_url} (Camera type: {status_data.get('camera_type')})")
@@ -147,8 +147,12 @@ class RPiCameraLibrary:
                 logger.info("Picamera2 stopped successfully.")
             except Exception as e:
                 logger.warning(f"Error stopping Picamera2: {e}")
-            finally:
-                self.picam2 = None
+            try:
+                self.picam2.close()
+                logger.info("Picamera2 closed successfully.")
+            except Exception as e:
+                logger.warning(f"Error closing Picamera2: {e}")
+            self.picam2 = None
         elif mode == "daemon":
             logger.info("Disconnected from Host Hardware Daemon.")
         self.picam2 = None

@@ -5,6 +5,8 @@ AURA Generic Sensor Library: Camera
 from hardware.utils import get_active_driver, load_specific_driver
 
 class Camera:
+    LABEL = "Camera"
+
     def __init__(self, **kwargs):
         driver, params = get_active_driver("camera")
         # Map built-in drivers to rpi_camera_module_3 for local simulation/scripts

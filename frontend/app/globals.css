@@ -15,19 +15,19 @@
 /* =============================================
    DESIGN SYSTEM — AURA Platform Light Mode
    
-   Paleta:
-   --bg-base:      #f5f6f8   superficie principal, gris muy frío y apagado
-   --bg-surface:   #ffffff   cards y paneles
+   Palette:
+   --bg-base:      #f5f6f8   main surface, very cold and muted gray
+   --bg-surface:   #ffffff   cards and panels
    --bg-raised:    #eef0f3   hover / inputs
-   --border:       #d8dce4   bordes estándar (más oscuros que antes)
-   --border-soft:  #e4e7ed   separadores internos
-   --text-primary: #0f1117   texto principal — casi negro, no negro puro
-   --text-muted:   #6b7280   texto secundario
+   --border:       #d8dce4   standard borders (darker than before)
+   --border-soft:  #e4e7ed   internal separators
+   --text-primary: #0f1117   primary text — almost black, not pure black
+   --text-muted:   #6b7280   secondary text
    --text-subtle:  #9ca3af   labels, placeholders
-   --accent:       #2563eb   azul 600 — acento puro moderno
-   --accent-dim:   #1d4ed8   hover del acento
-   --sidebar-bg:   #0f1117   mismo que el modo oscuro — sidebar negro
-   --topbar-bg:    #0f1117   topbar negro también
+   --accent:       #2563eb   blue 600 — modern pure accent
+   --accent-dim:   #1d4ed8   accent hover
+   --sidebar-bg:   #0f1117   same as dark mode — black sidebar
+   --topbar-bg:    #0f1117   black topbar too
    ============================================= */
 
 /* --- Body --- */
@@ -36,7 +36,7 @@
   color: #0f1117 !important;
 }
 
-/* --- Dot grid: apenas visible, puntitos gris frío --- */
+/* --- Dot grid: barely visible, cold gray dots --- */
 .dot-grid {
   background-image: radial-gradient(#c8cdd6 1px, transparent 1px);
   background-size: 24px 24px;
@@ -52,7 +52,7 @@
   background-size: 24px 24px;
 }
 
-/* --- Cards y paneles --- */
+/* --- Cards and panels --- */
 :root:not(.dark) .bg-white\/60,
 :root:not(.dark) .bg-white\/40,
 :root:not(.dark) .bg-white\/80,
@@ -74,7 +74,7 @@
   background-color: #eef0f3 !important;
 }
 
-/* --- Bordes --- */
+/* --- Borders --- */
 :root:not(.dark) .border,
 :root:not(.dark) .border-slate-200\/60,
 :root:not(.dark) .border-gray-200,
@@ -99,40 +99,40 @@
 }
 
 /* =============================================
-   SIDEBAR — Azul UPM oscuro
+   SIDEBAR — Dark UPM Blue
    ============================================= */
 :root:not(.dark) aside {
   background-color: #002570 !important;
-  border-right: none !important;        /* sin línea lateral */
+  border-right: none !important;        /* no side line */
   box-shadow: none !important;
 }
 
-/* Quitar la línea entre header del sidebar y el nav */
+/* Remove the line between sidebar header and nav */
 :root:not(.dark) aside .border-b,
 :root:not(.dark) aside .border-t {
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Item activo */
+/* Active item */
 :root:not(.dark) aside .absolute.inset-0 {
   background-color: rgba(255, 255, 255, 0.12) !important;
   border-color: rgba(255, 255, 255, 0.15) !important;
   box-shadow: none;
 }
 
-/* Todos los textos dentro del sidebar — blancos */
+/* All text inside sidebar — white */
 :root:not(.dark) aside,
 :root:not(.dark) aside * {
   color: #e8edf5 !important;
 }
 
-/* Textos secundarios (subtítulo PLATFORM, iconos inactivos) */
+/* Secondary text (PLATFORM subtitle, inactive icons) */
 :root:not(.dark) aside .text-gray-500,
 :root:not(.dark) aside .text-gray-400 {
   color: #7a9cc8 !important;
 }
 
-/* Iconos y links inactivos */
+/* Icons and inactive links */
 :root:not(.dark) aside a {
   color: #a8c4e0 !important;
 }
@@ -143,7 +143,7 @@
   color: #ffffff !important;
 }
 
-/* Hover del botón logo colapsado — sin cuadrado claro */
+/* Collapsed logo button hover — no light square */
 :root:not(.dark) aside button {
   background-color: transparent !important;
   color: #a8c4e0 !important;
@@ -154,47 +154,47 @@
   color: #ffffff !important;
 }
 
-/* Logout hover: rojo tenue */
+/* Logout hover: faint red */
 :root:not(.dark) aside footer button:hover,
 :root:not(.dark) aside > div:last-child button:hover {
   background-color: rgba(239, 68, 68, 0.18) !important;
   color: #fca5a5 !important;
 }
 
-/* Handle de expansión lateral */
+/* Side expansion handle */
 :root:not(.dark) aside .bg-blue-500\/50 {
   background-color: rgba(255, 255, 255, 0.25) !important;
 }
 
-/* Tooltips del sidebar */
+/* Sidebar tooltips */
 :root:not(.dark) aside .bg-gray-900 {
   background-color: #001540 !important;
   color: #ffffff !important;
 }
 
 /* =============================================
-   TOPBAR — Azul UPM oscuro, mismo que sidebar
+   TOPBAR — Dark UPM Blue, same as sidebar
    ============================================= */
 :root:not(.dark) header {
   background-color: #002570 !important;
-  border-bottom: none !important;       /* sin línea inferior */
+  border-bottom: none !important;       /* no bottom line */
   box-shadow: none !important;
 }
 
-/* Todos los textos del topbar — blancos/claros */
+/* All topbar text — white/light */
 :root:not(.dark) header,
 :root:not(.dark) header * {
   color: #e8edf5 !important;
 }
 
-/* Subtextos en gris-azulado */
+/* Gray-blue subtexts */
 :root:not(.dark) header .text-gray-600,
 :root:not(.dark) header .text-gray-500,
 :root:not(.dark) header .text-gray-400 {
   color: #7a9cc8 !important;
 }
 
-/* Badge "Connected" */
+/* "Connected" badge */
 :root:not(.dark) header .bg-gray-50\/80,
 :root:not(.dark) .bg-gray-50\/80 {
   background-color: rgba(255, 255, 255, 0.08) !important;
@@ -215,7 +215,7 @@
 }
 
 /* =============================================
-   BOTONES SECUNDARIOS
+   SECONDARY BUTTONS
    ============================================= */
 :root:not(.dark) .bg-gray-100 {
   background-color: #eef0f3 !important;
@@ -233,7 +233,7 @@
 }
 
 /* =============================================
-   TIPOGRAFÍA
+   TYPOGRAPHY
    ============================================= */
 :root:not(.dark) .text-slate-800,
 :root:not(.dark) .text-gray-900 {
@@ -278,7 +278,7 @@
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* =============================================
-   MAPA TÁCTICO
+   TACTICAL MAP
    ============================================= */
 .dark-tactical-tiles {
   filter: invert(100%) hue-rotate(180deg) saturate(350%) brightness(110%) contrast(95%);

@@ -463,4 +463,17 @@ def _model_resp(m) -> dict:
         "input_size": m.input_size or None,
         "batch_size": m.batch_size or None,
         "source_key": m.source_key or "",
+        "compilations": [
+            {
+                "id": c.id,
+                "model_id": c.model_id,
+                "hardware_type": c.hardware_type,
+                "compiled_key": c.compiled_key,
+                "compiled_sha256": c.compiled_sha256,
+                "compile_status": c.compile_status,
+                "compile_error": c.compile_error,
+                "created_at": c.created_at,
+            }
+            for c in m.compilations
+        ] if hasattr(m, "compilations") else [],
     }

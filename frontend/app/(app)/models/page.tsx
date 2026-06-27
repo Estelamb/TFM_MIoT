@@ -12,7 +12,7 @@ import {
   Dataset, Model,
   updateModel, updateDataset
 } from "@/lib/api";
-import { useDataMode } from "@/hooks/useDataMode";
+
 import { HW_LABELS } from "@/lib/utils";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -75,8 +75,7 @@ const stripAnsi = (str: string) => {
 };
 
 export default function ModelsPage() {
-  const { mode, demoData } = useDataMode();
-  const isDemo = mode === "demo";
+
   const [activeTab, setActiveTab] = useState<"models" | "baseModels">("models");
   const [selectedBaseModelVersions, setSelectedBaseModelVersions] = useState<Record<string, string>>({});
 
@@ -110,7 +109,6 @@ export default function ModelsPage() {
     e: React.MouseEvent,
     fetchUrlPromise: () => Promise<{ url: string }>
   ) => {
-    if (isDemo) { showTooltip(e, "Download is not available in Demo Mode"); return; }
     try {
       const { url } = await fetchUrlPromise();
       const a = document.createElement("a");
@@ -125,7 +123,7 @@ export default function ModelsPage() {
 
   const qc = useQueryClient();
 
-  const { data: realModels = [], isLoading: isModelsLoading } = useQuery({
+  const { data: models = [], isLoading: isModelsLoading } = useQuery({
     queryKey: ["models"], queryFn: getModels, refetchInterval: 5000,
   });
 
@@ -166,7 +164,7 @@ export default function ModelsPage() {
     return a.localeCompare(b);
   });
 
-  const models = isDemo ? demoData.models : realModels;
+
 
   const displayedModels = [
     ...pendingModels.filter((pm: any) => !models.some((m: any) => m.name === pm.name)),
@@ -205,31 +203,7 @@ export default function ModelsPage() {
     let active = true;
     const fetchLogs = async () => {
       if (!viewLogsOpen || !selectedModelForLogs) return;
-      if (isDemo) {
-        const mockLogLines = [
-          "Starting training run in Demo Mode...",
-          "PyTorch Version: 2.6.0 | CUDA Available: True | Device count: 1",
-          "Device name: NVIDIA GeForce RTX 3050 Ti Laptop GPU",
-          "Using base model: " + (selectedModelForLogs.base_architecture || "yolov8n.pt"),
-          "Loading dataset...",
-          "Dataset classes loaded successfully.",
-          "Epoch 1/20:  50%|██████████          | 50/100 [00:01<00:01, 48.20it/s, loss=0.875]",
-          "Epoch 1/20: 100%|████████████████████| 100/100 [00:02<00:00, 45.50it/s, loss=0.754, val_loss=0.612]",
-          "Epoch 5/20: 100%|████████████████████| 100/100 [00:02<00:00, 46.10it/s, loss=0.512, val_loss=0.431]",
-          "Epoch 10/20: 100%|████████████████████| 100/100 [00:02<00:00, 45.80it/s, loss=0.320, val_loss=0.285]",
-          "Epoch 15/20: 100%|████████████████████| 100/100 [00:02<00:00, 46.40it/s, loss=0.185, val_loss=0.170]",
-          "Epoch 20/20: 100%|████████████████████| 100/100 [00:02<00:00, 45.90it/s, loss=0.095, val_loss=0.091]",
-          "Training complete! Best weights saved to runs/train/weights/best.pt",
-          "Registering model.pt in base-models storage...",
-          "Model successfully compiled and ready.",
-        ];
-        for (let i = 0; i < mockLogLines.length; i++) {
-          if (!active) break;
-          await new Promise(resolve => setTimeout(resolve, 800));
-          setLogs(prev => [...prev, mockLogLines[i]]);
-        }
-        return;
-      }
+
       try {
         const token = localStorage.getItem("aura_token");
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/models/${selectedModelForLogs.id}/logs`, {
@@ -456,7 +430,7 @@ export default function ModelsPage() {
   };
 
   const getModelDatasetLabel = (model: any) => {
-    if (isDemo) return model.id === "mod-101" ? "Agriculture v1" : "No dataset associated";
+
     if (!model.dataset_id) return "No dataset associated";
     const ds = datasets.find((d: any) => d.id === model.dataset_id);
     if (!ds) return `Dataset: ${model.dataset_id.slice(0, 8)}...`;
@@ -532,7 +506,7 @@ export default function ModelsPage() {
 
       {activeTab === "models" ? (
         <div className="grid gap-4">
-          {isModelsLoading && !isDemo ? (
+          {isModelsLoading ? (
             <div className="text-center py-10 text-gray-500">Loading models...</div>
           ) : displayedModels.length === 0 ? (
             <Card className="border-dashed border-2 bg-transparent shadow-none opacity-60">
@@ -662,20 +636,18 @@ export default function ModelsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {!isDemo && (
-                        <Button
-                          variant="outline" size="sm" className="gap-2 shrink-0 border-gray-200 dark:border-gray-700"
-                          onClick={() => {
-                            setSelectedModelForAssociation(m);
-                            setAssociationDatasetId(m.dataset_id || "");
-                            setAssociationDatasetVersionId(m.dataset_version_id || "");
-                            setAssociateOpen(true);
-                          }}
-                          disabled={m.isPendingUpload}
-                        >
-                          <Database size={14} /> Dataset
-                        </Button>
-                      )}
+                      <Button
+                        variant="outline" size="sm" className="gap-2 shrink-0 border-gray-200 dark:border-gray-700"
+                        onClick={() => {
+                          setSelectedModelForAssociation(m);
+                          setAssociationDatasetId(m.dataset_id || "");
+                          setAssociationDatasetVersionId(m.dataset_version_id || "");
+                          setAssociateOpen(true);
+                        }}
+                        disabled={m.isPendingUpload}
+                      >
+                        <Database size={14} /> Dataset
+                      </Button>
                       <Button
                         variant="outline" size="sm" className="gap-2 shrink-0 border-gray-200 dark:border-gray-700"
                         onClick={e => handleDownload(e, () => getModelDownloadUrl(m.id, "source"))}
@@ -979,7 +951,6 @@ export default function ModelsPage() {
                           >
                             Manage
                           </Button>
-                          {!isDemo && (
                             <button
                               onClick={() => removeDatasetMutation.mutate(ds.id)}
                               className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
@@ -987,7 +958,6 @@ export default function ModelsPage() {
                             >
                               <Trash2 size={14} />
                             </button>
-                          )}
                         </>
                       )}
                     </div>
@@ -1043,36 +1013,32 @@ export default function ModelsPage() {
           <Input label="Description (optional)" value={form.description}
             onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
             placeholder="Brief description..." />
-          {!isDemo && (
-            <>
-              <Select
-                label="Dataset (optional)"
-                value={form.dataset_id}
-                onChange={e => setForm(f => ({ ...f, dataset_id: e.target.value, dataset_version_id: "" }))}
-                options={[
-                  { value: "", label: "Select Dataset (optional)" },
-                  ...datasets.map((d: any) => ({ value: d.id, label: d.name }))
-                ]}
-              />
-              {form.dataset_id && (() => {
-                const selectedDs = datasets.find((d: any) => d.id === form.dataset_id);
-                if (selectedDs && selectedDs.versions && selectedDs.versions.length > 0) {
-                  return (
-                    <Select
-                      label="Dataset Version (optional)"
-                      value={form.dataset_version_id}
-                      onChange={e => setForm(f => ({ ...f, dataset_version_id: e.target.value }))}
-                      options={[
-                        { value: "", label: "Latest Version (Default)" },
-                        ...selectedDs.versions.map((v: any) => ({ value: v.id, label: `${v.version} - ${v.description || 'No description'}` }))
-                      ]}
-                    />
-                  );
-                }
-                return null;
-              })()}
-            </>
-          )}
+            <Select
+              label="Dataset (optional)"
+              value={form.dataset_id}
+              onChange={e => setForm(f => ({ ...f, dataset_id: e.target.value, dataset_version_id: "" }))}
+              options={[
+                { value: "", label: "Select Dataset (optional)" },
+                ...datasets.map((d: any) => ({ value: d.id, label: d.name }))
+              ]}
+            />
+            {form.dataset_id && (() => {
+              const selectedDs = datasets.find((d: any) => d.id === form.dataset_id);
+              if (selectedDs && selectedDs.versions && selectedDs.versions.length > 0) {
+                return (
+                  <Select
+                    label="Dataset Version (optional)"
+                    value={form.dataset_version_id}
+                    onChange={e => setForm(f => ({ ...f, dataset_version_id: e.target.value }))}
+                    options={[
+                      { value: "", label: "Latest Version (Default)" },
+                      ...selectedDs.versions.map((v: any) => ({ value: v.id, label: `${v.version} - ${v.description || 'No description'}` }))
+                    ]}
+                  />
+                );
+              }
+              return null;
+            })()}
           <div className="border-t border-gray-150 dark:border-gray-800 pt-4 space-y-4">
             <h4 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
               Model Configuration &amp; Metadata

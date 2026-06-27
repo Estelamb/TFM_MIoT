@@ -46,7 +46,7 @@ Acts as the single REST entry point. Resolves authentication and proxies request
 * [api-gateway/app/config.py](autoapi/api_gateway_service/config/index): Validates configurations (JWT secrets, internal gRPC host mappings).
 * [api-gateway/app/stubs.py](autoapi/api_gateway_service/stubs/index): Caches active gRPC channels to communicate with backends.
   ```python
-  """gRPC stubs singleton para el gateway."""
+  """gRPC stubs singleton for the gateway."""
   ```
 * **[app/auth/](autoapi/api_gateway_service/auth/index)**: Contains utility functions to sign/decode JWT tokens and hash credentials.
   * [jwt.py](autoapi/api_gateway_service/auth/jwt/index):

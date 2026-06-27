@@ -201,13 +201,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -220,9 +219,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -242,14 +238,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -294,45 +282,22 @@
         <article role="main" id="furo-main-content">
           <section id="module-edge_runtime.hardware_daemon">
 <span id="edge-runtime-hardware-daemon"></span><h1>edge_runtime.hardware_daemon<a class="headerlink" href="#module-edge_runtime.hardware_daemon" title="Link to this heading">¶</a></h1>
-<p>Exposes Raspberry Pi Camera Module 3 over a lightweight local HTTP API.
+<p>Exposes Raspberry Pi Camera Module 3 and Hailo-8/8L hardware accelerators
+over a lightweight local HTTP API.
 Allows containerized edge agents to interact with native hardware without
 complex device mounts or privileged Docker flags.</p>
 <p>API Endpoints:
 * GET /capture - Returns the latest captured frame as ‘image/jpeg’ bytes.
-* GET /status  - Returns JSON status of the daemon (physical vs simulated).</p>
-<section id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#edge_runtime.hardware_daemon.logger" title="edge_runtime.hardware_daemon.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#edge_runtime.hardware_daemon.HAS_PICAMERA" title="edge_runtime.hardware_daemon.HAS_PICAMERA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HAS_PICAMERA</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#edge_runtime.hardware_daemon.HAS_PILLOW" title="edge_runtime.hardware_daemon.HAS_PILLOW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HAS_PILLOW</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#edge_runtime.hardware_daemon.MINIMAL_JPEG" title="edge_runtime.hardware_daemon.MINIMAL_JPEG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MINIMAL_JPEG</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#edge_runtime.hardware_daemon.camera_manager" title="edge_runtime.hardware_daemon.camera_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">camera_manager</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
+* GET /status  - Returns JSON status of the daemon (physical vs simulated).
+* POST /load   - Accepts raw HEF bytes and initializes Hailo context.
+* POST /infer  - Runs inference on the loaded Hailo model using raw RGB888 bytes.
+* POST /unload - Releases the Hailo context and cleans up temporary HEFs.</p>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#edge_runtime.hardware_daemon.CameraManager" title="edge_runtime.hardware_daemon.CameraManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CameraManager</span></code></a></p></td>
-<td><p>Manages camera lifecycle and captures frame to memory.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#edge_runtime.hardware_daemon.HardwareHTTPHandler" title="edge_runtime.hardware_daemon.HardwareHTTPHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HardwareHTTPHandler</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#edge_runtime.hardware_daemon.HardwareHTTPHandler" title="edge_runtime.hardware_daemon.HardwareHTTPHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HardwareHTTPHandler</span></code></a></p></td>
 <td><p>Lite HTTP handler resolving requests.</p></td>
 </tr>
 </tbody>
@@ -353,62 +318,6 @@ complex device mounts or privileged Docker flags.</p>
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
-<dl class="py data">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.logger">
-<span class="sig-prename descclassname"><span class="pre">edge_runtime.hardware_daemon.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.logger" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.HAS_PICAMERA">
-<span class="sig-prename descclassname"><span class="pre">edge_runtime.hardware_daemon.</span></span><span class="sig-name descname"><span class="pre">HAS_PICAMERA</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#HAS_PICAMERA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.HAS_PICAMERA" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.HAS_PILLOW">
-<span class="sig-prename descclassname"><span class="pre">edge_runtime.hardware_daemon.</span></span><span class="sig-name descname"><span class="pre">HAS_PILLOW</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#HAS_PILLOW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.HAS_PILLOW" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.MINIMAL_JPEG">
-<span class="sig-prename descclassname"><span class="pre">edge_runtime.hardware_daemon.</span></span><span class="sig-name descname"><span class="pre">MINIMAL_JPEG</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\xff\xff\xff\xff...</span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#MINIMAL_JPEG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.MINIMAL_JPEG" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.CameraManager">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">edge_runtime.hardware_daemon.</span></span><span class="sig-name descname"><span class="pre">CameraManager</span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#CameraManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.CameraManager" title="Link to this definition">¶</a></dt>
-<dd><p>Manages camera lifecycle and captures frame to memory.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.CameraManager.picam2">
-<span class="sig-name descname"><span class="pre">picam2</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#CameraManager.picam2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.CameraManager.picam2" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.CameraManager.is_active">
-<span class="sig-name descname"><span class="pre">is_active</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#CameraManager.is_active"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.CameraManager.is_active" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.CameraManager.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#CameraManager.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.CameraManager.start" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.CameraManager.capture_raw">
-<span class="sig-name descname"><span class="pre">capture_raw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#CameraManager.capture_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.CameraManager.capture_raw" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.CameraManager.stop">
-<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#CameraManager.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.CameraManager.stop" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.camera_manager">
-<span class="sig-prename descclassname"><span class="pre">edge_runtime.hardware_daemon.</span></span><span class="sig-name descname"><span class="pre">camera_manager</span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#camera_manager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.camera_manager" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="edge_runtime.hardware_daemon.HardwareHTTPHandler">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">edge_runtime.hardware_daemon.</span></span><span class="sig-name descname"><span class="pre">HardwareHTTPHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#HardwareHTTPHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.HardwareHTTPHandler" title="Link to this definition">¶</a></dt>
@@ -436,6 +345,11 @@ before writing the output to stderr.</p>
 <span class="sig-name descname"><span class="pre">do_GET</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#HardwareHTTPHandler.do_GET"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.HardwareHTTPHandler.do_GET" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="edge_runtime.hardware_daemon.HardwareHTTPHandler.do_POST">
+<span class="sig-name descname"><span class="pre">do_POST</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../_modules/edge_runtime/hardware_daemon.html#HardwareHTTPHandler.do_POST"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#edge_runtime.hardware_daemon.HardwareHTTPHandler.do_POST" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -457,7 +371,7 @@ before writing the output to stderr.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -484,26 +398,13 @@ before writing the output to stderr.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">edge_runtime.hardware_daemon</a><ul>
-<li><a class="reference internal" href="#attributes">Attributes</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.HAS_PICAMERA"><code class="docutils literal notranslate"><span class="pre">HAS_PICAMERA</span></code></a></li>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.HAS_PILLOW"><code class="docutils literal notranslate"><span class="pre">HAS_PILLOW</span></code></a></li>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.MINIMAL_JPEG"><code class="docutils literal notranslate"><span class="pre">MINIMAL_JPEG</span></code></a></li>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.CameraManager"><code class="docutils literal notranslate"><span class="pre">CameraManager</span></code></a><ul>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.CameraManager.picam2"><code class="docutils literal notranslate"><span class="pre">CameraManager.picam2</span></code></a></li>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.CameraManager.is_active"><code class="docutils literal notranslate"><span class="pre">CameraManager.is_active</span></code></a></li>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.CameraManager.start"><code class="docutils literal notranslate"><span class="pre">CameraManager.start()</span></code></a></li>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.CameraManager.capture_raw"><code class="docutils literal notranslate"><span class="pre">CameraManager.capture_raw()</span></code></a></li>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.CameraManager.stop"><code class="docutils literal notranslate"><span class="pre">CameraManager.stop()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#edge_runtime.hardware_daemon.camera_manager"><code class="docutils literal notranslate"><span class="pre">camera_manager</span></code></a></li>
 <li><a class="reference internal" href="#edge_runtime.hardware_daemon.HardwareHTTPHandler"><code class="docutils literal notranslate"><span class="pre">HardwareHTTPHandler</span></code></a><ul>
 <li><a class="reference internal" href="#edge_runtime.hardware_daemon.HardwareHTTPHandler.log_message"><code class="docutils literal notranslate"><span class="pre">HardwareHTTPHandler.log_message()</span></code></a></li>
 <li><a class="reference internal" href="#edge_runtime.hardware_daemon.HardwareHTTPHandler.do_GET"><code class="docutils literal notranslate"><span class="pre">HardwareHTTPHandler.do_GET()</span></code></a></li>
+<li><a class="reference internal" href="#edge_runtime.hardware_daemon.HardwareHTTPHandler.do_POST"><code class="docutils literal notranslate"><span class="pre">HardwareHTTPHandler.do_POST()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#edge_runtime.hardware_daemon.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
@@ -520,7 +421,7 @@ before writing the output to stderr.</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

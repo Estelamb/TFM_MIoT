@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { getDevices, getModels, getScripts, getDeployments, getMonitoringStates } from "@/lib/api";
-import { useDataMode } from "@/hooks/useDataMode";
+
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { StatBar } from "@/components/ui/StatBar";
@@ -38,20 +38,11 @@ function StatCard({
 }
 
 export default function DashboardPage() {
-  const { mode, demoData } = useDataMode();
-  const isDemo = mode === "demo";
-
-  const { data: realDevices = [] } = useQuery({ queryKey: ["devices"], queryFn: getDevices, refetchInterval: 5000 });
-  const { data: realModels = [] } = useQuery({ queryKey: ["models"], queryFn: getModels });
-  const { data: realScripts = [] } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
-  const { data: realDeployments = [] } = useQuery({ queryKey: ["deployments"], queryFn: getDeployments });
-  const { data: realStates = [] } = useQuery({ queryKey: ["monitoring"], queryFn: getMonitoringStates, refetchInterval: 5000 });
-
-  const devices = isDemo ? demoData.devices : realDevices;
-  const models = isDemo ? demoData.models : realModels;
-  const scripts = isDemo ? demoData.scripts : realScripts;
-  const deployments = isDemo ? demoData.deployments : realDeployments;
-  const states = isDemo ? demoData.monitoringStates : realStates;
+  const { data: devices = [] } = useQuery({ queryKey: ["devices"], queryFn: getDevices, refetchInterval: 5000 });
+  const { data: models = [] } = useQuery({ queryKey: ["models"], queryFn: getModels });
+  const { data: scripts = [] } = useQuery({ queryKey: ["scripts"], queryFn: getScripts });
+  const { data: deployments = [] } = useQuery({ queryKey: ["deployments"], queryFn: getDeployments });
+  const { data: states = [] } = useQuery({ queryKey: ["monitoring"], queryFn: getMonitoringStates, refetchInterval: 5000 });
 
   const online = devices.filter((d: any) => d.status === "online").length;
   const running = deployments.filter((d: any) => d.status === "running").length;

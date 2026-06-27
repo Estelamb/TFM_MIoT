@@ -200,13 +200,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -219,9 +218,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -241,14 +237,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -393,6 +381,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_script_module</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># ── Last inference result (shared between loops) ───────────────────</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inference_latencies</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_frame</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_inference</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_inference_ts</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -485,9 +474,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_frame</span> <span class="o">=</span> <span class="n">frame</span>
 
         <span class="c1"># Run inference (in thread executor to avoid blocking the event loop)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
-            <span class="kc">None</span><span class="p">,</span> <span class="n">execute_inference</span><span class="p">,</span> <span class="n">frame</span>
-        <span class="p">)</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_script_module</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_script_module</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">):</span>
+            <span class="n">run_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_script_module</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
+                <span class="kc">None</span><span class="p">,</span> <span class="n">run_fn</span><span class="p">,</span> <span class="n">frame</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
+                <span class="kc">None</span><span class="p">,</span> <span class="n">execute_inference</span><span class="p">,</span> <span class="n">frame</span>
+            <span class="p">)</span>
+        <span class="n">latency_ms</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1000.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inference_latencies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">latency_ms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inference_latencies</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inference_latencies</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_inference</span> <span class="o">=</span> <span class="n">result</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_inference_ts</span> <span class="o">=</span> <span class="n">ts</span>
 
@@ -511,6 +511,24 @@
         <span class="n">mem</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">virtual_memory</span><span class="p">()</span>
         <span class="n">hw</span> <span class="o">=</span> <span class="n">get_hardware_info</span><span class="p">()</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference_latencies</span><span class="p">:</span>
+            <span class="n">avg_latency</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inference_latencies</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inference_latencies</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inference_latencies</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">avg_latency</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Query active GPS sensors in DeviceManager to update local coordinates</span>
+        <span class="k">for</span> <span class="n">dev_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_manager</span><span class="o">.</span><span class="n">list_components</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_manager</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">dev_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dev</span><span class="o">.</span><span class="n">device_type</span> <span class="o">==</span> <span class="s2">&quot;gps&quot;</span><span class="p">:</span>
+                    <span class="n">coords</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">measure</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span> <span class="o">=</span> <span class="n">coords</span>
+                        <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to read GPS coordinates from device &#39;</span><span class="si">{</span><span class="n">dev_id</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">,</span>
             <span class="s2">&quot;cpu_percent&quot;</span><span class="p">:</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_percent</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
@@ -525,6 +543,7 @@
             <span class="s2">&quot;active_script_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_script_id</span><span class="p">,</span>
             <span class="s2">&quot;libraries_hash&quot;</span><span class="p">:</span> <span class="n">get_libraries_hash</span><span class="p">(),</span>
             <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span><span class="p">,</span>
+            <span class="s2">&quot;latency_ms&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">avg_latency</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
         <span class="p">}</span>
 
         <span class="c1"># Temperature sensors (not available on all platforms)</span>
@@ -665,7 +684,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -685,7 +704,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -7,16 +7,16 @@ mlops_service.grpc_handlers.compilation_handler
 
    Compilation Service Handler
    ============================
-   Orquesta la compilación de modelos .pt para cada hardware:
+   Orchestrates the compilation of .pt models for each hardware target:
 
-     hailo8 / hailo8l  → HailoCompiler  (lanza Docker con Hailo AI SW Suite)
-     rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter en Python)
-     rpi               → RPiCPUCompiler (exportación a ONNX en Docker)
-     jetson_orin_nano  → stub (TensorRT, pendiente)
+     hailo8 / hailo8l  → HailoCompiler  (launches Docker with Hailo AI SW Suite)
+     rpi_ai_cam        → AICamCompiler  (MCT + imx500-converter in Python)
+     rpi               → RPiCPUCompiler (ONNX export in Docker)
+     jetson_orin_nano  → stub (TensorRT, pending)
 
-   El handler es no-bloqueante: CompileModel lanza la compilación como tarea
-   asyncio y devuelve status="compiling" inmediatamente. El cliente puede
-   hacer polling con GetCompilationStatus.
+   The handler is non-blocking: CompileModel launches the compilation as an
+   asyncio task and returns status="compiling" immediately. The client can
+   poll status with GetCompilationStatus.
 
 
 

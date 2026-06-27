@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useDataMode } from "@/hooks/useDataMode";
 import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { getInferenceResults } from "@/lib/api";
@@ -16,7 +15,6 @@ interface DeploymentMapInternalProps {
   devices?: any[];
   models?: any[];
   scripts?: any[];
-  isDemo?: boolean;
 }
 
 const createTacticalIcon = (status: string, isDark: boolean) => {
@@ -53,10 +51,8 @@ export default function DeploymentMapInternal({
   deployments = [],
   devices = [],
   models = [],
-  scripts = [],
-  isDemo = false
+  scripts = []
 }: DeploymentMapInternalProps) {
-  const { demoData } = useDataMode();
   const { theme, systemTheme } = useTheme();
   const [activeNode, setActiveNode] = useState<any | null>(null);
   const [markers, setMarkers] = useState<any[]>([]);
@@ -68,29 +64,19 @@ export default function DeploymentMapInternal({
   const tileUrl = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
 
   useEffect(() => {
-    if (isDemo) {
-      const demoMarkers = demoData.monitoringStates.map((s: any) => ({
-        id: s.device_id,
-        name: s.device_id,
-        status: s.status,
-        coordinates: [s.coordinates[1], s.coordinates[0]], 
-      }));
-      setMarkers(demoMarkers);
-    } else {
-      const realMarkers = states
-        .filter(s => s.coordinates && s.coordinates.length === 2)
-        .map(s => {
-          const device = devices.find((d: any) => d.id === s.device_id);
-          return {
-            id: s.device_id,
-            name: device ? device.name : s.device_id,
-            status: s.status,
-            coordinates: [s.coordinates[1], s.coordinates[0]], 
-          };
-        });
-      setMarkers(realMarkers);
-    }
-  }, [states, isDemo, demoData.monitoringStates, devices]);
+    const realMarkers = states
+      .filter(s => s.coordinates && s.coordinates.length === 2)
+      .map(s => {
+        const device = devices.find((d: any) => d.id === s.device_id);
+        return {
+          id: s.device_id,
+          name: device ? device.name : s.device_id,
+          status: s.status,
+          coordinates: [s.coordinates[1], s.coordinates[0]], 
+        };
+      });
+    setMarkers(realMarkers);
+  }, [states, devices]);
 
   // Query live inference results for the activeNode (hovered/selected device)
   const { data: inferenceResults = [], isLoading: loadingInference } = useQuery({
@@ -100,9 +86,9 @@ export default function DeploymentMapInternal({
     refetchInterval: activeNode ? 2000 : false,
   });
 
-  if (markers.length === 0 && !isDemo) {
+  if (markers.length === 0) {
     return (
-      <div className="w-full h-[500px] bg-gray-50 dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-800 p-8 relative overflow-hidden flex items-center justify-center">
+      <div className="w-full h-full bg-gray-50 dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-800 p-8 relative overflow-hidden flex items-center justify-center">
         <div className="flex flex-col items-center text-center max-w-sm space-y-3 z-10">
           <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800/50 flex items-center justify-center border border-gray-200 dark:border-slate-700">
             <MapPin size={24} className="text-gray-400 dark:text-gray-500" />
@@ -121,7 +107,7 @@ export default function DeploymentMapInternal({
     : [40.4168, -3.7038];
 
   // Resolve deployment characteristics for active tooltip
-  const activeDeviceState = activeNode ? (isDemo ? demoData.monitoringStates.find((s: any) => s.device_id === activeNode.id) : states.find((s: any) => s.device_id === activeNode.id)) : null;
+  const activeDeviceState = activeNode ? states.find((s: any) => s.device_id === activeNode.id) : null;
   
   // Try to find the deployment reported by the edge agent telemetry first
   let activeDeployment = activeDeviceState && deployments.find((d: any) => d.id === activeDeviceState.active_deployment_id);
@@ -135,7 +121,7 @@ export default function DeploymentMapInternal({
   const activeScript = activeDeployment && scripts.find((s: any) => s.id === activeDeployment.script_id);
 
   return (
-    <div className="w-full h-[500px] bg-gray-100 dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-800 relative overflow-hidden flex flex-col z-0">
+    <div className="w-full h-full bg-gray-100 dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-800 relative overflow-hidden flex flex-col z-0">
       
       <div className="absolute top-6 left-6 z-[1000] pointer-events-none">
         <h3 className="text-gray-900 dark:text-white font-bold text-lg flex items-center gap-2">
@@ -147,7 +133,7 @@ export default function DeploymentMapInternal({
 
       <MapContainer 
         center={defaultCenter} 
-        zoom={isDemo ? 3 : 13} 
+        zoom={13} 
         scrollWheelZoom={true} 
         className="w-full h-full !bg-transparent" 
         zoomControl={false}

@@ -17,7 +17,7 @@ LABEL = "RPi AI Camera (Sony IMX500)"
 class RPiAICamCompiler(CompilerBase):
     EXECUTION_STRATEGY = "docker"
     DOCKER_IMAGE = "ultralytics/ultralytics:latest"
-    OUTPUT_FORMAT = ".zip"
+    OUTPUT_FORMAT = ".rpk"
     SUPPORTED_HARDWARE = ["rpi_ai_cam"]
 
     def __init__(self, minio_bucket_models: str, minio_bucket_compiled: str):
@@ -183,8 +183,8 @@ names:
                     "    print('Running export for IMX500...')\n"
                     "    model.export(format='imx', data='/tmp/auto_calibration_data.yaml')\n"
                     "    # Find the output zip inside runs/detect/train/weights/... or similar\n"
-                    "    # Usually YOLO exports to weights/model_imx_model/packerOut.zip\n"
-                    "    zips = glob.glob('**/packerOut.zip', recursive=True)\n"
+                    "    # Usually YOLO exports adjacent to the model path, so we check /tmp recursively as well\n"
+                    "    zips = glob.glob('/tmp/**/packerOut.zip', recursive=True) + glob.glob('**/packerOut.zip', recursive=True)\n"
                     "    if not zips:\n"
                     "         raise FileNotFoundError('packerOut.zip not found after export')\n"
                     "    shutil.copy(zips[0], '/tmp/packerOut.zip')\n"
@@ -253,6 +253,95 @@ names:
                     err_msg = stderr.decode().strip()
                     return CompilationResult(success=False, error=f"Failed to copy compiled ZIP from container: {err_msg}")
 
+                # Ensure the packaging image exists
+                logger.info("[RPiAICam] Checking if aura-imx500-packager exists...")
+                check_img = await asyncio.create_subprocess_exec(
+                    "docker", "image", "inspect", "aura-imx500-packager",
+                    stdout=asyncio.subprocess.DEVNULL,
+                    stderr=asyncio.subprocess.DEVNULL
+                )
+                await check_img.wait()
+                if check_img.returncode != 0:
+                    logger.info("[RPiAICam] aura-imx500-packager not found. Building it (runs once)...")
+                    dockerfile_content = (
+                        "FROM --platform=linux/arm64 debian:bookworm-slim\n"
+                        "RUN apt-get update && apt-get install -y curl gnupg \\\n"
+                        "    && curl -fsSL http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | gpg --dearmor -o /usr/share/keyrings/raspberrypi-archive-keyring.gpg \\\n"
+                        "    && echo 'deb [signed-by=/usr/share/keyrings/raspberrypi-archive-keyring.gpg] http://archive.raspberrypi.org/debian/ bookworm main' > /etc/apt/sources.list.d/raspi.list \\\n"
+                        "    && apt-get update \\\n"
+                        "    && apt-get install -y imx500-tools \\\n"
+                        "    && rm -rf /var/lib/apt/lists/*\n"
+                        "WORKDIR /workspace\n"
+                        "ENTRYPOINT [\"imx500-package\"]\n"
+                    )
+                    dockerfile_path = os.path.join(tmpdir, "Dockerfile.packager")
+                    with open(dockerfile_path, "w") as f:
+                        f.write(dockerfile_content)
+                    
+                    build_proc = await asyncio.create_subprocess_exec(
+                        "docker", "build", "--platform", "linux/arm64", "-t", "aura-imx500-packager", "-f", dockerfile_path, tmpdir,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE
+                    )
+                    stdout_b, stderr_b = await build_proc.communicate()
+                    if build_proc.returncode != 0:
+                        logger.error(f"[RPiAICam] Failed to build packager image: {stderr_b.decode()}")
+                        return CompilationResult(success=False, error=f"Failed to build RPK packager image: {stderr_b.decode()}")
+                    logger.info("[RPiAICam] Successfully built aura-imx500-packager image.")
+
+                # Run package command using container cp and exec (DinD safe)
+                logger.info("[RPiAICam] Packaging packerOut.zip into network.rpk inside ARM64 container...")
+                rpk_out_path = os.path.join(tmpdir, "network.rpk")
+                pack_container_name = f"package_{model_id}"
+                
+                # 1. Start packaging container in sleep mode
+                run_pack_cmd = [
+                    "docker", "run", "-d",
+                    "--name", pack_container_name,
+                    "--platform", "linux/arm64",
+                    "--entrypoint", "sleep",
+                    "aura-imx500-packager",
+                    "3600"
+                ]
+                proc_p = await asyncio.create_subprocess_exec(*run_pack_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                stdout_p, stderr_p = await proc_p.communicate()
+                if proc_p.returncode != 0:
+                    err_msg = stderr_p.decode().strip()
+                    return CompilationResult(success=False, error=f"Failed to start RPK packager container: {err_msg}")
+
+                try:
+                    # 2. Copy packerOut.zip into the packager container
+                    cp_pack_in = ["docker", "cp", zip_out_path, f"{pack_container_name}:/workspace/packerOut.zip"]
+                    proc_p = await asyncio.create_subprocess_exec(*cp_pack_in, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                    await proc_p.communicate()
+
+                    # 3. Execute imx500-package inside the container
+                    exec_pack_cmd = [
+                        "docker", "exec", pack_container_name,
+                        "imx500-package", "-i", "/workspace/packerOut.zip", "-o", "/workspace"
+                    ]
+                    proc_p = await asyncio.create_subprocess_exec(*exec_pack_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                    stdout_p, stderr_p = await proc_p.communicate()
+                    if proc_p.returncode != 0:
+                        err_msg = stderr_p.decode().strip()
+                        logger.error(f"[RPiAICam] RPK packaging failed: {err_msg}\nStdout: {stdout_p.decode()}")
+                        return CompilationResult(success=False, error=f"RPK packaging failed: {err_msg}")
+
+                    # 4. Copy network.rpk back to the host
+                    cp_pack_out = ["docker", "cp", f"{pack_container_name}:/workspace/network.rpk", rpk_out_path]
+                    proc_p = await asyncio.create_subprocess_exec(*cp_pack_out, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                    await proc_p.communicate()
+                    logger.info("[RPiAICam] Packaging completed successfully.")
+
+                finally:
+                    # 5. Clean up packager container
+                    cleanup_proc = await asyncio.create_subprocess_exec(
+                        "docker", "rm", "-f", pack_container_name,
+                        stdout=asyncio.subprocess.DEVNULL,
+                        stderr=asyncio.subprocess.DEVNULL
+                    )
+                    await cleanup_proc.wait()
+
             except asyncio.CancelledError:
                 logger.warning(f"[RPiAICam] Compilation job for model {model_id} was cancelled.")
                 raise
@@ -273,19 +362,19 @@ names:
                 except Exception as e:
                     logger.warning(f"[RPiAICam] Failed to clean up container: {e}")
 
-            # 5. Read compiled zip bytes and upload to MinIO
-            if not os.path.exists(zip_out_path):
-                return CompilationResult(success=False, error="packerOut.zip file not found on host after copy")
+            # 5. Read compiled RPK bytes and upload to MinIO
+            if not os.path.exists(rpk_out_path):
+                return CompilationResult(success=False, error="network.rpk file not found on host after packaging")
 
             try:
-                with open(zip_out_path, "rb") as f:
-                    zip_data = f.read()
+                with open(rpk_out_path, "rb") as f:
+                    rpk_data = f.read()
 
-                sha = hashlib.sha256(zip_data).hexdigest()
-                compiled_key = f"{model_id}/model.zip"
+                sha = hashlib.sha256(rpk_data).hexdigest()
+                compiled_key = f"{model_id}/model.rpk"
 
                 logger.info(f"[RPiAICam] Uploading compiled model to MinIO: {compiled_key}...")
-                await upload_bytes("compiled", compiled_key, zip_data)
+                await upload_bytes("compiled", compiled_key, rpk_data)
 
                 logger.info(f"[RPiAICam] Compilation successful -> {compiled_key}")
                 return CompilationResult(

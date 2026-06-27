@@ -5,8 +5,8 @@ shared.transport
 
 .. autoapi-nested-parse::
 
-   Capa de transporte abstracta.
-   Implementada sobre MQTT. Diseñada para ser intercambiable (WebSocket, AMQP, etc.)
+   Abstract transport layer.
+   Implemented over MQTT. Designed to be interchangeable (WebSocket, AMQP, etc.)
 
 
 

@@ -20,7 +20,7 @@ Module Contents
    .. py:attribute:: s
 
 
-   .. py:method:: create(device_id: str, model_id: str, script_id: str, name: str | None = None) -> app.models.orm.Deployment
+   .. py:method:: create(device_id: str, model_id: str, script_id: str, name: str | None = None, status: str = 'pending') -> app.models.orm.Deployment
       :async:
 
 

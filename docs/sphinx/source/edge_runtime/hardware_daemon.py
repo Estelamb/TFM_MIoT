@@ -2,13 +2,17 @@
 """
 AURA Hardware Daemon
 ====================
-Exposes Raspberry Pi Camera Module 3 over a lightweight local HTTP API.
+Exposes Raspberry Pi Camera Module 3 and Hailo-8/8L hardware accelerators
+over a lightweight local HTTP API.
 Allows containerized edge agents to interact with native hardware without
 complex device mounts or privileged Docker flags.
 
 API Endpoints:
 * GET /capture - Returns the latest captured frame as 'image/jpeg' bytes.
 * GET /status  - Returns JSON status of the daemon (physical vs simulated).
+* POST /load   - Accepts raw HEF bytes and initializes Hailo context.
+* POST /infer  - Runs inference on the loaded Hailo model using raw RGB888 bytes.
+* POST /unload - Releases the Hailo context and cleans up temporary HEFs.
 """
 import io
 import json
@@ -16,106 +20,16 @@ import logging
 import os
 import sys
 import time
+import urllib.parse
+import threading
+import numpy as np
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from pathlib import Path
+from typing import Any
 
-# Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [AURA-Daemon] %(levelname)s — %(message)s",
-    stream=sys.stdout
-)
-logger = logging.getLogger("hardware_daemon")
-
-# Try to import picamera2
-try:
-    from picamera2 import Picamera2
-    HAS_PICAMERA = True
-except ImportError:
-    HAS_PICAMERA = False
-
-# Try to import Pillow (PIL) for fallback simulation
-try:
-    from PIL import Image, ImageDraw
-    HAS_PILLOW = True
-except ImportError:
-    HAS_PILLOW = False
-
-# Fallback minimal 1x1 black JPEG image bytes in case Pillow is missing
-MINIMAL_JPEG = b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xc0\x00\x0b\x08\x00\x01\x00\x01\x01\x01\x11\x00\xff\xc4\x00\x14\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xda\x00\x08\x01\x01\x00\x00\x3f\x00\x37\xff\xd9'
-
-
-class CameraManager:
-    """Manages camera lifecycle and captures frame to memory."""
-    def __init__(self) -> None:
-        self.picam2 = None
-        self.is_active = False
-
-    def start(self) -> None:
-        if HAS_PICAMERA:
-            logger.info("Initializing native Picamera2 (Camera Module 3)...")
-            try:
-                self.picam2 = Picamera2()
-                config = self.picam2.create_preview_configuration(
-                    main={"size": (640, 480), "format": "RGB888"}
-                )
-                self.picam2.configure(config)
-                self.picam2.start()
-                self.is_active = True
-                logger.info("Picamera2 started successfully.")
-            except Exception as e:
-                logger.error(f"Error starting Picamera2: {e}")
-                self.picam2 = None
-                self.is_active = False
-        else:
-            logger.warning("Picamera2 not found. Exposing Simulated/Mock Camera instead.")
-            self.is_active = True
-
-    def capture_raw(self) -> bytes:
-        if not self.is_active:
-            return bytes(640 * 480 * 3)
-            
-        if self.picam2:
-            try:
-                # Capture frame natively as a numpy array
-                frame = self.picam2.capture_array()
-                return frame.tobytes()
-            except Exception as e:
-                logger.error(f"Error capturing physical frame: {e}")
-                return bytes(640 * 480 * 3)
-        else:
-            # Simulated frame fallback
-            if HAS_PILLOW:
-                try:
-                    # Create dark background image
-                    img = Image.new("RGB", (640, 480), color=(30, 32, 36))
-                    draw = ImageDraw.Draw(img)
-                    
-                    # Animated moving bars to show active loop
-                    t = int(time.time() * 20) % 480
-                    draw.rectangle([0, t, 640, min(t+30, 480)], fill=(235, 69, 75))
-                    t2 = int(time.time() * 30) % 640
-                    draw.rectangle([t2, 0, min(t2+30, 640), 480], fill=(114, 137, 218))
-                    
-                    # Convert Pillow Image to raw RGB bytes
-                    return img.tobytes()
-                except Exception as e:
-                    logger.error(f"Error generating Pillow mock frame: {e}")
-                    return bytes(640 * 480 * 3)
-            else:
-                return bytes(640 * 480 * 3)
-
-    def stop(self) -> None:
-        if self.picam2:
-            try:
-                self.picam2.stop()
-                logger.info("Picamera2 stopped successfully.")
-            except Exception as e:
-                logger.error(f"Error stopping Picamera2: {e}")
-            self.picam2 = None
-        self.is_active = False
-
-
-camera_manager = CameraManager()
+# Import config, utilities, and manager singletons from daemon package
+from daemon.shared import logger, HARDWARE_TYPE, CAMERA_ENABLED, HAS_PILLOW, _make_json_serializable
+from daemon import camera_manager, hailo_manager, imx500_manager
 
 
 class HardwareHTTPHandler(BaseHTTPRequestHandler):
@@ -134,10 +48,32 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(raw_data)
         elif self.path == "/status":
+            try:
+                from picamera2 import Picamera2
+                picam_avail = True
+            except ImportError:
+                picam_avail = False
+
+            try:
+                from picamera2.devices import Hailo
+                hailo_avail = True
+            except ImportError:
+                hailo_avail = False
+
+            try:
+                from picamera2.devices import IMX500
+                imx500_avail = True
+            except ImportError:
+                imx500_avail = False
+            
             status = {
                 "status": "online",
-                "camera_type": "physical" if HAS_PICAMERA else "simulated",
-                "picamera_available": HAS_PICAMERA,
+                "hardware_type": HARDWARE_TYPE,
+                "camera_type": "physical" if (picam_avail and CAMERA_ENABLED) else "simulated",
+                "picamera_available": picam_avail,
+                "camera_enabled": CAMERA_ENABLED,
+                "hailo_available": hailo_avail,
+                "imx500_available": imx500_avail,
                 "pillow_available": HAS_PILLOW
             }
             body = json.dumps(status).encode("utf-8")
@@ -147,6 +83,62 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(body)
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+    def do_POST(self) -> None:
+        parsed_url = urllib.parse.urlparse(self.path)
+        path = parsed_url.path
+        
+        # Read content length
+        content_length = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_length) if content_length > 0 else b""
+        
+        if path == "/load":
+            if HARDWARE_TYPE == "rpi_ai_cam":
+                res = imx500_manager.load(post_data)
+            else:
+                res = hailo_manager.load(post_data)
+            body = json.dumps(res).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(body)
+            
+        elif path == "/infer":
+            if HARDWARE_TYPE == "rpi_ai_cam":
+                res = imx500_manager.infer()
+            else:
+                params = urllib.parse.parse_qs(parsed_url.query)
+                w = int(params.get('w', [640])[0])
+                h = int(params.get('h', [480])[0])
+                res = hailo_manager.infer(post_data, w, h)
+                
+            res = _make_json_serializable(res)
+            body = json.dumps(res).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(body)
+            
+        elif path == "/unload":
+            if HARDWARE_TYPE == "rpi_ai_cam":
+                imx500_manager.unload()
+            else:
+                hailo_manager.unload()
+            body = json.dumps({"status": "success"}).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(body)
+            
         else:
             self.send_response(404)
             self.end_headers()
@@ -164,6 +156,8 @@ def main() -> None:
     def shutdown_handler(signum, frame) -> None:
         logger.info("Shutdown signal received. Stopping daemon...")
         camera_manager.stop()
+        hailo_manager.unload()
+        imx500_manager.unload()
         sys.exit(0)
         
     signal.signal(signal.SIGINT, shutdown_handler)
@@ -175,7 +169,10 @@ def main() -> None:
         pass
     finally:
         camera_manager.stop()
+        hailo_manager.unload()
 
 
 if __name__ == "__main__":
     main()
+
+

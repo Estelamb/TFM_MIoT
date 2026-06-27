@@ -7,7 +7,7 @@ from shared.utils.database import Base
 
 def _uuid(): return str(uuid.uuid4())
 
-# Readonly refs (solo para FK integrity, no gestiona estas tablas)
+# Readonly refs (only for FK integrity, does not manage these tables)
 class DeviceRef(Base):
     __tablename__ = "devices"
     id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
@@ -25,6 +25,15 @@ class ModelRef(Base):
     dataset_id: Mapped[str | None] = mapped_column(UUID(as_uuid=False), nullable=True)
     base_architecture: Mapped[str | None] = mapped_column(String, nullable=True)
     input_size: Mapped[str | None] = mapped_column(String, nullable=True)
+
+class ModelCompilationRef(Base):
+    __tablename__ = "model_compilations"
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
+    model_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("models.id", ondelete="CASCADE"), nullable=False)
+    hardware_type: Mapped[str] = mapped_column(String, nullable=False)
+    compiled_key: Mapped[str] = mapped_column(Text, nullable=False)
+    compiled_sha256: Mapped[str] = mapped_column(String, nullable=False)
+    compile_status: Mapped[str] = mapped_column(String, nullable=False)
 
 class ScriptRef(Base):
     __tablename__ = "scripts"

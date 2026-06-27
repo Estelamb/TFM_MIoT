@@ -201,13 +201,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -220,9 +219,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -242,14 +238,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -311,7 +299,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#registry_service.models.orm.Model" title="registry_service.models.orm.Model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Model</span></code></a></p></td>
 <td><p>Declarative base class for all SQLAlchemy ORM models in AURA.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#registry_service.models.orm.Script" title="registry_service.models.orm.Script"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Script</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#registry_service.models.orm.ModelCompilation" title="registry_service.models.orm.ModelCompilation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelCompilation</span></code></a></p></td>
+<td><p>Declarative base class for all SQLAlchemy ORM models in AURA.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#registry_service.models.orm.Script" title="registry_service.models.orm.Script"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Script</span></code></a></p></td>
 <td><p>Declarative base class for all SQLAlchemy ORM models in AURA.</p></td>
 </tr>
 </tbody>
@@ -606,6 +597,68 @@
 <span class="sig-name descname"><span class="pre">dataset</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#registry_service.models.orm.Dataset" title="registry_service.models.orm.Dataset"><span class="pre">Dataset</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#Model.dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.Model.dataset" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.Model.compilations">
+<span class="sig-name descname"><span class="pre">compilations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#registry_service.models.orm.ModelCompilation" title="registry_service.models.orm.ModelCompilation"><span class="pre">ModelCompilation</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#Model.compilations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.Model.compilations" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">registry_service.models.orm.</span></span><span class="sig-name descname"><span class="pre">ModelCompilation</span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../../shared/utils/database/index.html#shared.utils.database.Base" title="shared.utils.database.Base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared.utils.database.Base</span></code></a></p>
+<p>Declarative base class for all SQLAlchemy ORM models in AURA.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.__tablename__">
+<span class="sig-name descname"><span class="pre">__tablename__</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_compilations'</span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.__tablename__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.__tablename__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.id">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.model_id">
+<span class="sig-name descname"><span class="pre">model_id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.model_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.model_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.hardware_type">
+<span class="sig-name descname"><span class="pre">hardware_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.hardware_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.hardware_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.compiled_key">
+<span class="sig-name descname"><span class="pre">compiled_key</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.compiled_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.compiled_key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.compiled_sha256">
+<span class="sig-name descname"><span class="pre">compiled_sha256</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.compiled_sha256"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.compiled_sha256" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.compile_status">
+<span class="sig-name descname"><span class="pre">compile_status</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.compile_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.compile_status" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.compile_error">
+<span class="sig-name descname"><span class="pre">compile_error</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.compile_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.compile_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime.datetime</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.created_at"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.created_at" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="registry_service.models.orm.ModelCompilation.model">
+<span class="sig-name descname"><span class="pre">model</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">sqlalchemy.orm.Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#registry_service.models.orm.Model" title="registry_service.models.orm.Model"><span class="pre">Model</span></a><span class="p"><span class="pre">]</span></span></span><a class="reference internal" href="../../../../_modules/registry_service/models/orm.html#ModelCompilation.model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#registry_service.models.orm.ModelCompilation.model" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -669,7 +722,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -760,6 +813,20 @@
 <li><a class="reference internal" href="#registry_service.models.orm.Model.batch_size"><code class="docutils literal notranslate"><span class="pre">Model.batch_size</span></code></a></li>
 <li><a class="reference internal" href="#registry_service.models.orm.Model.created_at"><code class="docutils literal notranslate"><span class="pre">Model.created_at</span></code></a></li>
 <li><a class="reference internal" href="#registry_service.models.orm.Model.dataset"><code class="docutils literal notranslate"><span class="pre">Model.dataset</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.Model.compilations"><code class="docutils literal notranslate"><span class="pre">Model.compilations</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation"><code class="docutils literal notranslate"><span class="pre">ModelCompilation</span></code></a><ul>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.__tablename__"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.__tablename__</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.id"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.id</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.model_id"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.model_id</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.hardware_type"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.hardware_type</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.compiled_key"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.compiled_key</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.compiled_sha256"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.compiled_sha256</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.compile_status"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.compile_status</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.compile_error"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.compile_error</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.created_at"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.created_at</span></code></a></li>
+<li><a class="reference internal" href="#registry_service.models.orm.ModelCompilation.model"><code class="docutils literal notranslate"><span class="pre">ModelCompilation.model</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#registry_service.models.orm.Script"><code class="docutils literal notranslate"><span class="pre">Script</span></code></a><ul>
@@ -786,7 +853,7 @@
       
     </aside>
   </div>
-</div><script src="../../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>

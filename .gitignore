@@ -38,3 +38,4 @@ shared/proto_gen/__pycache__/
 .DS_Store
 /tmp/aura-compilation/
 report/
+.agents/

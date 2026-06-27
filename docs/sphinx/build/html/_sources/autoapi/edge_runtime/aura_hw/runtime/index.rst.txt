@@ -41,6 +41,7 @@ Functions
    edge_runtime.aura_hw.runtime.unload_model
    edge_runtime.aura_hw.runtime.get_hardware_info
    edge_runtime.aura_hw.runtime.get_last_inference
+   edge_runtime.aura_hw.runtime.get_model_classes
 
 
 Module Contents
@@ -48,7 +49,7 @@ Module Contents
 
 .. py:data:: logger
 
-.. py:function:: load_model(model_path: str) -> None
+.. py:function:: load_model(model_path: str, class_names: list[str] = None) -> None
 
 .. py:function:: execute_inference(inputs: numpy.ndarray | dict | None = None) -> Any
 
@@ -115,5 +116,10 @@ Module Contents
 
    :returns: The last inference output, or ``None`` if no inference has been
              run yet in this session.
+
+
+.. py:function:: get_model_classes() -> list[str]
+
+   Return the list of class names loaded from the current model's metadata.
 
 

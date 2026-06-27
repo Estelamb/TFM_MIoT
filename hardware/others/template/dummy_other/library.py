@@ -2,9 +2,10 @@
 AURA Other Library: Dummy Template Other Device
 ===============================================
 """
-LABEL = "Template Other Device"
 
 class TemplateOtherLibrary:
+    LABEL = "Template Other Device"
+    
     def __init__(self, **kwargs):
         self.params = kwargs
 

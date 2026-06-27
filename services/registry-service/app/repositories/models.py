@@ -32,7 +32,7 @@ class ModelRepository:
             input_size=input_size,
             batch_size=batch_size,
         )
-        self.s.add(m); await self.s.commit(); await self.s.refresh(m); return m
+        self.s.add(m); await self.s.commit(); return await self.get(m.id)
 
     async def get(self, id: str) -> Model | None:
         r = await self.s.execute(
@@ -124,7 +124,7 @@ class ModelRepository:
             m.dataset_version_id = dv.id
         else:
             m.dataset_version_id = None
-        await self.s.commit(); await self.s.refresh(m); return m
+        await self.s.commit(); return await self.get(m.id)
 
     async def update(self, id: str, name: str, description: str | None,
                      epochs: int | None = None, input_size: str | None = None,
@@ -142,7 +142,7 @@ class ModelRepository:
             m.batch_size = batch_size
         if base_architecture is not None:
             m.base_architecture = base_architecture
-        await self.s.commit(); await self.s.refresh(m); return m
+        await self.s.commit(); return await self.get(id)
 
     async def delete(self, id: str) -> bool:
         m = await self.get(id)

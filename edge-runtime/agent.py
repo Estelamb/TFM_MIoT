@@ -45,45 +45,39 @@ def _setup_logging(level_str: str) -> None:
 # ── Config loading ────────────────────────────────────────────────────────────
 
 _CONFIG_DIR = Path(__file__).parent / "config"
-_DEVICE_CONFIG_PATH  = _CONFIG_DIR / "device_config.yaml"
 _COMPONENTS_CONFIG_PATH = _CONFIG_DIR / "components_config.yaml"
-
-
-def _load_device_config() -> dict:
-    """Load device_config.yaml, falling back to an empty dict on error."""
-    try:
-        with open(_DEVICE_CONFIG_PATH) as fh:
-            return yaml.safe_load(fh) or {}
-    except FileNotFoundError:
-        return {}
-    except Exception as exc:  # noqa: BLE001
-        logging.getLogger(__name__).warning(
-            f"Could not read device_config.yaml: {exc}"
-        )
-        return {}
-
-
-def _cfg(env_key: str, yaml_key: str, default: str, file_cfg: dict) -> str:
-    """Resolve a config value: env var > YAML > default."""
-    return os.environ.get(env_key) or str(file_cfg.get(yaml_key, default))
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 async def main() -> None:
-    file_cfg = _load_device_config()
-
-    # Resolve all config values
-    device_id          = _cfg("AURA_DEVICE_ID",         "device_id",                  "dev-device-001", file_cfg)
-    mqtt_host          = _cfg("AURA_MQTT_HOST",         "mqtt_host",                  "localhost",      file_cfg)
-    mqtt_port          = int(_cfg("AURA_MQTT_PORT",     "mqtt_port",                  "1883",           file_cfg))
-    reconnect_s        = int(_cfg("AURA_RECONNECT_S",   "mqtt_reconnect_interval_s",  "5",              file_cfg))
-    telemetry_interval = float(_cfg("AURA_TELEMETRY_INTERVAL", "telemetry_interval_s","10",             file_cfg))
-    inference_interval = float(_cfg("AURA_INFERENCE_INTERVAL", "inference_interval_s","0.1",            file_cfg))
-    work_dir           = Path(_cfg("AURA_WORK_DIR",     "work_dir",                   "/tmp/aura",      file_cfg))
-    log_level          = _cfg("AURA_LOG_LEVEL",         "log_level",                  "INFO",           file_cfg)
-    primary_camera_id  = _cfg("AURA_PRIMARY_CAMERA",    "primary_camera_id",          "camera_0",       file_cfg)
-    coordinates_raw    = _cfg("AURA_COORDINATES",       "coordinates",                "[-3.7038, 40.4168]", file_cfg)
+    # Resolve all config values from environment variables or defaults
+    device_id          = os.environ.get("AURA_DEVICE_ID",          "dev-device-001")
+    mqtt_host          = os.environ.get("AURA_MQTT_HOST",          "localhost")
+    mqtt_port          = int(os.environ.get("AURA_MQTT_PORT",      "1883"))
+    reconnect_s        = int(os.environ.get("AURA_RECONNECT_S",    "5"))
+    telemetry_interval = float(os.environ.get("AURA_TELEMETRY_INTERVAL", "10"))
+    inference_interval = float(os.environ.get("AURA_INFERENCE_INTERVAL", "0.1"))
+    work_dir           = Path(os.environ.get("AURA_WORK_DIR",      "/tmp/aura"))
+    log_level          = os.environ.get("AURA_LOG_LEVEL",          "INFO")
+    primary_camera_id = os.environ.get("AURA_PRIMARY_CAMERA")
+    if not primary_camera_id:
+        peripherals_env = os.environ.get("AURA_PERIPHERALS")
+        if peripherals_env:
+            try:
+                import json
+                if peripherals_env.strip().startswith("["):
+                    periphs = json.loads(peripherals_env)
+                else:
+                    periphs = [p.strip() for p in peripherals_env.split(",") if p.strip()]
+                cam_ids = [p for p in periphs if "camera" in p.lower()]
+                if cam_ids:
+                    primary_camera_id = cam_ids[0]
+            except Exception:
+                pass
+    if not primary_camera_id:
+        primary_camera_id = "camera_0"
+    coordinates_raw    = os.environ.get("AURA_COORDINATES",        "[-3.7038, 40.4168]")
 
     # Parse coordinates
     import json
@@ -96,6 +90,27 @@ async def main() -> None:
 
     _setup_logging(log_level)
     logger = logging.getLogger(__name__)
+
+    # Save active configuration to device_config.yaml
+    active_config = {
+        "device_id": device_id,
+        "mqtt_host": mqtt_host,
+        "mqtt_port": mqtt_port,
+        "mqtt_reconnect_interval_s": reconnect_s,
+        "hardware_type": os.environ.get("AURA_HARDWARE_TYPE", "rpi"),
+        "telemetry_interval_s": telemetry_interval,
+        "inference_interval_s": inference_interval,
+        "work_dir": str(work_dir),
+        "log_level": log_level,
+        "primary_camera_id": primary_camera_id,
+        "coordinates": coordinates,
+    }
+    try:
+        with open(_CONFIG_DIR / "device_config.yaml", "w", encoding="utf-8") as f:
+            yaml.safe_dump(active_config, f, default_flow_style=False)
+            logger.info("Active configuration saved to device_config.yaml")
+    except Exception as exc:
+        logger.warning(f"Could not save active configuration to device_config.yaml: {exc}")
 
     # Register signal handlers for graceful shutdown on SIGTERM/SIGINT
     import signal

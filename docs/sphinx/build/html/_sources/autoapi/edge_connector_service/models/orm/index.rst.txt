@@ -11,6 +11,7 @@ Classes
 
    edge_connector_service.models.orm.DeviceRef
    edge_connector_service.models.orm.ModelRef
+   edge_connector_service.models.orm.ModelCompilationRef
    edge_connector_service.models.orm.ScriptRef
    edge_connector_service.models.orm.Deployment
 
@@ -90,6 +91,43 @@ Module Contents
 
    .. py:attribute:: input_size
       :type:  sqlalchemy.orm.Mapped[str | None]
+
+
+.. py:class:: ModelCompilationRef
+
+   Bases: :py:obj:`shared.utils.database.Base`
+
+
+   Declarative base class for all SQLAlchemy ORM models in AURA.
+
+
+   .. py:attribute:: __tablename__
+      :value: 'model_compilations'
+
+
+
+   .. py:attribute:: id
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: model_id
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: hardware_type
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: compiled_key
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: compiled_sha256
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: compile_status
+      :type:  sqlalchemy.orm.Mapped[str]
 
 
 .. py:class:: ScriptRef

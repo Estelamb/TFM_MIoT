@@ -28,14 +28,14 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside className={cn(
       "fixed left-0 top-0 h-screen transition-all duration-300",
-      "z-30", // BAJADO de z-50 a z-30 para que los modales y popups queden por encima
+      "z-30", // LOWERED from z-50 to z-30 so that modals and popups stay on top
       "flex flex-col",
       "bg-slate-100/85 dark:bg-gray-950/85 backdrop-blur-md",
       "border-r border-slate-200/60 dark:border-gray-800/50",
       collapsed ? "w-20" : "w-56"
     )}>
 
-      {/* --- EL BORDE EXPANSOR DE FLECHA HORIZONTAL --- */}
+      {/* --- HORIZONTAL ARROW EXPANDER EDGE --- */}
       <div
         onClick={onToggle}
         className="absolute top-0 -right-2 w-4 h-full cursor-ew-resize z-50 flex items-center justify-center group/edge"

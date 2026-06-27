@@ -21,6 +21,7 @@ class MonitoringRepository:
             "cpu_percent": state.get("cpu_percent", 0.0),
             "ram_percent": state.get("ram_percent", 0.0),
             "ram_used_mb": state.get("ram_used_mb", 0.0),
+            "latency_ms": state.get("latency_ms", 0.0),
             "status": state.get("status", "online")
         })
 

@@ -104,6 +104,7 @@ class Orchestrator:
         self._script_module: types.ModuleType | None = None
 
         # ── Last inference result (shared between loops) ───────────────────
+        self._inference_latencies: list[float] = []
         self._last_frame: Any = None
         self._last_inference: Any = None
         self._last_inference_ts: str | None = None
@@ -187,9 +188,20 @@ class Orchestrator:
         self._last_frame = frame
 
         # Run inference (in thread executor to avoid blocking the event loop)
-        result = await asyncio.get_event_loop().run_in_executor(
-            None, execute_inference, frame
-        )
+        t0 = time.perf_counter()
+        if self._script_module is not None and hasattr(self._script_module, "run"):
+            run_fn = getattr(self._script_module, "run")
+            result = await asyncio.get_event_loop().run_in_executor(
+                None, run_fn, frame
+            )
+        else:
+            result = await asyncio.get_event_loop().run_in_executor(
+                None, execute_inference, frame
+            )
+        latency_ms = (time.perf_counter() - t0) * 1000.0
+        self._inference_latencies.append(latency_ms)
+        if len(self._inference_latencies) > 100:
+            self._inference_latencies.pop(0)
         self._last_inference = result
         self._last_inference_ts = ts
 
@@ -213,6 +225,24 @@ class Orchestrator:
         mem = psutil.virtual_memory()
         hw = get_hardware_info()
 
+        if self._inference_latencies:
+            avg_latency = sum(self._inference_latencies) / len(self._inference_latencies)
+            self._inference_latencies.clear()
+        else:
+            avg_latency = 0.0
+
+        # Query active GPS sensors in DeviceManager to update local coordinates
+        for dev_id in self._device_manager.list_components():
+            try:
+                dev = self._device_manager.get_device(dev_id)
+                if dev.device_type == "gps":
+                    coords = dev.measure()
+                    if isinstance(coords, list) and len(coords) == 2:
+                        self._coordinates = coords
+                        break
+            except Exception as e:
+                logger.warning(f"Failed to read GPS coordinates from device '{dev_id}': {e}")
+
         payload: dict[str, Any] = {
             "ts": ts,
             "cpu_percent": psutil.cpu_percent(interval=None),
@@ -227,6 +257,7 @@ class Orchestrator:
             "active_script_id": self._active_script_id,
             "libraries_hash": get_libraries_hash(),
             "coordinates": self._coordinates,
+            "latency_ms": round(avg_latency, 2),
         }
 
         # Temperature sensors (not available on all platforms)

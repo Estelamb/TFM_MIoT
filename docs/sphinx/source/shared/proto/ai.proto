@@ -59,6 +59,16 @@ message UpdateModelCompiledRequest {
   string source_key = 7;
   string source_sha256 = 8;
 }
+message ModelCompilationResponse {
+  string id = 1;
+  string model_id = 2;
+  string hardware_type = 3;
+  string compiled_key = 4;
+  string compiled_sha256 = 5;
+  string compile_status = 6;
+  string compile_error = 7;
+  string created_at = 8;
+}
 message ModelResponse {
   string id = 1;
   string name = 2;
@@ -77,6 +87,7 @@ message ModelResponse {
   string input_size = 16;
   int32 batch_size = 17;
   string dataset_version_id = 18;
+  repeated ModelCompilationResponse compilations = 19;
 }
 message ListModelsResponse { repeated ModelResponse models = 1; }
 

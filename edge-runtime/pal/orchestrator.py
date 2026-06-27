@@ -231,6 +231,18 @@ class Orchestrator:
         else:
             avg_latency = 0.0
 
+        # Query active GPS sensors in DeviceManager to update local coordinates
+        for dev_id in self._device_manager.list_components():
+            try:
+                dev = self._device_manager.get_device(dev_id)
+                if dev.device_type == "gps":
+                    coords = dev.measure()
+                    if isinstance(coords, list) and len(coords) == 2:
+                        self._coordinates = coords
+                        break
+            except Exception as e:
+                logger.warning(f"Failed to read GPS coordinates from device '{dev_id}': {e}")
+
         payload: dict[str, Any] = {
             "ts": ts,
             "cpu_percent": psutil.cpu_percent(interval=None),

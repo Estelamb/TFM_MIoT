@@ -77,6 +77,24 @@ class Model(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     dataset: Mapped["Dataset | None"] = relationship(back_populates="models")
+    compilations: Mapped[list["ModelCompilation"]] = relationship(
+        back_populates="model", cascade="all, delete-orphan", order_by="ModelCompilation.created_at.desc()"
+    )
+
+class ModelCompilation(Base):
+    __tablename__ = "model_compilations"
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    model_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), ForeignKey("models.id", ondelete="CASCADE"), nullable=False
+    )
+    hardware_type: Mapped[str] = mapped_column(String, nullable=False)
+    compiled_key: Mapped[str] = mapped_column(Text, nullable=False)
+    compiled_sha256: Mapped[str] = mapped_column(String, nullable=False)
+    compile_status: Mapped[str] = mapped_column(String, nullable=False, default="pending")
+    compile_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    model: Mapped["Model"] = relationship(back_populates="compilations")
 
 class Script(Base):
     __tablename__ = "scripts"

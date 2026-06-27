@@ -15,5 +15,6 @@ Submodules
    /autoapi/registry_service/main/index
    /autoapi/registry_service/models/index
    /autoapi/registry_service/repositories/index
+   /autoapi/registry_service/update_existing_datasets/index
 
 

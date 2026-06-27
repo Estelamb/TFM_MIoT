@@ -54,14 +54,14 @@ export default function LoginPage() {
     <div className="w-full max-w-sm mx-auto animate-fade-in px-6">
       <div className="flex flex-col items-center gap-4 mb-8">
 
-        {/* Logo alineado con el estilo brillante */}
+        {/* Logo aligned with the glowing style */}
         <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-200 to-emerald-100 dark:from-gray-700 dark:to-gray-800 p-1 shadow-xl">
           <div className="w-full h-full rounded-full bg-white dark:bg-gray-950 flex items-center justify-center border-2 border-white dark:border-gray-900 overflow-hidden relative">
             <Image
               src="/logo.png"
               alt="Aura Logo"
-              fill // Hace que la imagen ocupe todo el contenedor
-              className="object-contain p-1" // p-1 para darle un poco de respiro dentro del círculo
+              fill // Makes the image occupy the entire container
+              className="object-contain p-1" // p-1 to give it some breathing room inside the circle
               priority
             />
           </div>

@@ -25,6 +25,7 @@ message DeviceStateResponse {
   float  ram_used_mb = 8;
   string last_seen_at = 9;
   repeated float coordinates = 10;
+  float  latency_ms = 11;
 }
 message ListDeviceStatesResponse { repeated DeviceStateResponse states = 1; }
 

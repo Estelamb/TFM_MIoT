@@ -200,13 +200,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -219,9 +218,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -241,14 +237,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -327,6 +315,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_compilation_service_grpc</span> <span class="o">=</span> <span class="n">compilation_service_grpc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_redis_settings</span> <span class="o">=</span> <span class="n">RedisSettings</span><span class="o">.</span><span class="n">from_dsn</span><span class="p">(</span><span class="n">redis_url</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_redis_pool</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ai_channel</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">insecure_channel</span><span class="p">(</span><span class="n">ai_service_grpc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ai_stub</span> <span class="o">=</span> <span class="n">ai_pb2_grpc</span><span class="o">.</span><span class="n">AIServiceStub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ai_channel</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_redis_pool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -349,19 +339,53 @@
                 <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">,</span> <span class="s2">&quot;Script not found&quot;</span><span class="p">);</span> <span class="k">return</span>
 
             <span class="c1"># Check if model is already compiled for the device&#39;s target hardware architecture</span>
+            <span class="n">compilation_ready</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">compiled_key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">compiled_sha256</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
             <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">hardware_type</span> <span class="o">==</span> <span class="n">device</span><span class="o">.</span><span class="n">hardware_type</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">compile_status</span> <span class="o">==</span> <span class="s2">&quot;ready&quot;</span><span class="p">:</span>
+                <span class="n">compilation_ready</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">compiled_key</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">compiled_key</span>
+                <span class="n">compiled_sha256</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">compiled_sha256</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">app.models.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelCompilationRef</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="n">select</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="o">.</span><span class="n">model_id</span> <span class="o">==</span> <span class="n">req</span><span class="o">.</span><span class="n">model_id</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="o">.</span><span class="n">hardware_type</span> <span class="o">==</span> <span class="n">device</span><span class="o">.</span><span class="n">hardware_type</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="o">.</span><span class="n">compile_status</span> <span class="o">==</span> <span class="s2">&quot;ready&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">comp</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">comp</span><span class="p">:</span>
+                    <span class="n">compilation_ready</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">compiled_key</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">compiled_key</span>
+                    <span class="n">compiled_sha256</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">compiled_sha256</span>
+
+            <span class="k">if</span> <span class="n">compilation_ready</span><span class="p">:</span>
                 <span class="c1"># Already compiled! Deploy immediately</span>
                 <span class="n">dep</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">device_id</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">script_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="n">model_url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">presigned_url</span><span class="p">(</span><span class="s2">&quot;compiled&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">compiled_key</span><span class="p">)</span>
+                <span class="n">model_url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">presigned_url</span><span class="p">(</span><span class="s2">&quot;compiled&quot;</span><span class="p">,</span> <span class="n">compiled_key</span><span class="p">)</span>
                 <span class="n">script_url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">presigned_url</span><span class="p">(</span><span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="n">script</span><span class="o">.</span><span class="n">script_key</span><span class="p">)</span>
+
+                <span class="n">class_names</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">dataset_id</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">ds_resp</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ai_stub</span><span class="o">.</span><span class="n">GetDataset</span><span class="p">(</span><span class="n">ai_pb2</span><span class="o">.</span><span class="n">GetDatasetRequest</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">dataset_id</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">ds_resp</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+                            <span class="n">ds_meta</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">ds_resp</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+                            <span class="n">class_names</span> <span class="o">=</span> <span class="n">ds_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;class_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not retrieve dataset metadata for class names: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="n">command</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;deploy&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;deployment_id&quot;</span><span class="p">:</span> <span class="n">dep</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                     <span class="s2">&quot;model_url&quot;</span><span class="p">:</span> <span class="n">model_url</span><span class="p">,</span>
-                    <span class="s2">&quot;model_sha256&quot;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">compiled_sha256</span><span class="p">,</span>
+                    <span class="s2">&quot;model_sha256&quot;</span><span class="p">:</span> <span class="n">compiled_sha256</span><span class="p">,</span>
                     <span class="s2">&quot;script_url&quot;</span><span class="p">:</span> <span class="n">script_url</span><span class="p">,</span>
                     <span class="s2">&quot;script_sha256&quot;</span><span class="p">:</span> <span class="n">script</span><span class="o">.</span><span class="n">script_sha256</span><span class="p">,</span>
+                    <span class="s2">&quot;class_names&quot;</span><span class="p">:</span> <span class="n">class_names</span><span class="p">,</span>
                 <span class="p">}</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">async</span> <span class="k">with</span> <span class="n">aiomqtt</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">hostname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mqtt_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mqtt_port</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
@@ -383,8 +407,8 @@
                     <span class="p">)</span>
                     <span class="k">return</span>
 
-                <span class="c1"># Create the deployment in pending state</span>
-                <span class="n">dep</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">device_id</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">script_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="c1"># Create the deployment in compiling state</span>
+                <span class="n">dep</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">device_id</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">model_id</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">script_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;compiling&quot;</span><span class="p">)</span>
 
                 <span class="c1"># Spawn background task to trigger compilation and wait</span>
                 <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pool</span><span class="p">()</span>
@@ -463,7 +487,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -483,7 +507,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

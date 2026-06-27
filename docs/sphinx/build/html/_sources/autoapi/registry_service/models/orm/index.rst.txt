@@ -13,6 +13,7 @@ Classes
    registry_service.models.orm.Dataset
    registry_service.models.orm.DatasetVersion
    registry_service.models.orm.Model
+   registry_service.models.orm.ModelCompilation
    registry_service.models.orm.Script
 
 
@@ -261,6 +262,59 @@ Module Contents
 
    .. py:attribute:: dataset
       :type:  sqlalchemy.orm.Mapped[Dataset | None]
+
+
+   .. py:attribute:: compilations
+      :type:  sqlalchemy.orm.Mapped[list[ModelCompilation]]
+
+
+.. py:class:: ModelCompilation
+
+   Bases: :py:obj:`shared.utils.database.Base`
+
+
+   Declarative base class for all SQLAlchemy ORM models in AURA.
+
+
+   .. py:attribute:: __tablename__
+      :value: 'model_compilations'
+
+
+
+   .. py:attribute:: id
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: model_id
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: hardware_type
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: compiled_key
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: compiled_sha256
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: compile_status
+      :type:  sqlalchemy.orm.Mapped[str]
+
+
+   .. py:attribute:: compile_error
+      :type:  sqlalchemy.orm.Mapped[str | None]
+
+
+   .. py:attribute:: created_at
+      :type:  sqlalchemy.orm.Mapped[datetime.datetime]
+
+
+   .. py:attribute:: model
+      :type:  sqlalchemy.orm.Mapped[Model]
 
 
 .. py:class:: Script

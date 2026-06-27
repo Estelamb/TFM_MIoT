@@ -200,13 +200,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -219,9 +218,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -241,14 +237,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -357,9 +345,23 @@
         <span class="n">skip_compile</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;session_factory&quot;</span><span class="p">]()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
             <span class="n">model</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ModelRef</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">hardware_type</span> <span class="o">==</span> <span class="n">hardware_type</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">compile_status</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;compiling&quot;</span><span class="p">,</span> <span class="s2">&quot;ready&quot;</span><span class="p">):</span>
-                <span class="n">skip_compile</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="n">model_id</span><span class="si">}</span><span class="s2"> is already </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">compile_status</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">hardware_type</span><span class="si">}</span><span class="s2">. Skipping CompileModel.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">model</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">hardware_type</span> <span class="o">==</span> <span class="n">hardware_type</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">compile_status</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;compiling&quot;</span><span class="p">,</span> <span class="s2">&quot;ready&quot;</span><span class="p">):</span>
+                    <span class="n">skip_compile</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">app.models.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelCompilationRef</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                        <span class="n">select</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="o">.</span><span class="n">model_id</span> <span class="o">==</span> <span class="n">model_id</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="o">.</span><span class="n">hardware_type</span> <span class="o">==</span> <span class="n">hardware_type</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="o">.</span><span class="n">compile_status</span><span class="o">.</span><span class="n">in_</span><span class="p">([</span><span class="s2">&quot;compiling&quot;</span><span class="p">,</span> <span class="s2">&quot;ready&quot;</span><span class="p">]))</span>
+                    <span class="p">)</span>
+                    <span class="n">comp</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">comp</span><span class="p">:</span>
+                        <span class="n">skip_compile</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">skip_compile</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="n">model_id</span><span class="si">}</span><span class="s2"> is already compiling/ready for </span><span class="si">{</span><span class="n">hardware_type</span><span class="si">}</span><span class="s2">. Skipping CompileModel.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_compile</span><span class="p">:</span>
             <span class="c1"># Delete old redis key before triggering compilation to prevent reading obsolete &quot;ready&quot; state</span>
@@ -438,8 +440,22 @@
         <span class="k">async</span> <span class="k">with</span> <span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;session_factory&quot;</span><span class="p">]()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
             <span class="n">model</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ModelRef</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">model</span><span class="p">:</span>
-                <span class="n">compiled_key</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">compiled_key</span>
-                <span class="n">compiled_sha256</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">compiled_sha256</span>
+                <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">hardware_type</span> <span class="o">==</span> <span class="n">hardware_type</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">compiled_key</span><span class="p">:</span>
+                    <span class="n">compiled_key</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">compiled_key</span>
+                    <span class="n">compiled_sha256</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">compiled_sha256</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">app.models.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelCompilationRef</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                        <span class="n">select</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="o">.</span><span class="n">model_id</span> <span class="o">==</span> <span class="n">model_id</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="o">.</span><span class="n">hardware_type</span> <span class="o">==</span> <span class="n">hardware_type</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ModelCompilationRef</span><span class="o">.</span><span class="n">compile_status</span> <span class="o">==</span> <span class="s2">&quot;ready&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">comp</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">comp</span><span class="p">:</span>
+                        <span class="n">compiled_key</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">compiled_key</span>
+                        <span class="n">compiled_sha256</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">compiled_sha256</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="n">model_id</span><span class="si">}</span><span class="s2"> not found in DB after compilation&quot;</span><span class="p">)</span>
                 <span class="n">dep</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Deployment</span><span class="p">,</span> <span class="n">dep_id</span><span class="p">)</span>
@@ -460,6 +476,14 @@
         <span class="n">model_url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">presigned_url</span><span class="p">(</span><span class="s2">&quot;compiled&quot;</span><span class="p">,</span> <span class="n">compiled_key</span><span class="p">)</span>
         <span class="n">script_url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">presigned_url</span><span class="p">(</span><span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="n">script_key</span><span class="p">)</span>
 
+        <span class="n">class_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">dv</span> <span class="ow">and</span> <span class="n">dv</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ds_meta</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">dv</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+                <span class="n">class_names</span> <span class="o">=</span> <span class="n">ds_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;class_names&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not parse dataset metadata for class names: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="n">command</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;deploy&quot;</span><span class="p">,</span>
             <span class="s2">&quot;deployment_id&quot;</span><span class="p">:</span> <span class="n">dep_id</span><span class="p">,</span>
@@ -467,6 +491,7 @@
             <span class="s2">&quot;model_sha256&quot;</span><span class="p">:</span> <span class="n">compiled_sha256</span><span class="p">,</span>
             <span class="s2">&quot;script_url&quot;</span><span class="p">:</span> <span class="n">script_url</span><span class="p">,</span>
             <span class="s2">&quot;script_sha256&quot;</span><span class="p">:</span> <span class="n">script_sha256</span><span class="p">,</span>
+            <span class="s2">&quot;class_names&quot;</span><span class="p">:</span> <span class="n">class_names</span><span class="p">,</span>
         <span class="p">}</span>
 
         <span class="n">s_conf</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span>
@@ -570,7 +595,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -590,7 +615,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -200,13 +200,12 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to the AURA Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/run_platform.html">How to Run AURA Platform and Edge Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorials/use_platform.html">How to Use the Interface and Deploy Models in AURA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/edge_runtime.html">Edge Runtime</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/hardware/index.html">Hardware Tutorials</a><input aria-label="Toggle navigation of Hardware Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8.html">Tutorial: Raspberry Pi 5 + Hailo-8</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/hardware/hailo8l.html">Tutorial: Raspberry Pi 5 + Hailo-8L</a></li>
@@ -219,9 +218,6 @@
 <p class="caption" role="heading"><span class="caption-text">Code Explanation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../code_explanation.html">Codebase Structure and Explanation</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/api_gateway_service/index.html">api_gateway_service</a><input aria-label="Toggle navigation of api_gateway_service" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/api_gateway_service/auth/index.html">api_gateway_service.auth</a><input aria-label="Toggle navigation of api_gateway_service.auth" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/api_gateway_service/auth/jwt/index.html">api_gateway_service.auth.jwt</a></li>
@@ -241,14 +237,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../autoapi/api_gateway_service/stubs/index.html">api_gateway_service.stubs</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Edge Runtime</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../edge_runtime.html">Edge Runtime</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 </ul>
 
 </div>
@@ -301,14 +289,14 @@
 
 <div class="viewcode-block" id="validate_dataset_zip">
 <a class="viewcode-back" href="../../../autoapi/api_gateway_service/routers/datasets/index.html#api_gateway_service.routers.datasets.validate_dataset_zip">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">validate_dataset_zip</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_dataset_zip</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate that the ZIP contains images/, labels/ and classes.json (can be inside a subfolder).&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">))</span> <span class="k">as</span> <span class="n">z</span><span class="p">:</span>
             <span class="n">namelist</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">namelist</span><span class="p">()</span>
             <span class="n">classes_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">namelist</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;classes.json&quot;</span><span class="p">)]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">classes_paths</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Missing &#39;classes.json&#39; in the zip file.&quot;</span><span class="p">,</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Missing &#39;classes.json&#39; in the zip file.&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span>
 
             <span class="n">classes_path</span> <span class="o">=</span> <span class="n">classes_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">base_dir</span> <span class="o">=</span> <span class="n">classes_path</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;classes.json&quot;</span><span class="p">)]</span>
@@ -320,24 +308,42 @@
             <span class="n">has_labels</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">labels_prefix</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">labels_prefix</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">namelist</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">has_images</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Missing &#39;images/&#39; directory or it is empty under &#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">,</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Missing &#39;images/&#39; directory or it is empty under &#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">has_labels</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Missing &#39;labels/&#39; directory or it is empty under &#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">,</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Missing &#39;labels/&#39; directory or it is empty under &#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span>
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">classes_content</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">classes_path</span><span class="p">)</span>
                 <span class="n">classes_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">classes_content</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classes_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;&#39;classes.json&#39; must be a JSON object mapping indices to class names.&quot;</span><span class="p">,</span> <span class="mi">0</span>
-                <span class="n">num_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes_data</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classes_data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">classes_data</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classes_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># Format A: {&quot;0&quot;: &quot;alert&quot;, &quot;1&quot;: &quot;drowsy&quot;} (index -&gt; name)</span>
+                        <span class="n">first_key</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">classes_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">first_key</span><span class="p">)</span>
+                        <span class="n">sorted_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">classes_data</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                        <span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">classes_data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="c1"># Format B: {&quot;alert&quot;: 0, &quot;drowsy&quot;: 1} (name -&gt; index)</span>
+                            <span class="n">sorted_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">classes_data</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">classes_data</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
+                            <span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                            <span class="n">class_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">classes_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;&#39;classes.json&#39; must be a JSON list or dictionary.&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span>
+                
+                <span class="n">num_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">class_names</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">je</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Failed to parse &#39;classes.json&#39;: </span><span class="si">{</span><span class="n">je</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Failed to parse &#39;classes.json&#39;: </span><span class="si">{</span><span class="n">je</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span>
 
-            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">num_classes</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">class_names</span>
     <span class="k">except</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">BadZipFile</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;The uploaded file is not a valid zip file.&quot;</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;The uploaded file is not a valid zip file.&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error validating zip file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">0</span></div>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error validating zip file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span></div>
 
 
 
@@ -355,9 +361,10 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new dataset, optionally uploading a ZIP file immediately.&quot;&quot;&quot;</span>
     <span class="n">file_bytes</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">num_classes</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">class_names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file_bytes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">is_valid</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">,</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="n">validate_dataset_zip</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">)</span>
+        <span class="n">is_valid</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">class_names</span> <span class="o">=</span> <span class="n">validate_dataset_zip</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="n">err_msg</span><span class="p">)</span>
 
@@ -375,7 +382,7 @@
                 <span class="n">object_key</span><span class="o">=</span><span class="n">object_key</span><span class="p">,</span>
                 <span class="n">sha256</span><span class="o">=</span><span class="n">sha</span><span class="p">,</span>
                 <span class="n">size_bytes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">),</span>
-                <span class="n">metadata</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;num_classes&quot;</span><span class="p">:</span> <span class="n">num_classes</span><span class="p">}),</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;num_classes&quot;</span><span class="p">:</span> <span class="n">num_classes</span><span class="p">,</span> <span class="s2">&quot;class_names&quot;</span><span class="p">:</span> <span class="n">class_names</span><span class="p">}),</span>
                 <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
                 <span class="n">description</span><span class="o">=</span><span class="n">version_description</span><span class="p">,</span>
             <span class="p">)</span>
@@ -423,7 +430,7 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Replace the ZIP file of an existing dataset (submits a new version).&quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">is_valid</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">,</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="n">validate_dataset_zip</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">is_valid</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">class_names</span> <span class="o">=</span> <span class="n">validate_dataset_zip</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="n">err_msg</span><span class="p">)</span>
 
@@ -436,7 +443,7 @@
             <span class="n">object_key</span><span class="o">=</span><span class="n">object_key</span><span class="p">,</span>
             <span class="n">sha256</span><span class="o">=</span><span class="n">sha</span><span class="p">,</span>
             <span class="n">size_bytes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;num_classes&quot;</span><span class="p">:</span> <span class="n">num_classes</span><span class="p">}),</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;num_classes&quot;</span><span class="p">:</span> <span class="n">num_classes</span><span class="p">,</span> <span class="s2">&quot;class_names&quot;</span><span class="p">:</span> <span class="n">class_names</span><span class="p">}),</span>
             <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="n">version_description</span><span class="p">,</span>
         <span class="p">)</span>
@@ -571,7 +578,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, AURA Project
+                Copyright &#169; 2026, Estela Mora Barba
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -591,7 +598,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

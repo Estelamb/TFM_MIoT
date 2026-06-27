@@ -56,8 +56,9 @@ class RPiAICamBackend:
         # Resolve RPK path
         rpk_path = None
         
+        import zipfile
         # 1. If it's a zip file (packerOut.zip), package it locally to network.rpk using imx500-package if available
-        if model_path.endswith(".zip"):
+        if zipfile.is_zipfile(model_path):
             out_dir = os.path.dirname(model_path)
             import subprocess
             try:
@@ -66,22 +67,22 @@ class RPiAICamBackend:
                 subprocess.run(cmd, check=True)
                 rpk_path = os.path.join(out_dir, "network.rpk")
             except (subprocess.SubprocessError, FileNotFoundError) as e:
-                logger.warning(f"Could not package model locally using imx500-package ({e}). Checking for existing network.rpk in directory...")
-                possible_rpk = os.path.join(out_dir, "network.rpk")
-                if os.path.exists(possible_rpk):
-                    rpk_path = possible_rpk
-                else:
-                    possible_rpk = os.path.join(out_dir, "model.rpk")
-                    if os.path.exists(possible_rpk):
-                        rpk_path = possible_rpk
-                    else:
-                        rpk_path = os.path.join(out_dir, "mock_network.rpk")
-                        with open(rpk_path, "wb") as f:
-                            f.write(b"MOCK_RPK_DATA")
+                logger.warning(f"Could not package model locally using imx500-package ({e}). Forwarding raw ZIP to Host Daemon...")
+                rpk_path = model_path
         elif model_path.endswith(".rpk") or model_path.endswith(".bin"):
             rpk_path = model_path
         else:
-            rpk_path = model_path
+            # Check magic bytes to see if it's a zip file even without extension
+            try:
+                with open(model_path, "rb") as f:
+                    header = f.read(4)
+                if header == b"PK\x03\x04":
+                    logger.info("Model file is a ZIP archive without extension. Forwarding raw ZIP to Host Daemon...")
+                    rpk_path = model_path
+                else:
+                    rpk_path = model_path
+            except Exception:
+                rpk_path = model_path
 
         gw_ip = _get_gateway_ip()
         self._daemon_url = f"http://{gw_ip}:8008"
@@ -98,7 +99,7 @@ class RPiAICamBackend:
             headers={"Content-Type": "application/octet-stream"}
         )
         try:
-            with urllib.request.urlopen(req, timeout=15.0) as resp:
+            with urllib.request.urlopen(req, timeout=120.0) as resp:
                 res = json.loads(resp.read().decode("utf-8"))
                 if res.get("status") != "success":
                     raise RuntimeError(f"Daemon failed to load model: {res.get('error')}")
@@ -128,17 +129,41 @@ class RPiAICamBackend:
             return {"output0": np.zeros((1, 4 + self._num_classes, 0), dtype=np.float32)}
 
         # Reconstruct outputs to fit the YOLOv8 format (1, 4 + num_classes, num_detections)
+        logger.debug(f"RPiAICamBackend.infer - Raw outputs: {outputs}")
+        logger.debug(f"RPiAICamBackend.infer - num_classes={self._num_classes}, class_names={self._class_names}")
+
         if not outputs or len(outputs) < 3:
             return {"output0": np.zeros((1, 4 + self._num_classes, 0), dtype=np.float32)}
 
         boxes = np.array(outputs[0], dtype=np.float32)
-        classes = np.array(outputs[1], dtype=np.float32)
-        scores = np.array(outputs[2], dtype=np.float32)
+        block_1 = np.array(outputs[1], dtype=np.float32)
+        block_2 = np.array(outputs[2], dtype=np.float32)
+
+        # Dynamically determine which block is scores and which is classes.
+        # Confidence scores are always in range [0, 1].
+        # Class IDs can be > 1.0 (e.g. 4.0, 3.0) if unquantized.
+        if np.max(block_2) > 1.0:
+            classes = block_2
+            scores = block_1
+        elif np.max(block_1) > 1.0:
+            classes = block_1
+            scores = block_2
+        else:
+            # Both are <= 1.0. The block with the larger maximum is the scores block
+            # (since max class ID is 7/256 = 0.027, whereas scores go up to 1.0).
+            if np.max(block_1) > np.max(block_2):
+                scores = block_1
+                classes = block_2
+            else:
+                scores = block_2
+                classes = block_1
 
         if len(outputs) >= 4 and outputs[3] is not None and len(outputs[3]) > 0:
             num_detections = int(outputs[3][0])
         else:
             num_detections = boxes.shape[0]
+
+        logger.debug(f"RPiAICamBackend.infer - num_detections={num_detections}, boxes shape={boxes.shape}, classes shape={classes.shape}, scores shape={scores.shape}")
 
         boxes = boxes[:num_detections]
         classes = classes[:num_detections]
@@ -153,7 +178,13 @@ class RPiAICamBackend:
 
             xmin, ymin, xmax, ymax = boxes[idx]
             score = scores[idx]
-            class_id = int(round(classes[idx] * 256.0))
+            
+            # Support both direct integer class IDs and 1/256.0 normalized ones
+            raw_class = classes[idx]
+            if 0.0 < raw_class < 1.0:
+                class_id = int(round(raw_class * 256.0))
+            else:
+                class_id = int(round(raw_class))
 
             w_box = xmax - xmin
             h_box = ymax - ymin
