@@ -12,9 +12,7 @@ AURA is architected as a set of loosely coupled microservices communicating via 
 TFM_MIoT/
 ├── .env.example                # Global template for environment variables
 ├── docker-compose.yml          # Container orchestration file for server stack & infra
-├── README.md                   # Project overview and introduction
-├── RUNNING.md                  # Comprehensive platform execution guide
-├── DEVELOPER_GUIDE.md          # Guide for adding new compilers and hardware architectures
+├── README.md                   # Unified project overview, quick start, running guide, and developer guide
 ├── data/                       # Local volume mounts for databases (git-ignored)
 ├── docker/                     # Per-service compose files and setup configurations
 ├── docs/                       # Project documentation (Sphinx & TypeDoc configurations)
@@ -33,7 +31,7 @@ The server-side system runs separate backend microservices interacting via gRPC,
 
 ### `services/api-gateway/`
 Acts as the single REST entry point. Resolves authentication and proxies requests to internal gRPC endpoints.
-* [api-gateway/app/main.py](autoapi/api_gateway_service/main/index): Initializes the FastAPI application, mounts CORS middlewares, and binds REST routers.
+* [api-gateway/app/main.py](code_docs/api_gateway_service_main.rst): Initializes the FastAPI application, mounts CORS middlewares, and binds REST routers.
   ```python
   """API Gateway entry point.
 
@@ -43,13 +41,13 @@ Acts as the single REST entry point. Resolves authentication and proxies request
   directly to MinIO to avoid passing large binaries through gRPC.
   """
   ```
-* [api-gateway/app/config.py](autoapi/api_gateway_service/config/index): Validates configurations (JWT secrets, internal gRPC host mappings).
-* [api-gateway/app/stubs.py](autoapi/api_gateway_service/stubs/index): Caches active gRPC channels to communicate with backends.
+* [api-gateway/app/config.py](code_docs/api_gateway_service_config.rst): Validates configurations (JWT secrets, internal gRPC host mappings).
+* [api-gateway/app/stubs.py](code_docs/api_gateway_service_stubs.rst): Caches active gRPC channels to communicate with backends.
   ```python
   """gRPC stubs singleton for the gateway."""
   ```
-* **[app/auth/](autoapi/api_gateway_service/auth/index)**: Contains utility functions to sign/decode JWT tokens and hash credentials.
-  * [jwt.py](autoapi/api_gateway_service/auth/jwt/index):
+* **[app/auth/](code_docs/api_gateway_service_auth_jwt.rst)**: Contains utility functions to sign/decode JWT tokens and hash credentials.
+  * [jwt.py](code_docs/api_gateway_service_auth_jwt.rst):
     ```python
     """JWT authentication helpers for the API Gateway.
 
@@ -58,16 +56,16 @@ Acts as the single REST entry point. Resolves authentication and proxies request
     in a future iteration.
     """
     ```
-* **[app/routers/](autoapi/api_gateway_service/routers/index)**: Exposes REST paths by calling internal gRPC channels:
-  * [deployments.py](autoapi/api_gateway_service/routers/deployments/index): Manages the lifecycle of deployments and releases.
-  * [devices.py](autoapi/api_gateway_service/routers/devices/index): Manages device metadata and connection states.
-  * [models.py](autoapi/api_gateway_service/routers/models/index): Handles model uploads and compilation triggers.
-  * [scripts.py](autoapi/api_gateway_service/routers/scripts/index): Manages inference script files.
-  * [monitoring.py](autoapi/api_gateway_service/routers/monitoring/index): Implements real-time telemetry WebSocket endpoints.
+* **[app/routers/](code_docs/api_gateway_service_routers_datasets.rst)**: Exposes REST paths by calling internal gRPC channels:
+  * [deployments.py](code_docs/api_gateway_service_routers_deployments.rst): Manages the lifecycle of deployments and releases.
+  * [devices.py](code_docs/api_gateway_service_routers_devices.rst): Manages device metadata and connection states.
+  * [models.py](code_docs/api_gateway_service_routers_models.rst): Handles model uploads and compilation triggers.
+  * [scripts.py](code_docs/api_gateway_service_routers_scripts.rst): Manages inference script files.
+  * [monitoring.py](code_docs/api_gateway_service_routers_monitoring.rst): Implements real-time telemetry WebSocket endpoints.
 
 ### `services/registry-service/`
 Acts as the metadata catalog. Persists data about registered hardware, uploaded model assets, and scripts.
-* [registry-service/app/main.py](autoapi/registry_service/main/index): Sets up and runs the gRPC server on port `50051`.
+* [registry-service/app/main.py](code_docs/registry_service_main.rst): Sets up and runs the gRPC server on port `50051`.
   ```python
   """Registry Service entry point.
 
@@ -76,13 +74,13 @@ Acts as the metadata catalog. Persists data about registered hardware, uploaded 
   DeviceServiceHandler, AIServiceHandler, and ScriptServiceHandler.
   """
   ```
-* **[app/grpc_handlers/](autoapi/registry_service/grpc_handlers/index)**: Handles RPC calls to fetch/modify devices, models, and scripts.
-* **[app/repositories/](autoapi/registry_service/repositories/index)**: Implements Repository patterns using SQLAlchemy to perform PostgreSQL operations.
-* **[app/models/](autoapi/registry_service/models/index)**: SQL schemas mapped via SQLAlchemy ORM classes.
+* **[app/grpc_handlers/](code_docs/registry_service_grpc_handlers_ai_handler.rst)**: Handles RPC calls to fetch/modify devices, models, and scripts.
+* **[app/repositories/](code_docs/registry_service_repositories_devices.rst)**: Implements Repository patterns using SQLAlchemy to perform PostgreSQL operations.
+* **[app/models/](code_docs/registry_service_models_orm.rst)**: SQL schemas mapped via SQLAlchemy ORM classes.
 
 ### `services/mlops-service/`
 Runs asynchronous compilation and optimization pipelines using isolated Docker runtimes.
-* [mlops-service/app/main.py](autoapi/mlops_service/main/index): Listens for gRPC compilation requests on port `50052`.
+* [mlops-service/app/main.py](code_docs/mlops_service_main.rst): Listens for gRPC compilation requests on port `50052`.
   ```python
   """Compilation Service entry point.
 
@@ -91,7 +89,7 @@ Runs asynchronous compilation and optimization pipelines using isolated Docker r
   Compilation jobs run as background asyncio tasks so the RPC returns immediately.
   """
   ```
-* [mlops-service/app/worker.py](autoapi/mlops_service/worker/index): Manages compilation tasks and spawns local Docker container compilations using the Docker socket.
+* [mlops-service/app/worker.py](code_docs/mlops_service_worker.rst): Manages compilation tasks and spawns local Docker container compilations using the Docker socket.
   ```python
   """ARQ worker for compilation-service.
 
@@ -105,11 +103,11 @@ Runs asynchronous compilation and optimization pipelines using isolated Docker r
   a separate process (started via arq app.worker.WorkerSettings).
   """
   ```
-* **[app/compilers/](autoapi/mlops_service/compilers/index)**: Contains compiler implementations (Hailo, TensorRT, ONNX).
+* **[app/compilers/](code_docs/mlops_service_compilers.rst)**: Contains compiler implementations (Hailo, TensorRT, ONNX).
 
 ### `services/edge-connector-service/`
 Connects the cloud services to the physical hardware devices.
-* [edge-connector-service/app/main.py](autoapi/edge_connector_service/main/index): Initializes the service on port `50053`.
+* [edge-connector-service/app/main.py](code_docs/edge_connector_service_main.rst): Initializes the service on port `50053`.
   ```python
   """Edge Connector Service entry point.
 
@@ -118,7 +116,7 @@ Connects the cloud services to the physical hardware devices.
   MQTT background listener, and deployment arq worker.
   """
   ```
-* [edge-connector-service/app/worker.py](autoapi/edge_connector_service/worker/index): Listens to incoming MQTT metrics and telemetry, persisting them in MongoDB and Prometheus.
+* [edge-connector-service/app/worker.py](code_docs/edge_connector_service_worker.rst): Listens to incoming MQTT metrics and telemetry, persisting them in MongoDB and Prometheus.
   ```python
   """ARQ worker for deployment-service.
 
@@ -127,7 +125,7 @@ Connects the cloud services to the physical hardware devices.
   by the compilation worker) rather than polling Postgres in a busy loop.
   """
   ```
-* **[app/mqtt/](autoapi/edge_connector_service/mqtt/index)**: MQTT client configuration and subscription loops.
+* **[app/mqtt/](code_docs/edge_connector_service_mqtt_listener.rst)**: MQTT client configuration and subscription loops.
 
 ---
 
@@ -135,7 +133,7 @@ Connects the cloud services to the physical hardware devices.
 
 Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).
 
-* [edge-runtime/agent.py](autoapi/edge_runtime/agent/index): The edge agent entry point. Establishes the MQTT client connection, sends system metrics, downloads compiled model artifacts, verifies hashes, and starts the active inference loop.
+* [edge-runtime/agent.py](code_docs/edge_runtime_agent.rst): The edge agent entry point. Establishes the MQTT client connection, sends system metrics, downloads compiled model artifacts, verifies hashes, and starts the active inference loop.
   ```python
   """AURA Edge Agent — Entrypoint
   =============================
@@ -160,8 +158,8 @@ Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).
               device/{DEVICE_ID}/inference
   """
   ```
-* **[edge-runtime/pal/](autoapi/edge_runtime/pal/index)**: Platform Abstraction Layer:
-  * [comm_client.py](autoapi/edge_runtime/pal/comm_client/index): Handles MQTT socket client interfaces and telemetry message publishing.
+* **[edge-runtime/pal/](code_docs/edge_runtime_pal.rst)**: Platform Abstraction Layer:
+  * [comm_client.py](code_docs/edge_runtime_pal_comm_client.rst): Handles MQTT socket client interfaces and telemetry message publishing.
     ```python
     """PAL — Communication Client
     ===========================
@@ -183,8 +181,8 @@ Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).
         device/{device_id}/inference
     """
     ```
-* **[edge-runtime/aura_hw/](autoapi/edge_runtime/aura_hw/index)**: Hardware abstraction library:
-  * [detect.py](autoapi/edge_runtime/aura_hw/detect/index): Automatically runs hardware inspection commands to check which NPUs are attached.
+* **[edge-runtime/aura_hw/](code_docs/edge_runtime_aura_hw.rst)**: Hardware abstraction library:
+  * [detect.py](code_docs/edge_runtime_aura_hw_detect.rst): Automatically runs hardware inspection commands to check which NPUs are attached.
     ```python
     """Hardware auto-detection for the AURA edge runtime.
 
@@ -202,7 +200,7 @@ Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).
     6. Fallback → unknown
     """
     ```
-  * [device_manager.py](autoapi/edge_runtime/aura_hw/device_manager/index): Controls low-level sensor interfaces, camera devices, and active actuators.
+  * [device_manager.py](code_docs/edge_runtime_aura_hw_device_manager.rst): Controls low-level sensor interfaces, camera devices, and active actuators.
     ```python
     """AURA Device Manager
     =====================
@@ -214,8 +212,8 @@ Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).
     the AURA platform.
     """
     ```
-  * [loader.py](autoapi/edge_runtime/aura_hw/loader/index): Loads the user-submitted Python inference script dynamically into the Python runtime.
-  * [runtime.py](autoapi/edge_runtime/aura_hw/runtime/index): Coordinates model execution with the detected backend accelerator.
+  * [loader.py](code_docs/edge_runtime_aura_hw_loader.rst): Loads the user-submitted Python inference script dynamically into the Python runtime.
+  * [runtime.py](code_docs/edge_runtime_aura_hw_runtime.rst): Coordinates model execution with the detected backend accelerator.
     ```python
     """Public API for the AURA hardware abstraction layer.
 
@@ -228,7 +226,7 @@ Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).
     * get_last_inference— return the result of the last inference pass
     """
     ```
-  * **[aura_hw/backends/](autoapi/edge_runtime/aura_hw/backends/index)**: Specific backends for each compiler output target (Hailo, IMX500, CPU/ONNX, Jetson).
+  * **[aura_hw/backends/](code_docs/edge_runtime_aura_hw_backends_base.rst)**: Specific backends for each compiler output target (Hailo, IMX500, CPU/ONNX, Jetson).
 
 ---
 
@@ -257,7 +255,7 @@ Common modules imported by both backend microservices and edge runtimes.
 * **`shared/proto_gen/`**: Auto-generated gRPC code generated using `grpcio-tools`.
 * **`shared/transport/`**: Common network wrappers (e.g., helper clients for secure MQTT connections).
 * **`shared/utils/`**:
-  * [database.py](autoapi/shared/utils/database/index): PostgreSQL connection utilities and session decorators.
+  * [database.py](code_docs/shared_utils_database.rst): PostgreSQL connection utilities and session decorators.
     ```python
     """Database utilities shared across all AURA services.
 
@@ -265,7 +263,7 @@ Common modules imported by both backend microservices and edge runtimes.
     plus a common declarative base for ORM models.
     """
     ```
-  * [minio.py](autoapi/shared/utils/minio/index): Helper class for MinIO S3 object storage (bucket operations, pre-signed URL creation).
+  * [minio.py](code_docs/shared_utils_minio.rst): Helper class for MinIO S3 object storage (bucket operations, pre-signed URL creation).
     ```python
     """MinIO async client helpers for AURA services.
 
@@ -274,7 +272,7 @@ Common modules imported by both backend microservices and edge runtimes.
     shared across all services.
     """
     ```
-  * [logging.py](autoapi/shared/utils/logging/index): Centralized logging formatters.
+  * [logging.py](code_docs/shared_utils_logging.rst): Centralized logging formatters.
     ```python
     """Structured logging configuration for all AURA services.
 
@@ -291,3 +289,99 @@ Additional hardware modules:
 
 * **`hardware/sensors/` & `hardware/actuators/`**: Simulators and physical libraries to run checks on temperature sensors, buzzer circuits, and LED modules.
 * **`hardware/hw_arch/`**: Hardware compiler configurations and calibration utilities.
+
+
+---
+
+## Technical Module Reference
+
+The following list contains all dynamically scanned modules automatically documented from the platform source code:
+
+```{toctree}
+:hidden:
+:maxdepth: 1
+
+   code_docs/api_gateway_service_auth_jwt
+   code_docs/api_gateway_service_config
+   code_docs/api_gateway_service_main
+   code_docs/api_gateway_service_routers_datasets
+   code_docs/api_gateway_service_routers_deployments
+   code_docs/api_gateway_service_routers_devices
+   code_docs/api_gateway_service_routers_models
+   code_docs/api_gateway_service_routers_monitoring
+   code_docs/api_gateway_service_routers_scripts
+   code_docs/api_gateway_service_stubs
+   code_docs/edge_connector_service_config
+   code_docs/edge_connector_service_grpc_handlers_deployment_handler
+   code_docs/edge_connector_service_grpc_handlers_monitoring_handler
+   code_docs/edge_connector_service_main
+   code_docs/edge_connector_service_models_mongo
+   code_docs/edge_connector_service_models_orm
+   code_docs/edge_connector_service_mqtt_listener
+   code_docs/edge_connector_service_repositories_deployments
+   code_docs/edge_connector_service_repositories_monitoring
+   code_docs/edge_connector_service_worker
+   code_docs/edge_runtime_agent
+   code_docs/edge_runtime_aura_hw
+   code_docs/edge_runtime_aura_hw_backends_base
+   code_docs/edge_runtime_aura_hw_backends_devices
+   code_docs/edge_runtime_aura_hw_backends_devices_actuator
+   code_docs/edge_runtime_aura_hw_backends_devices_actuator_base
+   code_docs/edge_runtime_aura_hw_backends_devices_actuator_general
+   code_docs/edge_runtime_aura_hw_backends_devices_base
+   code_docs/edge_runtime_aura_hw_backends_devices_camera
+   code_docs/edge_runtime_aura_hw_backends_devices_camera_base
+   code_docs/edge_runtime_aura_hw_backends_devices_camera_general
+   code_docs/edge_runtime_aura_hw_backends_devices_other
+   code_docs/edge_runtime_aura_hw_backends_devices_other_base
+   code_docs/edge_runtime_aura_hw_backends_devices_other_general
+   code_docs/edge_runtime_aura_hw_backends_devices_sensor
+   code_docs/edge_runtime_aura_hw_backends_devices_sensor_base
+   code_docs/edge_runtime_aura_hw_backends_devices_sensor_general
+   code_docs/edge_runtime_aura_hw_backends_inference
+   code_docs/edge_runtime_aura_hw_backends_inference_base
+   code_docs/edge_runtime_aura_hw_backends_inference_general
+   code_docs/edge_runtime_aura_hw_detect
+   code_docs/edge_runtime_aura_hw_device_manager
+   code_docs/edge_runtime_aura_hw_loader
+   code_docs/edge_runtime_aura_hw_runtime
+   code_docs/edge_runtime_daemon
+   code_docs/edge_runtime_daemon_camera
+   code_docs/edge_runtime_daemon_hailo
+   code_docs/edge_runtime_daemon_imx500
+   code_docs/edge_runtime_daemon_shared
+   code_docs/edge_runtime_hardware_daemon
+   code_docs/edge_runtime_pal
+   code_docs/edge_runtime_pal_comm_client
+   code_docs/edge_runtime_pal_orchestrator
+   code_docs/edge_runtime_pal_ota_handler
+   code_docs/mlops_service_actuators
+   code_docs/mlops_service_compilers
+   code_docs/mlops_service_compilers_base
+   code_docs/mlops_service_compilers_yolo_train
+   code_docs/mlops_service_config
+   code_docs/mlops_service_grpc_handlers_compilation_handler
+   code_docs/mlops_service_main
+   code_docs/mlops_service_models_orm
+   code_docs/mlops_service_others
+   code_docs/mlops_service_repositories_compilation
+   code_docs/mlops_service_sensors
+   code_docs/mlops_service_worker
+   code_docs/registry_service_config
+   code_docs/registry_service_grpc_handlers_ai_handler
+   code_docs/registry_service_grpc_handlers_device_handler
+   code_docs/registry_service_grpc_handlers_script_handler
+   code_docs/registry_service_main
+   code_docs/registry_service_models_orm
+   code_docs/registry_service_repositories_devices
+   code_docs/registry_service_repositories_models
+   code_docs/registry_service_repositories_scripts
+   code_docs/registry_service_update_existing_datasets
+   code_docs/shared_transport
+   code_docs/shared_transport_base
+   code_docs/shared_transport_mqtt
+   code_docs/shared_utils_database
+   code_docs/shared_utils_grpc_server
+   code_docs/shared_utils_logging
+   code_docs/shared_utils_minio
+```

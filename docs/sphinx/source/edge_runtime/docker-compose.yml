@@ -21,7 +21,7 @@ services:
     volumes:
       - ./data:/tmp/aura
       # Local configuration from the host (read-only)
-      - ./config:/app/config:ro
+      - ./config:/app/config
       # Hardware libraries — persistent across reboots.
       # Populated via OTA (update_libraries) upon connecting to the platform.
       - edge-agent-hardware:/app/hardware

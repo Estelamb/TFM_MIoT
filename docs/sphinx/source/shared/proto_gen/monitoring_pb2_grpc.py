@@ -49,6 +49,11 @@ class MonitoringServiceStub(object):
                 request_serializer=monitoring__pb2.GetInferenceResultsRequest.SerializeToString,
                 response_deserializer=monitoring__pb2.GetInferenceResultsResponse.FromString,
                 _registered_method=True)
+        self.DeleteDeviceState = channel.unary_unary(
+                '/aura.monitoring.v1.MonitoringService/DeleteDeviceState',
+                request_serializer=monitoring__pb2.DeleteDeviceStateRequest.SerializeToString,
+                response_deserializer=monitoring__pb2.DeleteDeviceStateResponse.FromString,
+                _registered_method=True)
 
 
 class MonitoringServiceServicer(object):
@@ -72,6 +77,12 @@ class MonitoringServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DeleteDeviceState(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_MonitoringServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -89,6 +100,11 @@ def add_MonitoringServiceServicer_to_server(servicer, server):
                     servicer.GetInferenceResults,
                     request_deserializer=monitoring__pb2.GetInferenceResultsRequest.FromString,
                     response_serializer=monitoring__pb2.GetInferenceResultsResponse.SerializeToString,
+            ),
+            'DeleteDeviceState': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteDeviceState,
+                    request_deserializer=monitoring__pb2.DeleteDeviceStateRequest.FromString,
+                    response_serializer=monitoring__pb2.DeleteDeviceStateResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -172,6 +188,33 @@ class MonitoringService(object):
             '/aura.monitoring.v1.MonitoringService/GetInferenceResults',
             monitoring__pb2.GetInferenceResultsRequest.SerializeToString,
             monitoring__pb2.GetInferenceResultsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteDeviceState(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aura.monitoring.v1.MonitoringService/DeleteDeviceState',
+            monitoring__pb2.DeleteDeviceStateRequest.SerializeToString,
+            monitoring__pb2.DeleteDeviceStateResponse.FromString,
             options,
             channel_credentials,
             insecure,

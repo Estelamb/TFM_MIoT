@@ -77,6 +77,7 @@ class Hailo8LCompiler(CompilerBase):
             pt_path = os.path.join(tmpdir, "model.pt")
             minio = get_minio()
             try:
+                await self.log_progress(model_id, "[Hailo8L] Descargando modelo base .pt desde MinIO...")
                 await minio.fget_object(self._bucket_models, source_key, pt_path)
             except Exception as e:
                 logger.error(f"[Hailo8L] Failed to download source model: {e}")
@@ -87,6 +88,7 @@ class Hailo8LCompiler(CompilerBase):
 
             # 2. Export PT model to ONNX locally (using MLOps container python)
             logger.info(f"[Hailo8L] Exporting model to ONNX with nms=False, opset=11, batch=1...")
+            await self.log_progress(model_id, "[Hailo8L] Exportando modelo .pt a ONNX (Ultralytics)...")
             try:
                 from ultralytics import YOLO
                 model = YOLO(pt_path)
@@ -109,6 +111,7 @@ class Hailo8LCompiler(CompilerBase):
                 zip_path = os.path.join(tmpdir, "dataset.zip")
                 dataset_extract_dir = os.path.join(tmpdir, "dataset")
                 logger.info(f"[Hailo8L] Downloading dataset {dataset_key} for calibration...")
+                await self.log_progress(model_id, "[Hailo8L] Descargando y preparando imágenes para calibración...")
                 await minio.fget_object("datasets", dataset_key, zip_path)
                 
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
@@ -164,6 +167,7 @@ class Hailo8LCompiler(CompilerBase):
                     "3600"
                 ]
                 logger.info(f"[Hailo8L] Creating Docker container: {' '.join(run_cmd)}")
+                await self.log_progress(model_id, "[Hailo8L] Creando contenedor Docker para compilador Hailo Model Zoo...")
                 proc = await asyncio.create_subprocess_exec(
                     *run_cmd,
                     stdout=asyncio.subprocess.PIPE,
@@ -177,6 +181,7 @@ class Hailo8LCompiler(CompilerBase):
 
                 # Copy files inside
                 logger.info(f"[Hailo8L] Copying ONNX model and calibration images to container...")
+                await self.log_progress(model_id, "[Hailo8L] Copiando modelo ONNX e imágenes de calibración al contenedor...")
                 cp_model_cmd = ["docker", "cp", onnx_path, f"{container_name}:/tmp/model.onnx"]
                 proc = await asyncio.create_subprocess_exec(*cp_model_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
                 await proc.communicate()
@@ -205,52 +210,19 @@ class Hailo8LCompiler(CompilerBase):
 
                 exec_cmd = [
                     "docker", "exec", container_name,
-                    "python3", "-c", py_script
+                    "python3", "-u", "-c", py_script
                 ]
                 logger.info(f"[Hailo8L] Executing compile script in container...")
+                await self.log_progress(model_id, "[Hailo8L] Ejecutando compilación de red neuronal en contenedor Hailo...")
 
-                proc = await asyncio.create_subprocess_exec(
-                    *exec_cmd,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                )
-
-                cancellation_task = None
-                if redis:
-                    async def check_cancel():
-                        try:
-                            while True:
-                                if await redis.exists(cancel_key):
-                                    logger.info(f"[Hailo8L] Cancellation requested. Stopping compile container...")
-                                    try:
-                                        proc.terminate()
-                                        await asyncio.sleep(1)
-                                        proc.kill()
-                                    except ProcessLookupError:
-                                        pass
-                                    break
-                                await asyncio.sleep(2)
-                        except asyncio.CancelledError:
-                            pass
-                    cancellation_task = asyncio.create_task(check_cancel())
-
-                try:
-                    stdout, stderr = await proc.communicate()
-                finally:
-                    if cancellation_task:
-                        cancellation_task.cancel()
-                        try:
-                            await cancellation_task
-                        except asyncio.CancelledError:
-                            pass
+                returncode = await self.run_subprocess_with_logs(model_id, exec_cmd)
 
                 if redis and await redis.exists(cancel_key):
                     raise asyncio.CancelledError()
 
-                if proc.returncode != 0:
-                    err_msg = stderr.decode().strip()
-                    logger.error(f"[Hailo8L] Compile failed inside container: {err_msg}\nStdout: {stdout.decode()}")
-                    return CompilationResult(success=False, error=f"Hailo compilation failed: {err_msg}")
+                if returncode != 0:
+                    logger.error(f"[Hailo8L] Compile failed inside container")
+                    return CompilationResult(success=False, error="Hailo compilation failed inside container")
 
                 # Copy model back to host
                 cp_out_cmd = ["docker", "cp", f"{container_name}:/tmp/model.hef", hef_path]

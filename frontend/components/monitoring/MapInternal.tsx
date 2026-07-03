@@ -173,7 +173,7 @@ export default function MapInternal({ states = [] }: EdgeMapProps) {
               <div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500 dark:text-slate-400">Latency</span>
-                  <span className="text-gray-955 dark:text-white font-bold font-mono">{Math.round(activeNode.latency)} ms</span>
+                  <span className="text-gray-955 dark:text-white font-bold font-mono">{activeNode.latency.toFixed(5)} ms</span>
                 </div>
               </div>
             )}

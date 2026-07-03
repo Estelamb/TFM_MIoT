@@ -77,7 +77,7 @@ async def main() -> None:
                 pass
     if not primary_camera_id:
         primary_camera_id = "camera_0"
-    coordinates_raw    = os.environ.get("AURA_COORDINATES",        "[-3.7038, 40.4168]")
+    coordinates_raw    = os.environ.get("AURA_COORDINATES",        "[-3.6294, 40.3897]")
 
     # Parse coordinates
     import json
@@ -148,6 +148,7 @@ async def main() -> None:
         host=mqtt_host,
         port=mqtt_port,
         reconnect_interval_s=reconnect_s,
+        db_path=work_dir / f"mqtt_buffer_{device_id}.db",
     )
 
     orchestrator = Orchestrator(

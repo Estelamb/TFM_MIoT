@@ -32,6 +32,26 @@ from daemon.shared import logger, HARDWARE_TYPE, CAMERA_ENABLED, HAS_PILLOW, _ma
 from daemon import camera_manager, hailo_manager, imx500_manager
 
 
+# Cache import availability at start to prevent expensive runtime checks on requests
+try:
+    from picamera2 import Picamera2
+    PICAM_AVAIL = True
+except ImportError:
+    PICAM_AVAIL = False
+
+try:
+    from picamera2.devices import Hailo
+    HAILO_AVAIL = True
+except ImportError:
+    HAILO_AVAIL = False
+
+try:
+    from picamera2.devices import IMX500
+    IMX500_AVAIL = True
+except ImportError:
+    IMX500_AVAIL = False
+
+
 class HardwareHTTPHandler(BaseHTTPRequestHandler):
     """Lite HTTP handler resolving requests."""
     def log_message(self, format, *args):
@@ -48,32 +68,14 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(raw_data)
         elif self.path == "/status":
-            try:
-                from picamera2 import Picamera2
-                picam_avail = True
-            except ImportError:
-                picam_avail = False
-
-            try:
-                from picamera2.devices import Hailo
-                hailo_avail = True
-            except ImportError:
-                hailo_avail = False
-
-            try:
-                from picamera2.devices import IMX500
-                imx500_avail = True
-            except ImportError:
-                imx500_avail = False
-            
             status = {
                 "status": "online",
                 "hardware_type": HARDWARE_TYPE,
-                "camera_type": "physical" if (picam_avail and CAMERA_ENABLED) else "simulated",
-                "picamera_available": picam_avail,
+                "camera_type": "physical" if (PICAM_AVAIL and CAMERA_ENABLED) else "simulated",
+                "picamera_available": PICAM_AVAIL,
                 "camera_enabled": CAMERA_ENABLED,
-                "hailo_available": hailo_avail,
-                "imx500_available": imx500_avail,
+                "hailo_available": HAILO_AVAIL,
+                "imx500_available": IMX500_AVAIL,
                 "pillow_available": HAS_PILLOW
             }
             body = json.dumps(status).encode("utf-8")
@@ -146,6 +148,12 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
 
 def main() -> None:
     import signal
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)]
+    )
     
     port = 8008
     camera_manager.start()

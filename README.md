@@ -4,247 +4,296 @@ Edge AI deployment platform for IoT devices. Upload a trained YOLOv8 model, comp
 
 ---
 
-## What it does
+## 1. Overview & Key Features
 
-1. **Register** edge devices (Hailo-8, Hailo-8L, RPi AI Camera, Jetson Orin Nano, plain RPi)
-2. **Upload** a trained `.pt` model and the platform compiles it to the right format for the target hardware
-3. **Upload** an inference script (pre/post-processing logic)
-4. **Deploy** model + script to a device with one click
-5. **Monitor** live CPU/RAM telemetry and inference results from all devices
+AURA allows you to manage the full lifecycle of edge AI models and peripheral devices from a unified console:
+1. **Register** edge devices (Hailo-8, Hailo-8L, RPi AI Camera, Jetson Orin Nano, plain RPi).
+2. **Upload** a trained PyTorch `.pt` model, and the platform compiles it to the appropriate format for the target hardware.
+3. **Upload** an inference script specifying pre/post-processing logic.
+4. **Deploy** the model + script to a device with one click.
+5. **Monitor** live CPU/RAM telemetry, active models/scripts, and raw inference payload streams.
 
 ---
 
-## Services
+## 2. Project Architecture & Services
+
+AURA consists of a modular MLOps and Edge AI deployment platform:
+
+```
+    Frontend (Next.js :3000)
+              │
+              │ HTTP + JWT REST & WebSockets
+              ▼
+     API Gateway (:8000)
+              │
+              ├─▶ (gRPC :50051) ── registry-service ── [PostgreSQL, MinIO]
+              ├─▶ (gRPC :50052) ── mlops-service    ── [MinIO, Docker Socket, Redis]
+              └─▶ (gRPC :50053) ── edge-connector-service ── [PostgreSQL, MongoDB, MinIO, Prometheus]
+                                           ▲
+                                           │ gRPC / events
+                                           ▼
+                                    MQTT Broker (:1883)
+                                           ▲
+                                           │ MQTT (Publish / Subscribe)
+                                           ▼
+                                    Edge Runtime (PAL)
+```
+
+### Services Breakdown
 
 | Service | Port | Stack | Responsibility |
 |---|---|---|---|
-| `api-gateway` | 8000 (HTTP) | FastAPI + JWT | Single entry point for the frontend. Proxies to gRPC services. |
-| `registry-service` | 50051 (gRPC) | Python + PostgreSQL + MinIO | Metadata registry for devices, datasets, models, and scripts. |
-| `mlops-service` | 50052 (gRPC) | Python + Docker socket | Handles model training and compilation asynchronously. |
-| `edge-connector-service` | 50053 (gRPC) + 9100 (Prometheus) | Python + PostgreSQL + MQTT + MongoDB | Telemetry ingest, inference logging, and OTA deployment. |
-| `frontend` | 3000 (HTTP) | Next.js 15 + Tailwind | Dashboard UI. |
+| `api-gateway` | 8000 (HTTP) | FastAPI + JWT | Single HTTP entry point. Validates credentials and routes to gRPC microservices. |
+| `registry-service` | 50051 (gRPC) | Python + PostgreSQL + MinIO | Metadata catalog for devices, models, and scripts. |
+| `mlops-service` | 50052 (gRPC) | Python + Docker socket | Handles model compilations and YOLOv8 training asynchronously. |
+| `edge-connector-service` | 50053 (gRPC) + 9100 (metrics) | Python + PostgreSQL + MQTT + MongoDB | Telemetry ingestion, metrics compilation, OTA deployment coordination. |
+| `frontend` | 3000 (HTTP) | Next.js 16 + Tailwind CSS | Unified web dashboard management console. |
 
 ---
 
-## Repository structure
+## 3. Quick Start Guide
 
+### Prerequisites
+- **Docker Engine** (version 24 or higher) with **Docker Compose v2**.
+- Minimum of **8 GB RAM** (16 GB recommended if compiling heavy models concurrently).
+- Ensure the following ports are available: `3000`, `8000`, `1883`, `5432`, `9000`, `9001`, `27017`, `50051–50053`, `9100`.
+
+### Step 1: Configure the Environment
+1. Duplicate the environment template file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Generate a secure secret key for JWT signing and replace it inside the `.env` file:
+   ```bash
+   openssl rand -hex 32
+   ```
+
+### Step 2: Start the Core Platform Stack
+Run the following command to build the containers and launch services in the background:
+```bash
+docker compose up -d
 ```
-aura/
-├── docker-compose.yml              # Full stack
-├── docker/                         # Per-service debug composes
-│   ├── api-gateway.yml
-│   ├── frontend.yml
-│   └── mlops-service.yml
-│
-├── infra/
-│   ├── mosquitto/mosquitto.conf    # MQTT broker config (anonymous, port 1883)
-│   └── postgres/init.sql           # DB schema (devices, models, scripts, deployments)
-│
-├── shared/
-│   ├── proto/                      # Protobuf definitions (source of truth for all APIs)
-│   ├── proto_gen/                  # Generated gRPC stubs — do not edit manually
-│   ├── transport/                  # Pluggable transport layer (MQTT implemented)
-│   └── utils/                      # Shared: database, MinIO, logging, gRPC server helper
-│
-├── services/
-│   ├── api-gateway/                # API Gateway microservice (FastAPI REST to gRPC)
-│   ├── registry-service/           # Devices, models, and scripts metadata registry
-│   ├── mlops-service/              # Model compilation orchestrator
-│   └── edge-connector-service/     # Telemetry ingest and OTA deployment broker
-│
-├── edge-runtime/
-│   ├── agent.py                    # Edge agent: subscribes to MQTT commands
-│   ├── aura_hw/                    # Hardware abstraction library
-│   │   ├── detect.py               # Auto-detects hardware type
-│   │   ├── runtime.py              # Public API: load_model(), execute_inference()
-│   │   └── backends/               # Hardware target backends
-│   │       ├── devices/            # Hardware-specific devices (actuators, cameras, sensors)
-│   │       └── inference/          # Inference processing engine backends
-│   └── pal/                        # Platform Abstraction Layer (communication client)
-│
-├── docs/                           # Documentation folder (Sphinx & TypeDoc)
-│   ├── sphinx/                     # Sphinx python documentation source and configs
-│   └── typedoc/                    # TypeDoc configuration for TS frontend
-│
-└── frontend/
-    ├── app/                        # Next.js App Router
-    │   ├── (auth)/login/           # Login page
-    │   └── (app)/                  # Authenticated layout + all pages
-    │       ├── dashboard/          # Overview + live telemetry
-    │       ├── devices/            # Device management
-    │       ├── models/             # Model upload + compilation status
-    │       ├── scripts/            # Script upload
-    │       ├── deployments/        # Create and track deployments
-    │       └── monitoring/         # Per-device telemetry + inference results
-    ├── components/                 # React components
-    ├── hooks/                      # Custom React hooks (WS sub, query etc.)
-    └── lib/                        # Axios clients & layout helpers
+*Note: First-time startup can take 3 to 5 minutes to build base images.*
+
+### Step 3: Verify Container Health
+```bash
+docker compose ps
+```
+Ensure all services are in the `Up` / `Running` state. You can monitor active logs using:
+```bash
+docker compose logs -f                  # Combined logs
+docker compose logs -f api-gateway      # Gateway logs
+docker compose logs -f edge-connector-service
 ```
 
----
+### Step 4: Access URLs & Credentials
 
-## Database schema
-
-PostgreSQL manages the core entities. MongoDB stores time-series telemetry and inference results.
-
-**PostgreSQL tables:**
-
-```
-devices       — registered edge devices (id, name, hardware_type, status)
-models        — uploaded .pt files + compilation state (source_key, compiled_key, compile_status)
-scripts       — inference scripts (script_key, script_sha256, hardware_type)
-deployments   — links device + model + script (status: pending → sent → running | failed)
-```
-
-**MongoDB collections (edge-connector-service):**
-
-```
-device_states      — current state per device (upsert on each telemetry message)
-inference_results  — append-only inference outputs with timestamp
-```
-
-**MinIO buckets:**
-
-```
-models     — original .pt files
-compiled   — compiled model artifacts (.hef, packerOut.zip, .onnx)
-scripts    — inference scripts (.py)
-```
-
----
-
-## Deployment flow
-
-```
-1. User uploads .pt model
-   └─▶ api-gateway saves to MinIO (models bucket)
-   └─▶ registry-service registers model in PostgreSQL (compile_status = pending)
-   └─▶ mlops-service.CompileModel() called [non-blocking, returns immediately]
-       └─▶ background task: export ONNX → Hailo Docker / MCT Python pipeline
-       └─▶ uploads compiled artifact to MinIO (compiled bucket)
-       └─▶ notifies registry-service: UpdateModelCompiled (compile_status = ready)
-
-2. User creates deployment (device + model + script)
-   └─▶ edge-connector-service generates presigned MinIO URLs (1h TTL)
-   └─▶ publishes to MQTT: device/{id}/commands
-       { "command": "deploy", "model_url", "model_sha256", "script_url", "script_sha256" }
-   └─▶ marks deployment status = sent
-
-3. Edge agent receives command
-   └─▶ downloads model via presigned URL, verifies SHA-256
-   └─▶ downloads script, verifies SHA-256
-   └─▶ calls aura_hw.load_model() → hardware-specific backend
-   └─▶ publishes: device/{id}/events { "event": "deploy_ack" }
-   └─▶ edge-connector-service listener updates status = running
-
-4. Edge agent runs continuously
-   └─▶ publishes telemetry every N seconds: device/{id}/telemetry
-   └─▶ publishes inference results: device/{id}/inference
-   └─▶ edge-connector-service stores both in MongoDB + updates Prometheus gauges
-```
-
----
-
-## MQTT topics
-
-| Topic | Direction | Payload |
+| Service | URL / Host | Default Credentials |
 |---|---|---|
-| `device/{id}/commands` | Cloud → Edge | `{ "command": "deploy", "deployment_id", "model_url", "model_sha256", "script_url", "script_sha256" }` |
-| `device/{id}/events` | Edge → Cloud | `{ "event": "deploy_ack" \| "deploy_failed", "deployment_id", "error"? }` |
-| `device/{id}/telemetry` | Edge → Cloud | `{ "cpu_percent", "ram_percent", "ram_used_mb", "active_model_id", "active_script_id", "active_deployment_id" }` |
-| `device/{id}/inference` | Edge → Cloud | `{ "deployment_id", "result_json" }` |
+| **Web Console** | [http://localhost:3000](http://localhost:3000) | Username: `admin` / Password: `aura2026` |
+| **API Docs (Swagger)** | [http://localhost:8000/docs](http://localhost:8000/docs) | Requires logging in first via `/auth/token` |
+| **MinIO Console** | [http://localhost:9001](http://localhost:9001) | Username: `aura` / Password: `aura_dev` |
+| **Prometheus Metrics** | [http://localhost:9100/metrics](http://localhost:9100/metrics) | Anonymous access |
+
+> [!TIP]
+> **Demo Mode**: The frontend sidebar contains a **Demo Mode** toggle (bottom-right). Toggle it on to load static mock data to inspect the UI without requiring running backends. Turn it off to load live MQTT telemetry and database records.
 
 ---
 
-## MLOps service
+## 4. Edge Runtime (Agent) Setup
 
-The MLOps service contains a pluggable registry of compilers:
+The edge runtime runs on the physical perimetral device (e.g., Raspberry Pi 5) or locally for testing.
 
-```python
-COMPILER_REGISTRY = {
-    "hailo8":     HailoCompiler,    # launches hailo_ai_sw_suite Docker container
-    "hailo8l":    HailoCompiler,    # same, different --hw-arch flag
-    "rpi_ai_cam": AICamCompiler,    # MCT + imx500-converter Python pipeline
-    "rpi":        RPiCPUCompiler,   # exports to ONNX via Ultralytics Docker
-    # "jetson_orin_nano": TRTCompiler  # TODO
-}
-```
+### Option A: Running Locally with Docker Compose (Testing)
+1. **Verify network**: Ensure the core platform is running.
+2. **Start the agent**:
+   ```bash
+   docker compose -f edge-runtime/docker-compose.yml up -d
+   ```
 
-**Hailo pipeline** (`compilers/hailo.py`): download `.pt` → export ONNX (`nms=False`, `opset=11`, `batch=1`) → generate calibration images → launch `hailo_ai_sw_suite` Docker container → run `hailomz compile` → upload `.hef` to MinIO.
+### Option B: Running on a Physical Edge Device (Production)
+1. **Copy folder**: Transfer the `edge-runtime/` directory onto the storage of your physical device.
+2. **Configure network in `edge-runtime/docker-compose.yml`**:
+   - Change `AURA_MQTT_HOST` from `mosquitto` to your server host's actual IP address.
+   - Comment out or remove the `networks` block under the `edge-agent` service and the global `networks` block at the bottom of the compose file.
+3. **Start the Host Hardware Daemon** (required for native Raspberry Pi Camera / NPU hardware access):
+   Install host dependencies and start the daemon natively on your device OS:
+   ```bash
+   pip install -r requirements.txt
+   python3 edge-runtime/hardware_daemon.py
+   ```
+4. **Start the Agent Container**:
+   ```bash
+   docker compose -f docker-compose.yml up -d
+   ```
+5. **Verify runtime logs**:
+   ```bash
+   docker compose -f docker-compose.yml logs -f edge-agent
+   ```
 
-**AI Camera pipeline** (`compilers/aicam.py`): download `.pt` → generate calibration images → `model.export(format="imx")` via Ultralytics (MCT + imx500-converter) → upload `packerOut.zip` to MinIO.
-
-`CompileModel` RPC returns immediately with `status=compiling`. Compilation runs as a background `asyncio.create_task()` and notifies `registry-service` on completion via `UpdateModelCompiled`.
-
----
-
-## Hardware abstraction layer (aura_hw)
-
-The inference script only needs to call `execute_inference()`. Hardware detection and routing happen automatically.
-
-```python
-from aura_hw import execute_inference
-
-def pre_inference(raw_input):
-    # preprocess → numpy tensor
-    return tensor
-
-def post_inference(raw_output):
-    # postprocess → list of dicts
-    return [{"class": "person", "confidence": 0.92, "bbox": [...]}]
-
-def run(raw_input):          # called by the edge runtime
-    return post_inference(execute_inference(pre_inference(raw_input)))
-```
-
-Hardware detection order: `AURA_HARDWARE_TYPE` env var → `hailortcli` → `/etc/nv_tegra_release` → `libcamera-hello` (IMX500) → `/proc/device-tree/model` (RPi) → ONNX fallback.
-
----
-
-## Supported hardware
-
-| Device | Model format | Backend | Status |
-|---|---|---|---|
-| RPi5 + Hailo-8 | `.hef` | HailoRT SDK | ✅ Full |
-| RPi5 + Hailo-8L | `.hef` | HailoRT SDK | ✅ Full |
-| RPi5 + AI Camera (IMX500) | `packerOut.zip` | picamera2 | ✅ Full |
-| RPi5 (CPU only) | `.onnx` | ONNX Runtime | ✅ Full |
-| Jetson Orin Nano | `.engine` | TensorRT | ⚠️ Stub |
-
----
-
-## Frontend
-
-Built with Next.js 15 App Router, Tailwind CSS and TanStack Query. Auth via JWT stored in `localStorage`. Dark theme with `aura-*` Tailwind color tokens (`#0a0c10` background, `#6366f1` indigo accent). Live data refetches every 5–10 seconds.
-
-Pages: **Dashboard** · **Devices** · **Models** · **Scripts** · **Deployments** · **Monitoring**
-
----
-
-## Environment variables
+### Edge Agent Configuration Parameters
+The agent reads settings from `edge-runtime/config/device_config.yaml`. These can be overridden using environment variables in the Docker Compose configuration:
 
 | Variable | Default | Description |
 |---|---|---|
-| `SECRET_KEY` | — | JWT signing secret. **Change before any deployment.** |
-| `POSTGRES_PASSWORD` | `aura_dev` | PostgreSQL password |
-| `MINIO_ROOT_PASSWORD` | `aura_dev` | MinIO root password |
-| `POSTGRES_USER` | `aura` | PostgreSQL user |
-| `POSTGRES_DB` | `aura` | PostgreSQL database name |
-| `MINIO_ROOT_USER` | `aura` | MinIO root user |
-| `MINIO_BUCKET_MODELS` | `models` | Bucket for source .pt files |
-| `MINIO_BUCKET_COMPILED` | `compiled` | Bucket for compiled artifacts |
-| `MINIO_BUCKET_SCRIPTS` | `scripts` | Bucket for inference scripts |
-| `MQTT_HOST` | `mosquitto` | MQTT broker hostname |
-| `MQTT_PORT` | `1883` | MQTT broker port |
-| `HAILO_DOCKER_IMAGE` | `hailo_ai_sw_suite:latest` | Docker image for Hailo compilation |
-| `LOG_LEVEL` | `INFO` | Log level: DEBUG \| INFO \| WARNING \| ERROR |
+| `AURA_DEVICE_ID` | `IoT-Edge-Device-01` | Unique device identifier. Must match the Device ID in the AURA console. |
+| `AURA_MQTT_HOST` | `localhost` | Host IP address of the MQTT Broker. |
+| `AURA_MQTT_PORT` | `1883` | MQTT Broker port. |
+| `AURA_HARDWARE_TYPE` | `auto` | Acceleration target: `hailo8`, `hailo8l`, `rpi`, `rpi_ai_cam`, `jetson_orin_nano`, `simulated`, or `auto` (auto-detect). |
+| `AURA_TELEMETRY_INTERVAL` | `10` | Frequency in seconds to push CPU/RAM metrics. |
+| `AURA_INFERENCE_INTERVAL` | `0.1` | Loop interval in seconds for model inference execution. |
+| `AURA_WORK_DIR` | `/tmp/aura` | Target folder for downloading OTA updates and runtime files. |
+| `AURA_COORDINATES` | `[-3.6288, 40.3899]` | Initial GPS coordinates matching JSON array format `[longitude, latitude]`. |
 
 ---
 
-## Known limitations (PoC)
+## 5. Repository Structure
 
-- Auth uses a hardcoded user (`admin` / `aura2026`). Replace with DB-backed auth in the next iteration.
-- Calibration images for Hailo and AI Camera compilation are currently dummy frames. Real dataset support is pending.
-- Compiler for `jetson_orin_nano` (TensorRT) is a stub.
-- No deployment rollback if `deploy_failed`.
-- No real-time log streaming from edge devices to the UI.
+```
+TFM_MIoT/
+├── docker-compose.yml              # Server stack orchestration config
+├── docker/                         # Service-specific compose files
+├── infra/                          # Infrastructure configurations
+│   ├── mosquitto/mosquitto.conf    # MQTT Broker config
+│   └── postgres/init.sql           # Database schema seed
+├── shared/                         # Shared libraries and protocols
+│   ├── proto/                      # gRPC Protocol Buffer definitions (.proto)
+│   ├── proto_gen/                  # Auto-generated gRPC stubs
+│   ├── transport/                  # Pluggable communication transport layers
+│   └── utils/                      # Shared DB connections, MinIO, and log utils
+├── services/                       # Server-side microservices
+│   ├── api-gateway/                # Single entry point FastAPI router
+│   ├── registry-service/           # Metadata catalog registry
+│   ├── mlops-service/              # Compilations and training worker
+│   └── edge-connector-service/     # Telemetry ingest and OTA deploy broker
+├── hardware/                       # Physical compilers, peripherals catalog, and drivers
+├── edge-runtime/                   # IoT edge runtime agent code
+└── frontend/                       # React Next.js dashboard console
+```
+
+---
+
+## 6. Deployment Workflow
+
+The following pipeline describes how an OTA deployment is scheduled, built, and executed:
+
+```
+1. Model Upload
+   └─▶ User uploads .pt model weights through Frontend.
+   └─▶ api-gateway saves weights to MinIO (models bucket).
+   └─▶ registry-service registers metadata in PostgreSQL (compile_status = pending).
+   └─▶ mlops-service.CompileModel() is triggered (non-blocking).
+       └─▶ background task: exports model to ONNX, runs Hailo/IMX Docker compiler.
+       └─▶ uploads resulting compiled binaries (.hef, .onnx, .zip) to MinIO (compiled bucket).
+       └─▶ updates status in registry-service to ready (compile_status = ready).
+
+2. Deployment Creation
+   └─▶ User selects device + model + script in Deployments tab, clicks Deploy.
+   └─▶ edge-connector-service generates secure presigned MinIO download URLs.
+   └─▶ publishes deploy payload on MQTT topic: device/{id}/commands.
+   └─▶ marks deployment state in PostgreSQL as sent.
+
+3. Edge Acknowledgment
+   └─▶ Edge agent receives MQTT command, downloads model & script, validates SHA-256 hashes.
+   └─▶ agent invokes aura_hw.load_model() to load weights into accelerator.
+   └─▶ agent publishes acknowledgment event on: device/{id}/events.
+   └─▶ edge-connector-service updates deployment status to running.
+
+4. Telemetry Loop
+   └─▶ Edge agent publishes telemetry metrics to device/{id}/telemetry and inference JSON to device/{id}/inference.
+   └─▶ edge-connector-service persists telemetry into MongoDB and updates Prometheus metrics gauges.
+```
+
+---
+
+## 7. Database Layout
+
+The platform uses a specialized database stack adapted for relational metadata, binary storage, and time-series telemetry:
+
+- **PostgreSQL** — Relational metadata: Persists structured definitions of `devices`, `models`, `scripts`, and `deployments`.
+- **MongoDB** — Time-series storage: Ingests rapid, append-only `inference_results` and keeps the latest `device_states` from edge device telemetry.
+- **Redis** — Job queuing & state caching: Manages background async jobs queue (using `arq` workers) for compiler tasks, training execution, and coordination of deployment cancellations.
+- **Prometheus** — Telemetry metrics: Gathers and exposes node exporter metrics and edge agent statistics for visualization.
+- **MinIO** — Object storage: Stores raw uploaded PyTorch `.pt` files under `models/`, compiled binaries (like `.hef` or `.onnx`) under `compiled/`, raw ZIP datasets under `datasets/`, and custom user-provided inference scripts under `scripts/`.
+
+---
+
+## 8. Extensibility Guide (For Developers)
+
+### Adding a New Hardware Compiler Architecture
+The MLOps service dynamically registers compilers located in [hardware/hw_arch/](file:///c:/Users/Estela/TFM_MIoT/hardware/hw_arch).
+1. Create a subdirectory under `hardware/hw_arch/<arch_name>/compilation/`.
+2. Create `compiler.py` and subclass `CompilerBase` (defined in `mlops-service/app/compilers/base.py`):
+   - Set the following metadata fields: `LABEL`, `EXECUTION_STRATEGY` (`"docker"` or `"python"`), `OUTPUT_FORMAT` (e.g. `".hef"`), `SUPPORTED_HARDWARE`.
+   - Implement `async def compile(...) -> CompilationResult`. Download the raw `.pt` weights, invoke compile tools, upload outputs to the compiled MinIO bucket, and return success status.
+3. Restart `mlops-service` to dynamically discover the compiler.
+
+### Adding a Custom Sensor or Actuator Peripheral
+Peripherals are dynamically scanned at startup from `hardware/sensors/` and `hardware/actuators/`.
+1. Create your peripheral's directory path: `hardware/sensors/<category>/<peripheral_name>/library.py`.
+2. In `library.py`, define a global variable `LABEL` and implement your driver class:
+   ```python
+   LABEL = "My Sensor Friendly Name"
+   class MySensorDriver:
+       def __init__(self, **kwargs): pass
+       def initialize(self) -> bool: return True
+       def read_value(self) -> dict: return {"metric": 42.0}
+       def close(self): pass
+   ```
+3. Fallback gracefully: Since components might run on dev environments without native dependencies (e.g., trying to load Raspberry Pi GPIO pins on a macOS laptop), wrap import libraries inside `initialize()` and fall back to a mock data simulation on `ImportError`.
+4. Register your component backend inside `edge-runtime/aura_hw/device_manager.py` and activate it in `edge-runtime/config/components_config.yaml`.
+
+---
+
+## 9. Useful Developer & Admin Commands
+
+```bash
+# Rebuild and restart a single service after code change
+docker compose up -d --build api-gateway
+
+# Access PostgreSQL database CLI shell
+docker compose exec postgres psql -U aura -d aura
+
+# Access MongoDB time-series CLI shell
+docker compose exec mongodb mongosh -u aura -p aura_dev aura
+
+# Subscribe to all MQTT topics to debug broker communication
+docker compose exec mosquitto mosquitto_sub -h localhost -t '#' -v
+
+# Check active Prometheus device gauges
+curl http://localhost:9100/metrics | grep aura_device
+
+# Regenerate Python gRPC stubs from protobuf definitions
+pip install grpcio-tools
+python -m grpc_tools.protoc -I shared/proto --python_out=shared/proto_gen --grpc_python_out=shared/proto_gen shared/proto/*.proto
+
+# Stop all containers (keeping DB data volumes)
+docker compose down
+
+# Fully reset including volumes data
+docker compose down -v
+```
+
+### Compiling Documentation Locally
+
+To verify and compile documentation pages:
+- **Sphinx (Python Docs)**:
+  ```bash
+  pip install -r docs/requirements.txt
+  python -m sphinx.cmd.build -M html docs/sphinx/source docs/sphinx/build
+  ```
+- **TypeDoc (Frontend Docs)**:
+  ```bash
+  cd frontend
+  npx typedoc --options ../docs/typedoc/typedoc.json
+  ```
+
+---
+
+## 10. Known Limitations (PoC Phase)
+
+- Authentication relies on demo hardcoded credentials (`admin` / `aura2026`).
+- Compilation calibration images currently use dummy empty inputs rather than real user dataset distributions.
+- Compiler for `jetson_orin_nano` (TensorRT) remains a stub interface.
+- No automatic rollback mechanism if device reports a `deploy_failed` event.
+- Live edge runtime logs are not yet streamed back to the management console UI.

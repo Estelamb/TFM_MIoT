@@ -6,7 +6,7 @@ class GPSSimulated:
     LABEL = "Simulated GPS"
 
     def __init__(self, **kwargs):
-        self.coords = [-3.7038, 40.4168]  # Default fallback
+        self.coords = [-3.6294, 40.3897]  # Default fallback
         self.load_initial_coordinates()
 
     def load_initial_coordinates(self):

@@ -232,7 +232,7 @@ export default function DeploymentMapInternal({
                     <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto mt-1">
                       {detections.map((det: any, idx: number) => (
                         <div key={idx} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 border border-blue-100/50 dark:border-blue-900/30 text-[10px] font-bold text-blue-700 dark:text-blue-400">
-                          <span>🎯 {det.class}</span>
+                          <span>{det.class}</span>
                           {det.confidence !== undefined ? (
                             <span className="opacity-80">({Math.round(det.confidence * 100)}%)</span>
                           ) : det.value !== undefined ? (

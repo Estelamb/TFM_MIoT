@@ -25,7 +25,7 @@ ALLOWED_BASE_MODELS = {
 
 def _to_proto(m) -> ai_pb2.ModelResponse:
     compilations_proto = []
-    if hasattr(m, "compilations") and m.compilations:
+    if "compilations" in m.__dict__ and m.compilations:
         for c in m.compilations:
             compilations_proto.append(ai_pb2.ModelCompilationResponse(
                 id=c.id,
@@ -63,7 +63,7 @@ def _dataset_to_proto(d) -> ai_pb2.DatasetResponse:
             pass
 
     versions_proto = []
-    if hasattr(d, "versions") and d.versions:
+    if "versions" in d.__dict__ and d.versions:
         for v in d.versions:
             v_meta_str = ""
             if v.meta_info:

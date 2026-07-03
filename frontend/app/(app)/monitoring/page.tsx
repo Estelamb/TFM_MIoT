@@ -22,22 +22,27 @@ export default function MonitoringPage() {
     queryFn: getDevices,
   });
 
+  // Filter telemetry states to only include devices that actually exist in the registered devices list
+  const activeStates = states.filter((s: any) =>
+    devices.some((d: any) => d.id === s.device_id)
+  );
+
   const stats = {
-    activeNodes: `${states.filter((s: any) => s.status === "online").length} / ${states.length || 0}`,
+    activeNodes: `${activeStates.filter((s: any) => s.status === "online").length} / ${activeStates.length || 0}`,
     avgLatency: (() => {
-      const validLatencies = states
+      const validLatencies = activeStates
         .filter((s: any) => s.status === "online" && typeof s.latency_ms === "number" && s.latency_ms >= 0)
         .map((s: any) => s.latency_ms);
       if (validLatencies.length === 0) return "— ms";
       const sum = validLatencies.reduce((acc: number, val: number) => acc + val, 0);
-      return `${Math.round(sum / validLatencies.length)} ms`;
+      return `${(sum / validLatencies.length).toFixed(5)} ms`;
     })(),
-    alerts: states.filter((s: any) => s.cpu_percent > 90).length,
-    cpuLoad: states.length > 0
-      ? Math.round(states.reduce((acc: number, s: any) => acc + s.cpu_percent, 0) / states.length)
+    alerts: activeStates.filter((s: any) => s.cpu_percent > 90).length,
+    cpuLoad: activeStates.length > 0
+      ? Math.round(activeStates.reduce((acc: number, s: any) => acc + s.cpu_percent, 0) / activeStates.length)
       : 0,
-    memory: states.length > 0
-      ? Math.round(states.reduce((acc: number, s: any) => acc + s.ram_percent, 0) / states.length)
+    memory: activeStates.length > 0
+      ? Math.round(activeStates.reduce((acc: number, s: any) => acc + s.ram_percent, 0) / activeStates.length)
       : 0,
   };
 
@@ -79,21 +84,21 @@ export default function MonitoringPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Map */}
         <div className="lg:col-span-7 flex flex-col relative w-full">
-          <EdgeMap states={states} />
+          <EdgeMap states={activeStates} />
         </div>
 
         {/* Right Column: Node details list */}
-        {states.length === 0 ? (
+        {activeStates.length === 0 ? (
           <div className="lg:col-span-5 border border-dashed border-2 bg-transparent shadow-none opacity-60 rounded-3xl p-6 text-center italic text-gray-500">
             No active telemetry connections reported.
           </div>
         ) : (
-          <Card className="lg:col-span-5 h-[500px] overflow-y-auto pr-1">
+          <Card className="lg:col-span-5 h-[500px] overflow-y-auto">
             <CardHeader className="mb-4">
-              <CardTitle>Connected Edge Gateways</CardTitle>
+              <CardTitle>Connected IoT Edge Devices</CardTitle>
             </CardHeader>
-            <div className="space-y-4">
-              {states.map((s: any) => (
+            <div className="space-y-4 px-4 pb-4">
+              {activeStates.map((s: any) => (
                 <div key={s.device_id} className="p-4 bg-gray-50 dark:bg-gray-900/40 border border-gray-150 dark:border-gray-850 rounded-2xl space-y-3">
                   <div className="flex justify-between items-start">
                     <Link href={`/devices/${s.device_id}?from=monitoring`} className="hover:underline">

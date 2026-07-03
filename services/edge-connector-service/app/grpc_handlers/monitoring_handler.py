@@ -42,3 +42,8 @@ class MonitoringServiceHandler(monitoring_pb2_grpc.MonitoringServiceServicer):
             timestamp=r["timestamp"], result_json=r["result_json"],
         ) for r in results]
         return monitoring_pb2.GetInferenceResultsResponse(results=protos)
+
+    async def DeleteDeviceState(self, req, ctx):
+        repo = self._repo_factory()
+        await repo.delete_device_data(req.device_id)
+        return monitoring_pb2.DeleteDeviceStateResponse(success=True)

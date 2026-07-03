@@ -47,3 +47,8 @@ class MonitoringRepository:
             {"device_id": device_id}, {"_id": 0}
         ).sort("timestamp", -1).limit(limit)
         return await cursor.to_list(length=None)
+
+    async def delete_device_data(self, device_id: str) -> None:
+        await self._db[DEVICE_STATES_COL].delete_one({"device_id": device_id})
+        await self._db["telemetry_history"].delete_many({"device_id": device_id})
+        await self._db[INFERENCE_RESULTS_COL].delete_many({"device_id": device_id})

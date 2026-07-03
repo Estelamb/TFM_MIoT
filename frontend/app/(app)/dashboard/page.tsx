@@ -93,7 +93,10 @@ export default function DashboardPage() {
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle>Live Device Telemetry</CardTitle>
-            <Activity size={18} className="text-blue-500 animate-pulse" />
+            <div className="flex items-center gap-3">
+              <Activity size={18} className="text-blue-500 animate-pulse" />
+              <Link href="/monitoring" className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">View all</Link>
+            </div>
           </CardHeader>
           <div className="space-y-6 mt-4">
             {states.length === 0 ? (
@@ -140,7 +143,7 @@ export default function DashboardPage() {
                 <div key={d.id} className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800/50 last:border-0">
                   <div className="flex items-center gap-3">
                     <StatusDot status={d.status} />
-                    <span className="text-sm font-mono text-gray-600 dark:text-gray-300">{d.id.slice(0, 8)}...</span>
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate max-w-[180px]">{d.name || `${d.id.slice(0, 8)}…`}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant={STATUS_VARIANT[d.status] || "default"}>

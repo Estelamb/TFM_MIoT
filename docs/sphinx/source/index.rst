@@ -26,7 +26,6 @@ AI deployment platform for IoT Edge devices.
    :caption: Code Explanation
 
    code_explanation
-   autoapi/api_gateway_service/index
 
 Indices and tables
 ==================

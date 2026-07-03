@@ -55,6 +55,7 @@ class RPiAICamCompiler(CompilerBase):
             pt_path = os.path.join(tmpdir, "model.pt")
             minio = get_minio()
             try:
+                await self.log_progress(model_id, "[RPiAICam] Descargando modelo base .pt desde MinIO...")
                 await minio.fget_object(self._bucket_models, source_key, pt_path)
             except Exception as e:
                 logger.error(f"[RPiAICam] Failed to download source model: {e}")
@@ -74,6 +75,7 @@ class RPiAICamCompiler(CompilerBase):
                 zip_path = os.path.join(tmpdir, "dataset.zip")
                 dataset_extract_dir = os.path.join(tmpdir, "dataset_raw")
                 logger.info(f"[RPiAICam] Downloading dataset {dataset_key} for calibration...")
+                await self.log_progress(model_id, "[RPiAICam] Descargando y preparando imágenes para calibración...")
                 await minio.fget_object("datasets", dataset_key, zip_path)
                 
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
@@ -142,6 +144,7 @@ names:
                     "3600"
                 ]
                 logger.info(f"[RPiAICam] Creating Docker container: {' '.join(run_cmd)}")
+                await self.log_progress(model_id, "[RPiAICam] Creando contenedor Docker para compilador Sony IMX500...")
                 proc = await asyncio.create_subprocess_exec(
                     *run_cmd,
                     stdout=asyncio.subprocess.PIPE,
@@ -155,6 +158,7 @@ names:
 
                 # Copy files inside
                 logger.info(f"[RPiAICam] Copying model, yaml and calibration dataset to container...")
+                await self.log_progress(model_id, "[RPiAICam] Copiando pesos, YAML y dataset de calibración al contenedor...")
                 
                 # Copy model.pt
                 cp_model_cmd = ["docker", "cp", pt_path, f"{container_name}:/tmp/model.pt"]
@@ -197,52 +201,19 @@ names:
 
                 exec_cmd = [
                     "docker", "exec", container_name,
-                    "python3", "-c", py_script
+                    "python3", "-u", "-c", py_script
                 ]
                 logger.info(f"[RPiAICam] Executing compile script in container...")
+                await self.log_progress(model_id, "[RPiAICam] Instalando dependencias y exportando modelo a formato IMX500...")
 
-                proc = await asyncio.create_subprocess_exec(
-                    *exec_cmd,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                )
-
-                cancellation_task = None
-                if redis:
-                    async def check_cancel():
-                        try:
-                            while True:
-                                if await redis.exists(cancel_key):
-                                    logger.info(f"[RPiAICam] Cancellation requested. Stopping compile container...")
-                                    try:
-                                        proc.terminate()
-                                        await asyncio.sleep(1)
-                                        proc.kill()
-                                    except ProcessLookupError:
-                                        pass
-                                    break
-                                await asyncio.sleep(2)
-                        except asyncio.CancelledError:
-                            pass
-                    cancellation_task = asyncio.create_task(check_cancel())
-
-                try:
-                    stdout, stderr = await proc.communicate()
-                finally:
-                    if cancellation_task:
-                        cancellation_task.cancel()
-                        try:
-                            await cancellation_task
-                        except asyncio.CancelledError:
-                            pass
+                returncode = await self.run_subprocess_with_logs(model_id, exec_cmd)
 
                 if redis and await redis.exists(cancel_key):
                     raise asyncio.CancelledError()
 
-                if proc.returncode != 0:
-                    err_msg = stderr.decode().strip()
-                    logger.error(f"[RPiAICam] Compile failed inside container: {err_msg}\nStdout: {stdout.decode()}")
-                    return CompilationResult(success=False, error=f"IMX500 compilation failed: {err_msg}")
+                if returncode != 0:
+                    logger.error(f"[RPiAICam] Compile failed inside container")
+                    return CompilationResult(success=False, error="IMX500 compilation failed inside container")
 
                 # Copy model back to host
                 cp_out_cmd = ["docker", "cp", f"{container_name}:/tmp/packerOut.zip", zip_out_path]

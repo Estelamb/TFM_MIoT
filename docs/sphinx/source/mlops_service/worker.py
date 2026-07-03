@@ -352,6 +352,9 @@ async def compile_job(
     if redis:
         await redis.delete(cancel_key)
         await redis.delete(f"model_compile_done:{model_id}")
+        await redis.delete(f"train_logs:{model_id}_list")
+        await redis.rpush(f"train_logs:{model_id}_list", f"[Compiler] Iniciando proceso de compilación para target={hardware_type}...")
+        await redis.publish(f"train_logs:{model_id}", f"[Compiler] Iniciando proceso de compilación para target={hardware_type}...")
 
     compiler = ctx["compiler_registry"].get(hardware_type)
     if compiler is None:
@@ -368,6 +371,9 @@ async def compile_job(
         # Extract classes from dataset zip if not passed
         if not class_names and dataset_key:
             try:
+                if redis:
+                    await redis.rpush(f"train_logs:{model_id}_list", "[Compiler] Extrayendo clases del dataset...")
+                    await redis.publish(f"train_logs:{model_id}", "[Compiler] Extrayendo clases del dataset...")
                 class_names = await extract_classes_from_dataset("datasets", dataset_key)
                 num_classes = len(class_names)
                 logger.info(f"Extracted {num_classes} classes from dataset zip: {class_names}")

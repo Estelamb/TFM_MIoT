@@ -672,7 +672,7 @@ export default function ModelsPage() {
                       >
                         Manage
                       </Button>
-                      {(m.compile_status === "training" || m.compile_status === "failed") && (
+                      {(m.compile_status === "training" || m.compile_status === "compiling" || m.compile_status === "failed") && (
                         <Button
                           variant="outline" size="sm" className="gap-2 shrink-0 border-gray-200 dark:border-gray-700 text-pink-600 hover:text-pink-700 hover:bg-pink-50"
                           onClick={() => {

@@ -79,6 +79,10 @@ def _make_gps(cid: str, driver: str) -> DeviceBackend:
     from aura_hw.backends.devices.sensor.general import GeneralSensorBackend
     return GeneralSensorBackend(cid, "gps", driver)
 
+def _make_template(cid: str, driver: str) -> DeviceBackend:
+    from aura_hw.backends.devices.other.general import GeneralOtherBackend
+    return GeneralOtherBackend(cid, "template", driver)
+
 
 # Maps device type → dynamic factory
 _TYPE_FACTORIES: dict[str, callable] = {
@@ -92,6 +96,7 @@ _TYPE_FACTORIES: dict[str, callable] = {
     "servo": _make_servo,
     "relay": _make_relay,
     "gps": _make_gps,
+    "template": _make_template,
 }
 
 

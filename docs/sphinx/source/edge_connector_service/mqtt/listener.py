@@ -121,9 +121,15 @@ class EdgeConnectorMQTTListener:
                     await client.subscribe("device/+/inference")
                     await client.subscribe("device/+/status")
                     async for msg in client.messages:
-                        await self._handle(msg)
+                        try:
+                            await self._handle(msg)
+                        except Exception as e:
+                            logger.exception(f"Error handling message on topic '{msg.topic}': {e}")
             except aiomqtt.MqttError as e:
                 logger.warning(f"MQTT error: {e} — retrying in 5s")
+                await asyncio.sleep(5)
+            except Exception as e:
+                logger.exception(f"Unexpected error in MQTT listener: {e} — retrying in 5s")
                 await asyncio.sleep(5)
 
     async def _handle(self, msg):

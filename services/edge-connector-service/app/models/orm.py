@@ -23,6 +23,7 @@ class ModelRef(Base):
     hardware_type: Mapped[str | None] = mapped_column(String, nullable=True)
     compile_status: Mapped[str] = mapped_column(String)
     dataset_id: Mapped[str | None] = mapped_column(UUID(as_uuid=False), nullable=True)
+    dataset_version_id: Mapped[str | None] = mapped_column(UUID(as_uuid=False), nullable=True)
     base_architecture: Mapped[str | None] = mapped_column(String, nullable=True)
     input_size: Mapped[str | None] = mapped_column(String, nullable=True)
 

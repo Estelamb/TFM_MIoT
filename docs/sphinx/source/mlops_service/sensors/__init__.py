@@ -10,7 +10,7 @@ def get_hardware_dir() -> Path:
 def get_label_from_file(file_path: Path) -> str | None:
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
-        for node in tree.body:
+        for node in ast.walk(tree):
             if isinstance(node, ast.Assign):
                 for target in node.targets:
                     if isinstance(target, ast.Name) and target.id == "LABEL":
@@ -27,6 +27,12 @@ def get_sensors_data() -> dict[str, str]:
         return sensors_map
     for category in sensors_dir.iterdir():
         if category.is_dir() and not category.name.startswith("__"):
+            # Category-level wrapper (e.g. sensors/camera/library.py → key "camera")
+            cat_lib = category / "library.py"
+            if cat_lib.exists():
+                cat_label = get_label_from_file(cat_lib) or category.name
+                sensors_map[category.name] = cat_label
+            # Specific drivers (e.g. sensors/camera/rpi_camera_module_3/library.py → key "camera/rpi_camera_module_3")
             for item in category.iterdir():
                 if item.is_dir() and not item.name.startswith("__"):
                     lib_file = item / "library.py"
@@ -37,4 +43,7 @@ def get_sensors_data() -> dict[str, str]:
     return sensors_map
 
 def get_sensors() -> list[str]:
-    return sorted(list(get_sensors_data().keys()))
+    """Returns only specific driver keys (e.g. 'camera/rpi_camera_module_3').
+    Category-level keys (e.g. 'camera') are included in get_sensors_data() for
+    label resolution but should not appear as selectable sensors in the catalog."""
+    return sorted([k for k in get_sensors_data().keys() if "/" in k])

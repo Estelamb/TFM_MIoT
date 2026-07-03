@@ -47,13 +47,17 @@ DOT_CODE = """digraph G {
     subgraph cluster_col1 {
         style=invis;
         models;
+        model_compilations;
+        models -> model_compilations [style=invis];
     }
     
     subgraph cluster_col2 {
         style=invis;
         datasets;
+        dataset_versions;
         devices;
-        datasets -> devices [style=invis];
+        datasets -> dataset_versions [style=invis];
+        dataset_versions -> devices [style=invis];
     }
     
     subgraph cluster_col3 {
@@ -76,6 +80,20 @@ DOT_CODE = """digraph G {
         <tr><td align="left">📅 created_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
     </table>>];
 
+    // --- ENTITY: dataset_versions ---
+    dataset_versions [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="#ffffff" color="#cbd5e1" style="rounded">
+        <tr><td bgcolor="#d97706" align="center" colspan="3"><font color="#ffffff"><b>dataset_versions</b></font></td></tr>
+        <tr><td port="id" align="left">🔑 <b>id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>PK</b></td></tr>
+        <tr><td port="dataset_id" align="left">🔗 <b>dataset_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
+        <tr><td align="left">🏷️ version</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📝 description</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📁 object_key</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">🔒 sha256</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">💾 size_bytes</td><td align="left">bigint</td><td align="center"></td></tr>
+        <tr><td align="left">ℹ️ meta_info</td><td align="left">json</td><td align="center"></td></tr>
+        <tr><td align="left">📅 created_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+    </table>>];
+
     // --- ENTITY: models ---
     models [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="#ffffff" color="#cbd5e1" style="rounded">
         <tr><td bgcolor="#4f46e5" align="center" colspan="3"><font color="#ffffff"><b>models (AI Models)</b></font></td></tr>
@@ -90,10 +108,24 @@ DOT_CODE = """digraph G {
         <tr><td align="left">⚡ compile_status</td><td align="left">text</td><td align="center"></td></tr>
         <tr><td align="left">❌ compile_error</td><td align="left">text</td><td align="center"></td></tr>
         <tr><td port="dataset_id" align="left">🔗 <b>dataset_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
+        <tr><td port="dataset_version_id" align="left">🔗 <b>dataset_version_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
         <tr><td align="left">🧠 base_architecture</td><td align="left">text</td><td align="center"></td></tr>
         <tr><td align="left">🔄 epochs</td><td align="left">integer</td><td align="center"></td></tr>
         <tr><td align="left">📐 input_size</td><td align="left">text</td><td align="center"></td></tr>
         <tr><td align="left">📦 batch_size</td><td align="left">integer</td><td align="center"></td></tr>
+        <tr><td align="left">📅 created_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
+    </table>>];
+
+    // --- ENTITY: model_compilations ---
+    model_compilations [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="#ffffff" color="#cbd5e1" style="rounded">
+        <tr><td bgcolor="#4f46e5" align="center" colspan="3"><font color="#ffffff"><b>model_compilations</b></font></td></tr>
+        <tr><td port="id" align="left">🔑 <b>id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>PK</b></td></tr>
+        <tr><td port="model_id" align="left">🔗 <b>model_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
+        <tr><td align="left">⚙️ hardware_type</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">📁 compiled_key</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">🔒 compiled_sha256</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">⚡ compile_status</td><td align="left">text</td><td align="center"></td></tr>
+        <tr><td align="left">❌ compile_error</td><td align="left">text</td><td align="center"></td></tr>
         <tr><td align="left">📅 created_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
     </table>>];
 
@@ -104,6 +136,7 @@ DOT_CODE = """digraph G {
         <tr><td port="device_id" align="left">🔗 <b>device_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
         <tr><td port="model_id" align="left">🔗 <b>model_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
         <tr><td port="script_id" align="left">🔗 <b>script_id</b></td><td align="left"><i>uuid</i></td><td align="center"><b>FK</b></td></tr>
+        <tr><td align="left">🏷️ name</td><td align="left">text</td><td align="center"></td></tr>
         <tr><td align="left">⚡ status</td><td align="left">text</td><td align="center"></td></tr>
         <tr><td align="left">📤 sent_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
         <tr><td align="left">🚀 running_at</td><td align="left">timestamptz</td><td align="center"></td></tr>
@@ -144,7 +177,10 @@ DOT_CODE = """digraph G {
     datasets -> scripts [style=invis];
 
     // Relationships/Edges (connecting Table-to-Table to prevent lines from crossing through HTML tables)
-    datasets -> models [xlabel="used by", style=dashed, color="#d97706"];
+    datasets -> dataset_versions [xlabel="contains", color="#d97706"];
+    dataset_versions -> models [xlabel="calibrates", color="#d97706", style=dashed];
+    datasets -> models [xlabel="trains", color="#d97706", style=dashed];
+    models -> model_compilations [xlabel="produces", color="#4f46e5"];
     models -> deployments [xlabel="deployed", color="#4f46e5"];
     devices -> deployments [xlabel="target", color="#0284c7"];
     scripts -> deployments [xlabel="executed by", color="#7c3aed"];

@@ -101,6 +101,10 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
         await self._notify(req.model_id, "compiling", "", "", req.hardware_type, "")
 
         pool = await self._get_pool()
+        # Clear any cached job results/definitions in Redis to allow immediate retries
+        await pool.delete(f"arq:job:compile:{req.model_id}")
+        await pool.delete(f"arq:result:compile:{req.model_id}")
+
         await pool.enqueue_job(
             "compile_job",
             model_id=req.model_id,
@@ -112,7 +116,7 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
             dataset_key=dataset_key,
             base_architecture=req.base_architecture or "",
             input_size=req.input_size or "",
-            _job_id=f"compile:{req.model_id}",   # idempotency key — prevents duplicate jobs
+            _job_id=f"compile:{req.model_id}",   # idempotency key
         )
         logger.info(f"compile_job enqueued for model {req.model_id}")
 
@@ -131,6 +135,10 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
         await self._notify(req.model_id, "training", "", "", "", "")
 
         pool = await self._get_pool()
+        # Clear any cached job results/definitions in Redis to allow immediate retries
+        await pool.delete(f"arq:job:train:{req.model_id}")
+        await pool.delete(f"arq:result:train:{req.model_id}")
+
         await pool.enqueue_job(
             "train_job",
             model_id=req.model_id,
@@ -167,20 +175,29 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
         )
 
     async def GetSupportedSensors(self, req, ctx):
-        from app.sensors import get_sensors_data
+        from app.sensors import get_sensors_data, get_sensors
         sensors_data = get_sensors_data()
         return compilation_pb2.GetSupportedSensorsResponse(
-            sensors=sorted(list(sensors_data.keys())),
-            labels=sensors_data
+            sensors=get_sensors(),   # only subdriver keys (with "/")
+            labels=sensors_data      # full map including category keys for labels
         )
 
     async def GetSupportedActuators(self, req, ctx):
-        from app.actuators import get_actuators_data
+        from app.actuators import get_actuators_data, get_actuators
         actuators_data = get_actuators_data()
         return compilation_pb2.GetSupportedActuatorsResponse(
-            actuators=sorted(list(actuators_data.keys())),
-            labels=actuators_data
+            actuators=get_actuators(),   # only subdriver keys (with "/")
+            labels=actuators_data        # full map including category keys for labels
         )
+
+    async def GetSupportedOthers(self, req, ctx):
+        from app.others import get_others_data, get_others
+        others_data = get_others_data()
+        return compilation_pb2.GetSupportedOthersResponse(
+            others=get_others(),   # only subdriver keys (with "/")
+            labels=others_data     # full map including category keys for labels
+        )
+
 
 
     async def _notify(self, model_id: str, status: str, compiled_key: str,

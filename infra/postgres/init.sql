@@ -27,6 +27,18 @@ CREATE TABLE IF NOT EXISTS datasets (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS dataset_versions (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    dataset_id      UUID NOT NULL REFERENCES datasets(id) ON DELETE CASCADE,
+    version         TEXT NOT NULL,
+    description     TEXT,
+    object_key      TEXT NOT NULL,
+    sha256          TEXT NOT NULL,
+    size_bytes      BIGINT NOT NULL,
+    meta_info       JSON,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS models (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            TEXT NOT NULL,
@@ -39,6 +51,7 @@ CREATE TABLE IF NOT EXISTS models (
     compile_status  TEXT NOT NULL DEFAULT 'pending',  -- pending | compiling | ready | failed
     compile_error   TEXT,
     dataset_id      UUID REFERENCES datasets(id) ON DELETE SET NULL,
+    dataset_version_id UUID REFERENCES dataset_versions(id) ON DELETE SET NULL,
     base_architecture TEXT,
     epochs          INT,
     input_size      TEXT,

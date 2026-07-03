@@ -44,7 +44,7 @@ class CameraManager:
                         main={"size": (640, 480), "format": "RGB888"}
                     )
                 self.picam2.configure(config)
-                self.picam2.start()
+                self.picam2.start(show_preview=False)
                 self.is_active = True
                 logger.info("Picamera2 started successfully.")
             except Exception as e:
@@ -129,15 +129,24 @@ class CameraManager:
 
     def stop(self) -> None:
         self.stop_event.set()
-        if self.thread is not None:
-            self.thread.join(timeout=1.0)
-            self.thread = None
         if self.picam2:
             try:
                 self.picam2.stop()
                 logger.info("Picamera2 stopped successfully.")
             except Exception as e:
                 logger.error(f"Error stopping Picamera2: {e}")
+        
+        if self.thread is not None:
+            self.thread.join(timeout=2.0)
+            self.thread = None
+            
+        if self.picam2:
+            try:
+                self.picam2.close()
+                logger.info("Picamera2 closed successfully.")
+            except Exception as e:
+                logger.error(f"Error closing Picamera2: {e}")
+            self.picam2 = None
         self.is_active = False
 
 

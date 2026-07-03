@@ -103,60 +103,90 @@
    ============================================= */
 :root:not(.dark) aside {
   background-color: #002570 !important;
-  border-right: none !important;        /* no side line */
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(180deg, #002570 0%, #001748 100%) !important;
+  background-size: 16px 16px, 100% 100% !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 6px 0 30px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* Make sidebar lines white in light mode */
+:root:not(.dark) aside .border-b,
+:root:not(.dark) aside .border-t {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Active item (using dark mode colors for background and border) */
+:root:not(.dark) aside .absolute.inset-0 {
+  background-color: rgba(31, 41, 55, 0.6) !important;
+  border-color: rgba(55, 65, 81, 0.5) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Sidebar header "AURA" and "PLATFORM" in white as requested */
+:root:not(.dark) aside p.text-slate-800 {
+  color: #ffffff !important;
+}
+:root:not(.dark) aside p.text-gray-500 {
+  color: #ffffff !important;
+}
+
+/* Inactive items styling matching dark mode colors */
+:root:not(.dark) aside a.text-gray-500 {
+  color: #9ca3af !important;
+}
+:root:not(.dark) aside a.text-gray-500:hover {
+  background-color: rgba(31, 41, 55, 0.5) !important;
+  color: #ffffff !important;
+}
+
+/* Make sure hovered icons inside inactive items turn white/light gray */
+:root:not(.dark) aside a.text-gray-500:hover .group-hover\:text-gray-700 {
+  color: #d1d5db !important;
+}
+
+/* Active items text in white */
+:root:not(.dark) aside a.text-gray-900 {
+  color: #ffffff !important;
+}
+
+/* Inactive icon color (default state) */
+:root:not(.dark) aside a:not(.text-gray-900) svg {
+  color: #9ca3af;
+}
+
+/* Collapsed logo button / expand/collapse handles */
+:root:not(.dark) aside button {
+  background-color: transparent !important;
+  color: #9ca3af !important;
+}
+:root:not(.dark) aside button:hover {
+  background-color: rgba(31, 41, 55, 0.5) !important;
+  color: #ffffff !important;
+}
+
+/* Ensure no background appears on the collapsed logo button in any state */
+:root:not(.dark) aside button.logo-collapsed-btn,
+:root:not(.dark) aside button.logo-collapsed-btn:hover,
+:root:not(.dark) aside button.logo-collapsed-btn:focus,
+:root:not(.dark) aside button.logo-collapsed-btn:active,
+:root:not(.dark) aside button.logo-collapsed-btn * {
+  background-color: transparent !important;
+  background: transparent !important;
   box-shadow: none !important;
 }
 
-/* Remove the line between sidebar header and nav */
-:root:not(.dark) aside .border-b,
-:root:not(.dark) aside .border-t {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-/* Active item */
-:root:not(.dark) aside .absolute.inset-0 {
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  box-shadow: none;
-}
-
-/* All text inside sidebar — white */
-:root:not(.dark) aside,
-:root:not(.dark) aside * {
-  color: #e8edf5 !important;
-}
-
-/* Secondary text (PLATFORM subtitle, inactive icons) */
-:root:not(.dark) aside .text-gray-500,
-:root:not(.dark) aside .text-gray-400 {
-  color: #7a9cc8 !important;
-}
-
-/* Icons and inactive links */
-:root:not(.dark) aside a {
-  color: #a8c4e0 !important;
-}
-
-/* Hover links */
-:root:not(.dark) aside a:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
+/* PanelLeftClose and PanelLeftOpen button hover states */
+:root:not(.dark) aside button.text-gray-400:hover {
   color: #ffffff !important;
 }
 
-/* Collapsed logo button hover — no light square */
-:root:not(.dark) aside button {
-  background-color: transparent !important;
-  color: #a8c4e0 !important;
+/* Logout button (same colors as dark mode: text-gray-400 hover:text-red-400 hover:bg-red-900/10) */
+:root:not(.dark) aside button.text-gray-500 {
+  color: #9ca3af !important;
 }
-
-:root:not(.dark) aside button:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
-}
-
-/* Logout hover: faint red */
-:root:not(.dark) aside footer button:hover,
-:root:not(.dark) aside > div:last-child button:hover {
+:root:not(.dark) aside button.text-gray-500:hover {
   background-color: rgba(239, 68, 68, 0.18) !important;
   color: #fca5a5 !important;
 }
@@ -168,7 +198,7 @@
 
 /* Sidebar tooltips */
 :root:not(.dark) aside .bg-gray-900 {
-  background-color: #001540 !important;
+  background-color: #1f2937 !important;
   color: #ffffff !important;
 }
 
@@ -177,21 +207,24 @@
    ============================================= */
 :root:not(.dark) header {
   background-color: #002570 !important;
-  border-bottom: none !important;       /* no bottom line */
-  box-shadow: none !important;
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, #002570 0%, #001748 100%) !important;
+  background-size: 16px 16px, 100% 100% !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* All topbar text — white/light */
-:root:not(.dark) header,
-:root:not(.dark) header * {
-  color: #e8edf5 !important;
+/* Topbar title and text - white as requested */
+:root:not(.dark) header h1.text-gray-900 {
+  color: #ffffff !important;
 }
 
 /* Gray-blue subtexts */
 :root:not(.dark) header .text-gray-600,
 :root:not(.dark) header .text-gray-500,
 :root:not(.dark) header .text-gray-400 {
-  color: #7a9cc8 !important;
+  color: #a8c4e0 !important;
 }
 
 /* "Connected" badge */
@@ -199,18 +232,23 @@
 :root:not(.dark) .bg-gray-50\/80 {
   background-color: rgba(255, 255, 255, 0.08) !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
-  color: #7a9cc8 !important;
+  color: #a8c4e0 !important;
 }
 
-/* Theme toggle */
+/* Theme toggle button and its SVG icon */
 :root:not(.dark) header button {
   background-color: transparent !important;
   border-color: rgba(255, 255, 255, 0.18) !important;
   color: #a8c4e0 !important;
 }
-
 :root:not(.dark) header button:hover {
   background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+:root:not(.dark) header button svg.text-gray-700 {
+  color: #a8c4e0 !important;
+}
+:root:not(.dark) header button:hover svg.text-gray-700 {
   color: #ffffff !important;
 }
 

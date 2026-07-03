@@ -31,7 +31,7 @@ async def list_devices(_=Depends(verify_token)):
     stub = get_stub("device")
     r = await stub.ListDevices(device_pb2.ListDevicesRequest())
     return [{"id": d.id, "name": d.name, "hardware_type": d.hardware_type,
-             "status": d.status, "last_seen_at": d.last_seen_at, "created_at": d.created_at,
+             "description": d.description, "status": d.status, "last_seen_at": d.last_seen_at, "created_at": d.created_at,
              "sensors": list(d.sensors), "actuators": list(d.actuators), "others": list(d.others)}
             for d in r.devices]
 
@@ -99,6 +99,14 @@ async def get_device(device_id: str, _=Depends(verify_token)):
 @router.delete("/{device_id}", status_code=204)
 async def delete_device(device_id: str, _=Depends(verify_token)):
     await get_stub("device").DeleteDevice(device_pb2.DeleteDeviceRequest(id=device_id))
+    try:
+        from shared.proto_gen import monitoring_pb2
+        await get_stub("monitoring").DeleteDeviceState(
+            monitoring_pb2.DeleteDeviceStateRequest(device_id=device_id)
+        )
+    except Exception as e:
+        import logging
+        logging.getLogger("api-gateway").error(f"Failed to delete monitoring state for device {device_id}: {e}")
 
 @router.put("/{device_id}")
 async def update_device(device_id: str, body: DeviceUpdate, _=Depends(verify_token)):

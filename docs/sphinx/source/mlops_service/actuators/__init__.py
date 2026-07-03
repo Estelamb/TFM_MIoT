@@ -10,7 +10,7 @@ def get_hardware_dir() -> Path:
 def get_label_from_file(file_path: Path) -> str | None:
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
-        for node in tree.body:
+        for node in ast.walk(tree):
             if isinstance(node, ast.Assign):
                 for target in node.targets:
                     if isinstance(target, ast.Name) and target.id == "LABEL":
@@ -27,6 +27,12 @@ def get_actuators_data() -> dict[str, str]:
         return actuators_map
     for category in actuators_dir.iterdir():
         if category.is_dir() and not category.name.startswith("__"):
+            # Category-level wrapper
+            cat_lib = category / "library.py"
+            if cat_lib.exists():
+                cat_label = get_label_from_file(cat_lib) or category.name
+                actuators_map[category.name] = cat_label
+            # Specific drivers
             for item in category.iterdir():
                 if item.is_dir() and not item.name.startswith("__"):
                     lib_file = item / "library.py"
@@ -37,4 +43,7 @@ def get_actuators_data() -> dict[str, str]:
     return actuators_map
 
 def get_actuators() -> list[str]:
-    return sorted(list(get_actuators_data().keys()))
+    """Returns only specific driver keys (e.g. 'relay/relay_5v_module').
+    Category-level keys are included in get_actuators_data() for label
+    resolution but should not appear as selectable actuators in the catalog."""
+    return sorted([k for k in get_actuators_data().keys() if "/" in k])

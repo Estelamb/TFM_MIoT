@@ -1,6 +1,0 @@
-edge_runtime.config
-===================
-
-.. py:module:: edge_runtime.config
-
-

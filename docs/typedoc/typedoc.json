@@ -16,6 +16,6 @@
     "**/*.spec.ts"
   ],
   "navigationLinks": {
-    "Platform Docs": "../platform/index.html"
+    "Platform Docs": "../index.html"
   }
 }

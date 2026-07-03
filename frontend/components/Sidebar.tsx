@@ -46,14 +46,14 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Header */}
       <div className={cn(
-        "h-16 border-b border-slate-200/60 dark:border-gray-800 transition-all flex flex-shrink-0 overflow-hidden relative z-40",
+        "h-16 border-b border-white dark:border-white transition-all flex flex-shrink-0 overflow-hidden relative z-40",
         collapsed ? "justify-center items-center" : "items-center justify-between px-5"
       )}>
 
         {collapsed ? (
           <button
             onClick={(e) => { e.stopPropagation(); onToggle(); }}
-            className="relative group w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
+            className="relative group w-10 h-10 flex items-center justify-center rounded-xl hover:bg-transparent dark:hover:bg-transparent transition-colors cursor-pointer logo-collapsed-btn"
           >
             {/* Collapsed Logo */}
             <div className="absolute inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity duration-200">
@@ -154,7 +154,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </nav>
 
       {/* Footer / Logout */}
-      <div className="px-3 py-4 border-t border-slate-200/60 dark:border-gray-800 relative z-40">
+      <div className="px-3 py-4 border-t border-white dark:border-white relative z-40">
         <button
           onClick={(e) => {
             e.stopPropagation();

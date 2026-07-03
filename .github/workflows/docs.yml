@@ -99,37 +99,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: sphinx-html
-          path: site/platform/
+          path: site/
 
       - name: Download TypeDoc HTML
         uses: actions/download-artifact@v4
         with:
           name: typedoc-html
           path: site/frontend/
-
-      - name: Create root index (redirects to Sphinx)
-        run: |
-          cat > site/index.html << 'HTML'
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <title>AURA Platform Docs</title>
-            <meta http-equiv="refresh" content="0; url=platform/index.html">
-            <style>
-              body { font-family: sans-serif; padding: 2rem; }
-              a { color: #6366f1; }
-            </style>
-          </head>
-          <body>
-            <h1>AURA Platform Documentation</h1>
-            <ul>
-              <li><a href="platform/index.html">Platform Docs (Sphinx)</a></li>
-              <li><a href="frontend/index.html">Frontend Docs (TypeDoc)</a></li>
-            </ul>
-          </body>
-          </html>
-          HTML
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

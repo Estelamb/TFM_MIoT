@@ -73,7 +73,7 @@ def detect_hardware() -> str:
             gw_ip = mqtt_host
             
         daemon_url = f"http://{gw_ip}:8008"
-        with urllib.request.urlopen(f"{daemon_url}/status", timeout=2.0) as resp:
+        with urllib.request.urlopen(f"{daemon_url}/status", timeout=5.0) as resp:
             if resp.status == 200:
                 status_data = json.loads(resp.read().decode("utf-8"))
                 detected_hw = status_data.get("hardware_type")

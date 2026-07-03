@@ -118,7 +118,7 @@ export default function DevicesPage() {
   const [deviceForm, setDeviceForm] = useState({
     name: "",
     hardware_type: "hailo8",
-    architecture_id: "",
+    description: "",
     selected_sensors: [] as string[],
     selected_actuators: [] as string[],
     selected_nodes: [] as string[],
@@ -171,7 +171,7 @@ export default function DevicesPage() {
       createDevice({
         name: deviceForm.name,
         hardware_type: deviceForm.hardware_type,
-        description: deviceForm.architecture_id || undefined,
+        description: deviceForm.description || undefined,
         sensors: deviceForm.selected_sensors,
         actuators: deviceForm.selected_actuators,
         others: deviceForm.selected_nodes,
@@ -179,7 +179,7 @@ export default function DevicesPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["devices"] });
       setOpenRegisterDevice(false);
-      setDeviceForm({ name: "", hardware_type: "hailo8", architecture_id: "", selected_sensors: [], selected_actuators: [], selected_nodes: [] });
+      setDeviceForm({ name: "", hardware_type: "hailo8", description: "", selected_sensors: [], selected_actuators: [], selected_nodes: [] });
     },
   });
 
@@ -514,6 +514,13 @@ export default function DevicesPage() {
             options={hwOptions}
           />
 
+          <Input
+            label="Description"
+            value={deviceForm.description}
+            onChange={e => setDeviceForm(prev => ({ ...prev, description: e.target.value }))}
+            placeholder="A brief description of this device..."
+          />
+
 
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-t pt-4 dark:border-gray-800">
@@ -806,7 +813,7 @@ export default function DevicesPage() {
                           {detections.map((det: any, dIdx: number) => (
                             <div key={dIdx} className="flex items-center justify-between p-2 rounded-lg bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800/80">
                               <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                                🎯 {det.class}
+                                {det.class}
                               </span>
                               {det.confidence !== undefined ? (
                                 <Badge variant="success" className="text-xs font-bold">

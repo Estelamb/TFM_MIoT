@@ -8,6 +8,7 @@ service CompilationService {
   rpc GetSupportedHardware(GetSupportedHardwareRequest) returns (GetSupportedHardwareResponse);
   rpc GetSupportedSensors(GetSupportedSensorsRequest) returns (GetSupportedSensorsResponse);
   rpc GetSupportedActuators(GetSupportedActuatorsRequest) returns (GetSupportedActuatorsResponse);
+  rpc GetSupportedOthers(GetSupportedOthersRequest) returns (GetSupportedOthersResponse);
 }
 
 message CompileModelRequest {
@@ -62,5 +63,11 @@ message GetSupportedSensorsResponse {
 message GetSupportedActuatorsRequest {}
 message GetSupportedActuatorsResponse {
   repeated string actuators = 1;
+  map<string, string> labels = 2;
+}
+
+message GetSupportedOthersRequest {}
+message GetSupportedOthersResponse {
+  repeated string others = 1;
   map<string, string> labels = 2;
 }

@@ -264,12 +264,21 @@ export default function DeviceDetailPage() {
               </CardHeader>
               
               <div className="space-y-6 mt-4">
-                {/* Description */}
+                {/* Description / Base Layer */}
                 <div>
                   <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Description / Base Layer</h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
-                    {device.description || "No specific configuration layer specified."}
+                  <p className="text-sm text-gray-900 dark:text-white font-bold mb-1">
+                    {HW_LABELS[device.hardware_type] || device.hardware_type}
                   </p>
+                  {device.description ? (
+                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                      {device.description}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-400 dark:text-gray-500 italic">
+                      No additional description provided.
+                    </p>
+                  )}
                 </div>
 
                 {/* Peripherals */}
@@ -396,7 +405,7 @@ export default function DeviceDetailPage() {
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">LATENCY</span>
                       <div className="flex items-center gap-1.5 text-gray-800 dark:text-white font-bold text-lg">
                         <Wifi size={16} className="text-blue-500" />
-                        {deviceState.latency_ms} ms
+                        {typeof deviceState.latency_ms === "number" ? deviceState.latency_ms.toFixed(5) : deviceState.latency_ms} ms
                       </div>
                     </div>
                   </div>
@@ -571,7 +580,7 @@ export default function DeviceDetailPage() {
                               className="flex items-center justify-between p-2 rounded-lg bg-white dark:bg-gray-950 border border-slate-150 dark:border-gray-800/80 text-xs shadow-inner"
                             >
                               <span className="font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                                🎯 {det.class}
+                                {det.class}
                               </span>
                               {det.confidence !== undefined ? (
                                 <Badge variant="success" className="text-[10px] font-bold">

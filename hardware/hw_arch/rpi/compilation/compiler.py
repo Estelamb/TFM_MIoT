@@ -49,6 +49,7 @@ class RPiCPUCompiler(CompilerBase):
             onnx_path = os.path.join(tmpdir, "model.onnx")
             minio = get_minio()
             try:
+                await self.log_progress(model_id, "[RPiCPU] Descargando modelo base .pt desde MinIO...")
                 await minio.fget_object(self._bucket_models, source_key, pt_path)
             except Exception as e:
                 logger.error(f"[RPiCPU] Failed to download source model: {e}")
@@ -65,6 +66,7 @@ class RPiCPUCompiler(CompilerBase):
                     "3600"
                 ]
                 logger.info(f"[RPiCPU] Creating Docker container: {' '.join(run_cmd)}")
+                await self.log_progress(model_id, "[RPiCPU] Creando contenedor de compilación Docker...")
                 proc = await asyncio.create_subprocess_exec(
                     *run_cmd,
                     stdout=asyncio.subprocess.PIPE,
@@ -79,6 +81,7 @@ class RPiCPUCompiler(CompilerBase):
                 # 3. Copy the .pt file inside
                 cp_in_cmd = ["docker", "cp", pt_path, f"{container_name}:/tmp/model.pt"]
                 logger.info(f"[RPiCPU] Copying weights to container: {' '.join(cp_in_cmd)}")
+                await self.log_progress(model_id, "[RPiCPU] Copiando pesos del modelo al contenedor...")
                 proc = await asyncio.create_subprocess_exec(
                     *cp_in_cmd,
                     stdout=asyncio.subprocess.PIPE,
@@ -91,61 +94,25 @@ class RPiCPUCompiler(CompilerBase):
                     return CompilationResult(success=False, error=f"Failed to copy weights to container: {err_msg}")
 
                 # 4. Execute compilation
-                # Execute python export script inside the container
+                # Execute python export script inside the container with unbuffered python (-u)
                 exec_cmd = [
                     "docker", "exec", container_name,
-                    "python3", "-c",
+                    "python3", "-u", "-c",
                     f"from ultralytics import YOLO; model = YOLO('/tmp/model.pt'); model.export(format='onnx', imgsz={img_size}, batch=1, nms=True, opset=12)"
                 ]
                 logger.info(f"[RPiCPU] Executing ONNX export in container: {' '.join(exec_cmd)}")
+                await self.log_progress(model_id, "[RPiCPU] Iniciando exportación a ONNX (Ultralytics)...")
+
+                returncode = await self.run_subprocess_with_logs(model_id, exec_cmd)
 
                 redis = getattr(self, "redis_client", None)
                 cancel_key = f"cancel:compile:{model_id}"
                 if redis and await redis.exists(cancel_key):
                     raise asyncio.CancelledError()
 
-                proc = await asyncio.create_subprocess_exec(
-                    *exec_cmd,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                )
-
-                cancellation_task = None
-                if redis:
-                    async def check_cancel():
-                        try:
-                            while True:
-                                if await redis.exists(cancel_key):
-                                    logger.info(f"[RPiCPU] Cancellation requested. Stopping compile container...")
-                                    try:
-                                        proc.terminate()
-                                        await asyncio.sleep(1)
-                                        proc.kill()
-                                    except ProcessLookupError:
-                                        pass
-                                    break
-                                await asyncio.sleep(2)
-                        except asyncio.CancelledError:
-                            pass
-                    cancellation_task = asyncio.create_task(check_cancel())
-
-                try:
-                    stdout, stderr = await proc.communicate()
-                finally:
-                    if cancellation_task:
-                        cancellation_task.cancel()
-                        try:
-                            await cancellation_task
-                        except asyncio.CancelledError:
-                            pass
-
-                if redis and await redis.exists(cancel_key):
-                    raise asyncio.CancelledError()
-
-                if proc.returncode != 0:
-                    err_msg = stderr.decode().strip()
-                    logger.error(f"[RPiCPU] ONNX export failed inside container: {err_msg}\nStdout: {stdout.decode()}")
-                    return CompilationResult(success=False, error=f"ONNX export failed: {err_msg}")
+                if returncode != 0:
+                    logger.error(f"[RPiCPU] ONNX export failed inside container")
+                    return CompilationResult(success=False, error="ONNX export failed inside container")
 
                 # 5. Copy the compiled ONNX model back to host
                 cp_out_cmd = ["docker", "cp", f"{container_name}:/tmp/model.onnx", onnx_path]
