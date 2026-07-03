@@ -47,10 +47,3 @@ Detailed codebase layout walk-throughs and module documentation pages compiled d
    code_explanation
 
 ---
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
