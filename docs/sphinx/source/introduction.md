@@ -63,13 +63,6 @@ The AURA ecosystem is divided into two primary blocks: the **Cloud/Server Platfo
   * `edge-connector-service`: Handles communications with edge agents via MQTT, stores inference results in MongoDB, and exposes system telemetry for Prometheus.
 * **IoT Edge Runtime**: A Python agent optimized to run on the physical device, responsible for downloading models, verifying files with SHA-256 checksums, and executing inference tasks via the `aura_hw` library.
 
-### Key design decisions
-
-- **gRPC** for all internal service-to-service communication
-- **MQTT** as the cloud-to-edge transport (anonymous in PoC, pluggable via `shared/transport`)
-- **SHA-256 verification** on every model and script download at the edge
-- **Hardware abstraction** via `aura_hw`. Inference scripts are hardware-agnostic
-
 ---
 
 ## Supported Hardware
@@ -82,6 +75,5 @@ AURA abstracts the complexity of the underlying hardware acceleration. Developer
 | RPi5 + Hailo-8L | `.hef` | ✅ Full |
 | RPi5 + AI Camera (IMX500) | `packerOut.zip` | ✅ Full |
 | RPi5 (CPU) | `.onnx` | ✅ Full |
-| Jetson Orin Nano | `.engine` | ⚠️ Stub |
 
 To start deploying your own models, head over to the [Platform Execution Tutorial](tutorials/run_platform) to set up the system.
