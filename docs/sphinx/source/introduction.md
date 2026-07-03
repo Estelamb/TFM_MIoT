@@ -38,7 +38,7 @@ The AURA ecosystem is divided into two primary blocks: the **Cloud/Server Platfo
 |  (Models/Scripts/Db)   |   |   (Compilation)   |       |                        |
 +-----------+------------+   +---------+---------+       +--+-------------------+-+
             |                          |                    |                   |
- MinIO / PG |                   Docker |               MQTT |                   | Mongo / Prom   
+ MinIO / PG |                   Docker |               MQTT |                   | Mongo / Prom
             v                          v                    v                   v
 +-----------+------------+   +---------+---------+   +------+------+ +----------+----------+
 |  Storage & Databases   |   |   Docker Socket   |   | MQTT Broker | | Metrics & Telemetry |
@@ -46,11 +46,11 @@ The AURA ecosystem is divided into two primary blocks: the **Cloud/Server Platfo
 +------------------------+   +-------------------+          ^
                                                             |
                                  MQTT (Commands, Telemetry) |
-                                                            v                                                
-                                                    +------+------+
-                                                    |   Device    |
-                                                    | Edge Agent  |
-                                                    +-------------+
+                                                            v 
+                                                     +------+------+
+                                                     |   Device    |
+                                                     | Edge Agent  |
+                                                     +-------------+
 ```
 
 ---

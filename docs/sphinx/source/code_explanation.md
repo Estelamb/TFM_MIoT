@@ -21,6 +21,7 @@ TFM_MIoT/
 ├── frontend/                   # Next.js 15 frontend application (App Router)
 ├── shared/                     # Shared modules, utility code, and generated gRPC stubs
 └── hardware/                   # Custom hardware definitions, peripherals, and tempThe server-side system runs separate backend microservices interacting via gRPC, exposed to the web frontend through the API Gateway.
+```
 
 ### `services/api-gateway/`
 Acts as the single REST entry point. Resolves authentication, maps routes, and proxies requests to internal gRPC endpoints.

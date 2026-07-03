@@ -10,10 +10,11 @@ High-level introduction and structural design characteristics of the AURA Platfo
 
 .. toctree::
    :maxdepth: 1
-   :caption: General
 
    introduction
    architecture
+
+---
 
 Guides & Tutorials
 ------------------
@@ -22,7 +23,6 @@ Step-by-step guides to run the platform stack, operate the web console, set up p
 
 .. toctree::
    :maxdepth: 1
-   :caption: Tutorials
 
    tutorials/run_platform
    tutorials/use_platform
@@ -31,6 +31,8 @@ Step-by-step guides to run the platform stack, operate the web console, set up p
    tutorials/create_script
    tutorials/hardware/index
 
+---
+
 Codebase & API Reference
 ------------------------
 
@@ -38,9 +40,10 @@ Detailed codebase layout walk-throughs and module documentation pages compiled d
 
 .. toctree::
    :maxdepth: 1
-   :caption: Code Explanation
 
    code_explanation
+
+---
 
 Indices and tables
 ==================
