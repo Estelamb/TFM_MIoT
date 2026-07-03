@@ -19,10 +19,12 @@ The following diagram illustrates how components communicate across the AURA pla
                                            ▼
                                     MQTT Broker (:1883)
                                            ▲
-                                           │ MQTT (Publish / Subscribe)
+                                           │ MQTT (Commands with presigned URLs & SHA-256)
                                            ▼
-                                    Edge Runtime (PAL)
+                                    Edge Runtime (PAL) ◀──(Direct HTTPS Download)── MinIO
 ```
+
+---
 
 ## gRPC Internal Communication
 
@@ -33,6 +35,33 @@ All downstream microservices within the AURA backend communicate internally usin
 - **Edge Connector Service (`:50053`)**: Manages device connection states, metrics ingestion, OTA deployment status, and MQTT event coordination.
 
 Protocol buffers definitions reside under [shared/proto/](file:///c:/Users/Estela/TFM_MIoT/shared/proto), and the compiled stubs are dynamically loaded from [shared/proto_gen/](file:///c:/Users/Estela/TFM_MIoT/shared/proto_gen).
+
+---
+
+## MQTT topics
+
+Perimetral edge devices communicate asynchronously with the **Edge Connector Service** via the MQTT broker using the following topics structure:
+
+| Topic | Direction | Purpose |
+|---|---|---|
+| `device/{id}/commands` | Cloud → Edge | Send deploy/update commands |
+| `device/{id}/events` | Edge → Cloud | Acknowledge deploy or report failure |
+| `device/{id}/telemetry` | Edge → Cloud | CPU, RAM, active model ID |
+| `device/{id}/inference` | Edge → Cloud | Inference results (JSON) |
+
+---
+
+## Database layout
+
+The platform uses a specialized database stack adapted for relational metadata, binary storage, and time-series telemetry:
+
+- **PostgreSQL** — Relational metadata: Persists structured definitions of `devices`, `models`, `scripts`, and `deployments`.
+- **MongoDB** — Time-series storage: Ingests rapid, append-only `inference_results` and keeps the latest `device_states` from edge device telemetry.
+- **Redis** — Job queuing & state caching: Manages background async jobs queue (using `arq` workers) for compiler tasks, training execution, and coordination of deployment cancellations.
+- **Prometheus** — Telemetry metrics: Gathers and exposes node exporter metrics and edge agent statistics for visualization.
+- **MinIO** — Object storage: Stores raw uploaded PyTorch `.pt` files under `models/`, compiled binaries (like `.hef` or `.onnx`) under `compiled/`, raw ZIP datasets under `datasets/`, and custom user-provided inference scripts under `scripts/`.
+
+---
 
 ## API Gateway REST API
 
@@ -71,24 +100,3 @@ The API Gateway exposes REST HTTP endpoints to the frontend, requiring authentic
   - `GET /api/monitoring/devices`: Get real-time statuses and hardware metrics for all devices.
   - `GET /api/monitoring/devices/{device_id}`: Get active state of a specific device.
   - `GET /api/monitoring/devices/{device_id}/inference`: Retrieve latest historical inference payloads.
-
-## MQTT topics
-
-Perimetral edge devices communicate asynchronously with the **Edge Connector Service** via the MQTT broker using the following topics structure:
-
-| Topic | Direction | Purpose |
-|---|---|---|
-| `device/{id}/commands` | Cloud → Edge | Send deploy/update commands |
-| `device/{id}/events` | Edge → Cloud | Acknowledge deploy or report failure |
-| `device/{id}/telemetry` | Edge → Cloud | CPU, RAM, active model ID |
-| `device/{id}/inference` | Edge → Cloud | Inference results (JSON) |
-
-## Database layout
-
-The platform uses a specialized database stack adapted for relational metadata, binary storage, and time-series telemetry:
-
-- **PostgreSQL** — Relational metadata: Persists structured definitions of `devices`, `models`, `scripts`, and `deployments`.
-- **MongoDB** — Time-series storage: Ingests rapid, append-only `inference_results` and keeps the latest `device_states` from edge device telemetry.
-- **Redis** — Job queuing & state caching: Manages background async jobs queue (using `arq` workers) for compiler tasks, training execution, and coordination of deployment cancellations.
-- **Prometheus** — Telemetry metrics: Gathers and exposes node exporter metrics and edge agent statistics for visualization.
-- **MinIO** — Object storage: Stores raw uploaded PyTorch `.pt` files under `models/`, compiled binaries (like `.hef` or `.onnx`) under `compiled/`, raw ZIP datasets under `datasets/`, and custom user-provided inference scripts under `scripts/`.
