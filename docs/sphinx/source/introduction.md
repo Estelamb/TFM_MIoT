@@ -18,42 +18,44 @@ AURA provides a robust and scalable infrastructure that enables ML engineers, de
 The AURA ecosystem is divided into two primary blocks: the **Cloud/Server Platform** and the **IoT Edge Runtime**.
 
 ```
-                                     +--------------------+
-                                     | Frontend Interface |
-                                     |   (Next.js App)    |
-                                     +---------+----------+
-                                               | HTTP / JWT
-                                               v
-                                     +---------+----------+
-                                     |    API Gateway     |
-                                     |     (FastAPI)      |
-                                     +---------+----------+
-                                               |
-            +----------------------------------+----------------------------------+
-            |                                  |                                  |
-       gRPC |                             gRPC |                             gRPC |
-            v                                  v                                  v
-+-----------+------------+           +---------+---------+            +-----------+------------+
-|    registry-service    |           |   mlops-service   |            | edge-connector-service |
-|  (Models/Scripts/Db)   |           |   (Compilation)   |            |                        |
-+-----------+------------+           +---------+---------+            +--+-------------------+-+
-            |                                  |                         |                   |
- MinIO / PG |                           Docker |                    MQTT |                   | Mongo / Prom   
-            v                                  v                         v                   v
-+-----------+------------+           +---------+---------+        +------+------+ +----------+----------+
-|  Storage & Databases   |           |   Docker Socket   |        | MQTT Broker | | Metrics & Telemetry |
-|  (PostgreSQL & MinIO)  |           |                   |        +------+------+ +---------------------+
-+------------------------+           +-------------------+               ^
-                                                                         |
-                                              MQTT (Commands, Telemetry) |
-                                                                         v                                                
-                                                                  +------+------+
-                                                                  |   Device    |
-                                                                  | Edge Agent  |
-                                                                  +-------------+
+                             +--------------------+
+                             | Frontend Interface |
+                             |   (Next.js App)    |
+                             +---------+----------+
+                                       | HTTP / JWT
+                                       v
+                             +---------+----------+
+                             |    API Gateway     |
+                             |     (FastAPI)      |
+                             +---------+----------+
+                                       |
+            +--------------------------+-----------------------------+
+            |                          |                             |
+       gRPC |                     gRPC |                        gRPC |
+            v                          v                             v
++-----------+------------+   +---------+---------+       +-----------+------------+
+|    registry-service    |   |   mlops-service   |       | edge-connector-service |
+|  (Models/Scripts/Db)   |   |   (Compilation)   |       |                        |
++-----------+------------+   +---------+---------+       +--+-------------------+-+
+            |                          |                    |                   |
+ MinIO / PG |                   Docker |               MQTT |                   | Mongo / Prom   
+            v                          v                    v                   v
++-----------+------------+   +---------+---------+   +------+------+ +----------+----------+
+|  Storage & Databases   |   |   Docker Socket   |   | MQTT Broker | | Metrics & Telemetry |
+|  (PostgreSQL & MinIO)  |   |                   |   +------+------+ +---------------------+
++------------------------+   +-------------------+          ^
+                                                            |
+                                 MQTT (Commands, Telemetry) |
+                                                            v                                                
+                                                    +------+------+
+                                                    |   Device    |
+                                                    | Edge Agent  |
+                                                    +-------------+
 ```
 
-### Key Components
+---
+
+## Key Components
 
 * **Frontend (Next.js)**: A modern, intuitive dashboard interface for managing devices, uploading model/script artifacts, viewing live logs, and visualizing telemetry charts.
 * **API Gateway (FastAPI)**: Centralizes frontend requests, handles JWT authentication, and exposes a clean REST API while routing internal traffic using gRPC.
