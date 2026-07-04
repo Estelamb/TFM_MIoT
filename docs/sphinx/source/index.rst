@@ -63,48 +63,6 @@ docstrings for all backend services, the edge runtime, and shared libraries.
 
    code_explanation
 
-.. toctree::
-   :maxdepth: 1
-   :caption: API Gateway Service
-   :glob:
-
-   code_docs/api_gateway_service_*
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Registry Service
-   :glob:
-
-   code_docs/registry_service_*
-
-.. toctree::
-   :maxdepth: 1
-   :caption: MLOps Service
-   :glob:
-
-   code_docs/mlops_service_*
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Edge Connector Service
-   :glob:
-
-   code_docs/edge_connector_service_*
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Edge Runtime
-   :glob:
-
-   code_docs/edge_runtime_*
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Shared Libraries
-   :glob:
-
-   code_docs/shared_*
-
 ----
 
 .. note::
