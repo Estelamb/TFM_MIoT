@@ -26,60 +26,60 @@ Acts as the single REST entry point. Resolves authentication, maps routes, and p
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [main.py](code_docs/api_gateway_service_main.rst) | `services/api-gateway/app` | Initializes the FastAPI application, mounts CORS configurations, and binds REST routers. |
-| [config.py](code_docs/api_gateway_service_config.rst) | `services/api-gateway/app` | Declares and validates configuration parameters (ports, hosts, JWT secrets). |
-| [stubs.py](code_docs/api_gateway_service_stubs.rst) | `services/api-gateway/app` | Implements cached gRPC channel stubs singleton connection pool. |
-| [jwt.py](code_docs/api_gateway_service_auth_jwt.rst) | `services/api-gateway/app/auth` | Implements JWT token signing, verification, and mock user validation. |
-| [datasets.py](code_docs/api_gateway_service_routers_datasets.rst) | `services/api-gateway/app/routers` | Handles dataset zip validation and S3 uploads. |
-| [deployments.py](code_docs/api_gateway_service_routers_deployments.rst) | `services/api-gateway/app/routers` | Manages OTA deployment lifecycle and triggers. |
-| [devices.py](code_docs/api_gateway_service_routers_devices.rst) | `services/api-gateway/app/routers` | Manages device registration and queries peripheral catalogs. |
-| [models.py](code_docs/api_gateway_service_routers_models.rst) | `services/api-gateway/app/routers` | Handles ML model uploads and compiler activation. |
-| [monitoring.py](code_docs/api_gateway_service_routers_monitoring.rst) | `services/api-gateway/app/routers` | Establishes telemetry queries and historical inference endpoints. |
-| [scripts.py](code_docs/api_gateway_service_routers_scripts.rst) | `services/api-gateway/app/routers` | Handles user-defined inference scripts registration. |
+| [main.py](autoapi/api_gateway_service/main/index) | `services/api-gateway/app` | Initializes the FastAPI application, mounts CORS configurations, and binds REST routers. |
+| [config.py](autoapi/api_gateway_service/config/index) | `services/api-gateway/app` | Declares and validates configuration parameters (ports, hosts, JWT secrets). |
+| [stubs.py](autoapi/api_gateway_service/stubs/index) | `services/api-gateway/app` | Implements cached gRPC channel stubs singleton connection pool. |
+| [jwt.py](autoapi/api_gateway_service/auth/jwt/index) | `services/api-gateway/app/auth` | Implements JWT token signing, verification, and mock user validation. |
+| [datasets.py](autoapi/api_gateway_service/routers/datasets/index) | `services/api-gateway/app/routers` | Handles dataset zip validation and S3 uploads. |
+| [deployments.py](autoapi/api_gateway_service/routers/deployments/index) | `services/api-gateway/app/routers` | Manages OTA deployment lifecycle and triggers. |
+| [devices.py](autoapi/api_gateway_service/routers/devices/index) | `services/api-gateway/app/routers` | Manages device registration and queries peripheral catalogs. |
+| [models.py](autoapi/api_gateway_service/routers/models/index) | `services/api-gateway/app/routers` | Handles ML model uploads and compiler activation. |
+| [monitoring.py](autoapi/api_gateway_service/routers/monitoring/index) | `services/api-gateway/app/routers` | Establishes telemetry queries and historical inference endpoints. |
+| [scripts.py](autoapi/api_gateway_service/routers/scripts/index) | `services/api-gateway/app/routers` | Handles user-defined inference scripts registration. |
 
 ### `services/registry-service/`
 Acts as the metadata catalog. Persists data about registered hardware, uploaded model assets, and scripts.
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [main.py](code_docs/registry_service_main.rst) | `services/registry-service/app` | Instantiates and starts the registry service gRPC listener on port `50051`. |
-| [config.py](code_docs/registry_service_config.rst) | `services/registry-service/app` | Service settings loader. |
-| [update_existing_datasets.py](code_docs/registry_service_update_existing_datasets.rst) | `services/registry-service/app` | Migration scripts to bootstrap database datasets logic. |
-| [ai_handler.py](code_docs/registry_service_grpc_handlers_ai_handler.rst) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to models registration, dataset files, and compiler reports. |
-| [device_handler.py](code_docs/registry_service_grpc_handlers_device_handler.rst) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to device registrations, updates, and deletes. |
-| [script_handler.py](code_docs/registry_service_grpc_handlers_script_handler.rst) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to script file catalog storage. |
-| [devices.py](code_docs/registry_service_repositories_devices.rst) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for device records. |
-| [models.py](code_docs/registry_service_repositories_models.rst) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for models and datasets records. |
-| [scripts.py](code_docs/registry_service_repositories_scripts.rst) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for scripts metadata. |
-| [orm.py](code_docs/registry_service_models_orm.rst) | `services/registry-service/app/models` | SQLAlchemy ORM classes mapping database tables (`devices`, `models`, `scripts`, `deployments`). |
+| [main.py](autoapi/registry_service/main/index) | `services/registry-service/app` | Instantiates and starts the registry service gRPC listener on port `50051`. |
+| [config.py](autoapi/registry_service/config/index) | `services/registry-service/app` | Service settings loader. |
+| [update_existing_datasets.py](autoapi/registry_service/update_existing_datasets/index) | `services/registry-service/app` | Migration scripts to bootstrap database datasets logic. |
+| [ai_handler.py](autoapi/registry_service/grpc_handlers/ai_handler/index) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to models registration, dataset files, and compiler reports. |
+| [device_handler.py](autoapi/registry_service/grpc_handlers/device_handler/index) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to device registrations, updates, and deletes. |
+| [script_handler.py](autoapi/registry_service/grpc_handlers/script_handler/index) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to script file catalog storage. |
+| [devices.py](autoapi/registry_service/repositories/devices/index) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for device records. |
+| [models.py](autoapi/registry_service/repositories/models/index) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for models and datasets records. |
+| [scripts.py](autoapi/registry_service/repositories/scripts/index) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for scripts metadata. |
+| [orm.py](autoapi/registry_service/models/orm/index) | `services/registry-service/app/models` | SQLAlchemy ORM classes mapping database tables (`devices`, `models`, `scripts`, `deployments`). |
 
 ### `services/mlops-service/`
 Runs asynchronous compilation and optimization pipelines using isolated Docker runtimes.
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [main.py](code_docs/mlops_service_main.rst) | `services/mlops-service/app` | Starts the gRPC compilation listener server on port `50052`. |
-| [config.py](code_docs/mlops_service_config.rst) | `services/mlops-service/app` | MLOps environmental parameters validation settings. |
-| [worker.py](code_docs/mlops_service_worker.rst) | `services/mlops-service/app` | ARQ Redis worker processing compiled models and yolo training runs. |
-| [compilation_handler.py](code_docs/mlops_service_grpc_handlers_compilation_handler.rst) | `services/mlops-service/app/grpc_handlers` | Listens to and launches job compilation requests. |
-| [base.py](code_docs/mlops_service_compilers_base.rst) | `services/mlops-service/app/compilers` | Defines abstract `CompilerBase` interface and Redis logs streamer tools. |
-| [yolo_train.py](code_docs/mlops_service_compilers_yolo_train.rst) | `services/mlops-service/app/compilers` | Pipeline trigger that executes YOLOv8 model training. |
+| [main.py](autoapi/mlops_service/main/index) | `services/mlops-service/app` | Starts the gRPC compilation listener server on port `50052`. |
+| [config.py](autoapi/mlops_service/config/index) | `services/mlops-service/app` | MLOps environmental parameters validation settings. |
+| [worker.py](autoapi/mlops_service/worker/index) | `services/mlops-service/app` | ARQ Redis worker processing compiled models and yolo training runs. |
+| [compilation_handler.py](autoapi/mlops_service/grpc_handlers/compilation_handler/index) | `services/mlops-service/app/grpc_handlers` | Listens to and launches job compilation requests. |
+| [base.py](autoapi/mlops_service/compilers/base/index) | `services/mlops-service/app/compilers` | Defines abstract `CompilerBase` interface and Redis logs streamer tools. |
+| [yolo_train.py](autoapi/mlops_service/compilers/yolo_train/index) | `services/mlops-service/app/compilers` | Pipeline trigger that executes YOLOv8 model training. |
 
 ### `services/edge-connector-service/`
 Connects the cloud services to the physical hardware devices.
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [main.py](code_docs/edge_connector_service_main.rst) | `services/edge-connector-service/app` | Entry point starting the gRPC connector server on port `50053` and the Prometheus metrics exporter on port `9100`. |
-| [config.py](code_docs/edge_connector_service_config.rst) | `services/edge-connector-service/app` | Service database and broker credentials validation. |
-| [worker.py](code_docs/edge_connector_service_worker.rst) | `services/edge-connector-service/app` | ARQ queue worker monitoring active deployments status. |
-| [deployment_handler.py](code_docs/edge_connector_service_grpc_handlers_deployment_handler.rst) | `services/edge-connector-service/app/grpc_handlers` | Handles RPCs for scheduling OTA deployments. |
-| [monitoring_handler.py](code_docs/edge_connector_service_grpc_handlers_monitoring_handler.rst) | `services/edge-connector-service/app/grpc_handlers` | Handles RPC queries retrieving active telemetry statuses. |
-| [listener.py](code_docs/edge_connector_service_mqtt_listener.rst) | `services/edge-connector-service/app/mqtt` | MQTT loop client ingesting telemetry, acknowledgements, and inference payloads. |
-| [orm.py](code_docs/edge_connector_service_models_orm.rst) | `services/edge-connector-service/app/models` | SQLAlchemy structures tracking active deployments. |
-| [mongo.py](code_docs/edge_connector_service_models_mongo.rst) | `services/edge-connector-service/app/models` | Time-series metrics document structures. |
-| [deployments.py](code_docs/edge_connector_service_repositories_deployments.rst) | `services/edge-connector-service/app/repositories` | Query interface for deployment statuses. |
-| [monitoring.py](code_docs/edge_connector_service_repositories_monitoring.rst) | `services/edge-connector-service/app/repositories` | Ingest log controller inserting states to MongoDB and updating Prometheus gauges. |
+| [main.py](autoapi/edge_connector_service/main/index) | `services/edge-connector-service/app` | Entry point starting the gRPC connector server on port `50053` and the Prometheus metrics exporter on port `9100`. |
+| [config.py](autoapi/edge_connector_service/config/index) | `services/edge-connector-service/app` | Service database and broker credentials validation. |
+| [worker.py](autoapi/edge_connector_service/worker/index) | `services/edge-connector-service/app` | ARQ queue worker monitoring active deployments status. |
+| [deployment_handler.py](autoapi/edge_connector_service/grpc_handlers/deployment_handler/index) | `services/edge-connector-service/app/grpc_handlers` | Handles RPCs for scheduling OTA deployments. |
+| [monitoring_handler.py](autoapi/edge_connector_service/grpc_handlers/monitoring_handler/index) | `services/edge-connector-service/app/grpc_handlers` | Handles RPC queries retrieving active telemetry statuses. |
+| [listener.py](autoapi/edge_connector_service/mqtt/listener/index) | `services/edge-connector-service/app/mqtt` | MQTT loop client ingesting telemetry, acknowledgements, and inference payloads. |
+| [orm.py](autoapi/edge_connector_service/models/orm/index) | `services/edge-connector-service/app/models` | SQLAlchemy structures tracking active deployments. |
+| [mongo.py](autoapi/edge_connector_service/models/mongo/index) | `services/edge-connector-service/app/models` | Time-series metrics document structures. |
+| [deployments.py](autoapi/edge_connector_service/repositories/deployments/index) | `services/edge-connector-service/app/repositories` | Query interface for deployment statuses. |
+| [monitoring.py](autoapi/edge_connector_service/repositories/monitoring/index) | `services/edge-connector-service/app/repositories` | Ingest log controller inserting states to MongoDB and updating Prometheus gauges. |
 
 ---
 
@@ -89,15 +89,15 @@ Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [agent.py](code_docs/edge_runtime_agent.rst) | `edge-runtime` | Main client entrypoint launching MQTT subscriptions, periodic telemetry updates, and active inference runtime loops. |
-| [hardware_daemon.py](code_docs/edge_runtime_hardware_daemon.rst) | `edge-runtime` | Host-level HTTP server exposing cameras and accelerators natively to Docker containers. |
-| [detect.py](code_docs/edge_runtime_aura_hw_detect.rst) | `edge-runtime/aura_hw` | Probes host system hardware to detect connected accelerators (Hailo, IMX500, CPU). |
-| [device_manager.py](code_docs/edge_runtime_aura_hw_device_manager.rst) | `edge-runtime/aura_hw` | Controls dynamic sensor configuration and peripheral drivers instantiation. |
-| [loader.py](code_docs/edge_runtime_aura_hw_loader.rst) | `edge-runtime/aura_hw` | Dynamically compiles and loads the user's inference script in memory. |
-| [runtime.py](code_docs/edge_runtime_aura_hw_runtime.rst) | `edge-runtime/aura_hw` | Public hardware interfaces managing model execution backends. |
-| [comm_client.py](code_docs/edge_runtime_pal_comm_client.rst) | `edge-runtime/pal` | Stable MQTT wrapper client mapping telemetry payload conventions. |
-| [orchestrator.py](code_docs/edge_runtime_pal_orchestrator.rst) | `edge-runtime/pal` | Handles parallel telemetry metrics and inference loops execution. |
-| [ota_handler.py](code_docs/edge_runtime_pal_ota_handler.rst) | `edge-runtime/pal` | Manages secure HTTP downloads of model files and executes SHA-256 integrity validation checks. |
+| [agent.py](autoapi/edge_runtime/agent/index) | `edge-runtime` | Main client entrypoint launching MQTT subscriptions, periodic telemetry updates, and active inference runtime loops. |
+| [hardware_daemon.py](autoapi/edge_runtime/hardware_daemon/index) | `edge-runtime` | Host-level HTTP server exposing cameras and accelerators natively to Docker containers. |
+| [detect.py](autoapi/edge_runtime/aura_hw/detect/index) | `edge-runtime/aura_hw` | Probes host system hardware to detect connected accelerators (Hailo, IMX500, CPU). |
+| [device_manager.py](autoapi/edge_runtime/aura_hw/device_manager/index) | `edge-runtime/aura_hw` | Controls dynamic sensor configuration and peripheral drivers instantiation. |
+| [loader.py](autoapi/edge_runtime/aura_hw/loader/index) | `edge-runtime/aura_hw` | Dynamically compiles and loads the user's inference script in memory. |
+| [runtime.py](autoapi/edge_runtime/aura_hw/runtime/index) | `edge-runtime/aura_hw` | Public hardware interfaces managing model execution backends. |
+| [comm_client.py](autoapi/edge_runtime/pal/comm_client/index) | `edge-runtime/pal` | Stable MQTT wrapper client mapping telemetry payload conventions. |
+| [orchestrator.py](autoapi/edge_runtime/pal/orchestrator/index) | `edge-runtime/pal` | Handles parallel telemetry metrics and inference loops execution. |
+| [ota_handler.py](autoapi/edge_runtime/pal/ota_handler/index) | `edge-runtime/pal` | Manages secure HTTP downloads of model files and executes SHA-256 integrity validation checks. |
 
 ---
 
@@ -124,13 +124,13 @@ Common modules imported by both backend microservices and edge runtimes.
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [proto_gen/](code_docs/shared_transport.rst) | `shared` | Generated Protocol Buffer Python message stubs and services bindings. |
-| [base.py](code_docs/shared_transport_base.rst) | `shared/transport` | Defines abstract transport layers interfaces. |
-| [mqtt.py](code_docs/shared_transport_mqtt.rst) | `shared/transport` | Reusable MQTT connection and publish wrappers logic. |
-| [database.py](code_docs/shared_utils_database.rst) | `shared/utils` | Shared SQLAlchemy engine connection context helpers. |
-| [minio.py](code_docs/shared_utils_minio.rst) | `shared/utils` | Wraps client logic for presigned URL signatures and uploads. |
-| [logging.py](code_docs/shared_utils_logging.rst) | `shared/utils` | Unified format configuration settings for all console outputs. |
-| [grpc_server.py](code_docs/shared_utils_grpc_server.rst) | `shared/utils` | Core listener startup helper wrapping standard gRPC parameters. |
+| [proto_gen/](autoapi/shared/transport/index) | `shared` | Generated Protocol Buffer Python message stubs and services bindings. |
+| [base.py](autoapi/shared/transport/base/index) | `shared/transport` | Defines abstract transport layers interfaces. |
+| [mqtt.py](autoapi/shared/transport/mqtt/index) | `shared/transport` | Reusable MQTT connection and publish wrappers logic. |
+| [database.py](autoapi/shared/utils/database/index) | `shared/utils` | Shared SQLAlchemy engine connection context helpers. |
+| [minio.py](autoapi/shared/utils/minio/index) | `shared/utils` | Wraps client logic for presigned URL signatures and uploads. |
+| [logging.py](autoapi/shared/utils/logging/index) | `shared/utils` | Unified format configuration settings for all console outputs. |
+| [grpc_server.py](autoapi/shared/utils/grpc_server/index) | `shared/utils` | Core listener startup helper wrapping standard gRPC parameters. |
 
 ---
 

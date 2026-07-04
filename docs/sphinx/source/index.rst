@@ -12,8 +12,8 @@ resource-constrained edge hardware, from uploading a trained model to monitoring
 results in real time.
 
 .. tip::
-   New here? Start with the :doc:\introduction\ for a high-level overview and then follow
-   the :doc:\	utorials/run_platform\ guide to get the stack running locally.
+   New here? Start with the :doc:`introduction` for a high-level overview and then follow
+   the :doc:`tutorials/run_platform` guide to get the stack running locally.
 
 ----
 
@@ -67,5 +67,5 @@ docstrings for all backend services, the edge runtime, and shared libraries.
 
 .. note::
    This documentation is auto-generated from source code docstrings using
-   \sphinx-autoapi <https://sphinx-autoapi.readthedocs.io>\_. Keep docstrings
+   `sphinx-autoapi <https://sphinx-autoapi.readthedocs.io>`_. Keep docstrings
    up to date to ensure the reference pages remain accurate.
