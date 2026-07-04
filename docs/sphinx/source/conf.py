@@ -4,47 +4,50 @@ import sys
 import shutil
 
 # ── Path setup ────────────────────────────────────────────────────────────────
-_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+_root    = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+# Build-time staging area for renamed source packages (gitignored).
+# The real project source lives in services/<svc>/app, edge-runtime/, shared/,
+# but autoapi needs packages named after the service (not "app"), so we copy
+# them here at build time. This directory is NEVER committed to git.
+_autosrc = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "_autosrc"))
 
 dynamic_packages = {
-    "api_gateway_service": os.path.join(_root, "services/api-gateway/app"),
-    "registry_service": os.path.join(_root, "services/registry-service/app"),
-    "mlops_service": os.path.join(_root, "services/mlops-service/app"),
+    "api_gateway_service":    os.path.join(_root, "services/api-gateway/app"),
+    "registry_service":       os.path.join(_root, "services/registry-service/app"),
+    "mlops_service":          os.path.join(_root, "services/mlops-service/app"),
     "edge_connector_service": os.path.join(_root, "services/edge-connector-service/app"),
-    "edge_runtime": os.path.join(_root, "edge-runtime"),
-    "shared": os.path.join(_root, "shared"),
+    "edge_runtime":           os.path.join(_root, "edge-runtime"),
+    "shared":                 os.path.join(_root, "shared"),
 }
 
 autoapi_dirs = []
 
+os.makedirs(_autosrc, exist_ok=True)
+
 for name, src in dynamic_packages.items():
-    dest = os.path.join(os.path.dirname(__file__), name)
+    dest = os.path.join(_autosrc, name)
     if os.path.exists(dest):
         try:
             shutil.rmtree(dest)
         except Exception:
             pass
-    shutil.copytree(src, dest, ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "build", "dist", ".doctrees", "html"))
-    
-    # Ensure __init__.py exists recursively in all subdirectories under dest
-    for root_dir, dirs, files in os.walk(dest):
-        init_file = os.path.join(root_dir, "__init__.py")
-        if not os.path.exists(init_file):
-            with open(init_file, "w", encoding="utf-8") as f:
-                f.write("# Auto-generated package init\n")
-            
-    autoapi_dirs.append(dest)
+    if os.path.exists(src):
+        shutil.copytree(src, dest, ignore=shutil.ignore_patterns(
+            "__pycache__", "*.pyc", "build", "dist", ".doctrees", "html"
+        ))
+        # Ensure __init__.py exists recursively so autodoc can import subpackages
+        for root_dir, dirs, files in os.walk(dest):
+            init_file = os.path.join(root_dir, "__init__.py")
+            if not os.path.exists(init_file):
+                with open(init_file, "w", encoding="utf-8") as f:
+                    f.write("# Auto-generated package init\n")
+        autoapi_dirs.append(dest)
 
+# Make staged packages importable (e.g. "import api_gateway_service")
+sys.path.insert(0, _autosrc)
 sys.path.insert(0, _root)
-for svc in [
-    "services/api-gateway",
-    "services/registry-service",
-    "services/mlops-service",
-    "services/edge-connector-service",
-    "edge-runtime",
-]:
-    sys.path.insert(0, os.path.join(_root, svc))
 sys.path.insert(0, os.path.dirname(__file__))
+
 
 # ── Project info ──────────────────────────────────────────────────────────────
 project   = "AURA Platform"

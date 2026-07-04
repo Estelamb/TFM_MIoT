@@ -13,8 +13,6 @@ TFM_MIoT/
 ├── .env.example                # Global template for environment variables
 ├── docker-compose.yml          # Container orchestration file for server stack & infra
 ├── README.md                   # Unified project overview, quick start, running guide, and developer guide
-├── data/                       # Local volume mounts for databases (git-ignored)
-├── docker/                     # Per-service compose files and setup configurations
 ├── docs/                       # Project documentation (Sphinx & TypeDoc configurations)
 ├── services/                   # Server backend microservices (gRPC/REST/MQTT listeners)
 ├── edge-runtime/               # Python-based agent code running on edge devices

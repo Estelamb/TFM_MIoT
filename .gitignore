@@ -39,3 +39,7 @@ shared/proto_gen/__pycache__/
 /tmp/aura-compilation/
 .agents/
 build/
+
+# Sphinx build artifacts (generated at build time, never committed)
+docs/sphinx/_autosrc/
+docs/sphinx/build/
