@@ -63,7 +63,30 @@ extensions = [
     "myst_parser",                # Markdown support for .md files
 ]
 
-# ── autoapi ───────────────────────────────────────────────────────────────────
+# ── Autodoc mock imports ───────────────────────────────────────────────────────
+# Packages not installed in the docs build environment are mocked so that
+# autodoc can import the source modules and extract docstrings without errors.
+autodoc_mock_imports = [
+    "aiomqtt",
+    "sqlalchemy",
+    "grpc",
+    "miniopy_async",
+    "fastapi",
+    "pydantic",
+    "uvicorn",
+    "motor",
+    "pymongo",
+    "prometheus_client",
+    "hailo_platform",
+    "picamera2",
+    "libcamera",
+    "numpy",
+    "cv2",
+    "onnxruntime",
+    "imx500",
+]
+
+
 autoapi_type              = "python"
 autoapi_dirs              = autoapi_dirs
 autoapi_keep_files        = False
@@ -116,8 +139,16 @@ html_theme_options = {
 }
 todo_include_todos = True
 
-# Suppress known autoapi duplicate-field warnings for dataclasses
+# Suppress known warnings:
+#   autoapi        - duplicate-field warnings for dataclasses
+#   ref.duplicate  - duplicate cross-reference targets
+#   autodoc.*      - import failures already handled via autodoc_mock_imports
+#   toc.*          - non-fatal toctree resolution issues
 suppress_warnings = [
     "autoapi",
     "ref.duplicate",
+    "autodoc.import_object",
+    "toc.not_readable",
+    "toc.excluded",
+    "app.add_node",
 ]
