@@ -1,7 +1,7 @@
 """
 Abstract base class for all AURA inference backends.
 
-Each hardware accelerator target (Hailo, ONNX, IMX500, TensorRT)
+Each hardware accelerator target (Hailo, ONNX, IMX500)
 implements this interface so the rest of the runtime is fully
 hardware-agnostic.
 
@@ -65,7 +65,7 @@ class InferenceBackend(ABC):
 
         Returns:
             One of ``"hailo8"``, ``"hailo8l"``, ``"rpi_ai_cam"``,
-            ``"rpi"``, ``"jetson_orin_nano"``.
+            ``"rpi"``.
         """
         ...
 

@@ -9,10 +9,9 @@ Detection order
 ---------------
 1. ``AURA_HARDWARE_TYPE`` environment variable (override, highest priority)
 2. ``hailortcli fw-control identify`` → ``hailo8`` / ``hailo8l``
-3. ``/etc/nv_tegra_release`` → ``jetson_orin_nano``
-4. ``libcamera-hello --list-cameras`` with *imx500* in output → ``rpi_ai_cam``
-5. ``/proc/device-tree/model`` containing *raspberry* → ``rpi``
-6. Fallback → ``unknown``
+3. ``libcamera-hello --list-cameras`` with *imx500* in output → ``rpi_ai_cam``
+4. ``/proc/device-tree/model`` containing *raspberry* → ``rpi``
+5. Fallback → ``unknown``
 
 If the result is ``"unknown"``, :func:`~aura_hw.runtime.load_model` will
 raise :exc:`RuntimeError`.  Set ``AURA_HARDWARE_TYPE`` to a supported
@@ -35,7 +34,6 @@ def detect_hardware() -> str:
 
         * ``"hailo8"``
         * ``"hailo8l"``
-        * ``"jetson_orin_nano"``
         * ``"rpi_ai_cam"``
         * ``"rpi"``
         * ``"unknown"``
@@ -92,10 +90,6 @@ def detect_hardware() -> str:
             return "hailo8l" if "hailo8l" in result.stdout.lower() else "hailo8"
     except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
-
-    # NVIDIA Jetson
-    if os.path.exists("/etc/nv_tegra_release"):
-        return "jetson_orin_nano"
 
     # Raspberry Pi AI Camera (Sony IMX500)
     try:

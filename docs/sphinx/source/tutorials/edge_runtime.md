@@ -43,7 +43,6 @@ def run(raw_input):   # called by the runtime
 
 1. `AURA_HARDWARE_TYPE` env var (override)
 2. `hailortcli fw-control identify` → `hailo8` / `hailo8l`
-3. `/etc/nv_tegra_release` → `jetson_orin_nano`
-4. `libcamera-hello --list-cameras` with imx500 → `rpi_ai_cam`
-5. `/proc/device-tree/model` with "raspberry" → `rpi`
-6. Fallback → ONNX CPU
+3. `libcamera-hello --list-cameras` with imx500 → `rpi_ai_cam`
+4. `/proc/device-tree/model` with "raspberry" → `rpi`
+5. Fallback → ONNX CPU

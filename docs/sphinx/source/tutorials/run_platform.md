@@ -128,7 +128,7 @@ python agent.py
 | `AURA_DEVICE_ID` | `dev-device-001` | Unique device identifier. Must exactly match the Device ID registered in the AURA web console. |
 | `AURA_MQTT_HOST` | `localhost` | IP address or domain name where the platform's MQTT broker is running. |
 | `AURA_MQTT_PORT` | `1883` | MQTT broker port (usually `1883`). |
-| `AURA_HARDWARE_TYPE` | *Auto-detected* | Overrides automatic hardware detection. Valid values: `hailo8`, `hailo8l`, `imx500`, `rpi` (CPU), `jetson_orin_nano`. |
+| `AURA_HARDWARE_TYPE` | *Auto-detected* | Overrides automatic hardware detection. Valid values: `hailo8`, `hailo8l`, `imx500`, `rpi` (CPU). |
 | `AURA_TELEMETRY_INTERVAL` | `10` | Frequency in seconds at which the agent sends CPU/RAM telemetry messages. |
 
 The agent will establish a connection with the broker. Upon success, the device state will change to **Online** in the AURA web dashboard.

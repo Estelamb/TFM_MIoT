@@ -93,7 +93,7 @@ Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).
 |---|---|---|
 | [agent.py](code_docs/edge_runtime_agent.rst) | `edge-runtime` | Main client entrypoint launching MQTT subscriptions, periodic telemetry updates, and active inference runtime loops. |
 | [hardware_daemon.py](code_docs/edge_runtime_hardware_daemon.rst) | `edge-runtime` | Host-level HTTP server exposing cameras and accelerators natively to Docker containers. |
-| [detect.py](code_docs/edge_runtime_aura_hw_detect.rst) | `edge-runtime/aura_hw` | Probes host system hardware to detect connected accelerators (Hailo, IMX500, Jetson, CPU). |
+| [detect.py](code_docs/edge_runtime_aura_hw_detect.rst) | `edge-runtime/aura_hw` | Probes host system hardware to detect connected accelerators (Hailo, IMX500, CPU). |
 | [device_manager.py](code_docs/edge_runtime_aura_hw_device_manager.rst) | `edge-runtime/aura_hw` | Controls dynamic sensor configuration and peripheral drivers instantiation. |
 | [loader.py](code_docs/edge_runtime_aura_hw_loader.rst) | `edge-runtime/aura_hw` | Dynamically compiles and loads the user's inference script in memory. |
 | [runtime.py](code_docs/edge_runtime_aura_hw_runtime.rst) | `edge-runtime/aura_hw` | Public hardware interfaces managing model execution backends. |

@@ -7,9 +7,10 @@ Welcome to the official documentation for **AURA Platform**, a comprehensive, en
 AURA provides a robust and scalable infrastructure that enables ML engineers, developers, and integrators to manage and orchestrate Edge AI workflows with ease. The platform covers the following key phases:
 
 1. **Upload** a trained `.pt` model
-2. **Compile** it for your target hardware (Hailo-8, IMX500, ONNX, TensorRT)
+2. **Compile** it for your target hardware (Hailo-8, IMX500, ONNX)
 3. **Deploy** model + inference script to one or more edge devices over MQTT
-4. **Monitor** CPU/RAM telemetry and inference results in real time
+4. **Download & verify** the compiled model on the edge device, with SHA-256 checksum validation to guarantee file integrity
+5. **Monitor** CPU/RAM telemetry and inference results in real time
 
 ---
 
