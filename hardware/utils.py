@@ -1,6 +1,5 @@
-"""
-AURA Hardware Shared Utilities
-==============================
+"""AURA Hardware Shared Utilities.
+
 Common helpers for resolving device configuration and loading dynamic drivers.
 """
 import yaml
@@ -11,58 +10,120 @@ import inspect
 import logging
 
 logger = logging.getLogger(__name__)
+"""Logger instance specific to hardware driver loading."""
 
 class MockDevice:
     """Universal mock device that responds to all method calls without crashing."""
-    def __init__(self, *args, **kwargs):
+    
+    def __init__(self, *args: any, **kwargs: any):
+        """Initialises the MockDevice."""
         pass
+        
     def initialize(self) -> bool:
+        """Mock device initialization callback.
+
+        Returns:
+            Always returns True.
+        """
         return True
+        
     def open(self, params: dict) -> None:
+        """Mock open driver interface.
+
+        Args:
+            params: Dictionary containing configuration properties.
+        """
         pass
+        
     def close(self) -> None:
+        """Mock close driver interface."""
         pass
-    def read_value(self):
+        
+    def read_value(self) -> dict:
+        """Mock read value interface.
+
+        Returns:
+            Status metrics dictionary.
+        """
         return {"status": "mock_active"}
-    def measure(self):
+        
+    def measure(self) -> dict:
+        """Mock sensor measure interface.
+
+        Returns:
+            Status metrics dictionary.
+        """
         return self.read_value()
-    def write_value(self, value) -> None:
+        
+    def write_value(self, value: any) -> None:
+        """Mock actuator write value interface.
+
+        Args:
+            value: The value payload to write.
+        """
         pass
-    def write(self, value) -> None:
+        
+    def write(self, value: any) -> None:
+        """Mock actuator write interface.
+
+        Args:
+            value: The value payload to write.
+        """
         pass
-    def capture_frame(self):
+        
+    def capture_frame(self) -> any:
+        """Mock camera capture frame interface.
+
+        Returns:
+            A blank 3D numpy array or list array.
+        """
         try:
             import numpy as np
             return np.zeros((640, 640, 3), dtype=np.uint8)
         except ImportError:
             return [[[0, 0, 0] for _ in range(640)] for _ in range(640)]
-    def take_photo(self):
+            
+    def take_photo(self) -> any:
+        """Mock camera take photo interface.
+
+        Returns:
+            A blank capture frame.
+        """
         return self.capture_frame()
-    def __getattr__(self, name):
-        # Gracefully handle any other dynamic methods
+        
+    def __getattr__(self, name: str) -> callable:
+        """Gracefully resolves any missing methods dynamically on the mock device.
+
+        Args:
+            name: Method name string.
+
+        Returns:
+            Callable placeholder function returning None.
+        """
         def mock_method(*args, **kwargs):
             return None
         return mock_method
 
 def get_config_path() -> Path:
-    """Find the components_config.yaml file path across standard setups."""
+    """Finds the components_config.yaml file path across standard setups.
+
+    Returns:
+        The resolved Path configuration object.
+    """
     env_path = os.environ.get("AURA_COMPONENTS_CONFIG_PATH")
     if env_path:
         p = Path(env_path)
         if p.exists():
             return p.resolve()
 
-    # Standard docker mount
     p = Path("/app/config/components_config.yaml")
     if p.exists():
         return p.resolve()
 
-    # Workspace sibling check relative to this file
     p = Path(__file__).parents[1] / "edge-runtime" / "config" / "components_config.yaml"
     if p.exists():
         return p.resolve()
 
-    # Relative to current working directory
     p = Path("config/components_config.yaml")
     if p.exists():
         return p.resolve()
@@ -70,7 +131,14 @@ def get_config_path() -> Path:
     return Path("config/components_config.yaml").resolve()
 
 def get_active_driver(device_type: str) -> tuple[str, dict]:
-    """Find the configured driver name and params for a given device type."""
+    """Finds the configured driver name and params for a given device type.
+
+    Args:
+        device_type: Device classification name (e.g. 'camera', 'gps').
+
+    Returns:
+        A tuple of (driver_name, parameters_dict).
+    """
     config_path = get_config_path()
     if not config_path.exists():
         logger.warning(f"components_config.yaml not found at {config_path}. Defaulting to template driver.")
@@ -87,7 +155,16 @@ def get_active_driver(device_type: str) -> tuple[str, dict]:
     return "template", {}
 
 def load_specific_driver(category: str, device_type: str, driver: str) -> type:
-    """Dynamically load and return the main class of a specific device driver."""
+    """Dynamically loads and returns the main class of a specific device driver.
+
+    Args:
+        category: Driver category subdirectory ('sensors', 'actuators', 'others').
+        device_type: Specific target device folder name.
+        driver: Target driver name.
+
+    Returns:
+        The loaded class object type, or MockDevice fallback if loading failed.
+    """
     module_name = f"hardware.{category}.{device_type}.{driver.lower()}.library"
     try:
         module = importlib.import_module(module_name)

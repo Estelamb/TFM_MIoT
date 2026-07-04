@@ -1,8 +1,14 @@
+"""REST API Router for managing datasets.
+
+Supports uploading dataset ZIP archives, executing file structure integrity checks,
+managing dataset versions, and retrieving presigned download links.
+"""
 import io
 import json
 import uuid
 import zipfile
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from pydantic import BaseModel
 
 from app.auth.jwt import verify_token
 from app.stubs import get_stub
@@ -10,10 +16,20 @@ from shared.proto_gen import ai_pb2
 from shared.utils.minio import upload_bytes, presigned_url
 
 router = APIRouter(prefix="/api/datasets", tags=["datasets"])
-
+"""APIRouter instance for dataset endpoints."""
 
 def validate_dataset_zip(file_bytes: bytes) -> tuple[bool, str, int, list[str]]:
-    """Validate that the ZIP contains images/, labels/ and classes.json (can be inside a subfolder)."""
+    """Validates that a dataset ZIP archive follows the YOLO format structure.
+
+    Checks for the existence of `classes.json`, an `images/` directory, and
+    a `labels/` directory, and extracts the list of class names.
+
+    Args:
+        file_bytes: Raw binary content of the ZIP archive.
+
+    Returns:
+        A tuple of (is_valid, error_message, num_classes, list_of_class_names).
+    """
     try:
         with zipfile.ZipFile(io.BytesIO(file_bytes)) as z:
             namelist = z.namelist()
@@ -68,7 +84,6 @@ def validate_dataset_zip(file_bytes: bytes) -> tuple[bool, str, int, list[str]]:
     except Exception as e:
         return False, f"Error validating zip file: {e}", 0, []
 
-
 @router.post("", status_code=201)
 async def create_dataset(
     name: str = Form(...),
@@ -77,8 +92,22 @@ async def create_dataset(
     version: str = Form(""),
     version_description: str = Form(""),
     _=Depends(verify_token),
-):
-    """Create a new dataset, optionally uploading a ZIP file immediately."""
+) -> dict:
+    """Registers a new dataset, uploading its initial version ZIP file if provided.
+
+    Args:
+        name: Name of the dataset.
+        description: Description of the dataset.
+        file: Optional ZIP archive file containing images and labels.
+        version: Version tag (e.g. '1.0.0').
+        version_description: Version release notes.
+
+    Returns:
+        Dictionary representation of the created dataset and its initial version.
+
+    Raises:
+        HTTPException: If zip validation fails (status 400).
+    """
     file_bytes = None
     num_classes = 0
     class_names = []
@@ -110,23 +139,37 @@ async def create_dataset(
 
     return _dataset_resp(d)
 
-
 @router.get("")
-async def list_datasets(_=Depends(verify_token)):
+async def list_datasets(_=Depends(verify_token)) -> list[dict]:
+    """Retrieves all registered datasets and their active versions.
+
+    Returns:
+        List of datasets.
+    """
     r = await get_stub("ai").ListDatasets(ai_pb2.ListDatasetsRequest())
     return [_dataset_resp(d) for d in r.datasets]
 
-
 @router.get("/{dataset_id}")
-async def get_dataset(dataset_id: str, _=Depends(verify_token)):
+async def get_dataset(dataset_id: str, _=Depends(verify_token)) -> dict:
+    """Retrieves a single dataset's metadata and all historical versions.
+
+    Args:
+        dataset_id: Dataset UUID string.
+
+    Returns:
+        Dataset details.
+    """
     d = await get_stub("ai").GetDataset(ai_pb2.GetDatasetRequest(id=dataset_id))
     return _dataset_resp(d)
 
-
 @router.delete("/{dataset_id}", status_code=204)
-async def delete_dataset(dataset_id: str, _=Depends(verify_token)):
-    await get_stub("ai").DeleteDataset(ai_pb2.DeleteDatasetRequest(id=dataset_id))
+async def delete_dataset(dataset_id: str, _=Depends(verify_token)) -> None:
+    """Deletes a dataset and all associated version references.
 
+    Args:
+        dataset_id: Dataset UUID string.
+    """
+    await get_stub("ai").DeleteDataset(ai_pb2.DeleteDatasetRequest(id=dataset_id))
 
 @router.put("/{dataset_id}/file", status_code=200)
 async def replace_dataset_file(
@@ -135,8 +178,21 @@ async def replace_dataset_file(
     version: str = Form(""),
     version_description: str = Form(""),
     _=Depends(verify_token),
-):
-    """Replace the ZIP file of an existing dataset (submits a new version)."""
+) -> dict:
+    """Uploads a new file version for an existing dataset record.
+
+    Args:
+        dataset_id: Target dataset UUID string.
+        file: New ZIP archive file.
+        version: Version tag.
+        version_description: Version release notes.
+
+    Returns:
+        Updated dataset details.
+
+    Raises:
+        HTTPException: If zip validation fails (status 400).
+    """
     data = await file.read()
     is_valid, err_msg, num_classes, class_names = validate_dataset_zip(data)
     if not is_valid:
@@ -158,10 +214,19 @@ async def replace_dataset_file(
     )
     return _dataset_resp(d)
 
-
 @router.get("/{dataset_id}/download")
-async def download_dataset(dataset_id: str, _=Depends(verify_token)):
-    """Get a presigned download URL for the dataset ZIP."""
+async def download_dataset(dataset_id: str, _=Depends(verify_token)) -> dict:
+    """Generates a presigned URL to download the current/latest dataset ZIP file.
+
+    Args:
+        dataset_id: Target dataset UUID string.
+
+    Returns:
+        JSON object containing the presigned download URL.
+
+    Raises:
+        HTTPException: If dataset has no file or file is missing (status 404).
+    """
     d = await get_stub("ai").GetDataset(ai_pb2.GetDatasetRequest(id=dataset_id))
     if not d.object_key:
         raise HTTPException(404, "This dataset has no file uploaded yet.")
@@ -176,10 +241,20 @@ async def download_dataset(dataset_id: str, _=Depends(verify_token)):
     url = await presigned_url("datasets", d.object_key)
     return {"url": url}
 
-
 @router.get("/{dataset_id}/versions/{version_id}/download")
-async def download_dataset_version(dataset_id: str, version_id: str, _=Depends(verify_token)):
-    """Get a presigned download URL for a specific dataset version ZIP."""
+async def download_dataset_version(dataset_id: str, version_id: str, _=Depends(verify_token)) -> dict:
+    """Generates a presigned URL to download a specific historical version ZIP.
+
+    Args:
+        dataset_id: Target dataset UUID string.
+        version_id: Specific version UUID string.
+
+    Returns:
+        JSON object containing the presigned download URL.
+
+    Raises:
+        HTTPException: If version does not exist or version file is missing (status 404).
+    """
     d = await get_stub("ai").GetDataset(ai_pb2.GetDatasetRequest(id=dataset_id))
     version_key = None
     for v in d.versions:
@@ -201,17 +276,27 @@ async def download_dataset_version(dataset_id: str, version_id: str, _=Depends(v
     url = await presigned_url("datasets", version_key)
     return {"url": url}
 
-
-from pydantic import BaseModel
-
-
 class UpdateDatasetRequestSchema(BaseModel):
+    """Pydantic schema representing dataset metadata update fields."""
     name: str
+    """New name for the dataset."""
     description: str = ""
-
+    """New description text."""
 
 @router.put("/{dataset_id}")
-async def update_dataset(dataset_id: str, req: UpdateDatasetRequestSchema, _=Depends(verify_token)):
+async def update_dataset(dataset_id: str, req: UpdateDatasetRequestSchema, _=Depends(verify_token)) -> dict:
+    """Updates core catalog information (name/description) of a dataset.
+
+    Args:
+        dataset_id: Dataset UUID string.
+        req: Updated properties schema.
+
+    Returns:
+        Updated dataset details.
+
+    Raises:
+        HTTPException: If dataset cannot be found (status 404).
+    """
     try:
         d = await get_stub("ai").UpdateDataset(ai_pb2.UpdateDatasetRequest(
             id=dataset_id,
@@ -222,8 +307,15 @@ async def update_dataset(dataset_id: str, req: UpdateDatasetRequestSchema, _=Dep
     except Exception as e:
         raise HTTPException(404, f"Dataset not found: {e}")
 
-
 def _dataset_resp(d) -> dict:
+    """Converts a dataset gRPC Protobuf object into a serializable API dict.
+
+    Args:
+        d: The dataset gRPC object from the registry service.
+
+    Returns:
+        A dictionary representation suited for REST response serialization.
+    """
     versions_list = []
     if d.versions:
         for v in d.versions:

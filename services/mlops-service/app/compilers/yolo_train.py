@@ -1,17 +1,15 @@
-"""
-YOLO Dataset Preparation and Training Pipeline
-=================================================
+"""YOLO Dataset Preparation and Training Pipeline script.
 
-This script combines dataset splitting and YOLO model training into a single workflow.
+This script parses training configurations, partitions images into training, validation,
+and test subsets, formats the YOLO yaml dataset configuration, and triggers Ultralytics
+YOLOv8/v10/v11 training runs using PyTorch on CPU or GPU targets.
 """
-
 import argparse
 import os
 import random
 import json
 from typing import List, Dict, Any
 
-# Ensure torch and ultralytics are installed
 try:
     import torch
     from ultralytics import YOLO
@@ -27,8 +25,12 @@ except ImportError as e:
     import sys
     sys.exit(1)
 
+def parse_arguments() -> argparse.Namespace:
+    """Parses command-line arguments for the dataset setup and training pipeline.
 
-def parse_arguments():
+    Returns:
+        Argparse Namespace containing parsed arguments.
+    """
     parser = argparse.ArgumentParser(description="YOLO Dataset Preparer and Trainer")
     
     # --- Dataset Preparation Arguments ---
@@ -60,13 +62,15 @@ def parse_arguments():
 
     return parser.parse_args()
 
+def prepare_dataset(args: argparse.Namespace) -> str | None:
+    """Discovers images, splits them into train/val/test sets, and generates a YOLO YAML config.
 
-def prepare_dataset(args) -> str:
+    Args:
+        args: Command-line configuration settings.
+
+    Returns:
+        The file path to the generated YAML configuration, or None if validation fails.
     """
-    Discovers images, splits them into train/val/test sets, and generates a YOLO YAML config.
-    Returns the path to the generated YAML config file.
-    """
-    # Auto-detect real dataset root directory if it's nested
     actual_data_dir = args.data_dir
     if not os.path.exists(os.path.join(args.data_dir, "classes.json")):
         for root, dirs, files in os.walk(args.data_dir):
@@ -76,7 +80,6 @@ def prepare_dataset(args) -> str:
 
     print(f"--- Starting Dataset Preparation from {actual_data_dir} ---")
     
-    # Image Discovery
     img_input_root_dir: str = os.path.join(actual_data_dir, "images")
     all_img_paths: List[str] = []
     
@@ -88,7 +91,6 @@ def prepare_dataset(args) -> str:
         if len(files) == 0:
             continue
         for file in files:
-            # Only process image files
             if file.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.webp')):
                 file_path: str = os.path.join(root, file)
                 relative_path: str = file_path.replace(img_input_root_dir, "./images").replace('\\', '/')
@@ -98,7 +100,6 @@ def prepare_dataset(args) -> str:
         print(f"Error: No images found in {img_input_root_dir}")
         return None
 
-    # Dataset Splitting
     random.shuffle(all_img_paths)
     file_suffix: str = "_onnx" if args.onnx_config else ""
     total_images: int = len(all_img_paths)
@@ -109,20 +110,17 @@ def prepare_dataset(args) -> str:
     val_filepath: str = os.path.join(actual_data_dir, f"val{file_suffix}.txt")
     train_filepath: str = os.path.join(actual_data_dir, f"train{file_suffix}.txt")
 
-    # Ensure we don't pop more than what's available
     test_num = min(test_num, len(all_img_paths))
     test_images: List[str] = [all_img_paths.pop() for _ in range(test_num)]
     
     val_num = min(val_num, len(all_img_paths))
     val_images: List[str] = [all_img_paths.pop() for _ in range(val_num)]
 
-    # ONNX Optimization (Reduces dataset size)
     if args.onnx_config:
         test_images = test_images[:300]
         val_images = val_images[:300]
-        all_img_paths = all_img_paths[:300]  # Remaining for training
+        all_img_paths = all_img_paths[:300]
 
-    # Write split files
     with open(test_filepath, 'w') as f:
         f.writelines(test_images)
     with open(val_filepath, 'w') as f:
@@ -130,7 +128,6 @@ def prepare_dataset(args) -> str:
     with open(train_filepath, 'w') as f:
         f.writelines(all_img_paths)
 
-    # Class Information Loading
     try:
         class_dict_filepath: str = os.path.join(actual_data_dir, "classes.json")
         with open(class_dict_filepath) as f:
@@ -141,7 +138,6 @@ def prepare_dataset(args) -> str:
         print(e)
         return None
 
-    # YAML Configuration Generation
     base_dir: str = os.path.basename(os.path.normpath(actual_data_dir))
     parent_dir: str = os.path.dirname(os.path.normpath(actual_data_dir))
     config_dir: str = os.path.join(os.path.dirname(os.path.normpath(args.data_dir)), "configs")
@@ -164,8 +160,8 @@ def prepare_dataset(args) -> str:
     print(f"--- Dataset Prepared! Config saved to: {yaml_filename} ---\n")
     return yaml_filename
 
-
-def main():
+def main() -> None:
+    """Orchestrates GPU environment validation, dataset generation and model training."""
     args = parse_arguments()
 
     # 1. GPU / CUDA Diagnostics
@@ -189,7 +185,6 @@ def main():
             print(f"Requested device '{device}' but CUDA is not available. Falling back to 'cpu'.")
             device = "cpu"
     else:
-        # If requested device is numeric but CUDA sees it, convert to int for YOLO if appropriate
         try:
             device = int(device)
         except ValueError:
@@ -217,11 +212,9 @@ def main():
     print(f"Loading model: {init_model}")
     model = YOLO(init_model)
     image_h, image_w = map(int, args.image_size.split('x'))
-    # YOLO training expects a single integer for imgsz
     image_size = max(image_h, image_w)
     print(f"Image Size: {image_size}")
 
-    # Define the main project directory for saving results
     project_dir = "run"
 
     # 4. Execution Phase (Train or Validate)
@@ -243,7 +236,6 @@ def main():
     elif args.val_model:
         print(f"Starting validation for project: {args.name}")
         _ = model.val(name=args.name, project=project_dir)
-
 
 if __name__ == "__main__":
     main()

@@ -1,3 +1,8 @@
+"""Registry Service gRPC handler for managing ML models and datasets metadata.
+
+Handles registration of training/uploaded models, dataset files version tracking,
+and association records within PostgreSQL database sessions.
+"""
 import grpc
 import json
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -21,9 +26,17 @@ ALLOWED_BASE_MODELS = {
     "yolox_l_leaky.pt", "yolox_s_leaky.pt", "yolox_s_wide_leaky.pt",
     "yolox_tiny.pt"
 }
-
+"""Set of pre-compiled or pre-trained baseline model weights filename options."""
 
 def _to_proto(m) -> ai_pb2.ModelResponse:
+    """Formats an ORM Model record to its corresponding Protobuf message type.
+
+    Args:
+        m: The ORM Model entity instance.
+
+    Returns:
+        The populated ModelResponse Protobuf object.
+    """
     compilations_proto = []
     if "compilations" in m.__dict__ and m.compilations:
         for c in m.compilations:
@@ -53,8 +66,15 @@ def _to_proto(m) -> ai_pb2.ModelResponse:
         compilations=compilations_proto,
     )
 
-
 def _dataset_to_proto(d) -> ai_pb2.DatasetResponse:
+    """Formats an ORM Dataset record to its corresponding Protobuf message type.
+
+    Args:
+        d: The ORM Dataset entity instance.
+
+    Returns:
+        The populated DatasetResponse Protobuf object.
+    """
     metadata_str = ""
     if d.meta_info:
         try:
@@ -95,11 +115,27 @@ def _dataset_to_proto(d) -> ai_pb2.DatasetResponse:
         versions=versions_proto,
     )
 
-
 class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
-    def __init__(self, sf: async_sessionmaker): self._sf = sf
+    """gRPC Service Servicer handling Model and Dataset catalog queries and modifications."""
 
-    async def UploadModel(self, req, ctx):
+    def __init__(self, sf: async_sessionmaker):
+        """Initializes the AI Service Handler.
+
+        Args:
+            sf: Database async session maker class.
+        """
+        self._sf = sf
+
+    async def UploadModel(self, req: ai_pb2.UploadModelRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.ModelResponse:
+        """Registers a new model record in the database.
+
+        Args:
+            req: Protobuf model request fields.
+            ctx: gRPC connection context.
+
+        Returns:
+            The created ModelResponse Protobuf object.
+        """
         base_arch = req.base_architecture or None
         if not base_arch or not base_arch.strip():
             await ctx.abort(grpc.StatusCode.INVALID_ARGUMENT, "base_architecture is required")
@@ -144,7 +180,16 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 return
             return _to_proto(m)
 
-    async def GetModel(self, req, ctx):
+    async def GetModel(self, req: ai_pb2.GetModelRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.ModelResponse:
+        """Fetches a single model details from the registry database.
+
+        Args:
+            req: Model request query key.
+            ctx: gRPC connection context.
+
+        Returns:
+            ModelResponse details.
+        """
         async with self._sf() as s:
             m = await ModelRepository(s).get(req.id)
             if not m:
@@ -152,12 +197,30 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 return
             return _to_proto(m)
 
-    async def ListModels(self, req, ctx):
+    async def ListModels(self, req: ai_pb2.ListModelsRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.ListModelsResponse:
+        """Lists all registered models in the registry database.
+
+        Args:
+            req: Empty query request message.
+            ctx: gRPC connection context.
+
+        Returns:
+            ListModelsResponse message.
+        """
         async with self._sf() as s:
             models = await ModelRepository(s).list_all()
             return ai_pb2.ListModelsResponse(models=[_to_proto(m) for m in models])
 
-    async def DeleteModel(self, req, ctx):
+    async def DeleteModel(self, req: ai_pb2.DeleteModelRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.DeleteModelResponse:
+        """Deletes a model record from the database.
+
+        Args:
+            req: Target model ID request.
+            ctx: gRPC connection context.
+
+        Returns:
+            DeleteModelResponse indicator.
+        """
         async with self._sf() as s:
             ok = await ModelRepository(s).delete(req.id)
             if not ok:
@@ -165,7 +228,16 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 return
             return ai_pb2.DeleteModelResponse(success=True)
 
-    async def UpdateModelCompiled(self, req, ctx):
+    async def UpdateModelCompiled(self, req: ai_pb2.UpdateModelCompiledRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.ModelResponse:
+        """Updates compilation output properties on a model registry.
+
+        Args:
+            req: Update parameters.
+            ctx: gRPC connection context.
+
+        Returns:
+            Updated model response.
+        """
         async with self._sf() as s:
             m = await ModelRepository(s).update_compiled(
                 req.id, req.compiled_key, req.compiled_sha256,
@@ -178,12 +250,30 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 return
             return _to_proto(m)
 
-    async def UploadDataset(self, req, ctx):
+    async def UploadDataset(self, req: ai_pb2.UploadDatasetRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.DatasetResponse:
+        """Registers a new dataset reference entry in the database.
+
+        Args:
+            req: Dataset details parameters.
+            ctx: gRPC connection context.
+
+        Returns:
+            Created DatasetResponse details.
+        """
         async with self._sf() as s:
             d = await DatasetRepository(s).create(req.name, req.description or None)
             return _dataset_to_proto(d)
 
-    async def GetDataset(self, req, ctx):
+    async def GetDataset(self, req: ai_pb2.GetDatasetRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.DatasetResponse:
+        """Retrieves a single dataset record by its unique ID.
+
+        Args:
+            req: Dataset request query key.
+            ctx: gRPC connection context.
+
+        Returns:
+            DatasetResponse details.
+        """
         async with self._sf() as s:
             d = await DatasetRepository(s).get(req.id)
             if not d:
@@ -191,12 +281,30 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 return
             return _dataset_to_proto(d)
 
-    async def ListDatasets(self, req, ctx):
+    async def ListDatasets(self, req: ai_pb2.ListDatasetsRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.ListDatasetsResponse:
+        """Lists all registered datasets.
+
+        Args:
+            req: Empty query request message.
+            ctx: gRPC connection context.
+
+        Returns:
+            ListDatasetsResponse message.
+        """
         async with self._sf() as s:
             items = await DatasetRepository(s).list_all()
             return ai_pb2.ListDatasetsResponse(datasets=[_dataset_to_proto(d) for d in items])
 
-    async def DeleteDataset(self, req, ctx):
+    async def DeleteDataset(self, req: ai_pb2.DeleteDatasetRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.DeleteDatasetResponse:
+        """Removes a dataset and its versions from the registry database.
+
+        Args:
+            req: Target dataset ID request.
+            ctx: gRPC connection context.
+
+        Returns:
+            DeleteDatasetResponse indicator.
+        """
         async with self._sf() as s:
             ok = await DatasetRepository(s).delete(req.id)
             if not ok:
@@ -204,7 +312,16 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 return
             return ai_pb2.DeleteDatasetResponse(success=True)
 
-    async def SetDatasetFile(self, req, ctx):
+    async def SetDatasetFile(self, req: ai_pb2.SetDatasetFileRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.DatasetResponse:
+        """Associates an uploaded ZIP archive file key and version details with a dataset.
+
+        Args:
+            req: Dataset file association details.
+            ctx: gRPC connection context.
+
+        Returns:
+            DatasetResponse details.
+        """
         metadata_dict = None
         if req.metadata:
             try:
@@ -226,7 +343,16 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 return
             return _dataset_to_proto(d)
 
-    async def AssociateModelDataset(self, req, ctx):
+    async def AssociateModelDataset(self, req: ai_pb2.AssociateModelDatasetRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.ModelResponse:
+        """Binds a dataset version reference to an existing model record.
+
+        Args:
+            req: Model and dataset association parameters.
+            ctx: gRPC connection context.
+
+        Returns:
+            Updated ModelResponse details.
+        """
         async with self._sf() as s:
             try:
                 m = await ModelRepository(s).associate_dataset(
@@ -240,7 +366,16 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 return
             return _to_proto(m)
 
-    async def UpdateModel(self, req, ctx):
+    async def UpdateModel(self, req: ai_pb2.UpdateModelRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.ModelResponse:
+        """Updates standard configuration metadata properties on a model registry.
+
+        Args:
+            req: Model parameter update fields.
+            ctx: gRPC connection context.
+
+        Returns:
+            Updated ModelResponse details.
+        """
         async with self._sf() as s:
             m = await ModelRepository(s).update(
                 req.id,
@@ -256,7 +391,16 @@ class AIServiceHandler(ai_pb2_grpc.AIServiceServicer):
                 return
             return _to_proto(m)
 
-    async def UpdateDataset(self, req, ctx):
+    async def UpdateDataset(self, req: ai_pb2.UpdateDatasetRequest, ctx: grpc.aio.ServicerContext) -> ai_pb2.DatasetResponse:
+        """Updates catalog descriptions fields of a dataset record.
+
+        Args:
+            req: Dataset parameter update fields.
+            ctx: gRPC connection context.
+
+        Returns:
+            Updated DatasetResponse details.
+        """
         async with self._sf() as s:
             d = await DatasetRepository(s).update(
                 req.id,

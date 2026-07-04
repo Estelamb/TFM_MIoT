@@ -1,3 +1,8 @@
+"""Maintenance migration script to parse class names from existing dataset ZIP files.
+
+Downloads the ZIP archives from MinIO, extracts class names from `classes.json`,
+and updates metadata fields on DatasetVersion and Dataset tables in PostgreSQL.
+"""
 import sys
 import os
 import asyncio
@@ -16,8 +21,21 @@ from sqlalchemy import select
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("update_existing_datasets")
+"""Logger instance specific to this migration script."""
 
 async def extract_classes_from_zip(bucket: str, object_key: str) -> list[str]:
+    """Downloads a dataset ZIP from MinIO and parses labels from its classes.json file.
+
+    Args:
+        bucket: Name of the MinIO bucket.
+        object_key: Target file object storage key.
+
+    Returns:
+        List of parsed class name strings.
+
+    Raises:
+        ValueError: If classes.json is missing or carries invalid structure formats.
+    """
     minio = get_minio()
     with tempfile.TemporaryDirectory() as tmpdir:
         zip_path = os.path.join(tmpdir, "dataset.zip")
@@ -52,7 +70,8 @@ async def extract_classes_from_zip(bucket: str, object_key: str) -> list[str]:
             else:
                 raise ValueError("'classes.json' must be a JSON list or dictionary.")
 
-async def main():
+async def main() -> None:
+    """Connects to SQL and MinIO databases, lists all dataset versions, and updates metadata."""
     s = get_settings()
     engine = build_engine(s.postgres_dsn)
     sf = build_session_factory(engine)
@@ -63,7 +82,6 @@ async def main():
                })
 
     async with sf() as session:
-        # Get all dataset versions
         r = await session.execute(select(DatasetVersion))
         versions = r.scalars().all()
         logger.info(f"Found {len(versions)} dataset versions to process.")

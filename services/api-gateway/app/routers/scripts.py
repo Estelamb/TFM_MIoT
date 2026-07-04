@@ -1,24 +1,44 @@
+"""REST API Router for managing user inference scripts.
+
+Exposes REST endpoints to upload scripts, retrieve source code from MinIO,
+list registered scripts, and parse python files in the hardware/ library folders
+using Python AST parser to list dynamic client APIs.
+"""
 import ast
 import uuid
 import logging
 import aiohttp
 from pathlib import Path
 from fastapi import APIRouter, Depends, File, Form, UploadFile
+
 from app.auth.jwt import verify_token
 from app.stubs import get_stub
 from shared.proto_gen import script_pb2
 from shared.utils.minio import upload_bytes
 
 logger = logging.getLogger(__name__)
+"""Logger instance specific to scripts router."""
 
 router = APIRouter(prefix="/api/scripts", tags=["scripts"])
+"""APIRouter instance for script endpoints."""
 
 @router.post("", status_code=201)
 async def upload_script(
     name: str = Form(...), description: str = Form(""),
     language: str = Form("python"),
     file: UploadFile = File(...), _=Depends(verify_token),
-):
+) -> dict:
+    """Uploads a new user-defined inference script to MinIO and registers metadata.
+
+    Args:
+        name: Name of the script.
+        description: Text details of the script.
+        language: Programming language name.
+        file: The raw file payload.
+
+    Returns:
+        Dictionary details of the created script.
+    """
     data = await file.read()
     script_id = str(uuid.uuid4())
     original_ext = file.filename.split('.')[-1] if file.filename and '.' in file.filename else "py"
@@ -30,7 +50,12 @@ async def upload_script(
     return {"id": sc.id, "name": sc.name, "language": sc.language, "created_at": sc.created_at}
 
 @router.get("")
-async def list_scripts(_=Depends(verify_token)):
+async def list_scripts(_=Depends(verify_token)) -> list[dict]:
+    """Retrieves all registered scripts, including their full text content from MinIO.
+
+    Returns:
+        List of scripts with contents.
+    """
     r = await get_stub("script").ListScripts(script_pb2.ListScriptsRequest())
     from shared.utils.minio import get_minio
     from app.config import get_settings
@@ -59,11 +84,12 @@ async def list_scripts(_=Depends(verify_token)):
             })
     return scripts_list
 
-
-# ── Hardware Libraries API ────────────────────────────────────────────────────
-
 def _get_hardware_dir() -> Path:
-    """Resolve hardware/ directory path."""
+    """Finds and resolves the local hardware directory path.
+
+    Returns:
+        The resolved Path object.
+    """
     for candidate in [
         Path("/app/hardware"),
         Path(__file__).parents[3] / "hardware",
@@ -73,10 +99,15 @@ def _get_hardware_dir() -> Path:
             return candidate.resolve()
     return Path("hardware").resolve()
 
-
 def _extract_library_api(library_path: Path) -> list[dict]:
-    """Parse a library.py file and extract class methods + module-level functions
-    with their signatures and docstrings."""
+    """Parses a driver source file and extracts public methods and classes using AST.
+
+    Args:
+        library_path: Full path to a driver library.py file.
+
+    Returns:
+        List of parsed class methods and function signatures.
+    """
     try:
         source = library_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
@@ -85,10 +116,7 @@ def _extract_library_api(library_path: Path) -> list[dict]:
         return []
 
     entries: list[dict] = []
-    module_doc = ast.get_docstring(tree)
-
     for node in ast.iter_child_nodes(tree):
-        # Extract class methods
         if isinstance(node, ast.ClassDef):
             class_name = node.name
             for item in node.body:
@@ -102,8 +130,6 @@ def _extract_library_api(library_path: Path) -> list[dict]:
                         "desc": doc,
                         "type": "method",
                     })
-
-        # Extract module-level functions
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if node.name.startswith("_"):
                 continue
@@ -114,16 +140,20 @@ def _extract_library_api(library_path: Path) -> list[dict]:
                 "desc": doc,
                 "type": "function",
             })
-
     return entries
 
-
 def _build_signature(func_node: ast.FunctionDef) -> str:
-    """Build a human-readable signature string from an AST function node."""
+    """Builds a human-readable argument string from an AST function node definition.
+
+    Args:
+        func_node: AST Function definition node.
+
+    Returns:
+        Human readable argument definition signature string.
+    """
     args = func_node.args
     parts: list[str] = []
 
-    # positional args (skip 'self')
     all_args = args.args
     defaults = args.defaults
     n_defaults = len(defaults)
@@ -133,13 +163,11 @@ def _build_signature(func_node: ast.FunctionDef) -> str:
         if arg.arg == "self":
             continue
         name = arg.arg
-        # Type annotation
         if arg.annotation:
             try:
                 name += f": {ast.unparse(arg.annotation)}"
             except Exception:
                 pass
-        # Default value
         default_idx = i - (n_args - n_defaults)
         if default_idx >= 0:
             try:
@@ -148,28 +176,33 @@ def _build_signature(func_node: ast.FunctionDef) -> str:
                 pass
         parts.append(name)
 
-    # **kwargs
     if args.kwarg:
         parts.append(f"**{args.kwarg.arg}")
 
     return ", ".join(parts)
 
-
 def _compute_import_path(hw_dir: Path, lib_path: Path) -> str:
-    """Compute the Python import path like 'hardware.sensors.camera.library'."""
+    """Calculates the python module import namespace path for a given file path.
+
+    Args:
+        hw_dir: Path to root hardware directory.
+        lib_path: Path to the target library.py file.
+
+    Returns:
+        Dot-separated import path.
+    """
     try:
         rel = lib_path.relative_to(hw_dir.parent)
         return str(rel.with_suffix("")).replace("/", ".").replace("\\", ".")
     except ValueError:
         return str(lib_path)
 
-
 @router.get("/libraries")
-async def list_libraries(_=Depends(verify_token)):
-    """Scan the hardware/ directory and return the generic library APIs.
+async def list_libraries(_=Depends(verify_token)) -> dict:
+    """Scans the hardware directories and lists details and signatures of all APIs.
 
-    Returns a dict mapping category to a list of API entries extracted
-    from each library.py file.
+    Returns:
+        Dictionary mapping peripheral categories to lists of library structures.
     """
     hw_dir = _get_hardware_dir()
     if not hw_dir.exists():
@@ -177,7 +210,6 @@ async def list_libraries(_=Depends(verify_token)):
 
     libraries: list[dict] = []
 
-    # Scan sensors/, actuators/, others/
     for category in ("sensors", "actuators", "others"):
         cat_dir = hw_dir / category
         if not cat_dir.is_dir():
@@ -199,7 +231,6 @@ async def list_libraries(_=Depends(verify_token)):
                 "api": api_entries,
             })
 
-    # Add generic Inference Library (aura_hw) instead of architecture-specific ones
     libraries.append({
         "category": "hw_arch",
         "subcategory": "Inference Library",
@@ -235,9 +266,16 @@ async def list_libraries(_=Depends(verify_token)):
 
     return {"libraries": libraries}
 
-
 @router.get("/{script_id}")
-async def get_script(script_id: str, _=Depends(verify_token)):
+async def get_script(script_id: str, _=Depends(verify_token)) -> dict:
+    """Retrieves metadata and raw file contents for a specific script.
+
+    Args:
+        script_id: Target script UUID string.
+
+    Returns:
+        Detailed script object with code string.
+    """
     s = await get_stub("script").GetScript(script_pb2.GetScriptRequest(id=script_id))
     from shared.utils.minio import get_minio
     from app.config import get_settings
@@ -265,6 +303,10 @@ async def get_script(script_id: str, _=Depends(verify_token)):
     }
 
 @router.delete("/{script_id}", status_code=204)
-async def delete_script(script_id: str, _=Depends(verify_token)):
-    await get_stub("script").DeleteScript(script_pb2.DeleteScriptRequest(id=script_id))
+async def delete_script(script_id: str, _=Depends(verify_token)) -> None:
+    """Deletes script metadata registration from the database catalog.
 
+    Args:
+        script_id: Target script UUID.
+    """
+    await get_stub("script").DeleteScript(script_pb2.DeleteScriptRequest(id=script_id))

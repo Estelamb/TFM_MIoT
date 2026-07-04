@@ -23,7 +23,12 @@ from shared.utils.database import build_engine, build_session_factory
 from shared.utils.logging import configure_logging
 from shared.utils.minio import init_minio, ensure_buckets
 
-async def main():
+async def main() -> None:
+    """Bootstraps databases, sets up MinIO storage connection, and runs gRPC server.
+
+    Creates SQL tables and adds migration column constraints, validates object
+    storage buckets, hooks service handlers to gRPC server and enables reflection.
+    """
     s = get_settings()
     configure_logging("registry-service", s.log_level)
     logger = logging.getLogger("registry-service")

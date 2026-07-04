@@ -23,7 +23,12 @@ from shared.utils.minio import init_minio, ensure_buckets
 s = get_settings()
 configure_logging("api-gateway", s.log_level)
 
-async def bootstrap_base_models():
+async def bootstrap_base_models() -> None:
+    """Synchronizes and populates allowed reference base models in MinIO.
+
+    Scans the MinIO base-models bucket, removes obsolete items, and creates
+    empty placeholders for all valid items listed in ALLOWED_BASE_MODELS.
+    """
     import logging
     import io
     from shared.utils.minio import get_minio
@@ -58,6 +63,11 @@ async def bootstrap_base_models():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """FastAPI application lifespan manager handling startup and shutdown logic.
+
+    Initializes gRPC clients, connects to MinIO Object Storage, verifies
+    bucket existences, and bootstraps default system models.
+    """
     init_stubs()
     init_minio(
         endpoint=s.minio_endpoint,
@@ -78,6 +88,8 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title="AURA Platform API", version="0.1.0", lifespan=lifespan)
+"""FastAPI instance serving the core web platform REST routes."""
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:3001"],
@@ -87,13 +99,29 @@ app.add_middleware(
 )
 
 @app.post("/auth/token")
-async def login(form: OAuth2PasswordRequestForm = Depends()):
+async def login(form: OAuth2PasswordRequestForm = Depends()) -> dict:
+    """Authenticates the incoming username and password for a JWT access token.
+
+    Args:
+        form: OAuth2 form fields carrying username and password.
+
+    Returns:
+        JSON response with the generated JWT access token.
+
+    Raises:
+        HTTPException: If user validation fails (status 401).
+    """
     if form.username != DEMO_USER["username"] or form.password != DEMO_USER["password"]:
         raise HTTPException(401, "Invalid credentials")
     return {"access_token": create_token(form.username), "token_type": "bearer"}
 
 @app.get("/health")
-async def health():
+async def health() -> dict:
+    """Verifies that the API Gateway is running and healthy.
+
+    Returns:
+        Dictionary status descriptor object.
+    """
     return {"status": "ok", "platform": "AURA"}
 
 app.include_router(devices.router)
@@ -102,3 +130,4 @@ app.include_router(datasets.router)
 app.include_router(scripts.router)
 app.include_router(deployments.router)
 app.include_router(monitoring.router)
+

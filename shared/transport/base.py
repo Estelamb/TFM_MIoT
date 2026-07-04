@@ -1,7 +1,6 @@
-"""
-Abstract transport layer for AURA cloud-to-edge communication.
+"""Abstract transport layer for AURA cloud-to-edge communication.
 
-Defines the :class:`TransportBase` interface and :class:`MessageEnvelope`
+Defines the TransportBase interface and MessageEnvelope
 data class so that MQTT can be swapped for WebSocket, AMQP or any other
 broker without changing business logic.
 """
@@ -9,7 +8,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import AsyncIterator
-
 
 @dataclass
 class MessageEnvelope:
@@ -26,18 +24,10 @@ class MessageEnvelope:
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
 
-
 class TransportBase(ABC):
     """Abstract base class for pluggable transport implementations.
 
     Concrete implementations must override all four abstract methods.
-    The intended usage pattern is::
-
-        transport = MQTTTransport("mosquitto", 1883)
-        await transport.connect()
-        await transport.publish("device/abc/commands", {"command": "deploy"})
-        async for msg in transport.subscribe("device/+/events"):
-            print(msg.topic, msg.payload)
     """
 
     @abstractmethod
@@ -65,9 +55,9 @@ class TransportBase(ABC):
         """Subscribe to a topic filter and yield incoming messages.
 
         Args:
-            topic_filter: Topic or wildcard filter, e.g. ``"device/+/events"``.
+            topic_filter: Topic or wildcard filter, e.g. "device/+/events".
 
         Yields:
-            :class:`MessageEnvelope` for each received message.
+            MessageEnvelope for each received message.
         """
         ...

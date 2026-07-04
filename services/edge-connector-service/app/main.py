@@ -29,7 +29,8 @@ from shared.utils.grpc_server import serve
 from shared.utils.logging import configure_logging
 from shared.utils.minio import init_minio, ensure_buckets
 
-async def main():
+async def main() -> None:
+    """Bootstraps databases, initializes client wrappers, and runs gRPC, MQTT and ARQ worker."""
     s = get_settings()
     configure_logging("edge-connector-service", s.log_level)
     logger = logging.getLogger("edge-connector-service")

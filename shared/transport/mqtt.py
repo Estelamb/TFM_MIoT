@@ -1,7 +1,6 @@
-"""
-MQTT implementation of :class:`TransportBase`.
+"""MQTT implementation of TransportBase interface.
 
-Uses ``aiomqtt`` (an asyncio wrapper around ``paho-mqtt``) to connect
+Uses aiomqtt (an asyncio wrapper around paho-mqtt) to connect
 to a Mosquitto broker without TLS or authentication, as required for
 the AURA PoC.
 """
@@ -14,46 +13,42 @@ import aiomqtt
 from shared.transport.base import TransportBase, MessageEnvelope
 
 logger = logging.getLogger(__name__)
-
+"""Logger instance specific to MQTT transport operations."""
 
 class MQTTTransport(TransportBase):
-    """Async MQTT transport backed by ``aiomqtt``.
-
-    Args:
-        host: MQTT broker hostname, e.g. ``"mosquitto"`` or ``"localhost"``.
-        port: MQTT broker port. Defaults to ``1883`` (plain TCP, no TLS).
-
-    Example:
-        >>> transport = MQTTTransport("localhost", 1883)
-        >>> await transport.connect()
-        >>> await transport.publish("device/abc/commands", {"command": "deploy"})
-    """
+    """Async MQTT transport backend powered by the aiomqtt client wrapper."""
 
     def __init__(self, host: str, port: int = 1883) -> None:
+        """Initializes the MQTTTransport connection parameters.
+
+        Args:
+            host: MQTT broker hostname or network host IP address.
+            port: Network port of the broker. Defaults to 1883.
+        """
         self.host = host
         self.port = port
         self._client: aiomqtt.Client | None = None
 
     async def connect(self) -> None:
-        """Connect to the MQTT broker."""
+        """Establishes an active async connection to the MQTT broker."""
         self._client = aiomqtt.Client(hostname=self.host, port=self.port)
         await self._client.__aenter__()
         logger.info(f"MQTT connected to {self.host}:{self.port}")
 
     async def disconnect(self) -> None:
-        """Disconnect from the MQTT broker and release the client."""
+        """Closes the active connection client and releases channels."""
         if self._client:
             await self._client.__aexit__(None, None, None)
 
     async def publish(self, topic: str, payload: dict) -> None:
-        """Publish a JSON-serialised payload to a topic.
+        """Serializes payload to JSON format and dispatches it to the topic.
 
         Args:
-            topic:   MQTT topic string, e.g. ``"device/abc/commands"``.
-            payload: Python dict serialised to JSON before publishing.
+            topic: Target MQTT routing key path or channel.
+            payload: JSON serializable values mapping dictionary.
 
         Raises:
-            RuntimeError: If :meth:`connect` has not been called.
+            RuntimeError: If connect method was not run first.
         """
         if not self._client:
             raise RuntimeError("MQTTTransport not connected. Call connect() first.")
@@ -61,17 +56,16 @@ class MQTTTransport(TransportBase):
         logger.debug(f"MQTT published to {topic}")
 
     async def subscribe(self, topic_filter: str) -> AsyncIterator[MessageEnvelope]:
-        """Subscribe and yield decoded messages.
+        """Subscribes to a channel topic and yields decoded messages.
 
         Args:
-            topic_filter: MQTT topic or wildcard, e.g. ``"device/+/events"``.
+            topic_filter: Topic path or routing key string.
 
         Yields:
-            :class:`~shared.transport.base.MessageEnvelope` for each
-            successfully decoded message. Malformed JSON is silently skipped.
+            The normalized MessageEnvelope.
 
         Raises:
-            RuntimeError: If :meth:`connect` has not been called.
+            RuntimeError: If connect method was not run first.
         """
         if not self._client:
             raise RuntimeError("MQTTTransport not connected. Call connect() first.")

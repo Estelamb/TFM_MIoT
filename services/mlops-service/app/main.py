@@ -1,10 +1,10 @@
 """Compilation Service entry point.
 
-Starts an async gRPC server on port 50054 that exposes
-:class:`~app.grpc_handlers.compilation_handler.CompilationServiceHandler`.
-Compilation jobs run as background asyncio tasks so the RPC returns immediately.
+Starts an async gRPC server on port 50052 that exposes
+the CompilationServiceHandler and simultaneously runs the ARQ task worker.
 """
-import asyncio, sys
+import asyncio
+import sys
 sys.path.insert(0, "/app")
 from app.config import get_settings
 from app.grpc_handlers.compilation_handler import CompilationServiceHandler
@@ -14,14 +14,14 @@ from shared.utils.grpc_server import serve
 from shared.utils.logging import configure_logging
 from arq import Worker
 
-async def main():
+async def main() -> None:
+    """Configures logs, initializes handler registries, and runs gRPC + ARQ workers."""
     s = get_settings()
     configure_logging("mlops-service", s.log_level)
 
     handler = CompilationServiceHandler(
         s.ai_service_grpc, s.minio_bucket_models, s.minio_bucket_compiled, s.redis_url)
 
-    # Run gRPC server and ARQ worker concurrently
     await asyncio.gather(
         serve(
             port=s.grpc_port,

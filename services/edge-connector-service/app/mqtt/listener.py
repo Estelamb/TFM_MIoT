@@ -1,10 +1,7 @@
-"""
-Unified MQTT event and telemetry listener for the Edge Connector Service.
+"""Unified MQTT event and telemetry listener for the Edge Connector Service.
 
-Subscribes to:
-* ``device/+/events`` to update deployment status (deploy_ack, deploy_failed).
-* ``device/+/telemetry`` to sync hardware libraries and update device state + Prometheus metrics.
-* ``device/+/inference`` to store runtime neural network predictions in MongoDB.
+Subscribes to telemetry, inference payloads, status alerts, and deployment status events.
+Provides automatic dynamic peripheral driver library updates sync over the air (OTA).
 """
 import io
 import os
@@ -22,26 +19,34 @@ from app.repositories.monitoring import MonitoringRepository
 from shared.utils.minio import upload_bytes, presigned_url
 
 logger = logging.getLogger(__name__)
+"""Logger instance specific to MQTT listeners."""
 
-# Prometheus gauges (labels: device_id)
 CPU_GAUGE = Gauge("aura_device_cpu_percent",    "CPU usage %",    ["device_id"])
-RAM_GAUGE = Gauge("aura_device_ram_percent",    "RAM usage %",    ["device_id"])
-RAM_MB_GAUGE = Gauge("aura_device_ram_used_mb", "RAM used MB",    ["device_id"])
+"""Prometheus gauge measuring CPU consumption percentage of the edge device."""
 
-# Cache parameters to avoid zipping on every single telemetry tick
+RAM_GAUGE = Gauge("aura_device_ram_percent",    "RAM usage %",    ["device_id"])
+"""Prometheus gauge measuring RAM consumption percentage of the edge device."""
+
+RAM_MB_GAUGE = Gauge("aura_device_ram_used_mb", "RAM used MB",    ["device_id"])
+"""Prometheus gauge measuring RAM usage in megabytes of the edge device."""
+
 _PLATFORM_HW_MTIME_CACHE = 0.0
+"""Global cache timestamp tracking maximum hardware directory file modifications."""
+
 _LIBRARIES_DIR_HASH_CACHE = ""
+"""Global cache string containing hardware directory content hash."""
+
 _LIBRARIES_ZIP_HASH_CACHE = ""
+"""Global cache string containing hardware ZIP archive checksum."""
+
 _LIBRARIES_ZIP_CACHE = b""
+"""Global cache bytes containing zipped hardware archive."""
 
 def get_platform_hardware_hash_and_zip() -> tuple[str, str, bytes]:
-    """
-    Deterministically walk the platform's hardware directory,
-    compute its directory content SHA256 hash, and package it into a ZIP file in-memory.
-    Caches the results based on maximum file modification times.
-    
+    """Walks the hardware folder and builds an in-memory ZIP, caching the result.
+
     Returns:
-        tuple[str, str, bytes]: (directory_content_hash, zip_file_hash, zip_bytes)
+        A tuple of (directory_content_hash, zip_file_hash, zip_bytes).
     """
     global _PLATFORM_HW_MTIME_CACHE, _LIBRARIES_DIR_HASH_CACHE, _LIBRARIES_ZIP_HASH_CACHE, _LIBRARIES_ZIP_CACHE
     
@@ -52,7 +57,6 @@ def get_platform_hardware_hash_and_zip() -> tuple[str, str, bytes]:
     if not hw_dir.exists():
         return "", "", b""
 
-    # Calculate maximum modification time of files to check cache validity
     max_mtime = 0.0
     for root, dirs, files in os.walk(hw_dir):
         for file in files:
@@ -65,7 +69,6 @@ def get_platform_hardware_hash_and_zip() -> tuple[str, str, bytes]:
             except OSError:
                 pass
 
-    # Return cached hash and zip bytes if no file has been modified
     if max_mtime == _PLATFORM_HW_MTIME_CACHE and _LIBRARIES_DIR_HASH_CACHE:
         return _LIBRARIES_DIR_HASH_CACHE, _LIBRARIES_ZIP_HASH_CACHE, _LIBRARIES_ZIP_CACHE
 
@@ -83,10 +86,8 @@ def get_platform_hardware_hash_and_zip() -> tuple[str, str, bytes]:
                 file_path = Path(root) / file
                 rel_path = file_path.relative_to(hw_dir)
                 
-                # Write to zip archive
                 zip_file.write(file_path, rel_path)
                 
-                # Update hash digest of directory contents
                 sha_hash.update(str(rel_path).encode("utf-8"))
                 with open(file_path, "rb") as f:
                     for chunk in iter(lambda: f.read(65536), b""):
@@ -105,13 +106,24 @@ def get_platform_hardware_hash_and_zip() -> tuple[str, str, bytes]:
 
 
 class EdgeConnectorMQTTListener:
-    def __init__(self, mqtt_host: str, mqtt_port: int, sf: async_sessionmaker, mongo_repo_factory):
+    """Manages active MQTT connections, subscriptions, and message dispatch routines."""
+
+    def __init__(self, mqtt_host: str, mqtt_port: int, sf: async_sessionmaker, mongo_repo_factory: callable):
+        """Initializes the Edge Connector MQTT Listener.
+
+        Args:
+            mqtt_host: Network address hostname of the broker.
+            mqtt_port: Network port of the broker.
+            sf: Database session factory creator.
+            mongo_repo_factory: Callable returning an active MongoDB repository.
+        """
         self._host = mqtt_host
         self._port = mqtt_port
         self._sf = sf
         self._mongo_repo_factory = mongo_repo_factory
 
-    async def start(self):
+    async def start(self) -> None:
+        """Launches the listener loop, auto-reconnecting on broker connection failures."""
         logger.info("EdgeConnectorMQTTListener starting")
         while True:
             try:
@@ -132,7 +144,12 @@ class EdgeConnectorMQTTListener:
                 logger.exception(f"Unexpected error in MQTT listener: {e} — retrying in 5s")
                 await asyncio.sleep(5)
 
-    async def _handle(self, msg):
+    async def _handle(self, msg: aiomqtt.Message) -> None:
+        """Decodes JSON packet content and routes to the appropriate message type handler.
+
+        Args:
+            msg: The raw incoming MQTT message object.
+        """
         try:
             payload = json.loads(msg.payload)
         except Exception:
@@ -151,8 +168,13 @@ class EdgeConnectorMQTTListener:
         elif topic.endswith("/status"):
             await self._handle_status(device_id, payload)
 
-    async def _handle_telemetry(self, device_id: str, payload: dict):
-        # 1. Update the current state and append historical stats in MongoDB
+    async def _handle_telemetry(self, device_id: str, payload: dict) -> None:
+        """Saves telemetry resource percentages to MongoDB and updates Prometheus metrics.
+
+        Args:
+            device_id: Target device identifier.
+            payload: Parsed telemetry properties mapping.
+        """
         mongo_repo = self._mongo_repo_factory()
         await mongo_repo.upsert_device_state(device_id, {
             "status": "online",
@@ -166,7 +188,6 @@ class EdgeConnectorMQTTListener:
             "coordinates": payload.get("coordinates", []),
         })
 
-        # Update device status to online in PostgreSQL (via registry-service gRPC)
         try:
             from shared.proto_gen import device_pb2, device_pb2_grpc
             from app.config import get_settings
@@ -181,12 +202,10 @@ class EdgeConnectorMQTTListener:
         except Exception as e:
             logger.error(f"Failed to update device status in registry for '{device_id}': {e}")
 
-        # 2. Update Prometheus metrics
         CPU_GAUGE.labels(device_id=device_id).set(payload.get("cpu_percent", 0.0))
         RAM_GAUGE.labels(device_id=device_id).set(payload.get("ram_percent", 0.0))
         RAM_MB_GAUGE.labels(device_id=device_id).set(payload.get("ram_used_mb", 0.0))
 
-        # 3. Dynamic hardware libraries sync (OTA library sync)
         device_hash = payload.get("libraries_hash", "")
         platform_dir_hash, platform_zip_hash, zip_bytes = get_platform_hardware_hash_and_zip()
 
@@ -200,11 +219,9 @@ class EdgeConnectorMQTTListener:
             )
             object_key = f"libraries/{platform_zip_hash}.zip"
             try:
-                # Upload zip to MinIO
                 await upload_bytes("compiled", object_key, zip_bytes)
                 url = await presigned_url("compiled", object_key)
 
-                # Publish update_libraries command to the device
                 command = {
                     "command": "update_libraries",
                     "libraries_url": url,
@@ -217,7 +234,13 @@ class EdgeConnectorMQTTListener:
             except Exception as e:
                 logger.error(f"Failed to trigger libraries sync for device '{device_id}': {e}")
 
-    async def _handle_inference(self, device_id: str, payload: dict):
+    async def _handle_inference(self, device_id: str, payload: dict) -> None:
+        """Saves a YOLO inference prediction JSON log entry to MongoDB.
+
+        Args:
+            device_id: Source device identifier.
+            payload: Parsed inference result properties.
+        """
         mongo_repo = self._mongo_repo_factory()
         result_val = payload.get("result")
         if result_val is not None:
@@ -231,7 +254,12 @@ class EdgeConnectorMQTTListener:
             result_json,
         )
 
-    async def _handle_event(self, payload: dict):
+    async def _handle_event(self, payload: dict) -> None:
+        """Saves deployment acknowledgment and script activation states to PostgreSQL.
+
+        Args:
+            payload: Event details.
+        """
         event = payload.get("event")
         dep_id = payload.get("deployment_id")
         if not event or not dep_id:
@@ -250,17 +278,21 @@ class EdgeConnectorMQTTListener:
                 await repo.mark_failed(dep, payload.get("error", "unknown"))
                 logger.warning(f"Deployment {dep_id} → failed")
 
-    async def _handle_status(self, device_id: str, payload: dict):
+    async def _handle_status(self, device_id: str, payload: dict) -> None:
+        """Saves device connectivity status changes (heartbeat, offline) to database registries.
+
+        Args:
+            device_id: Target device identifier.
+            payload: Status payload.
+        """
         status = payload.get("status", "offline")
         logger.info(f"Device '{device_id}' status update received: {status}")
         
-        # 1. Update MongoDB status
         mongo_repo = self._mongo_repo_factory()
         await mongo_repo.upsert_device_state(device_id, {
             "status": status
         })
         
-        # 2. Update PostgreSQL status
         try:
             from shared.proto_gen import device_pb2, device_pb2_grpc
             from app.config import get_settings

@@ -1,3 +1,8 @@
+"""Edge Connector Service gRPC handler managing model OTA deployments.
+
+Triggers compiling, serializing, signing download URLs, enqueuing build workers,
+and publishing command packets via MQTT topics to target devices.
+"""
 import asyncio
 import json
 import logging
@@ -17,8 +22,17 @@ from app.repositories.deployments import DeploymentRepository
 from app.models.orm import Deployment, ModelRef
 
 logger = logging.getLogger(__name__)
+"""Logger instance specific to deployment handlers."""
 
 def _to_proto(d) -> deployment_pb2.DeploymentResponse:
+    """Formats an ORM Deployment record to its corresponding Protobuf message type.
+
+    Args:
+        d: The ORM Deployment entity instance.
+
+    Returns:
+        The populated DeploymentResponse Protobuf object.
+    """
     return deployment_pb2.DeploymentResponse(
         id=d.id, device_id=d.device_id, model_id=d.model_id, script_id=d.script_id,
         status=d.status,
@@ -30,7 +44,20 @@ def _to_proto(d) -> deployment_pb2.DeploymentResponse:
     )
 
 class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
-    def __init__(self, sf, mqtt_host: str, mqtt_port: int, ai_service_grpc: str, compilation_service_grpc: str, redis_url: str):
+    """gRPC Service Servicer implementing edge deployment orchestration."""
+
+    def __init__(self, sf: async_sessionmaker, mqtt_host: str, mqtt_port: int,
+                 ai_service_grpc: str, compilation_service_grpc: str, redis_url: str):
+        """Initializes the Deployment Service Handler.
+
+        Args:
+            sf: SQLAlchemy session factory.
+            mqtt_host: Hostname of the MQTT broker.
+            mqtt_port: Network port of the MQTT broker.
+            ai_service_grpc: Registry/AI service endpoint address.
+            compilation_service_grpc: Compilation service endpoint address.
+            redis_url: Connection settings for the task worker queue.
+        """
         self._sf = sf
         self._mqtt_host = mqtt_host
         self._mqtt_port = mqtt_port
@@ -41,25 +68,43 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
         self._ai_channel = grpc.aio.insecure_channel(ai_service_grpc)
         self._ai_stub = ai_pb2_grpc.AIServiceStub(self._ai_channel)
 
-    async def _get_pool(self):
+    async def _get_pool(self) -> any:
+        """Retrieves or initializes the task queue broker pool.
+
+        Returns:
+            ARQ Redis connection pool.
+        """
         if self._redis_pool is None:
             self._redis_pool = await create_pool(self._redis_settings, default_queue_name="deployment_queue")
         return self._redis_pool
 
-    async def CreateDeployment(self, req, ctx):
+    async def CreateDeployment(
+        self, req: deployment_pb2.CreateDeploymentRequest, ctx: grpc.aio.ServicerContext
+    ) -> deployment_pb2.DeploymentResponse:
+        """Triggers a deployment run, enqueuing compilation first if target binary is missing.
+
+        Args:
+            req: Target model, script, and device information request.
+            ctx: gRPC connection context.
+
+        Returns:
+            DeploymentResponse message details.
+        """
         async with self._sf() as s:
             repo = DeploymentRepository(s)
             device = await repo.get_device(req.device_id)
             if not device:
-                await ctx.abort(grpc.StatusCode.NOT_FOUND, "Device not found"); return
+                await ctx.abort(grpc.StatusCode.NOT_FOUND, "Device not found")
+                return
             model = await repo.get_model(req.model_id)
             if not model:
-                await ctx.abort(grpc.StatusCode.NOT_FOUND, "Model not found"); return
+                await ctx.abort(grpc.StatusCode.NOT_FOUND, "Model not found")
+                return
             script = await repo.get_script(req.script_id)
             if not script:
-                await ctx.abort(grpc.StatusCode.NOT_FOUND, "Script not found"); return
+                await ctx.abort(grpc.StatusCode.NOT_FOUND, "Script not found")
+                return
 
-            # Check if model is already compiled for the device's target hardware architecture
             compilation_ready = False
             compiled_key = ""
             compiled_sha256 = ""
@@ -84,7 +129,6 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                     compiled_sha256 = comp.compiled_sha256
 
             if compilation_ready:
-                # Already compiled! Deploy immediately
                 dep = await repo.create(req.device_id, req.model_id, req.script_id, name=req.name)
                 model_url = await presigned_url("compiled", compiled_key)
                 script_url = await presigned_url("scripts", script.script_key)
@@ -115,12 +159,12 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                     logger.info(f"Deploy command sent → device {req.device_id}, deployment {dep.id}")
                 except Exception as e:
                     await repo.mark_failed(dep, str(e))
-                    await ctx.abort(grpc.StatusCode.UNAVAILABLE, f"MQTT error: {e}"); return
+                    await ctx.abort(grpc.StatusCode.UNAVAILABLE, f"MQTT error: {e}")
+                    return
 
                 await s.refresh(dep)
                 return _to_proto(dep)
             else:
-                # Compilation required or pending for this architecture!
                 if not model.dataset_id:
                     await ctx.abort(
                         grpc.StatusCode.FAILED_PRECONDITION,
@@ -128,10 +172,8 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                     )
                     return
 
-                # Create the deployment in compiling state
                 dep = await repo.create(req.device_id, req.model_id, req.script_id, name=req.name, status="compiling")
 
-                # Spawn background task to trigger compilation and wait
                 pool = await self._get_pool()
                 await pool.enqueue_job(
                     "compile_and_deploy_job",
@@ -152,7 +194,12 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
                 await s.refresh(dep)
                 return _to_proto(dep)
 
-    async def _cleanup_cancelled_deployments(self, session):
+    async def _cleanup_cancelled_deployments(self, session: any) -> None:
+        """Deletes cancelled compile-and-deploy records enqueued in Redis cancel tables.
+
+        Args:
+            session: SQLAlchemy active connection database session.
+        """
         try:
             pool = await self._get_pool()
             keys = await pool.keys("cancel:deploy:*")
@@ -167,20 +214,55 @@ class DeploymentServiceHandler(deployment_pb2_grpc.DeploymentServiceServicer):
         except Exception as e:
             logger.exception(f"Error in cleanup of cancelled deployments: {e}")
 
-    async def GetDeployment(self, req, ctx):
+    async def GetDeployment(
+        self, req: deployment_pb2.GetDeploymentRequest, ctx: grpc.aio.ServicerContext
+    ) -> deployment_pb2.DeploymentResponse:
+        """Retrieves details of a single deployment record by its ID.
+
+        Args:
+            req: Target deployment ID request parameters.
+            ctx: gRPC connection context.
+
+        Returns:
+            DeploymentResponse message.
+        """
         async with self._sf() as s:
             await self._cleanup_cancelled_deployments(s)
             d = await DeploymentRepository(s).get(req.id)
-            if not d: await ctx.abort(grpc.StatusCode.NOT_FOUND, "Deployment not found"); return
+            if not d:
+                await ctx.abort(grpc.StatusCode.NOT_FOUND, "Deployment not found")
+                return
             return _to_proto(d)
 
-    async def ListDeployments(self, req, ctx):
+    async def ListDeployments(
+        self, req: deployment_pb2.ListDeploymentsRequest, ctx: grpc.aio.ServicerContext
+    ) -> deployment_pb2.ListDeploymentsResponse:
+        """Retrieves details of all deployment records.
+
+        Args:
+            req: Empty query message.
+            ctx: gRPC connection context.
+
+        Returns:
+            ListDeploymentsResponse message.
+        """
         async with self._sf() as s:
             await self._cleanup_cancelled_deployments(s)
             deps = await DeploymentRepository(s).list_all()
             return deployment_pb2.ListDeploymentsResponse(deployments=[_to_proto(d) for d in deps])
 
-    async def ListDeviceDeployments(self, req, ctx):
+    async def ListDeviceDeployments(
+        self, req: deployment_pb2.ListDeviceDeploymentsRequest, ctx: grpc.aio.ServicerContext
+    ) -> deployment_pb2.ListDeploymentsResponse:
+        """Retrieves details of all deployment records scheduled on a device.
+
+        Args:
+            req: Target device ID.
+            ctx: gRPC connection context.
+
+        Returns:
+            ListDeploymentsResponse message.
+        """
         async with self._sf() as s:
             await self._cleanup_cancelled_deployments(s)
             deps = await DeploymentRepository(s).list_for_device(req.device_id)

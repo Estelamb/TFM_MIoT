@@ -1,12 +1,23 @@
+"""REST API Router for managing ML models and compilation/training tasks.
+
+Provides REST endpoints to upload source models, configure training runs,
+stream training logs, request compilation, and download compiled model binaries.
+"""
 import uuid
+import re
+import asyncio
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
 import redis.asyncio as aioredis
+from pydantic import BaseModel
+
 from app.auth.jwt import verify_token
 from app.stubs import get_stub
 from shared.proto_gen import ai_pb2, compilation_pb2
 from shared.utils.minio import upload_bytes, presigned_url
 
 router = APIRouter(prefix="/api/models", tags=["models"])
+"""APIRouter instance for model endpoints."""
 
 ALLOWED_BASE_MODELS = {
     "yolov10b.pt", "yolov10n.pt", "yolov10s.pt", "yolov10x.pt",
@@ -25,10 +36,15 @@ ALLOWED_BASE_MODELS = {
     "yolox_l_leaky.pt", "yolox_s_leaky.pt", "yolox_s_wide_leaky.pt",
     "yolox_tiny.pt"
 }
-
+"""Set of pre-compiled or pre-trained baseline model weights filename options."""
 
 @router.get("/base-model-options")
-async def get_base_model_options(_=Depends(verify_token)):
+async def get_base_model_options(_=Depends(verify_token)) -> list[str]:
+    """Lists filenames of all available base reference models in storage.
+
+    Returns:
+        Sorted list of base model filenames.
+    """
     from shared.utils.minio import get_minio
     from app.config import get_settings
     s = get_settings()
@@ -39,9 +55,19 @@ async def get_base_model_options(_=Depends(verify_token)):
     except Exception:
         return sorted(list(ALLOWED_BASE_MODELS))
 
-
 @router.get("/base-models/{filename}/download")
-async def download_base_model(filename: str, _=Depends(verify_token)):
+async def download_base_model(filename: str, _=Depends(verify_token)) -> dict:
+    """Generates a presigned URL to download a specific base reference model.
+
+    Args:
+        filename: Base model filename.
+
+    Returns:
+        JSON response with the presigned download URL.
+
+    Raises:
+        HTTPException: If base model is not allowed or not found (status 404).
+    """
     from shared.utils.minio import get_minio, presigned_url
     from app.config import get_settings
     s = get_settings()
@@ -63,7 +89,6 @@ async def download_base_model(filename: str, _=Depends(verify_token)):
     except Exception as e:
         raise HTTPException(500, f"Error generating download URL: {e}")
 
-
 @router.post("", status_code=201)
 async def upload_model(
     name: str = Form(...), description: str = Form(""),
@@ -75,7 +100,28 @@ async def upload_model(
     input_size: str = Form(None),
     batch_size: int = Form(None),
     file: UploadFile = File(...), _=Depends(verify_token),
-):
+) -> dict:
+    """Uploads a trained model and optionally requests background compilation.
+
+    Args:
+        name: User-defined name of the model.
+        description: Text description of the model.
+        hardware_type: Target hardware backend compilation option.
+        compile: Boolean flag to trigger compilation on successful upload.
+        dataset_id: Optional dataset UUID association.
+        dataset_version_id: Optional specific dataset version association.
+        base_architecture: Parent architecture weights filename.
+        epochs: Optional epoch training counter metadata.
+        input_size: Optional tensor shape size string (e.g. '640x640').
+        batch_size: Optional batch size model parameter.
+        file: The raw binary model file object.
+
+    Returns:
+        Dictionary details of the registered model.
+
+    Raises:
+        HTTPException: If payload validation fails (status 400).
+    """
     if not base_architecture or not base_architecture.strip():
         raise HTTPException(400, "base_architecture is required")
 
@@ -102,7 +148,6 @@ async def upload_model(
 
     if input_size:
         input_size = input_size.strip().lower()
-        import re
         if not re.match(r"^\d+x\d+$", input_size):
             raise HTTPException(400, "input_size must be in format WxH, e.g. 640x640")
 
@@ -166,22 +211,46 @@ async def upload_model(
 
     return _model_resp(m)
 
-
 @router.get("")
-async def list_models(_=Depends(verify_token)):
+async def list_models(_=Depends(verify_token)) -> list[dict]:
+    """Retrieves all models registered in the database catalog.
+
+    Returns:
+        List of models.
+    """
     r = await get_stub("ai").ListModels(ai_pb2.ListModelsRequest())
     return [_model_resp(m) for m in r.models]
 
-
 @router.get("/{model_id}")
-async def get_model(model_id: str, _=Depends(verify_token)):
+async def get_model(model_id: str, _=Depends(verify_token)) -> dict:
+    """Retrieves metadata of a specific model by its unique ID.
+
+    Args:
+        model_id: Model UUID string.
+
+    Returns:
+        Model details.
+    """
     m = await get_stub("ai").GetModel(ai_pb2.GetModelRequest(id=model_id))
     return _model_resp(m)
 
-
 @router.post("/{model_id}/dataset/{dataset_id}")
-async def associate_model_dataset(model_id: str, dataset_id: str, dataset_version_id: str = None, _=Depends(verify_token)):
-    import re
+async def associate_model_dataset(
+    model_id: str, dataset_id: str, dataset_version_id: str = None, _=Depends(verify_token)
+) -> dict:
+    """Associates a dataset reference and version ID with an existing model registry.
+
+    Args:
+        model_id: Model UUID string.
+        dataset_id: Dataset UUID string.
+        dataset_version_id: Optional dataset version UUID string.
+
+    Returns:
+        Association status.
+
+    Raises:
+        HTTPException: If parameters are invalid or model/dataset is not found.
+    """
     uuid_re = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.IGNORECASE)
     if not uuid_re.match(dataset_id):
         raise HTTPException(400, "Invalid dataset ID format")
@@ -207,9 +276,13 @@ async def associate_model_dataset(model_id: str, dataset_id: str, dataset_versio
         "compile_status": m.compile_status,
     }
 
-
 @router.delete("/{model_id}", status_code=204)
-async def delete_model(model_id: str, _=Depends(verify_token)):
+async def delete_model(model_id: str, _=Depends(verify_token)) -> None:
+    """Deletes a model and cancels any active training or compilation tasks.
+
+    Args:
+        model_id: Model UUID string.
+    """
     from app.config import get_settings
     s_settings = get_settings()
     try:
@@ -221,9 +294,19 @@ async def delete_model(model_id: str, _=Depends(verify_token)):
         pass
     await get_stub("ai").DeleteModel(ai_pb2.DeleteModelRequest(id=model_id))
 
-
 @router.get("/{model_id}/download/source")
-async def download_model_source(model_id: str, _=Depends(verify_token)):
+async def download_model_source(model_id: str, _=Depends(verify_token)) -> dict:
+    """Generates a presigned URL to download the raw uncompiled source model file.
+
+    Args:
+        model_id: Target model UUID string.
+
+    Returns:
+        JSON object containing the presigned download URL.
+
+    Raises:
+        HTTPException: If source file is missing (status 404).
+    """
     m = await get_stub("ai").GetModel(ai_pb2.GetModelRequest(id=model_id))
     if not m.source_key:
         raise HTTPException(404, "Source model file not found")
@@ -238,21 +321,35 @@ async def download_model_source(model_id: str, _=Depends(verify_token)):
     url = await presigned_url("models", m.source_key)
     return {"url": url}
 
-
 @router.get("/{model_id}/download/compiled")
-async def download_model_compiled(model_id: str, _=Depends(verify_token)):
+async def download_model_compiled(model_id: str, _=Depends(verify_token)) -> dict:
+    """Generates a presigned URL to download a compiled hardware binary.
+
+    Args:
+        model_id: Target model UUID string.
+
+    Returns:
+        JSON object containing the presigned download URL.
+
+    Raises:
+        HTTPException: If compiled binary key does not exist (status 404).
+    """
     m = await get_stub("ai").GetModel(ai_pb2.GetModelRequest(id=model_id))
     if not m.compiled_key:
         raise HTTPException(404, "Compiled model file not found")
     url = await presigned_url("compiled", m.compiled_key)
     return {"url": url}
 
-
-import asyncio
-from fastapi.responses import StreamingResponse
-
 @router.get("/{model_id}/logs")
-async def stream_model_logs(model_id: str, _=Depends(verify_token)):
+async def stream_model_logs(model_id: str, _=Depends(verify_token)) -> StreamingResponse:
+    """Streams training logs in real-time from Redis via Server-Sent Events (SSE).
+
+    Args:
+        model_id: Model UUID string.
+
+    Returns:
+        Event-stream response yielding log entries.
+    """
     from app.config import get_settings
     import redis.asyncio as aioredis
     
@@ -266,7 +363,6 @@ async def stream_model_logs(model_id: str, _=Depends(verify_token)):
             # Send existing logs first
             existing_logs = await redis_client.lrange(redis_list, 0, -1)
             for log in existing_logs:
-                # SSE format
                 yield f"data: {log.decode('utf-8')}\n\n"
             
             # Subscribe to new logs
@@ -278,7 +374,6 @@ async def stream_model_logs(model_id: str, _=Depends(verify_token)):
                     message = await pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
                     if message:
                         yield f"data: {message['data'].decode('utf-8')}\n\n"
-                    # Small sleep to yield control
                     await asyncio.sleep(0.01)
                 except asyncio.CancelledError:
                     break
@@ -292,36 +387,50 @@ async def stream_model_logs(model_id: str, _=Depends(verify_token)):
 
     return StreamingResponse(log_generator(), media_type="text/event-stream")
 
-
-from pydantic import BaseModel
-
-
 class TrainModelRequestSchema(BaseModel):
+    """Pydantic schema representing a training job execution request."""
     name: str
+    """Label identifying the resulting model."""
     description: str = ""
+    """Optional text details or notes."""
     dataset_id: str
+    """Source training dataset UUID string."""
     dataset_version_id: str = None
+    """Optional specific version UUID string of the dataset."""
     base_model: str
+    """Underlying base pre-trained model weights file string."""
     epochs: int = 20
+    """Total epoch iterations to train."""
     input_size: str = "640x640"
+    """Resolution resolution string 'WxH'."""
     gpu_percent: float = 0.9
+    """Fraction limits of GPU resource allocation."""
     device: str = "0"
-
+    """CUDA index or CPU execution target tag."""
 
 @router.post("/train", status_code=201)
-async def train_model(req: TrainModelRequestSchema, _=Depends(verify_token)):
+async def train_model(req: TrainModelRequestSchema, _=Depends(verify_token)) -> dict:
+    """Enqueues a new background model training run using YOLOv8 structures.
+
+    Args:
+        req: Training execution parameters.
+
+    Returns:
+        JSON response with the registered model status details.
+
+    Raises:
+        HTTPException: If dataset is missing or job fails to spawn.
+    """
     if not req.base_model or not req.base_model.strip():
         raise HTTPException(400, "base_model is required")
     ai_stub = get_stub("ai")
     comp_stub = get_stub("compilation")
 
-    # 1. Fetch the dataset from AI Service to get the object_key and versions
     try:
         d = await ai_stub.GetDataset(ai_pb2.GetDatasetRequest(id=req.dataset_id))
     except Exception as e:
         raise HTTPException(404, f"Dataset not found: {e}")
 
-    # Determine dataset key and version ID
     dataset_key = d.object_key
     selected_version_id = req.dataset_version_id
 
@@ -335,7 +444,6 @@ async def train_model(req: TrainModelRequestSchema, _=Depends(verify_token)):
         if not version_found:
             raise HTTPException(400, f"Selected dataset version {selected_version_id} not found in this dataset.")
     else:
-        # Default to latest version if versions exist
         if d.versions:
             dataset_key = d.versions[0].object_key
             selected_version_id = d.versions[0].id
@@ -343,7 +451,6 @@ async def train_model(req: TrainModelRequestSchema, _=Depends(verify_token)):
     if not dataset_key:
         raise HTTPException(400, "Dataset has no file uploaded. Please upload a ZIP file to the dataset first.")
 
-    # 2. Register the model record in AI Service
     try:
         m = await ai_stub.UploadModel(ai_pb2.UploadModelRequest(
             name=req.name,
@@ -360,7 +467,6 @@ async def train_model(req: TrainModelRequestSchema, _=Depends(verify_token)):
     except Exception as e:
         raise HTTPException(500, f"Failed to register training model: {e}")
 
-    # 3. Call Compilation Service to start background training
     try:
         await comp_stub.TrainModel(compilation_pb2.TrainModelRequest(
             model_id=m.id,
@@ -388,24 +494,40 @@ async def train_model(req: TrainModelRequestSchema, _=Depends(verify_token)):
 
     return {**_model_resp(m), "compile_status": "training"}
 
-
 class UpdateModelRequestSchema(BaseModel):
+    """Pydantic schema representing model configuration update fields."""
     name: str
+    """Model human-readable title."""
     description: str = ""
+    """Model description."""
     epochs: int = None
+    """Epoch count metadata updates."""
     input_size: str = None
+    """Image resolution metadata updates."""
     batch_size: int = None
+    """Batch size metadata updates."""
     base_architecture: str = None
-
+    """Pre-trained base weights filename."""
 
 @router.put("/{model_id}")
-async def update_model(model_id: str, req: UpdateModelRequestSchema, _=Depends(verify_token)):
+async def update_model(model_id: str, req: UpdateModelRequestSchema, _=Depends(verify_token)) -> dict:
+    """Updates core model catalog information fields.
+
+    Args:
+        model_id: Model UUID string.
+        req: Updated fields properties.
+
+    Returns:
+        Updated model details.
+
+    Raises:
+        HTTPException: If update validation fails or model is not found.
+    """
     if req.epochs is not None and req.epochs <= 0:
         raise HTTPException(400, "epochs must be a positive integer")
 
     if req.input_size:
         req.input_size = req.input_size.strip().lower()
-        import re
         if not re.match(r"^\d+x\d+$", req.input_size):
             raise HTTPException(400, "input_size must be in format WxH, e.g. 640x640")
 
@@ -446,8 +568,15 @@ async def update_model(model_id: str, req: UpdateModelRequestSchema, _=Depends(v
     except Exception as e:
         raise HTTPException(404, f"Model not found: {e}")
 
-
 def _model_resp(m) -> dict:
+    """Helper formatting a model gRPC object to API JSON response payload structure.
+
+    Args:
+        m: Grpc source model message details.
+
+    Returns:
+        Structured serializable dictionary.
+    """
     return {
         "id": m.id,
         "name": m.name,

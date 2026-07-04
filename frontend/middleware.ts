@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+/**
+ * Next.js Edge Middleware managing session authentication redirects.
+ * Validates presence of the `aura_token` cookie for private routes, redirecting
+ * unauthenticated requests back to `/login`.
+ *
+ * @param request - Next.js incoming HTTP request object.
+ * @returns NextResponse configuration (redirect or continuation).
+ */
+export function middleware(request: NextRequest): NextResponse {
   const token = request.cookies.get('aura_token')?.value;
   const { pathname } = request.nextUrl;
 

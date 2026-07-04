@@ -1,9 +1,7 @@
-"""
-ARQ worker for deployment-service.
+"""ARQ task runner and queue background job executors for the Edge Connector Service.
 
-Defines compile_and_deploy_job: triggers compilation via compilation-service
-gRPC, then waits for the model to become ready by polling Redis (published
-by the compilation worker) rather than polling Postgres in a busy loop.
+Defines the compile-and-deploy task that coordinates target compile requests and OTA
+MQTT deployments, handles database sessions, and handles worker lifespans.
 """
 import os
 import logging
@@ -21,28 +19,48 @@ from shared.utils.minio import presigned_url
 from app.config import get_settings
 
 logger = logging.getLogger(__name__)
+"""Logger instance specific to background worker processes."""
 
 
 async def compile_and_deploy_job(
-    ctx,
+    ctx: dict,
     *,
-    dep_id,
-    model_id,
-    device_id,
-    script_id,
-    hardware_type,
-    source_key,
-    dataset_id,
-    script_key,
-    script_sha256,
-    base_architecture,
-    input_size
-):
+    dep_id: str,
+    model_id: str,
+    device_id: str,
+    script_id: str,
+    hardware_type: str,
+    source_key: str,
+    dataset_id: str,
+    script_key: str,
+    script_sha256: str,
+    base_architecture: str,
+    input_size: str
+) -> None:
+    """Executes compile-and-deploy pipeline.
+
+    Spawns model compilation request via Compilation Service gRPC, polls Redis
+    completion keys for status updates, generates presigned URLs for scripts and
+    compiled models, and dispatches the deploy command via MQTT.
+
+    Args:
+        ctx: Worker connection context state mapping.
+        dep_id: Deployment UUID identifier.
+        model_id: Model database UUID.
+        device_id: Target edge device UUID.
+        script_id: Custom script UUID.
+        hardware_type: Target hardware compiler platform.
+        source_key: Raw input weights key in MinIO.
+        dataset_id: Associated dataset UUID.
+        script_key: Python script path key in MinIO.
+        script_sha256: Script hash code.
+        base_architecture: Parent model weights settings.
+        input_size: Resolution.
+    """
     try:
         logger.info(f"Asynchronously compiling model {model_id} for device {device_id} (hw: {hardware_type})")
         redis = ctx["redis"]
         
-        # Check cancellation before starting
         if await redis.exists(f"cancel:deploy:{dep_id}"):
             logger.info(f"Deployment {dep_id} was cancelled before starting. Deleting from DB...")
             async with ctx["session_factory"]() as s:
@@ -53,7 +71,6 @@ async def compile_and_deploy_job(
             await redis.delete(f"cancel:deploy:{dep_id}")
             return
  
-        # 1. Fetch dataset details from AI service
         try:
             dv = await ctx["ai_stub"].GetDataset(ai_pb2.GetDatasetRequest(id=dataset_id))
         except Exception as e:
@@ -64,7 +81,6 @@ async def compile_and_deploy_job(
                     await DeploymentRepository(s).mark_failed(dep, f"Failed to retrieve dataset details: {e}")
             return
  
-        # Check if compilation is already ready or in progress for this hardware
         skip_compile = False
         async with ctx["session_factory"]() as s:
             model = await s.get(ModelRef, model_id)
@@ -87,9 +103,7 @@ async def compile_and_deploy_job(
                     logger.info(f"Model {model_id} is already compiling/ready for {hardware_type}. Skipping CompileModel.")
 
         if not skip_compile:
-            # Delete old redis key before triggering compilation to prevent reading obsolete "ready" state
             await redis.delete(f"model_compile_done:{model_id}")
-            # 2. Call compilation service to trigger build
             try:
                 comp_res = await ctx["comp_stub"].CompileModel(compilation_pb2.CompileModelRequest(
                     model_id=model_id,
@@ -115,16 +129,13 @@ async def compile_and_deploy_job(
                         await DeploymentRepository(s).mark_failed(dep, f"Compilation call error: {e}")
                 return
 
-        # 3. Poll compilation status from Redis instead of Postgres
         pubsub_key = f"model_compile_done:{model_id}"
 
         success = False
         error_msg = "Timeout waiting for compilation to finish"
 
-        # Check Redis with sleep, max 2 hours total (7200 seconds)
         deadline = asyncio.get_event_loop().time() + 7200
         while asyncio.get_event_loop().time() < deadline:
-            # Check if deployment was cancelled
             if await redis.exists(f"cancel:deploy:{dep_id}"):
                 logger.info(f"Deployment {dep_id} was cancelled. Deleting from DB...")
                 async with ctx["session_factory"]() as s:
@@ -157,7 +168,6 @@ async def compile_and_deploy_job(
                     await DeploymentRepository(s).mark_failed(dep, error_msg)
             return
 
-        # Fetch model from DB to get compiled_key and compiled_sha256
         compiled_key = ""
         compiled_sha256 = ""
         async with ctx["session_factory"]() as s:
@@ -186,7 +196,6 @@ async def compile_and_deploy_job(
                     await DeploymentRepository(s).mark_failed(dep, "Model ref not found in DB")
                 return
 
-        # Fallback if DB doesn't have details yet
         if not compiled_key:
             try:
                 m_details = await ctx["ai_stub"].GetModel(ai_pb2.GetModelRequest(id=model_id))
@@ -195,7 +204,6 @@ async def compile_and_deploy_job(
             except Exception as e:
                 logger.exception(f"Failed to fetch model details from AI service: {e}")
 
-        # 4. Compilation successful! Generate URLs and publish MQTT command
         model_url = await presigned_url("compiled", compiled_key)
         script_url = await presigned_url("scripts", script_key)
 
@@ -236,15 +244,28 @@ async def compile_and_deploy_job(
 
 
 class WorkerSettings:
+    """ARQ Worker configuration class defining tasks and lifecycle hooks."""
+    
     functions = [compile_and_deploy_job]
+    """List of registered execution tasks."""
     redis_settings = RedisSettings.from_dsn(os.environ.get("REDIS_URL", "redis://localhost:6379"))
+    """Redis settings derived from environment variables."""
     queue_name = "deployment_queue"
-    max_jobs = 10         # deployments can run concurrently (they mostly wait)
-    job_timeout = 14400   # 4 hours max (training + compilation + deploy)
+    """Name of the worker broker queue."""
+    max_jobs = 10
+    """Maximum concurrent runs allowed on this worker process."""
+    job_timeout = 14400
+    """Duration threshold in seconds before a task is forced to terminate."""
     keep_result = 3600
+    """Duration in seconds to preserve the task result definition in Redis."""
 
     @staticmethod
-    async def on_startup(ctx):
+    async def on_startup(ctx: dict) -> None:
+        """Connects gRPC, MinIO, and Redis client singletons at worker process startup.
+
+        Args:
+            ctx: Shared connection dictionary context.
+        """
         from app.config import get_settings
         from shared.utils.minio import init_minio, ensure_buckets
         from shared.utils.database import build_engine, build_session_factory
@@ -268,11 +289,15 @@ class WorkerSettings:
         ctx["ai_channel"]   = ai_channel
         ctx["comp_channel"] = comp_channel
 
-        # Raw Redis client for pub/sub polling
         ctx["redis"] = aioredis.from_url(s.redis_url)
 
     @staticmethod
-    async def on_shutdown(ctx):
+    async def on_shutdown(ctx: dict) -> None:
+        """Closes gRPC and Redis connection pool clients at worker process shutdown.
+
+        Args:
+            ctx: Shared connection dictionary context.
+        """
         for key in ("ai_channel", "comp_channel"):
             if key in ctx:
                 await ctx[key].close()

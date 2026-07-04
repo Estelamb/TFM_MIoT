@@ -1,17 +1,47 @@
+"""Repository module wrapping database operations for Model and Dataset records."""
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from app.models.orm import Dataset, Model, DatasetVersion
 
-
 class ModelRepository:
-    def __init__(self, s: AsyncSession): self.s = s
+    """Provides SQL access query handlers wrapping Model and ModelCompilation database objects."""
 
-    async def create(self, name: str, description: str | None, source_key: str,
-                     source_sha256: str, dataset_id: str | None = None,
-                     base_architecture: str | None = None, epochs: int | None = None,
-                     input_size: str | None = None, batch_size: int | None = None,
-                     dataset_version_id: str | None = None) -> Model:
+    def __init__(self, s: AsyncSession):
+        """Initializes the ModelRepository.
+
+        Args:
+            s: SQLAlchemy async database session.
+        """
+        self.s = s
+
+    async def create(
+        self, name: str, description: str | None, source_key: str,
+        source_sha256: str, dataset_id: str | None = None,
+        base_architecture: str | None = None, epochs: int | None = None,
+        input_size: str | None = None, batch_size: int | None = None,
+        dataset_version_id: str | None = None
+    ) -> Model:
+        """Registers a new model and validates associated dataset keys.
+
+        Args:
+            name: Human-readable display label.
+            description: Optional detailed comments.
+            source_key: MinIO object key for raw input weights.
+            source_sha256: SHA-256 hash checksum of source weights.
+            dataset_id: Optional linked dataset UUID.
+            base_architecture: Parent model configuration.
+            epochs: Optional epoch count metadata.
+            input_size: Optional WxH resolution.
+            batch_size: Optional batch size parameter.
+            dataset_version_id: Optional specific dataset version UUID.
+
+        Returns:
+            The created Model entity instance.
+
+        Raises:
+            ValueError: If dataset_id or dataset_version_id is invalid.
+        """
         if dataset_id:
             d = await self.s.get(Dataset, dataset_id)
             if not d:
@@ -32,9 +62,19 @@ class ModelRepository:
             input_size=input_size,
             batch_size=batch_size,
         )
-        self.s.add(m); await self.s.commit(); return await self.get(m.id)
+        self.s.add(m)
+        await self.s.commit()
+        return await self.get(m.id)
 
     async def get(self, id: str) -> Model | None:
+        """Retrieves a single model database row including all compilations.
+
+        Args:
+            id: Target model UUID string.
+
+        Returns:
+            Model object or None if not found.
+        """
         r = await self.s.execute(
             select(Model)
             .where(Model.id == id)
@@ -43,6 +83,11 @@ class ModelRepository:
         return r.scalar_one_or_none()
 
     async def list_all(self) -> list[Model]:
+        """Lists all registered models ordered by created timestamp descending.
+
+        Returns:
+            List of registered Model objects.
+        """
         r = await self.s.execute(
             select(Model)
             .options(selectinload(Model.compilations))
@@ -50,11 +95,29 @@ class ModelRepository:
         )
         return list(r.scalars().all())
 
-    async def update_compiled(self, id: str, compiled_key: str, compiled_sha256: str,
-                               hardware_type: str, compile_status: str, compile_error: str,
-                               source_key: str | None = None, source_sha256: str | None = None) -> Model | None:
+    async def update_compiled(
+        self, id: str, compiled_key: str, compiled_sha256: str,
+        hardware_type: str, compile_status: str, compile_error: str,
+        source_key: str | None = None, source_sha256: str | None = None
+    ) -> Model | None:
+        """Updates compilation results and adds or updates target compiles.
+
+        Args:
+            id: Target model UUID.
+            compiled_key: Compiled model MinIO object key.
+            compiled_sha256: SHA-256 hash checksum of compiled binary.
+            hardware_type: Compilation target platform architecture class.
+            compile_status: The compilation execution status.
+            compile_error: Error trace string if build failed.
+            source_key: Optional updated source key.
+            source_sha256: Optional updated source sha.
+
+        Returns:
+            Updated Model database object, or None if not found.
+        """
         m = await self.get(id)
-        if not m: return None
+        if not m:
+            return None
 
         if source_key:
             m.source_key = source_key
@@ -62,8 +125,6 @@ class ModelRepository:
             m.source_sha256 = source_sha256
 
         if hardware_type:
-            # If compile_status is ready, update main model fields for backward compatibility.
-            # Do NOT update main model status to "compiling" or "failed" to prevent blocking it.
             if compile_status == "ready":
                 m.compiled_key = compiled_key or None
                 m.compiled_sha256 = compiled_sha256 or None
@@ -110,6 +171,19 @@ class ModelRepository:
         return await self.get(id)
 
     async def associate_dataset(self, model_id: str, dataset_id: str, dataset_version_id: str | None = None) -> Model | None:
+        """Associates a dataset record and version with a registered model.
+
+        Args:
+            model_id: Target model UUID string.
+            dataset_id: Target dataset UUID string.
+            dataset_version_id: Optional target dataset version UUID string.
+
+        Returns:
+            Updated Model database object, or None if not found.
+
+        Raises:
+            ValueError: If dataset or dataset version does not exist.
+        """
         m = await self.get(model_id)
         if not m:
             return None
@@ -124,14 +198,31 @@ class ModelRepository:
             m.dataset_version_id = dv.id
         else:
             m.dataset_version_id = None
-        await self.s.commit(); return await self.get(m.id)
+        await self.s.commit()
+        return await self.get(m.id)
 
-    async def update(self, id: str, name: str, description: str | None,
-                     epochs: int | None = None, input_size: str | None = None,
-                     batch_size: int | None = None,
-                     base_architecture: str | None = None) -> Model | None:
+    async def update(
+        self, id: str, name: str, description: str | None,
+        epochs: int | None = None, input_size: str | None = None,
+        batch_size: int | None = None, base_architecture: str | None = None
+    ) -> Model | None:
+        """Updates standard configuration attributes on a model registry row.
+
+        Args:
+            id: Target model ID.
+            name: New display name.
+            description: New description comments.
+            epochs: New training epochs count.
+            input_size: New resolution size.
+            batch_size: New batch size value.
+            base_architecture: New base weights filename.
+
+        Returns:
+            Updated Model database object, or None if not found.
+        """
         m = await self.get(id)
-        if not m: return None
+        if not m:
+            return None
         m.name = name
         m.description = description
         if epochs is not None:
@@ -142,24 +233,61 @@ class ModelRepository:
             m.batch_size = batch_size
         if base_architecture is not None:
             m.base_architecture = base_architecture
-        await self.s.commit(); return await self.get(id)
+        await self.s.commit()
+        return await self.get(id)
 
     async def delete(self, id: str) -> bool:
+        """Deletes a model record row from the registry database.
+
+        Args:
+            id: Target model ID.
+
+        Returns:
+            True if deletion was successful, False otherwise.
+        """
         m = await self.get(id)
-        if not m: return False
-        await self.s.delete(m); await self.s.commit(); return True
+        if not m:
+            return False
+        await self.s.delete(m)
+        await self.s.commit()
+        return True
 
 
 class DatasetRepository:
-    def __init__(self, s: AsyncSession): self.s = s
+    """Provides SQL access query handlers wrapping Dataset database objects."""
+
+    def __init__(self, s: AsyncSession):
+        """Initializes the DatasetRepository.
+
+        Args:
+            s: SQLAlchemy async database session.
+        """
+        self.s = s
 
     async def create(self, name: str, description: str | None) -> Dataset:
+        """Creates a new dataset catalog record.
+
+        Args:
+            name: Human-readable display label.
+            description: Optional text comments details.
+
+        Returns:
+            The created Dataset database object.
+        """
         d = Dataset(name=name, description=description)
-        self.s.add(d); await self.s.commit()
-        # Fetch again using get() to ensure versions relationship is eager loaded
+        self.s.add(d)
+        await self.s.commit()
         return await self.get(d.id)
 
     async def get(self, id: str) -> Dataset | None:
+        """Retrieves a single dataset record including all associated versions.
+
+        Args:
+            id: Target dataset UUID string.
+
+        Returns:
+            Dataset object or None if not found.
+        """
         r = await self.s.execute(
             select(Dataset)
             .where(Dataset.id == id)
@@ -168,30 +296,54 @@ class DatasetRepository:
         return r.scalar_one_or_none()
 
     async def update(self, id: str, name: str, description: str | None) -> Dataset | None:
+        """Updates name and description on a dataset record.
+
+        Args:
+            id: Target dataset UUID.
+            name: New display name.
+            description: Optional new description.
+
+        Returns:
+            Updated Dataset database object, or None if not found.
+        """
         d = await self.get(id)
-        if not d: return None
+        if not d:
+            return None
         d.name = name
         d.description = description
         await self.s.commit()
-        # Fetch again using get() to ensure versions relationship is eager loaded
         return await self.get(id)
 
-    async def set_file(self, dataset_id: str, object_key: str, sha256: str,
-                       size_bytes: int, meta_info: dict | None = None,
-                       version: str | None = None, description: str | None = None) -> Dataset | None:
+    async def set_file(
+        self, dataset_id: str, object_key: str, sha256: str,
+        size_bytes: int, meta_info: dict | None = None,
+        version: str | None = None, description: str | None = None
+    ) -> Dataset | None:
+        """Creates and stores a new DatasetVersion row and links the parent dataset pointer to it.
+
+        Args:
+            dataset_id: Target dataset UUID.
+            object_key: MinIO storage key.
+            sha256: SHA-256 validation code.
+            size_bytes: Size in bytes.
+            meta_info: JSON dictionary metadata details.
+            version: Optional version tag.
+            description: Optional release notes.
+
+        Returns:
+            Updated parent Dataset object, or None if not found.
+        """
         d = await self.s.get(Dataset, dataset_id)
-        if not d: return None
+        if not d:
+            return None
         
-        # Calculate version name if not provided
         if not version or not version.strip():
-            # Query existing versions to find count
             r = await self.s.execute(
                 select(DatasetVersion).where(DatasetVersion.dataset_id == dataset_id)
             )
             existing_versions = r.scalars().all()
             version = f"v{len(existing_versions) + 1}"
             
-        # Create a new DatasetVersion
         dv = DatasetVersion(
             dataset_id=dataset_id,
             version=version.strip(),
@@ -203,7 +355,6 @@ class DatasetRepository:
         )
         self.s.add(dv)
         
-        # Keep parent dataset columns synced to the latest uploaded version for backward compatibility
         d.object_key = object_key
         d.sha256 = sha256
         d.size_bytes = size_bytes
@@ -211,11 +362,14 @@ class DatasetRepository:
             d.meta_info = meta_info
             
         await self.s.commit()
-        
-        # Fetch again using get() to ensure versions relationship is eager loaded
         return await self.get(dataset_id)
 
     async def list_all(self) -> list[Dataset]:
+        """Lists all datasets ordered by created timestamp descending.
+
+        Returns:
+            List of registered datasets.
+        """
         r = await self.s.execute(
             select(Dataset)
             .options(selectinload(Dataset.versions))
@@ -224,7 +378,17 @@ class DatasetRepository:
         return list(r.scalars().all())
 
     async def delete(self, id: str) -> bool:
+        """Deletes a dataset and all associated versions from the registry database.
+
+        Args:
+            id: Target dataset UUID.
+
+        Returns:
+            True if deletion was successful, False otherwise.
+        """
         d = await self.get(id)
         if not d:
             return False
-        await self.s.delete(d); await self.s.commit(); return True
+        await self.s.delete(d)
+        await self.s.commit()
+        return True

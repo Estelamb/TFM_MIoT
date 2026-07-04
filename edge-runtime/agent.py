@@ -1,25 +1,15 @@
-"""
-AURA Edge Agent — Entrypoint
-=============================
+"""AURA Edge Agent — Entrypoint.
+
 Minimal entrypoint that wires together the PAL components:
+- pal.comm_client: MQTT publish/subscribe
+- pal.ota_handler: OTA deploy handler
+- pal.orchestrator: inference + telemetry loops
+- aura_hw.device_manager: connected device backends
 
-* :class:`~pal.comm_client.CommunicationClient` — MQTT publish/subscribe
-* :class:`~pal.ota_handler.OTAHandler`          — OTA deploy handler
-* :class:`~pal.orchestrator.Orchestrator`        — inference + telemetry loops
-* :class:`~aura_hw.device_manager.DeviceManager` — connected device backends
-
-Configuration (priority order)
--------------------------------
+Configuration priority:
 1. Environment variables
-2. ``config/device_config.yaml``
+2. config/device_config.yaml
 3. Built-in defaults
-
-MQTT Topics
------------
-Subscribe:  device/{DEVICE_ID}/commands
-Publish:    device/{DEVICE_ID}/events
-            device/{DEVICE_ID}/telemetry
-            device/{DEVICE_ID}/inference
 """
 from __future__ import annotations
 
@@ -29,12 +19,14 @@ import os
 import sys
 import time
 from pathlib import Path
-
 import yaml
 
-# ── Logging ──────────────────────────────────────────────────────────────────
-
 def _setup_logging(level_str: str) -> None:
+    """Configures global system logging for the edge agent.
+
+    Args:
+        level_str: Logging severity level name string.
+    """
     level = getattr(logging, level_str.upper(), logging.INFO)
     logging.basicConfig(
         stream=sys.stdout,
@@ -42,15 +34,14 @@ def _setup_logging(level_str: str) -> None:
         format="%(asctime)s [edge-agent] %(levelname)s — %(message)s",
     )
 
-# ── Config loading ────────────────────────────────────────────────────────────
-
 _CONFIG_DIR = Path(__file__).parent / "config"
+"""Path to the directory containing configuration files."""
+
 _COMPONENTS_CONFIG_PATH = _CONFIG_DIR / "components_config.yaml"
-
-
-# ── Main ──────────────────────────────────────────────────────────────────────
+"""Path to the active component drivers config schema yaml file."""
 
 async def main() -> None:
+    """Parses settings, initializes driver libraries, and runs client loops."""
     # Resolve all config values from environment variables or defaults
     device_id          = os.environ.get("AURA_DEVICE_ID",          "dev-device-001")
     mqtt_host          = os.environ.get("AURA_MQTT_HOST",          "localhost")
@@ -79,7 +70,6 @@ async def main() -> None:
         primary_camera_id = "camera_0"
     coordinates_raw    = os.environ.get("AURA_COORDINATES",        "[-3.6294, 40.3897]")
 
-    # Parse coordinates
     import json
     try:
         coordinates = json.loads(coordinates_raw) if isinstance(coordinates_raw, str) else coordinates_raw
@@ -91,7 +81,6 @@ async def main() -> None:
     _setup_logging(log_level)
     logger = logging.getLogger(__name__)
 
-    # Save active configuration to device_config.yaml
     active_config = {
         "device_id": device_id,
         "mqtt_host": mqtt_host,
@@ -112,7 +101,6 @@ async def main() -> None:
     except Exception as exc:
         logger.warning(f"Could not save active configuration to device_config.yaml: {exc}")
 
-    # Register signal handlers for graceful shutdown on SIGTERM/SIGINT
     import signal
     def handle_sigterm(*args):
         logger.info("Signal received — exiting gracefully")
@@ -127,7 +115,6 @@ async def main() -> None:
     work_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"AURA Edge Agent starting — device_id={device_id}")
 
-    # ── Instantiate PAL + HAL components ─────────────────────────────────
     from pal.comm_client import CommunicationClient
     from pal.ota_handler import OTAHandler
     from pal.orchestrator import Orchestrator
@@ -135,7 +122,6 @@ async def main() -> None:
 
     start_time = time.monotonic()
 
-    # Device manager — opens peripheral backends from components_config.yaml
     device_manager = DeviceManager(_COMPONENTS_CONFIG_PATH)
     device_manager.open_all()
     logger.info(
@@ -169,24 +155,19 @@ async def main() -> None:
         device_manager=device_manager,
     )
 
-    # ── Register MQTT command handlers ────────────────────────────────────
     comm.register_command_handler("deploy", ota.handle_deploy)
     comm.register_command_handler("update_libraries", ota.handle_update_libraries)
 
-    # ── Launch concurrent async tasks ─────────────────────────────────────
     try:
         async with asyncio.TaskGroup() as tg:
             tg.create_task(comm.run(),                    name="mqtt-loop")
             tg.create_task(orchestrator.run_inference_loop(), name="inference-loop")
             tg.create_task(orchestrator.run_telemetry_loop(), name="telemetry-loop")
     finally:
-        # Ensure devices are cleanly closed on exit
         logger.info("Shutting down — closing all devices")
         device_manager.close_all()
 
-        # Publish offline status to the broker before exiting (handles clean exit status sync)
         logger.info("Publishing offline status to broker...")
-        import json
         try:
             import paho.mqtt.client as mqtt
             client = mqtt.Client()
@@ -196,7 +177,6 @@ async def main() -> None:
             logger.info("Offline status published successfully.")
         except Exception as e:
             logger.warning(f"Could not publish offline status on exit: {e}")
-
 
 if __name__ == "__main__":
     asyncio.run(main())

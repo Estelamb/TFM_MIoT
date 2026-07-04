@@ -1,14 +1,7 @@
-"""
-ARQ worker for compilation-service.
+"""ARQ task runner and queue background job executors for the MLOps Service.
 
-Defines job functions for:
-  - train_job:   runs YOLO training subprocess, uploads best.pt to MinIO
-  - compile_job: runs hardware-specific compiler, uploads artefact to MinIO
-
-Both jobs update the model status in ai-service via gRPC on completion.
-
-The worker runs inside the same Docker container as the gRPC server but as
-a separate process (started via arq app.worker.WorkerSettings).
+Defines the worker loop, enqueued training jobs, enqueued hardware-specific model
+compilations, log streams, and worker lifespans.
 """
 import os
 import sys
@@ -28,17 +21,34 @@ from shared.utils.minio import get_minio, upload_bytes
 from app.grpc_handlers.compilation_handler import extract_classes_from_dataset
 
 logger = logging.getLogger(__name__)
+"""Logger instance specific to background worker processes."""
 
+async def _notify_compilation(ctx: dict, model_id: str, status: str, compiled_key: str,
+                              compiled_sha256: str, hardware_type: str, error: str) -> None:
+    """Invokes registry service update_compiled gRPC method to publish task progress.
 
-async def _notify_compilation(ctx, model_id: str, status: str, compiled_key: str,
-                              compiled_sha256: str, hardware_type: str, error: str):
+    Args:
+        ctx: Worker connection context state mapping.
+        model_id: Target model UUID string.
+        status: Compilation status tag string.
+        compiled_key: MinIO target key containing output file.
+        compiled_sha256: Hash validation tag string.
+        hardware_type: Compilation target platform type.
+        error: Descriptive error message string.
+    """
     await ctx["ai_stub"].UpdateModelCompiled(ai_pb2.UpdateModelCompiledRequest(
         id=model_id, compiled_key=compiled_key, compiled_sha256=compiled_sha256,
         hardware_type=hardware_type, compile_status=status, compile_error=error,
     ))
 
+async def check_cancellation(redis: aioredis.Redis, cancel_key: str, process: asyncio.subprocess.Process) -> None:
+    """Monitors Redis cancellation keys and terminates subprocesses if cancel request triggers.
 
-async def check_cancellation(redis, cancel_key, process):
+    Args:
+        redis: Shared Redis async client instance.
+        cancel_key: The Redis cancellation trigger key string.
+        process: Subprocess handler to terminate.
+    """
     try:
         while True:
             if await redis.exists(cancel_key):
@@ -54,29 +64,45 @@ async def check_cancellation(redis, cancel_key, process):
     except asyncio.CancelledError:
         pass
 
-
 async def train_job(
-    ctx,
+    ctx: dict,
     *,
-    model_id,
-    name,
-    dataset_id,
-    dataset_key,
-    base_architecture,
-    epochs,
-    input_size,
-    gpu_percent,
-    device
-):
+    model_id: str,
+    name: str,
+    dataset_id: str,
+    dataset_key: str,
+    base_architecture: str,
+    epochs: int,
+    input_size: str,
+    gpu_percent: float,
+    device: str
+) -> None:
+    """Executes a YOLO model training task as a background worker.
+
+    Downloads dataset ZIP from MinIO, invokes `yolo_train` script, parses
+    log states, streams real-time training progress to Redis pubsub channels,
+    retrieves output best.pt model weights, and uploads to MinIO.
+
+    Args:
+        ctx: Context mapping shared client references.
+        model_id: Model database UUID.
+        name: Run name prefix identifier.
+        dataset_id: Source dataset UUID.
+        dataset_key: ZIP object path key in MinIO.
+        base_architecture: Weights file configuration.
+        epochs: Epoch quantity.
+        input_size: Training dimensions size.
+        gpu_percent: Limits of GPU memory limits.
+        device: CPU or target GPU index value.
+    """
     logger.info(f"[train_job] Starting training run for model {model_id}...")
     redis = ctx.get("redis")
     cancel_key = f"cancel:train:{model_id}"
     if redis:
-        await redis.delete(cancel_key) # clear old leftover key
+        await redis.delete(cancel_key)
 
     tmpdir = tempfile.mkdtemp()
     try:
-        # Check cancellation before starting
         if redis and await redis.exists(cancel_key):
             raise asyncio.CancelledError()
 
@@ -84,7 +110,6 @@ async def train_job(
         extract_dir = os.path.join(tmpdir, "dataset")
         os.makedirs(extract_dir, exist_ok=True)
 
-        # 1. Download dataset zip
         logger.info(f"[train_job] Downloading dataset datasets/{dataset_key} to {zip_path}...")
         minio = get_minio()
         await minio.fget_object("datasets", dataset_key, zip_path)
@@ -92,7 +117,6 @@ async def train_job(
         if redis and await redis.exists(cancel_key):
             raise asyncio.CancelledError()
 
-        # 2. Extract dataset zip
         logger.info(f"[train_job] Extracting dataset to {extract_dir}...")
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(extract_dir)
@@ -100,7 +124,6 @@ async def train_job(
         if redis and await redis.exists(cancel_key):
             raise asyncio.CancelledError()
 
-        # 3. Resolve base model
         base_model_path = os.path.join(tmpdir, "base_model.pt")
         try:
             if "/" in base_architecture:
@@ -110,7 +133,6 @@ async def train_job(
             else:
                 logger.info(f"[train_job] Checking base-models bucket for {base_architecture}...")
                 await minio.fget_object("base-models", base_architecture, base_model_path)
-                # If the downloaded file is a 0-byte placeholder, ignore it and let YOLO auto-download
                 if os.path.exists(base_model_path) and os.path.getsize(base_model_path) == 0:
                     logger.info(f"[train_job] Base model {base_architecture} in MinIO is a 0-byte placeholder. Ignoring.")
                     try:
@@ -126,10 +148,9 @@ async def train_job(
         if redis and await redis.exists(cancel_key):
             raise asyncio.CancelledError()
 
-        # 4. Invoke yolo_train script via subprocess
         cmd = [
             sys.executable,
-            "-u",  # Force unbuffered stdout so logs stream in real-time
+            "-u",
             "-m", "app.compilers.yolo_train",
             "--data_dir", extract_dir,
             "--init_model", base_model_path,
@@ -142,18 +163,16 @@ async def train_job(
 
         logger.info(f"[train_job] Executing training command: {' '.join(cmd)}")
         
-        # Force unbuffered output so training logs stream in real-time
         sub_env = os.environ.copy()
         sub_env["PYTHONUNBUFFERED"] = "1"
 
-        # Execute subprocess
         process = await asyncio.create_subprocess_exec(
             *cmd,
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.STDOUT,  # Merge stderr into stdout
+            stderr=asyncio.subprocess.STDOUT,
             cwd="/app",
             env=sub_env,
-            limit=1024 * 1024 * 10  # 10 MB buffer limit to handle long YOLO output lines/progress bars
+            limit=1024 * 1024 * 10
         )
         
         cancellation_task = None
@@ -162,12 +181,11 @@ async def train_job(
                 check_cancellation(redis, cancel_key, process)
             )
 
-        # Stream logs to Redis in real-time
         redis_channel = f"train_logs:{model_id}"
         redis_list = f"train_logs:{model_id}_list"
         
         if redis:
-            await redis.delete(redis_list) # Clear old logs for this model
+            await redis.delete(redis_list)
 
         output_buffer = []
         raw_buffer = b""
@@ -179,16 +197,14 @@ async def train_job(
 
                 raw_buffer += chunk
 
-                # Split on \r and \n to capture tqdm progress updates (which use \r)
                 lines_raw = []
                 while raw_buffer:
                     r_pos = raw_buffer.find(b'\r')
                     n_pos = raw_buffer.find(b'\n')
 
                     if r_pos == -1 and n_pos == -1:
-                        break  # No complete line yet, keep buffering
+                        break
 
-                    # Find the earliest separator
                     if r_pos == -1:
                         pos = n_pos
                     elif n_pos == -1:
@@ -197,7 +213,6 @@ async def train_job(
                         pos = min(r_pos, n_pos)
 
                     line_bytes = raw_buffer[:pos]
-                    # Handle \r\n as a single separator
                     if pos + 1 < len(raw_buffer) and raw_buffer[pos:pos+2] == b'\r\n':
                         raw_buffer = raw_buffer[pos+2:]
                     else:
@@ -217,14 +232,12 @@ async def train_job(
 
                     output_buffer.append(line_str)
 
-                    # Filter tqdm progress: only publish every 5%
                     progress_match = re.search(r'(\d+)%\|', line_str)
                     if progress_match:
                         pct = int(progress_match.group(1))
                         if pct % 5 != 0:
-                            continue  # Skip intermediate progress updates
+                            continue
 
-                    # Publish to Redis
                     if redis:
                         try:
                             await redis.rpush(redis_list, line_str)
@@ -234,7 +247,6 @@ async def train_job(
                         except Exception as e:
                             logger.warning(f"Failed to publish log to redis: {e}")
 
-            # Flush any remaining bytes in buffer
             if raw_buffer.strip():
                 try:
                     line_str = raw_buffer.decode('utf-8', errors='replace').strip()
@@ -262,13 +274,12 @@ async def train_job(
             raise asyncio.CancelledError()
 
         if process.returncode != 0:
-            err_content = "\n".join(output_buffer[-50:]) # Last 50 lines as error
+            err_content = "\n".join(output_buffer[-50:])
             logger.error(f"[train_job] YOLO training subprocess failed:\n{err_content}")
             raise RuntimeError(f"YOLO training failed (exit code {process.returncode}):\n{err_content}")
 
         logger.info("[train_job] Training subprocess complete. Locating best.pt weights...")
 
-        # 5. Locate best.pt
         best_weights_path = f"/app/run/{name}/weights/best.pt"
         if not os.path.exists(best_weights_path):
             import glob
@@ -291,14 +302,12 @@ async def train_job(
         sha = hashlib.sha256(data).hexdigest()
         model_key = f"{model_id}/model.pt"
 
-        # 6. Upload to MinIO models bucket
         logger.info(f"[train_job] Uploading trained model to MinIO: models/{model_key}...")
         await upload_bytes("models", model_key, data)
 
         if redis and await redis.exists(cancel_key):
             raise asyncio.CancelledError()
 
-        # 7. Notify AI service to mark model as ready (uploaded to platform) and update source details
         await ctx["ai_stub"].UpdateModelCompiled(ai_pb2.UpdateModelCompiledRequest(
             id=model_id,
             compiled_key="",
@@ -332,20 +341,36 @@ async def train_job(
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
 
-
 async def compile_job(
-    ctx,
+    ctx: dict,
     *,
-    model_id,
-    source_key,
-    hardware_type,
-    num_classes,
-    class_names,
-    dataset_id,
-    dataset_key,
-    base_architecture,
-    input_size
-):
+    model_id: str,
+    source_key: str,
+    hardware_type: str,
+    num_classes: int,
+    class_names: list[str],
+    dataset_id: str,
+    dataset_key: str,
+    base_architecture: str,
+    input_size: str
+) -> None:
+    """Executes a model compilation task as a background worker.
+
+    Finds the matching target Compiler class, calls its compile pipeline, and
+    saves progress updates to registry servers and Redis databases.
+
+    Args:
+        ctx: Shared worker connection references.
+        model_id: Target model UUID string.
+        source_key: Raw source weights key in MinIO.
+        hardware_type: Compilation target platform type string.
+        num_classes: Total class count.
+        class_names: Class labels list.
+        dataset_id: Source dataset UUID.
+        dataset_key: Dataset archive key in MinIO.
+        base_architecture: Parent model configuration.
+        input_size: Tensor dimensions.
+    """
     logger.info(f"[compile_job] Starting compilation for model {model_id} (hw: {hardware_type})...")
     redis = ctx.get("redis")
     cancel_key = f"cancel:compile:{model_id}"
@@ -368,7 +393,6 @@ async def compile_job(
         if redis and await redis.exists(cancel_key):
             raise asyncio.CancelledError()
 
-        # Extract classes from dataset zip if not passed
         if not class_names and dataset_key:
             try:
                 if redis:
@@ -425,18 +449,29 @@ async def compile_job(
         if redis:
             await redis.set(f"model_compile_done:{model_id}", f"failed:{str(e)}", ex=86400)
 
-
 class WorkerSettings:
+    """ARQ Worker configuration class defining tasks and lifecycle hooks."""
+    
     functions = [train_job, compile_job]
+    """List of registered execution tasks."""
     redis_settings = RedisSettings.from_dsn(os.environ.get("REDIS_URL", "redis://localhost:6379"))
+    """Redis settings derived from environment variables."""
     queue_name = "mlops_queue"
-    max_jobs = 1          # one heavy GPU/CPU job at a time per worker
-    job_timeout = 7200    # 2 hours max per job
-    keep_result = 3600    # keep result in Redis for 1 hour
+    """Name of the worker broker queue."""
+    max_jobs = 1
+    """Maximum concurrent runs allowed on this worker process."""
+    job_timeout = 7200
+    """Duration threshold in seconds before a task is forced to terminate."""
+    keep_result = 3600
+    """Duration in seconds to preserve the task result definition in Redis."""
 
     @staticmethod
-    async def on_startup(ctx):
-        """Initialise shared resources once at worker startup."""
+    async def on_startup(ctx: dict) -> None:
+        """Connects gRPC, MinIO, and Redis client singletons at worker process startup.
+
+        Args:
+            ctx: Shared connection dictionary context.
+        """
         from app.config import get_settings
         from app.compilers import discover_compilers
         from shared.utils.minio import init_minio, ensure_buckets
@@ -463,7 +498,12 @@ class WorkerSettings:
             compiler.redis_client = redis_client
 
     @staticmethod
-    async def on_shutdown(ctx):
+    async def on_shutdown(ctx: dict) -> None:
+        """Closes gRPC and Redis connection pool clients at worker process shutdown.
+
+        Args:
+            ctx: Shared connection dictionary context.
+        """
         if "ai_channel" in ctx:
             await ctx["ai_channel"].close()
         if "redis" in ctx:

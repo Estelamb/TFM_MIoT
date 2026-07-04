@@ -1,10 +1,10 @@
-"""
-MongoDB collections para monitoring.
-No usamos ORM — documentos directos via motor.
+"""MongoDB collections for monitoring.
 
-Collections:
-  device_states     — estado actual por device_id (upsert)
-  inference_results  — resultados de inferencia (append-only, TTL opcional)
+No ORM is used for telemetry; documents are accessed directly via Motor.
 """
+
 DEVICE_STATES_COL = "device_states"
+"""Collection name storing the current telemetry status for each device ID (upsert)."""
+
 INFERENCE_RESULTS_COL = "inference_results"
+"""Collection name storing historical YOLO inference result records (append-only)."""

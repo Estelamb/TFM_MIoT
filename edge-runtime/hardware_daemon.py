@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-"""
-AURA Hardware Daemon
-====================
+"""AURA Hardware Daemon.
+
 Exposes Raspberry Pi Camera Module 3 and Hailo-8/8L hardware accelerators
 over a lightweight local HTTP API.
 Allows containerized edge agents to interact with native hardware without
 complex device mounts or privileged Docker flags.
 
 API Endpoints:
-* GET /capture - Returns the latest captured frame as 'image/jpeg' bytes.
-* GET /status  - Returns JSON status of the daemon (physical vs simulated).
-* POST /load   - Accepts raw HEF bytes and initializes Hailo context.
-* POST /infer  - Runs inference on the loaded Hailo model using raw RGB888 bytes.
-* POST /unload - Releases the Hailo context and cleans up temporary HEFs.
+- GET /capture: Returns the latest captured frame as raw image bytes.
+- GET /status: Returns JSON status of the daemon.
+- POST /load: Accepts raw HEF bytes and initializes Hailo context.
+- POST /infer: Runs inference on the loaded Hailo model using raw RGB888 bytes.
+- POST /unload: Releases the Hailo context and cleans up temporary HEFs.
 """
 import io
 import json
@@ -27,38 +26,43 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from typing import Any
 
-# Import config, utilities, and manager singletons from daemon package
 from daemon.shared import logger, HARDWARE_TYPE, CAMERA_ENABLED, HAS_PILLOW, _make_json_serializable
 from daemon import camera_manager, hailo_manager, imx500_manager
 
-
-# Cache import availability at start to prevent expensive runtime checks on requests
+PICAM_AVAIL = False
+"""Boolean indicating if the native `picamera2` library can be imported."""
 try:
     from picamera2 import Picamera2
     PICAM_AVAIL = True
 except ImportError:
-    PICAM_AVAIL = False
+    pass
 
+HAILO_AVAIL = False
+"""Boolean indicating if the native `picamera2.devices.Hailo` class can be imported."""
 try:
     from picamera2.devices import Hailo
     HAILO_AVAIL = True
 except ImportError:
-    HAILO_AVAIL = False
+    pass
 
+IMX500_AVAIL = False
+"""Boolean indicating if the native `picamera2.devices.IMX500` class can be imported."""
 try:
     from picamera2.devices import IMX500
     IMX500_AVAIL = True
 except ImportError:
-    IMX500_AVAIL = False
+    pass
 
 
 class HardwareHTTPHandler(BaseHTTPRequestHandler):
-    """Lite HTTP handler resolving requests."""
-    def log_message(self, format, *args):
-        # Silence default access logging to keep console clean during rapid capture requests
+    """HTTP Request Handler routing edge device camera and compiler operations."""
+    
+    def log_message(self, format: str, *args: Any) -> None:
+        """Overrides default request log output to keep console clean during rapid frames capture."""
         pass
 
     def do_GET(self) -> None:
+        """Handles HTTP GET routes: `/capture` and `/status`."""
         if self.path == "/capture":
             raw_data = camera_manager.capture_raw()
             self.send_response(200)
@@ -90,10 +94,10 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_POST(self) -> None:
+        """Handles HTTP POST routes: `/load`, `/infer`, and `/unload`."""
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
         
-        # Read content length
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length) if content_length > 0 else b""
         
@@ -147,6 +151,7 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
+    """Bootstraps camera manager, configures logs, signal handlers and serves HTTPServer."""
     import signal
     
     logging.basicConfig(
@@ -182,5 +187,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
