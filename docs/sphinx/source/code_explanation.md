@@ -18,7 +18,7 @@ TFM_MIoT/
 ├── edge-runtime/               # Python-based agent code running on edge devices
 ├── frontend/                   # Next.js 15 frontend application (App Router)
 ├── shared/                     # Shared modules, utility code, and generated gRPC stubs
-└── hardware/                   # Custom hardware definitions, peripherals, and tempThe server-side system runs separate backend microservices interacting via gRPC, exposed to the web frontend through the API Gateway.
+└── hardware/                   # Physical device drivers, sensor/actuator libraries, and hw_arch compilation configs
 ```
 
 ### `services/api-gateway/`
@@ -136,9 +136,67 @@ Common modules imported by both backend microservices and edge runtimes.
 
 ## 5. Physical Hardware Integration (`hardware/`)
 
-Additional hardware modules:
+Standalone Python drivers and hardware-specific compilation/inference scripts that extend AURA with support for real peripherals. The runtime loads these modules dynamically at startup via `utils.py`.
 
-* **`hardware/sensors/` & `hardware/actuators/`**: Simulators and physical libraries to run checks on temperature sensors, buzzer circuits, and LED modules.
-* **`hardware/hw_arch/`**: Hardware compiler configurations and calibration utilities.
+```
+hardware/
+├── utils.py            # Shared driver loader and MockDevice fallback
+├── sensors/            # Sensor driver implementations
+│   ├── camera/         # Camera backends
+│   │   ├── imx500/     # Sony IMX500 AI camera (RPi AI Camera module)
+│   │   └── rpi_camera_module_3/   # Raspberry Pi Camera Module 3
+│   ├── gps/            # GPS receiver
+│   │   └── gps_simulated/         # Simulated GPS driver for testing
+│   └── template/       # Boilerplate for new sensor drivers
+├── actuators/          # Actuator driver implementations
+│   ├── template/       # Boilerplate for new actuator drivers
+│   │   └── dummy_actuator/        # No-op actuator stub for testing
+└── hw_arch/            # Hardware-specific compilation & inference configurations
+│   ├── hailo8/         # Hailo-8 M.2 accelerator
+│   │   ├── compilation/compiler.py  # Docker-based HEF model compiler
+│   │   └── inference/library.py     # Hailo SDK inference backend
+│   ├── hailo8l/        # Hailo-8L (lower power) accelerator
+│   │   ├── compilation/
+│   │   └── inference/
+│   ├── rpi/            # Raspberry Pi 5 CPU (ONNX Runtime)
+│   │   ├── compilation/
+│   │   └── inference/
+│   └── rpi_ai_cam/     # Raspberry Pi AI Camera (IMX500)
+│       ├── compilation/
+│       └── inference/
+└── others/
+    └── template/       # Boilerplate for new peripheral categories
+```
 
+### Driver system
 
+| File / Component | Folder | Description |
+|---|---|---|
+| [utils.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/utils.py) | `hardware` | Shared utilities: `get_active_driver()` reads `components_config.yaml` to resolve the configured driver for each device type; `load_specific_driver()` dynamically imports the matching `library.py`; `MockDevice` provides a safe no-op fallback when no real hardware is present. |
+
+### Sensors
+
+| Driver | Path | Description |
+|---|---|---|
+| IMX500 camera | `hardware/sensors/camera/imx500/library.py` | Captures frames from the Sony IMX500 AI camera via `picamera2`. |
+| RPi Camera Module 3 | `hardware/sensors/camera/rpi_camera_module_3/library.py` | Standard Raspberry Pi Camera Module 3 using `picamera2`. |
+| GPS simulated | `hardware/sensors/gps/gps_simulated/library.py` | Software-emulated GPS feed for development and testing without physical hardware. |
+| Sensor template | `hardware/sensors/template/library.py` | Reference skeleton implementing the sensor driver interface. |
+
+### Actuators
+
+| Driver | Path | Description |
+|---|---|---|
+| Dummy actuator | `hardware/actuators/template/dummy_actuator/library.py` | No-op actuator stub used for integration tests. |
+| Actuator template | `hardware/actuators/template/library.py` | Reference skeleton implementing the actuator driver interface. |
+
+### Hardware architecture backends (`hw_arch/`)
+
+Each target subdirectory contains two modules that plug into the AURA compilation and inference pipeline:
+
+| Target | `compilation/compiler.py` | `inference/library.py` |
+|---|---|---|
+| `hailo8` | Launches the Hailo AI SW Suite Docker container and runs `hailo compiler` to produce `.hef` files. | Hailo SDK (`hailo_platform`) inference backend used at runtime by the edge agent. |
+| `hailo8l` | Same pipeline as `hailo8`, targeting the lower-power Hailo-8L variant. | Hailo-8L SDK inference backend. |
+| `rpi` | Exports the model to ONNX format inside a Docker container. | ONNX Runtime CPU inference backend. |
+| `rpi_ai_cam` | Runs the MCT + `imx500-converter` pipeline to produce `packerOut.zip`. | IMX500 on-chip inference backend using `picamera2`. |
