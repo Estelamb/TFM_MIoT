@@ -1,14 +1,14 @@
 # AURA Platform
 
-Edge AI deployment platform for IoT devices. Upload a trained YOLOv8 model, compile it for your target hardware, and deploy it to remote edge devices over MQTT — all from a single dashboard.
+Edge AI deployment platform for IoT devices. Upload a trained YOLO model, compile it for your target hardware, and deploy it to remote edge devices over MQTT. All from a single dashboard!
 
 ---
 
 ## 1. Overview & Key Features
 
 AURA allows you to manage the full lifecycle of edge AI models and peripheral devices from a unified console:
-1. **Register** edge devices (Hailo-8, Hailo-8L, RPi AI Camera, Jetson Orin Nano, plain RPi).
-2. **Upload** a trained PyTorch `.pt` model, and the platform compiles it to the appropriate format for the target hardware.
+1. **Register** IoT edge devices (Hailo-8, Hailo-8L, RPi AI Camera, plain RPi) and other peripherals.
+2. **Upload** a trained YOLO model, and the platform compiles it to the appropriate format for the target hardware.
 3. **Upload** an inference script specifying pre/post-processing logic.
 4. **Deploy** the model + script to a device with one click.
 5. **Monitor** live CPU/RAM telemetry, active models/scripts, and raw inference payload streams.
@@ -95,23 +95,12 @@ docker compose logs -f edge-connector-service
 | **MinIO Console** | [http://localhost:9001](http://localhost:9001) | Username: `aura` / Password: `aura_dev` |
 | **Prometheus Metrics** | [http://localhost:9100/metrics](http://localhost:9100/metrics) | Anonymous access |
 
-> [!TIP]
-> **Demo Mode**: The frontend sidebar contains a **Demo Mode** toggle (bottom-right). Toggle it on to load static mock data to inspect the UI without requiring running backends. Turn it off to load live MQTT telemetry and database records.
-
 ---
 
 ## 4. Edge Runtime (Agent) Setup
 
-The edge runtime runs on the physical perimetral device (e.g., Raspberry Pi 5) or locally for testing.
+The edge runtime runs on the physical perimetral device (e.g., Raspberry Pi 5).
 
-### Option A: Running Locally with Docker Compose (Testing)
-1. **Verify network**: Ensure the core platform is running.
-2. **Start the agent**:
-   ```bash
-   docker compose -f edge-runtime/docker-compose.yml up -d
-   ```
-
-### Option B: Running on a Physical Edge Device (Production)
 1. **Copy folder**: Transfer the `edge-runtime/` directory onto the storage of your physical device.
 2. **Configure network in `edge-runtime/docker-compose.yml`**:
    - Change `AURA_MQTT_HOST` from `mosquitto` to your server host's actual IP address.
@@ -152,7 +141,6 @@ The agent reads settings from `edge-runtime/config/device_config.yaml`. These ca
 ```
 TFM_MIoT/
 ├── docker-compose.yml              # Server stack orchestration config
-├── docker/                         # Service-specific compose files
 ├── infra/                          # Infrastructure configurations
 │   ├── mosquitto/mosquitto.conf    # MQTT Broker config
 │   └── postgres/init.sql           # Database schema seed
@@ -210,18 +198,18 @@ The following pipeline describes how an OTA deployment is scheduled, built, and 
 
 The platform uses a specialized database stack adapted for relational metadata, binary storage, and time-series telemetry:
 
-- **PostgreSQL** — Relational metadata: Persists structured definitions of `devices`, `models`, `scripts`, and `deployments`.
-- **MongoDB** — Time-series storage: Ingests rapid, append-only `inference_results` and keeps the latest `device_states` from edge device telemetry.
-- **Redis** — Job queuing & state caching: Manages background async jobs queue (using `arq` workers) for compiler tasks, training execution, and coordination of deployment cancellations.
-- **Prometheus** — Telemetry metrics: Gathers and exposes node exporter metrics and edge agent statistics for visualization.
-- **MinIO** — Object storage: Stores raw uploaded PyTorch `.pt` files under `models/`, compiled binaries (like `.hef` or `.onnx`) under `compiled/`, raw ZIP datasets under `datasets/`, and custom user-provided inference scripts under `scripts/`.
+- **PostgreSQL**: Relational metadata: Persists structured definitions of `devices`, `models`, `scripts`, and `deployments`.
+- **MongoDB**: Time-series storage: Ingests rapid, append-only `inference_results` and keeps the latest `device_states` from edge device telemetry.
+- **Redis**: Job queuing & state caching: Manages background async jobs queue (using `arq` workers) for compiler tasks, training execution, and coordination of deployment cancellations.
+- **Prometheus**: Telemetry metrics: Gathers and exposes node exporter metrics and edge agent statistics for visualization.
+- **MinIO**: Object storage: Stores raw uploaded PyTorch `.pt` files under `models/`, compiled binaries (like `.hef` or `.onnx`) under `compiled/`, raw ZIP datasets under `datasets/`, and custom user-provided inference scripts under `scripts/`.
 
 ---
 
 ## 8. Extensibility Guide (For Developers)
 
 ### Adding a New Hardware Compiler Architecture
-The MLOps service dynamically registers compilers located in [hardware/hw_arch/](file:///c:/Users/Estela/TFM_MIoT/hardware/hw_arch).
+The MLOps service dynamically registers compilers located in `hardware/hw_arch`.
 1. Create a subdirectory under `hardware/hw_arch/<arch_name>/compilation/`.
 2. Create `compiler.py` and subclass `CompilerBase` (defined in `mlops-service/app/compilers/base.py`):
    - Set the following metadata fields: `LABEL`, `EXECUTION_STRATEGY` (`"docker"` or `"python"`), `OUTPUT_FORMAT` (e.g. `".hef"`), `SUPPORTED_HARDWARE`.
@@ -273,27 +261,5 @@ docker compose down
 # Fully reset including volumes data
 docker compose down -v
 ```
-
-### Compiling Documentation Locally
-
-To verify and compile documentation pages:
-- **Sphinx (Python Docs)**:
-  ```bash
-  pip install -r docs/requirements.txt
-  python -m sphinx.cmd.build -M html docs/sphinx/source docs/sphinx/build
-  ```
-- **TypeDoc (Frontend Docs)**:
-  ```bash
-  cd frontend
-  npx typedoc --options ../docs/typedoc/typedoc.json
-  ```
-
 ---
 
-## 10. Known Limitations (PoC Phase)
-
-- Authentication relies on demo hardcoded credentials (`admin` / `aura2026`).
-- Compilation calibration images currently use dummy empty inputs rather than real user dataset distributions.
-- Compiler for `jetson_orin_nano` (TensorRT) remains a stub interface.
-- No automatic rollback mechanism if device reports a `deploy_failed` event.
-- Live edge runtime logs are not yet streamed back to the management console UI.
