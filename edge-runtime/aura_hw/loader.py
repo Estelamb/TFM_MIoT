@@ -9,7 +9,11 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 def get_hardware_dir() -> Path:
-    """Resolve the absolute path to the root 'hardware' directory."""
+    """Resolve the absolute path to the root 'hardware' directory.
+
+    Returns:
+        Path: The resolved absolute Path to the 'hardware' directory.
+    """
     # 1. Environment variable override
     env_path = os.environ.get("AURA_HARDWARE_DIR")
     if env_path:
@@ -36,7 +40,18 @@ def get_hardware_dir() -> Path:
     return Path("hardware").resolve()
 
 def load_class_from_module(module, module_name: str):
-    """Utility to inspect a dynamically loaded module and find the main class."""
+    """Inspect a dynamically loaded module and find its main class.
+
+    Args:
+        module: The loaded module object.
+        module_name (str): The full name of the module.
+
+    Returns:
+        type: The matched class ending in 'Library' or 'Backend', or the first class found.
+
+    Raises:
+        AttributeError: If no class is defined in the module.
+    """
     classes = []
     for name, obj in inspect.getmembers(module, inspect.isclass):
         if obj.__module__ == module_name:
@@ -53,9 +68,19 @@ def load_class_from_module(module, module_name: str):
     return classes[0]
 
 def load_component_class(category: str, subcategory: str, driver: str):
-    """
-    Dynamically loads the library class for a custom sensor or actuator.
-    Example: load_component_class("sensors", "camera", "rpi_camera_module_3")
+    """Dynamically load the library class for a custom sensor or actuator.
+
+    Args:
+        category (str): The device category (e.g., 'sensors', 'actuators').
+        subcategory (str): The device subcategory (e.g., 'camera', 'led').
+        driver (str): The driver name.
+
+    Returns:
+        type: The loaded hardware backend class.
+
+    Raises:
+        FileNotFoundError: If the library.py file does not exist.
+        ImportError: If the module specification cannot be loaded.
     """
     hw_dir = get_hardware_dir()
     lib_path = hw_dir / category / subcategory / driver / "library.py"
@@ -75,9 +100,17 @@ def load_component_class(category: str, subcategory: str, driver: str):
     return load_class_from_module(module, module_name)
 
 def load_inference_class(hw: str):
-    """
-    Dynamically loads the inference class for a custom hardware type.
-    Example: load_inference_class("test_arch") -> loaded from hardware/hw_arch/test_arch/inference/library.py
+    """Dynamically load the inference class for a custom hardware type.
+
+    Args:
+        hw (str): The hardware identifier.
+
+    Returns:
+        type: The loaded hardware inference class.
+
+    Raises:
+        FileNotFoundError: If the inference library.py does not exist.
+        ImportError: If the module specification cannot be loaded.
     """
     hw_dir = get_hardware_dir()
     lib_path = hw_dir / "hw_arch" / hw / "inference" / "library.py"
@@ -97,7 +130,13 @@ def load_inference_class(hw: str):
     return load_class_from_module(module, module_name)
 
 def get_libraries_hash() -> str:
-    """Calculates a deterministic SHA256 hash of the local hardware directory."""
+    """Calculate a deterministic SHA256 hash of the local hardware directory.
+
+    Excludes `__pycache__` and compiled bytecode files to ensure consistency.
+
+    Returns:
+        str: The hexadecimal SHA256 digest of the directory content, or an empty string if not found.
+    """
     hw_dir = get_hardware_dir()
     if not hw_dir.exists():
         return ""

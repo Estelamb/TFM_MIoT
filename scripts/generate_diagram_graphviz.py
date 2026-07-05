@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
+"""
+AURA MLOps & Database ER Diagram Generator.
+===========================================
+Generates a Graphviz DOT diagram representing the database relational schema
+of the AURA platform (Registry database tables, columns, PK/FK relationships).
+Compiles the DOT syntax using local Graphviz compiler into SVG and PNG formats
+inside the `docs` directory if Graphviz is installed on the system.
+"""
 import os
 import subprocess
 import sys
 from pathlib import Path
 
 def get_project_root() -> Path:
+    """
+    Returns the absolute path to the project root directory.
+
+    :return: Path to the project root directory.
+    :rtype: Path
+    """
     return Path(__file__).resolve().parent.parent
 
 DOT_CODE = """digraph G {
@@ -187,7 +201,10 @@ DOT_CODE = """digraph G {
 }
 """
 
-def main():
+def main() -> None:
+    """
+    Core function saving DOT files locally and invoking Graphviz utility commands.
+    """
     root = get_project_root()
     docs_dir = root / "docs"
     docs_dir.mkdir(parents=True, exist_ok=True)

@@ -1,22 +1,44 @@
+"""
+AURA RPi CPU Compiler.
+======================
+Compiles/Exports PyTorch neural networks into ONNX format inside Docker container environments for Raspberry Pi 5.
+"""
+from __future__ import annotations
+
 import asyncio
+import hashlib
 import logging
 import os
 import tempfile
-import hashlib
+from typing import Any
+
 from app.compilers.base import CompilerBase, CompilationResult
 from shared.utils.minio import get_minio, upload_bytes
 
+# Setup logging
 logger = logging.getLogger(__name__)
 
 LABEL = "RPi (CPU)"
 
+
 class RPiCPUCompiler(CompilerBase):
+    """
+    Compiler executing ONNX export compilation jobs for Raspberry Pi CPU inside Docker.
+    """
     EXECUTION_STRATEGY = "docker"
     DOCKER_IMAGE = "ultralytics/ultralytics:latest"
     OUTPUT_FORMAT = ".onnx"
     SUPPORTED_HARDWARE = ["rpi"]
 
-    def __init__(self, minio_bucket_models: str, minio_bucket_compiled: str):
+    def __init__(self, minio_bucket_models: str, minio_bucket_compiled: str) -> None:
+        """
+        Initializes the compiler with bucket storage paths.
+
+        :param minio_bucket_models: MinIO bucket name for raw model files.
+        :type minio_bucket_models: str
+        :param minio_bucket_compiled: MinIO bucket name for compiled binaries.
+        :type minio_bucket_compiled: str
+        """
         self._bucket_models = minio_bucket_models
         self._bucket_compiled = minio_bucket_compiled
 
@@ -32,6 +54,33 @@ class RPiCPUCompiler(CompilerBase):
         base_architecture: str = "",
         input_size: str = "",
     ) -> CompilationResult:
+        """
+        Performs the model export/compilation sequence.
+
+        Downloads the .pt model weights, starts an Ultralytics container,
+        runs model.export() to generate ONNX, and uploads the output to MinIO.
+
+        :param model_id: Target model ID string.
+        :type model_id: str
+        :param source_key: Object storage key of original model weights.
+        :type source_key: str
+        :param num_classes: Total number of prediction categories.
+        :type num_classes: int
+        :param class_names: Prediction category labels.
+        :type class_names: list[str]
+        :param hardware_type: Target hardware target.
+        :type hardware_type: str
+        :param dataset_id: Unique calibration dataset ID.
+        :type dataset_id: str
+        :param dataset_key: Object storage key of calibration dataset.
+        :type dataset_key: str
+        :param base_architecture: Base YOLO model architecture.
+        :type base_architecture: str
+        :param input_size: Desired model resolution (e.g. '640x640').
+        :type input_size: str
+        :return: Compilation status metrics.
+        :rtype: CompilationResult
+        """
         logger.info(f"[RPiCPU] Starting compilation for model {model_id}, hw={hardware_type}")
 
         # Resolve image dimensions

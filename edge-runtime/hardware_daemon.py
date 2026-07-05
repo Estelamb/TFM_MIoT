@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""AURA Hardware Daemon.
+"""
+AURA Hardware Daemon.
 
 Exposes Raspberry Pi Camera Module 3 and Hailo-8/8L hardware accelerators
 over a lightweight local HTTP API.
@@ -55,14 +56,32 @@ except ImportError:
 
 
 class HardwareHTTPHandler(BaseHTTPRequestHandler):
-    """HTTP Request Handler routing edge device camera and compiler operations."""
+    """
+    HTTP Request Handler routing edge device camera and hardware compiler operations.
+
+    Exposes API endpoints to capture frames, query status, and orchestrate
+    deep learning model context loads and inferences.
+    """
     
     def log_message(self, format: str, *args: Any) -> None:
-        """Overrides default request log output to keep console clean during rapid frames capture."""
+        """
+        Overrides the default request logging output.
+
+        Suppresses HTTP transaction logs to keep the console clean during rapid,
+        continuous frame captures.
+
+        :param format: Log format string.
+        :type format: str
+        :param args: Formatting parameters.
+        :type args: Any
+        """
         pass
 
     def do_GET(self) -> None:
-        """Handles HTTP GET routes: `/capture` and `/status`."""
+        """
+        Handles incoming HTTP GET routes: `/capture` and `/status`.
+        """
+        # Route: GET /capture - returns the most recent frame captured by camera_manager
         if self.path == "/capture":
             raw_data = camera_manager.capture_raw()
             self.send_response(200)
@@ -71,6 +90,7 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(raw_data)
+        # Route: GET /status - returns system capability JSON response
         elif self.path == "/status":
             status = {
                 "status": "online",
@@ -90,17 +110,22 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
         else:
+            # Fallback 404 response
             self.send_response(404)
             self.end_headers()
 
     def do_POST(self) -> None:
-        """Handles HTTP POST routes: `/load`, `/infer`, and `/unload`."""
+        """
+        Handles incoming HTTP POST routes: `/load`, `/infer`, and `/unload`.
+        """
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
         
+        # Read the request body payload
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length) if content_length > 0 else b""
         
+        # Route: POST /load - loads neural network models dynamically (RPK for IMX500, HEF for Hailo)
         if path == "/load":
             if HARDWARE_TYPE == "rpi_ai_cam":
                 res = imx500_manager.load(post_data)
@@ -114,6 +139,7 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             
+        # Route: POST /infer - runs model inference on target hardware accelerator
         elif path == "/infer":
             if HARDWARE_TYPE == "rpi_ai_cam":
                 res = imx500_manager.infer()
@@ -123,6 +149,7 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
                 h = int(params.get('h', [480])[0])
                 res = hailo_manager.infer(post_data, w, h)
                 
+            # Serialize the output arrays to ensure JSON format compatibility
             res = _make_json_serializable(res)
             body = json.dumps(res).encode("utf-8")
             self.send_response(200)
@@ -132,6 +159,7 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             
+        # Route: POST /unload - releases device model contexts and removes temp files
         elif path == "/unload":
             if HARDWARE_TYPE == "rpi_ai_cam":
                 imx500_manager.unload()
@@ -146,14 +174,18 @@ class HardwareHTTPHandler(BaseHTTPRequestHandler):
             self.wfile.write(body)
             
         else:
+            # Fallback 404 response
             self.send_response(404)
             self.end_headers()
 
 
 def main() -> None:
-    """Bootstraps camera manager, configures logs, signal handlers and serves HTTPServer."""
+    """
+    Bootstraps the camera manager, configures loggers, handles signals, and starts the HTTP server.
+    """
     import signal
     
+    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
@@ -161,11 +193,14 @@ def main() -> None:
     )
     
     port = 8008
+    # Start the camera capture manager loop
     camera_manager.start()
     
+    # Initialize HTTPServer
     server = HTTPServer(("0.0.0.0", port), HardwareHTTPHandler)
     logger.info(f"AURA Hardware Daemon listening on http://0.0.0.0:{port}")
     
+    # Graceful shutdown helper callback
     def shutdown_handler(signum, frame) -> None:
         logger.info("Shutdown signal received. Stopping daemon...")
         camera_manager.stop()
@@ -177,10 +212,12 @@ def main() -> None:
     signal.signal(signal.SIGTERM, shutdown_handler)
     
     try:
+        # Run server loop infinitely
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
+        # Ensure cleanup tasks run on exit
         camera_manager.stop()
         hailo_manager.unload()
 

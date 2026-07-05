@@ -1,18 +1,31 @@
 """
-AURA Sensor Library: Sony IMX500 AI Camera
+AURA Sensor Library: Sony IMX500 AI Camera.
 ===========================================
+Interfaces directly with native Picamera2 libraries or pings Host Hardware HTTP Daemon interfaces.
 """
+from __future__ import annotations
+
+import json
 import logging
 import os
 import urllib.request
-import json
+from typing import Any
+
 import numpy as np
 
+# Setup logging
 logger = logging.getLogger(__name__)
 
 LABEL = "Sony IMX500 AI Camera"
 
+
 def _get_gateway_ip() -> str:
+    """
+    Attempts to resolve the Host IP gateway address dynamically inside container networks.
+
+    :return: Host gateway IP address.
+    :rtype: str
+    """
     env_gw = os.environ.get("AURA_HARDWARE_DAEMON_HOST")
     if env_gw:
         return env_gw
@@ -31,8 +44,23 @@ def _get_gateway_ip() -> str:
         return mqtt_host
     return "172.18.0.1"
 
+
 class IMX500CameraLibrary:
-    def __init__(self, camera_id: int = 0, resolution: tuple[int, int] = (640, 480), fps: int = 10, **kwargs):
+    """
+    Sony IMX500 AI Camera integration library.
+    """
+    
+    def __init__(self, camera_id: int = 0, resolution: tuple[int, int] | str = (640, 480), fps: int = 10, **kwargs: Any) -> None:
+        """
+        Initializes the IMX500 Camera driver context.
+
+        :param camera_id: System index of camera.
+        :type camera_id: int
+        :param resolution: Desired output capture dimensions.
+        :type resolution: tuple or str
+        :param fps: Frame capturing speed.
+        :type fps: int
+        """
         self.camera_id = camera_id
         if isinstance(resolution, str):
             try:
@@ -49,6 +77,14 @@ class IMX500CameraLibrary:
         self._daemon_url = ""
 
     def initialize(self, model_path: str = None) -> bool:
+        """
+        Runs connection verification and sets up active capturing stream modules.
+
+        :param model_path: Disk path to compiled AI models.
+        :type model_path: str or None
+        :return: True if successful, False otherwise.
+        :rtype: bool
+        """
         logger.info("Initializing Sony IMX500 AI Camera driver...")
 
         # 1. Handle Model Packaging
@@ -112,7 +148,13 @@ class IMX500CameraLibrary:
         self._mode = "mock"
         return True
 
-    def read_value(self):
+    def read_value(self) -> np.ndarray:
+        """
+        Captures one frame as an RGB numpy array.
+
+        :return: Image pixel grid ndarray.
+        :rtype: np.ndarray
+        """
         mode = getattr(self, "_mode", "mock")
         if mode == "mock":
             w, h = self.resolution
@@ -142,10 +184,19 @@ class IMX500CameraLibrary:
                 logger.error(f"Error capturing natively from IMX500: {e}")
                 raise
 
-    def capture_frame(self):
+    def capture_frame(self) -> np.ndarray:
+        """
+        Reads frame array (alias for read_value).
+
+        :return: Captured image frame.
+        :rtype: np.ndarray
+        """
         return self.read_value()
 
     def close(self) -> None:
+        """
+        Stops active capture interfaces and releases video devices.
+        """
         mode = getattr(self, "_mode", "mock")
         if mode == "native" and self.picam2 is not None:
             try:

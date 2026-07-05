@@ -1,26 +1,47 @@
+"""
+AURA Hailo-8 Compiler.
+======================
+Compiles neural networks into Hailo-8 HEF binaries using Docker container environments.
+"""
+from __future__ import annotations
+
 import asyncio
+import hashlib
 import logging
 import os
-import tempfile
-import hashlib
 import random
+import tempfile
 import zipfile
-import shutil
+from typing import Any
+
 from PIL import Image
 from app.compilers.base import CompilerBase, CompilationResult
 from shared.utils.minio import get_minio, upload_bytes
 
+# Setup logging
 logger = logging.getLogger(__name__)
 
 LABEL = "Hailo-8"
 
+
 class Hailo8Compiler(CompilerBase):
+    """
+    Compiler executing Hailo-8 MLOps build jobs within a specialized Docker environment.
+    """
     EXECUTION_STRATEGY = "docker"
     DOCKER_IMAGE = "hailo8_ai_sw_suite_2025-10:1"
     OUTPUT_FORMAT = ".hef"
     SUPPORTED_HARDWARE = ["hailo8"]
 
-    def __init__(self, minio_bucket_models: str, minio_bucket_compiled: str):
+    def __init__(self, minio_bucket_models: str, minio_bucket_compiled: str) -> None:
+        """
+        Initializes the compiler with bucket storage paths.
+
+        :param minio_bucket_models: MinIO bucket name for raw model files.
+        :type minio_bucket_models: str
+        :param minio_bucket_compiled: MinIO bucket name for compiled binaries.
+        :type minio_bucket_compiled: str
+        """
         self._bucket_models = minio_bucket_models
         self._bucket_compiled = minio_bucket_compiled
 
@@ -36,6 +57,34 @@ class Hailo8Compiler(CompilerBase):
         base_architecture: str = "",
         input_size: str = "",
     ) -> CompilationResult:
+        """
+        Performs the model compilation sequence.
+
+        Downloads the .pt model weights, converts them to ONNX, prepares dataset
+        calibration images, starts a compiler container, compiles to HEF,
+        and uploads the output binary to MinIO object storage.
+
+        :param model_id: Target model ID string.
+        :type model_id: str
+        :param source_key: Object storage key of original model weights.
+        :type source_key: str
+        :param num_classes: Total number of prediction categories.
+        :type num_classes: int
+        :param class_names: Prediction category labels.
+        :type class_names: list[str]
+        :param hardware_type: Target hardware target.
+        :type hardware_type: str
+        :param dataset_id: Unique calibration dataset ID.
+        :type dataset_id: str
+        :param dataset_key: Object storage key of calibration dataset.
+        :type dataset_key: str
+        :param base_architecture: Base YOLO model architecture.
+        :type base_architecture: str
+        :param input_size: Desired model resolution (e.g. '640x640').
+        :type input_size: str
+        :return: Compilation status metrics.
+        :rtype: CompilationResult
+        """
         logger.info(f"[Hailo8] Starting compilation for model {model_id}, hw={hardware_type}")
 
         # Resolve image dimensions
@@ -47,7 +96,7 @@ class Hailo8Compiler(CompilerBase):
             except Exception:
                 pass
 
-        # Resolve model configuration YAML
+        # Resolve model configuration YAML name based on target base architecture
         yaml_name = "yolov8n.yaml"
         if base_architecture:
             base_lower = base_architecture.lower()
@@ -183,11 +232,15 @@ class Hailo8Compiler(CompilerBase):
                 logger.info(f"[Hailo8] Copying ONNX model and calibration images to container...")
                 await self.log_progress(model_id, "[Hailo8] Copiando modelo ONNX e imágenes de calibración al contenedor...")
                 cp_model_cmd = ["docker", "cp", onnx_path, f"{container_name}:/tmp/model.onnx"]
-                proc = await asyncio.create_subprocess_exec(*cp_model_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                proc = await asyncio.create_subprocess_exec(
+                    *cp_model_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                )
                 await proc.communicate()
 
                 cp_calib_cmd = ["docker", "cp", calib_dir, f"{container_name}:/tmp/calib"]
-                proc = await asyncio.create_subprocess_exec(*cp_calib_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                proc = await asyncio.create_subprocess_exec(
+                    *cp_calib_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                )
                 await proc.communicate()
 
                 # Execute compilation inside container using python to find generated .hef safely
@@ -227,7 +280,9 @@ class Hailo8Compiler(CompilerBase):
                 # Copy model back to host
                 cp_out_cmd = ["docker", "cp", f"{container_name}:/tmp/model.hef", hef_path]
                 logger.info(f"[Hailo8] Copying compiled HEF model back to host...")
-                proc = await asyncio.create_subprocess_exec(*cp_out_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                proc = await asyncio.create_subprocess_exec(
+                    *cp_out_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+                )
                 stdout, stderr = await proc.communicate()
                 if proc.returncode != 0:
                     err_msg = stderr.decode().strip()

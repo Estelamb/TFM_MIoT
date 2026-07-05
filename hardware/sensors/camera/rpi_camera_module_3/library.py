@@ -1,14 +1,28 @@
 """
-AURA Sensor Library: RPi Camera Module 3
+AURA Sensor Library: RPi Camera Module 3.
 ========================================
+Integrates with physical Raspberry Pi Camera Module 3 using Picamera2 APIs or HTTP socket streams.
 """
-import logging
+from __future__ import annotations
 
+import logging
+from typing import Any
+
+import numpy as np
+
+# Setup logging
 logger = logging.getLogger(__name__)
 
 LABEL = "RPi Camera Module 3"
 
+
 def _get_gateway_ip() -> str:
+    """
+    Attempts to resolve the Host IP gateway address dynamically inside container networks.
+
+    :return: Host gateway IP address.
+    :rtype: str
+    """
     import os
     import socket
     # 1. Environment variable override
@@ -37,7 +51,21 @@ def _get_gateway_ip() -> str:
 
 
 class RPiCameraLibrary:
-    def __init__(self, camera_id: int = 0, resolution: tuple[int, int] = (640, 480), fps: int = 10, **kwargs):
+    """
+    Raspberry Pi Camera Module 3 integration library.
+    """
+
+    def __init__(self, camera_id: int = 0, resolution: tuple[int, int] | str = (640, 480), fps: int = 10, **kwargs: Any) -> None:
+        """
+        Initializes the Camera Module 3 driver context.
+
+        :param camera_id: System index of camera.
+        :type camera_id: int
+        :param resolution: Desired output capture dimensions.
+        :type resolution: tuple or str
+        :param fps: Frame capturing speed.
+        :type fps: int
+        """
         self.camera_id = camera_id
         # Support either string resolution "[640, 480]" or list/tuple
         if isinstance(resolution, str):
@@ -57,7 +85,12 @@ class RPiCameraLibrary:
         self._daemon_url = ""
 
     def initialize(self) -> bool:
-        """Initialize and configure the Picamera2 camera."""
+        """
+        Initialize and configure the Picamera2 camera.
+
+        :return: True if successful, False otherwise.
+        :rtype: bool
+        """
         logger.info("Initializing Picamera2 (RPi Camera Module 3)...")
         # 1. Try native initialization first
         try:
@@ -97,11 +130,15 @@ class RPiCameraLibrary:
         self._mode = "mock"
         return True
 
-    def read_value(self):
-        """Capture an RGB image frame from the camera."""
+    def read_value(self) -> np.ndarray:
+        """
+        Capture an RGB image frame from the camera.
+
+        :return: Captured image pixel grid array.
+        :rtype: np.ndarray
+        """
         mode = getattr(self, "_mode", "mock")
         if mode == "mock":
-            import numpy as np
             import time
             w, h = self.resolution
             frame = np.zeros((h, w, 3), dtype=np.uint8)
@@ -113,7 +150,6 @@ class RPiCameraLibrary:
 
         elif mode == "daemon":
             import urllib.request
-            import numpy as np
             try:
                 with urllib.request.urlopen(f"{self._daemon_url}/capture", timeout=5.0) as resp:
                     raw_data = resp.read()
@@ -135,11 +171,19 @@ class RPiCameraLibrary:
                 logger.error(f"Error capturing frame from native Picamera2: {e}")
                 raise
 
-    def capture_frame(self):
+    def capture_frame(self) -> np.ndarray:
+        """
+        Reads frame array (alias for read_value).
+
+        :return: Image frame array data.
+        :rtype: np.ndarray
+        """
         return self.read_value()
 
     def close(self) -> None:
-        """Stop and release camera resources."""
+        """
+        Stop and release camera resources.
+        """
         mode = getattr(self, "_mode", "mock")
         if mode == "native" and self.picam2 is not None:
             try:

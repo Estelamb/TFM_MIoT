@@ -1,18 +1,32 @@
+"""
+AURA RPi CPU Inference Backend.
+===============================
+Runs neural network inference locally using ONNX Runtime directly on Raspberry Pi 5.
+"""
+from __future__ import annotations
+
 import logging
 import os
 from typing import Any
+
 import numpy as np
 
+# Setup logging
 logger = logging.getLogger(__name__)
 
+
 class RPiCPUBackend:
-    """RPi CPU inference backend using ONNX Runtime.
+    """
+    RPi CPU inference backend using ONNX Runtime.
 
     Loads an optimized ONNX model and executes multi-threaded inference.
     Designed to be loaded dynamically by GeneralInferenceBackend.
     """
 
     def __init__(self) -> None:
+        """
+        Initializes the client backend properties.
+        """
         self._session = None
         self._input_name = None
         self._input_shape = None
@@ -21,6 +35,14 @@ class RPiCPUBackend:
         self._class_names = []
 
     def load(self, model_path: str, class_names: list[str] = None) -> None:
+        """
+        Loads the ONNX model into memory using ONNX Runtime.
+
+        :param model_path: Disk path to the exported ONNX model.
+        :type model_path: str
+        :param class_names: Optional class label strings.
+        :type class_names: list[str] or None
+        """
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model path does not exist: {model_path}")
 
@@ -72,7 +94,15 @@ class RPiCPUBackend:
             self._num_classes = 80
             logger.info(f"Defaulting to {self._num_classes} classes.")
 
-    def infer(self, inputs: Any) -> Any:
+    def infer(self, inputs: Any) -> dict[str, np.ndarray]:
+        """
+        Executes inference using ONNX Runtime.
+
+        :param inputs: Input image ndarray of format HWC or preprocessed NCHW.
+        :type inputs: Any
+        :return: Reconstructed predictions matching {"output0": boxes_array}.
+        :rtype: dict
+        """
         if self._session is None:
             raise RuntimeError("Model is not loaded. Call load() first.")
 
@@ -174,13 +204,22 @@ class RPiCPUBackend:
         return {self._output_names[0]: ort_outputs[0]}
 
     def unload(self) -> None:
+        """
+        De-allocates the ONNX session context to reclaim memory resources.
+        """
         self._session = None
         self._input_name = None
         self._input_shape = None
         self._output_names = []
         logger.info("ONNX model unloaded")
 
-    def device_info(self) -> dict:
+    def device_info(self) -> dict[str, Any]:
+        """
+        Collects active SDK and hardware descriptor details.
+
+        :return: Device metrics dictionary.
+        :rtype: dict
+        """
         import onnxruntime as ort
         return {
             "hardware_type": "rpi",

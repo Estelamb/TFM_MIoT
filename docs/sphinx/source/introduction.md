@@ -80,3 +80,10 @@ AURA abstracts the complexity of the underlying hardware acceleration. Developer
 | RPi5 (CPU) | `.onnx` | ✅ Full |
 
 To start deploying your own models, head over to the [Platform Execution Tutorial](tutorials/run_platform) to set up the system.
+
+---
+
+## Privacy & Anonymity
+
+AURA is designed with privacy-by-design principles to ensure compliance and respect user anonymity. The edge runtime processes video/image input locally on the physical device and only transmits high-level, structured inference results (e.g., class labels, confidence scores, and bounding box coordinates in JSON format) back to the cloud/server platform. Raw camera frames, video files, or any personally identifiable information are never sent over the network, ensuring complete subject anonymity.
+

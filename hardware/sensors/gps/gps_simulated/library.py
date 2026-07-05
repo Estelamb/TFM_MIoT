@@ -1,15 +1,34 @@
+"""
+AURA GPS Sensor Library: Simulated GPS.
+=======================================
+Generates dummy GPS coordinates with coordinates loading from configuration and small random drift simulation.
+"""
+from __future__ import annotations
+
 import random
-import yaml
 from pathlib import Path
+from typing import Any
+
+import yaml
+
 
 class GPSSimulated:
+    """
+    Simulated GPS sensor implementation.
+    """
     LABEL = "Simulated GPS"
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
+        """
+        Initializes the simulated GPS driver.
+        """
         self.coords = [-3.6294, 40.3897]  # Default fallback
         self.load_initial_coordinates()
 
-    def load_initial_coordinates(self):
+    def load_initial_coordinates(self) -> None:
+        """
+        Looks up configuration settings to set initial coordinate values.
+        """
         config_dirs = [
             Path("/app/config"),
             Path(__file__).parents[4] / "edge-runtime" / "config",
@@ -30,9 +49,21 @@ class GPSSimulated:
                     pass
 
     def initialize(self) -> bool:
+        """
+        Initializes the simulated sensor.
+
+        :return: Always returns True.
+        :rtype: bool
+        """
         return True
 
     def read_value(self) -> list[float]:
+        """
+        Collects active coordinate values and updates internally with small movement drifts.
+
+        :return: A list containing [longitude, latitude].
+        :rtype: list
+        """
         current = list(self.coords)
         # Add a small random drift to simulate movement (approx 1-10 meters, very small delta)
         # 0.0001 degrees is roughly 11 meters
@@ -43,4 +74,7 @@ class GPSSimulated:
         return current
 
     def close(self) -> None:
+        """
+        Releases driver interfaces.
+        """
         pass

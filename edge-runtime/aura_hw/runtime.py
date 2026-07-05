@@ -69,6 +69,16 @@ def _get_backend(hw: str) -> InferenceBackend:
 
 
 def load_model(model_path: str, class_names: list[str] = None) -> None:
+    """Load a compiled model onto the detected hardware.
+
+    If `class_names` is not provided, it attempts to load from a `classes.json`
+    file in the same directory as the model path.
+
+    Args:
+        model_path (str): Absolute or relative path to the compiled model file.
+        class_names (list[str], optional): List of class names for the model.
+            Defaults to None.
+    """
     global _backend, _model_classes
     if class_names is not None:
         _model_classes = class_names
@@ -184,7 +194,11 @@ def get_last_inference() -> Any:
 
 
 def get_model_classes() -> list[str]:
-    """Return the list of class names loaded from the current model's metadata."""
+    """Return the list of class names loaded from the current model's metadata.
+
+    Returns:
+        list[str]: The list of class names, or an empty list if not available.
+    """
     global _model_classes
     if _model_classes:
         return _model_classes

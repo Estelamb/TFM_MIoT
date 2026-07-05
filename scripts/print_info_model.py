@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""
+AURA Platform Information Model Viewer.
+======================================
+Prints details of the platform database entities, object storage structures,
+and gRPC communication contracts. Renders or downloads the relational diagram
+from mermaid.ink and saves it locally in the docs folder.
+"""
 import os
 import sys
 import base64
@@ -92,10 +99,18 @@ erDiagram
 """
 
 def get_project_root() -> Path:
-    # This script is located in root/scripts/print_info_model.py
+    """
+    Returns the absolute path to the project root directory.
+
+    :return: Path to the project root directory.
+    :rtype: Path
+    """
     return Path(__file__).resolve().parent.parent
 
-def print_header():
+def print_header() -> None:
+    """
+    Prints a styled terminal header for the information model viewer.
+    """
     try:
         # Try to reconfigure stdout to UTF-8 to handle block characters on Windows
         if hasattr(sys.stdout, 'reconfigure'):
@@ -103,10 +118,12 @@ def print_header():
     except Exception:
         pass
     
-    # Simple header as requested (no large ASCII art)
     print(f"\n{BLUE}{BOLD}=== AURA PLATFORM - INFORMATION MODEL ==={RESET}\n")
 
-def print_entities():
+def print_entities() -> None:
+    """
+    Prints schema details of all SQL database entities and their ORM maps.
+    """
     print(f"{CYAN}{BOLD}1. MAIN ENTITIES (POSTGRESQL & ORM){RESET}")
     print("-" * 70)
     
@@ -207,7 +224,10 @@ def print_entities():
             print(f"    - {YELLOW}{field:<20}{RESET} {ftype:<18} | {fdesc}")
         print("-" * 70)
 
-def print_minio_mapping():
+def print_minio_mapping() -> None:
+    """
+    Prints key pattern mappings utilized in the MinIO Object Storage bucket.
+    """
     print(f"\n{CYAN}{BOLD}2. FILE STORAGE (MINIO OBJECT STORAGE){RESET}")
     print("-" * 70)
     mappings = [
@@ -220,7 +240,10 @@ def print_minio_mapping():
         print(f"  * {BOLD}{key:<35}{RESET} -> {GREEN}{path}{RESET}")
     print("-" * 70)
 
-def print_grpc_contracts():
+def print_grpc_contracts() -> None:
+    """
+    Prints list of protobuf gRPC contracts and services between microservices.
+    """
     print(f"\n{CYAN}{BOLD}3. gRPC CONTRACTS (COMMUNICATION BETWEEN SERVICES){RESET}")
     print("-" * 70)
     protos = [
@@ -236,7 +259,10 @@ def print_grpc_contracts():
         print(f"    {desc}")
     print("-" * 70)
 
-def print_raw_sql():
+def print_raw_sql() -> None:
+    """
+    Reads and outputs SQL creation tables from postgres/init.sql with highlights.
+    """
     root = get_project_root()
     sql_path = root / "infra" / "postgres" / "init.sql"
     
@@ -247,7 +273,6 @@ def print_raw_sql():
         try:
             with open(sql_path, "r", encoding="utf-8") as f:
                 content = f.read()
-            # Highlight comments and SQL statements slightly
             lines = content.splitlines()
             for line in lines:
                 if line.strip().startswith("--"):
@@ -264,8 +289,13 @@ def print_raw_sql():
         print(f"{RED}SQL file not found at {sql_path}{RESET}")
     print("-" * 70)
 
-def download_diagram_png(output_path: Path):
-    """Downloads the Mermaid diagram as a PNG using the mermaid.ink API."""
+def download_diagram_png(output_path: Path) -> None:
+    """
+    Downloads the Mermaid diagram as a PNG using the mermaid.ink API.
+
+    :param output_path: Path where the PNG image will be saved.
+    :type output_path: Path
+    """
     print(f"\n{CYAN}{BOLD}GENERATING DIAGRAM IMAGE (via mermaid.ink)...{RESET}")
     print("-" * 70)
     
@@ -293,7 +323,10 @@ def download_diagram_png(output_path: Path):
         print(f"{RED}Unexpected error generating PNG image: {e}{RESET}")
     print("-" * 70)
 
-def print_diagram():
+def print_diagram() -> None:
+    """
+    Prints conceptual ASCII diagram and writes Mermaid code files locally.
+    """
     print(f"{CYAN}{BOLD}ENTITY-RELATIONSHIP DIAGRAM (ASCII & MERMAID){RESET}")
     print("-" * 70)
     
@@ -324,7 +357,6 @@ def print_diagram():
     docs_dir = root / "docs"
     docs_dir.mkdir(parents=True, exist_ok=True)
     
-    # Save .mermaid
     diagram_path = docs_dir / "model_diagram.mermaid"
     try:
         with open(diagram_path, "w", encoding="utf-8") as f:
@@ -333,12 +365,14 @@ def print_diagram():
     except Exception as e:
         print(f"{RED}Could not write .mermaid diagram to disk: {e}{RESET}")
     
-    # Save .png using mermaid.ink
     png_path = docs_dir / "model_diagram.png"
     download_diagram_png(png_path)
 
-def main():
-    # On Windows, we might need to enable ANSI escape codes
+def main() -> None:
+    """
+    Bootstraps the model information printer and parses console flags.
+    """
+    # On Windows, enable ANSI escape codes
     if os.name == 'nt':
         import ctypes
         kernel32 = ctypes.windll.kernel32

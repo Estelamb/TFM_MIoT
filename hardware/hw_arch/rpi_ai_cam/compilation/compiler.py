@@ -1,26 +1,47 @@
+"""
+AURA RPi AI Camera Compiler.
+============================
+Compiles/Exports PyTorch neural networks into Sony IMX500 RPK firmware binaries.
+"""
+from __future__ import annotations
+
 import asyncio
+import hashlib
 import logging
 import os
-import tempfile
-import hashlib
 import random
+import tempfile
 import zipfile
-import shutil
+from typing import Any
+
 from PIL import Image
 from app.compilers.base import CompilerBase, CompilationResult
 from shared.utils.minio import get_minio, upload_bytes
 
+# Setup logging
 logger = logging.getLogger(__name__)
 
 LABEL = "RPi AI Camera (Sony IMX500)"
 
+
 class RPiAICamCompiler(CompilerBase):
+    """
+    Compiler executing Sony IMX500 compilation and packaging jobs within specialized Docker environments.
+    """
     EXECUTION_STRATEGY = "docker"
     DOCKER_IMAGE = "ultralytics/ultralytics:latest"
     OUTPUT_FORMAT = ".rpk"
     SUPPORTED_HARDWARE = ["rpi_ai_cam"]
 
-    def __init__(self, minio_bucket_models: str, minio_bucket_compiled: str):
+    def __init__(self, minio_bucket_models: str, minio_bucket_compiled: str) -> None:
+        """
+        Initializes the compiler with bucket storage paths.
+
+        :param minio_bucket_models: MinIO bucket name for raw model files.
+        :type minio_bucket_models: str
+        :param minio_bucket_compiled: MinIO bucket name for compiled binaries.
+        :type minio_bucket_compiled: str
+        """
         self._bucket_models = minio_bucket_models
         self._bucket_compiled = minio_bucket_compiled
 
@@ -36,6 +57,34 @@ class RPiAICamCompiler(CompilerBase):
         base_architecture: str = "",
         input_size: str = "",
     ) -> CompilationResult:
+        """
+        Performs the model compilation sequence.
+
+        Downloads weights, exports them using MCT/IMX converter tools inside Docker,
+        packages the packerOut.zip into network.rpk using an ARM64 debian container,
+        and uploads the output RPK file to MinIO.
+
+        :param model_id: Target model ID string.
+        :type model_id: str
+        :param source_key: Object storage key of original model weights.
+        :type source_key: str
+        :param num_classes: Total number of prediction categories.
+        :type num_classes: int
+        :param class_names: Prediction category labels.
+        :type class_names: list[str]
+        :param hardware_type: Target hardware target.
+        :type hardware_type: str
+        :param dataset_id: Unique calibration dataset ID.
+        :type dataset_id: str
+        :param dataset_key: Object storage key of calibration dataset.
+        :type dataset_key: str
+        :param base_architecture: Base YOLO model architecture.
+        :type base_architecture: str
+        :param input_size: Desired model resolution (e.g. '640x640').
+        :type input_size: str
+        :return: Compilation status metrics.
+        :rtype: CompilationResult
+        """
         logger.info(f"[RPiAICam] Starting compilation for model {model_id}, hw={hardware_type}")
 
         # Resolve image dimensions
@@ -175,8 +224,7 @@ names:
                 proc = await asyncio.create_subprocess_exec(*cp_yaml_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
                 await proc.communicate()
 
-                # Execute compilation inside container.
-                # First we install dependencies, then we call model.export(format="imx")
+                # Execute compilation inside container
                 py_script = (
                     "import subprocess, glob, shutil, os, sys\n"
                     "try:\n"
@@ -186,8 +234,6 @@ names:
                     "    model = YOLO('/tmp/model.pt')\n"
                     "    print('Running export for IMX500...')\n"
                     "    model.export(format='imx', data='/tmp/auto_calibration_data.yaml')\n"
-                    "    # Find the output zip inside runs/detect/train/weights/... or similar\n"
-                    "    # Usually YOLO exports adjacent to the model path, so we check /tmp recursively as well\n"
                     "    zips = glob.glob('/tmp/**/packerOut.zip', recursive=True) + glob.glob('**/packerOut.zip', recursive=True)\n"
                     "    if not zips:\n"
                     "         raise FileNotFoundError('packerOut.zip not found after export')\n"
@@ -219,7 +265,7 @@ names:
                 cp_out_cmd = ["docker", "cp", f"{container_name}:/tmp/packerOut.zip", zip_out_path]
                 logger.info(f"[RPiAICam] Copying packerOut.zip back to host...")
                 proc = await asyncio.create_subprocess_exec(*cp_out_cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
-                stdout, stderr = await proc.communicate()
+                await proc.communicate()
                 if proc.returncode != 0:
                     err_msg = stderr.decode().strip()
                     return CompilationResult(success=False, error=f"Failed to copy compiled ZIP from container: {err_msg}")

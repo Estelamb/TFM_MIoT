@@ -1,13 +1,29 @@
+"""
+AURA Hailo-8 Inference Client.
+==============================
+Handles neural network inference on Host Daemon containing physical Hailo-8 NPU hardware.
+"""
+from __future__ import annotations
+
+import json
 import logging
 import os
 import urllib.request
-import json
 from typing import Any
+
 import numpy as np
 
+# Setup logging
 logger = logging.getLogger(__name__)
 
+
 def _get_gateway_ip() -> str:
+    """
+    Attempts to resolve the Host IP gateway address dynamically inside container networks.
+
+    :return: Host gateway IP address.
+    :rtype: str
+    """
     # 1. Environment variable override
     env_gw = os.environ.get("AURA_HARDWARE_DAEMON_HOST")
     if env_gw:
@@ -35,9 +51,14 @@ def _get_gateway_ip() -> str:
 
 
 class Hailo8Backend:
-    """Hailo-8 inference backend communicating with the Host Hardware Daemon."""
+    """
+    Hailo-8 inference backend communicating with the Host Hardware Daemon.
+    """
 
     def __init__(self) -> None:
+        """
+        Initializes the client backend properties.
+        """
         self._daemon_url = ""
         self._num_classes = 80
         self._class_names = []
@@ -45,6 +66,14 @@ class Hailo8Backend:
         self._input_width = 640
 
     def load(self, model_path: str, class_names: list[str] = None) -> None:
+        """
+        Requests the host hardware daemon to load model HEF bytes.
+
+        :param model_path: Disk path to the compiled model (.hef).
+        :type model_path: str
+        :param class_names: Optional labels mapping classes.
+        :type class_names: list[str] or None
+        """
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model path does not exist: {model_path}")
 
@@ -83,7 +112,15 @@ class Hailo8Backend:
             logger.error(f"Failed to communicate with Host Hardware Daemon to load model: {e}")
             raise RuntimeError(f"Failed to load model on Host Daemon: {e}")
 
-    def infer(self, inputs: Any) -> Any:
+    def infer(self, inputs: Any) -> dict[str, np.ndarray]:
+        """
+        Transmits raw image frames to the host daemon and reconstructs YOLOv8 outputs.
+
+        :param inputs: Input image ndarray of format HWC or NCHW.
+        :type inputs: Any
+        :return: Decoded predictions matching {"output0": boxes_array}.
+        :rtype: dict
+        """
         if not self._daemon_url:
             raise RuntimeError("Model is not loaded. Call load() first.")
 
@@ -157,6 +194,9 @@ class Hailo8Backend:
         return {"output0": mock_out}
 
     def unload(self) -> None:
+        """
+        Signals the host daemon to release the allocated Hailo device context.
+        """
         if self._daemon_url:
             req = urllib.request.Request(f"{self._daemon_url}/unload", method="POST")
             try:
@@ -166,7 +206,13 @@ class Hailo8Backend:
                 logger.warning(f"Failed to unload model on Host Hardware Daemon: {e}")
             self._daemon_url = ""
 
-    def device_info(self) -> dict:
+    def device_info(self) -> dict[str, Any]:
+        """
+        Collects active SDK and hardware descriptor details.
+
+        :return: Device metrics dictionary.
+        :rtype: dict
+        """
         return {
             "hardware_type": "hailo8",
             "accelerator": "Hailo-8 NPU (via Host Daemon)",

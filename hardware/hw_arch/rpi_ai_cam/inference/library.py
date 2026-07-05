@@ -1,13 +1,29 @@
+"""
+AURA RPi AI Camera Inference Client.
+====================================
+Handles offloaded neural network inference requests using physical Sony IMX500 AI Camera chip on Raspberry Pi 5.
+"""
+from __future__ import annotations
+
+import json
 import logging
 import os
 import urllib.request
-import json
 from typing import Any
+
 import numpy as np
 
+# Setup logging
 logger = logging.getLogger(__name__)
 
+
 def _get_gateway_ip() -> str:
+    """
+    Attempts to resolve the Host IP gateway address dynamically inside container networks.
+
+    :return: Host gateway IP address.
+    :rtype: str
+    """
     # 1. Environment variable override
     env_gw = os.environ.get("AURA_HARDWARE_DAEMON_HOST")
     if env_gw:
@@ -35,14 +51,27 @@ def _get_gateway_ip() -> str:
 
 
 class RPiAICamBackend:
-    """RPi AI Camera (Sony IMX500) inference backend communicating with Host Hardware Daemon."""
+    """
+    RPi AI Camera (Sony IMX500) inference backend communicating with Host Hardware Daemon.
+    """
 
     def __init__(self) -> None:
+        """
+        Initializes the client backend properties.
+        """
         self._daemon_url = ""
         self._num_classes = 80
         self._class_names = []
 
     def load(self, model_path: str, class_names: list[str] = None) -> None:
+        """
+        Loads the compiled RPK model into the hardware daemon.
+
+        :param model_path: Disk path to the compiled model (.rpk / .zip).
+        :type model_path: str
+        :param class_names: Optional class labels list.
+        :type class_names: list[str] or None
+        """
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model path does not exist: {model_path}")
 
@@ -108,7 +137,15 @@ class RPiAICamBackend:
             logger.error(f"Failed to communicate with Host Hardware Daemon to load model: {e}")
             raise RuntimeError(f"Failed to load model on Host Daemon: {e}")
 
-    def infer(self, inputs: Any) -> Any:
+    def infer(self, inputs: Any) -> dict[str, np.ndarray]:
+        """
+        Triggers onboard capture and inference on the physical AI camera.
+
+        :param inputs: Dummy argument (onboard sensor handles capture directly).
+        :type inputs: Any
+        :return: Reconstructed predictions matching {"output0": boxes_array}.
+        :rtype: dict
+        """
         if not self._daemon_url:
             raise RuntimeError("Model is not loaded. Call load() first.")
 
@@ -201,6 +238,9 @@ class RPiAICamBackend:
         return {"output0": mock_out}
 
     def unload(self) -> None:
+        """
+        Instructs the daemon to unload the network.
+        """
         if self._daemon_url:
             req = urllib.request.Request(f"{self._daemon_url}/unload", method="POST")
             try:
@@ -210,7 +250,13 @@ class RPiAICamBackend:
                 logger.warning(f"Failed to unload model on Host Hardware Daemon: {e}")
             self._daemon_url = ""
 
-    def device_info(self) -> dict:
+    def device_info(self) -> dict[str, Any]:
+        """
+        Collects active SDK and hardware descriptor details.
+
+        :return: Device metrics dictionary.
+        :rtype: dict
+        """
         return {
             "hardware_type": "rpi_ai_cam",
             "accelerator": "Sony IMX500 AI Camera (via Host Daemon)",

@@ -49,6 +49,9 @@ Perimetral edge devices communicate asynchronously with the **Edge Connector Ser
 | `device/{id}/telemetry` | Edge → Cloud | CPU, RAM, active model ID |
 | `device/{id}/inference` | Edge → Cloud | Inference results (JSON) |
 
+> [!NOTE]
+> **Privacy & Anonymity**: The `device/{id}/inference` topic only transmits structured, high-level JSON payloads. Raw images, video feeds, or any personally identifiable information are never published or uploaded, preserving anonymity.
+
 ---
 
 ## Database layout

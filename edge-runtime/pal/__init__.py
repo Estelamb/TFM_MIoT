@@ -12,8 +12,12 @@ OTAHandler
 Orchestrator
     Manages the inference loop and the telemetry loop.
 """
+
+# Import the primary PAL classes to expose them directly at the package level
 from pal.comm_client import CommunicationClient
 from pal.ota_handler import OTAHandler
 from pal.orchestrator import Orchestrator
 
+# Define the package's public API surface
 __all__ = ["CommunicationClient", "OTAHandler", "Orchestrator"]
+

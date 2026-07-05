@@ -1,3 +1,10 @@
+"""
+AURA MLOps Service Compilers Subpackage.
+=========================================
+Dynamically discovers and registers compilers under the `hardware/hw_arch` directory.
+"""
+from __future__ import annotations
+
 import importlib.util
 import inspect
 import logging
@@ -6,15 +13,37 @@ import ast
 from pathlib import Path
 from app.compilers.base import CompilerBase
 
+# Logger setup
 logger = logging.getLogger(__name__)
 
+
 def get_hardware_dir() -> Path:
+    """
+    Resolves the absolute path to the project's hardware directory.
+
+    Checks first if the project runs inside the deployment container path (/app/hardware)
+    and falls back to parent workspace levels on local development environments.
+
+    :return: Resolved directory path.
+    :rtype: Path
+    """
     p = Path("/app/hardware")
     if p.exists():
         return p
     return Path(__file__).parents[4] / "hardware"
 
+
 def get_label_from_file(file_path: Path) -> str | None:
+    """
+    Statically parses a Python file to locate the value of the `LABEL` variable.
+
+    Avoids importing modules prematurely by reading the AST representation.
+
+    :param file_path: Target compiler script path.
+    :type file_path: Path
+    :return: The string value assigned to LABEL or None.
+    :rtype: str or None
+    """
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
         for node in tree.body:
@@ -26,7 +55,21 @@ def get_label_from_file(file_path: Path) -> str | None:
         pass
     return None
 
+
 def discover_compilers(minio_bucket_models: str, minio_bucket_compiled: str) -> dict:
+    """
+    Dynamically loads all hardware target Compiler subclasses.
+
+    Walks the `hardware/hw_arch/*/compilation/compiler.py` subpaths, imports
+    each module dynamically, maps their subclass instances to the compiler registry.
+
+    :param minio_bucket_models: Source bucket containing raw weights.
+    :type minio_bucket_models: str
+    :param minio_bucket_compiled: Destination bucket for compiled targets.
+    :type minio_bucket_compiled: str
+    :return: Dictionary registry mapping hardware tags to instantiated compilers.
+    :rtype: dict
+    """
     registry = {}
     hardware_dir = get_hardware_dir()
     hw_arch_dir = hardware_dir / "hw_arch"
@@ -67,7 +110,14 @@ def discover_compilers(minio_bucket_models: str, minio_bucket_compiled: str) -> 
                 
     return registry
 
+
 def get_architectures_data() -> dict[str, str]:
+    """
+    Reads architecture metadata labels from discovered compiler files.
+
+    :return: Dictionary mapping architecture ID key to its display label.
+    :rtype: dict
+    """
     data = {}
     hardware_dir = get_hardware_dir()
     hw_arch_dir = hardware_dir / "hw_arch"
@@ -81,5 +131,12 @@ def get_architectures_data() -> dict[str, str]:
                 data[item.name] = label
     return data
 
+
 def get_architectures() -> list[str]:
+    """
+    Returns a sorted list of all active compiler hardware names.
+
+    :return: List of architectures.
+    :rtype: list
+    """
     return sorted(list(get_architectures_data().keys()))

@@ -2,6 +2,7 @@
 
 Manages the initialization and retrieval of asynchronous gRPC service stubs.
 """
+from typing import Any
 import grpc
 from shared.proto_gen import (
     device_pb2_grpc, ai_pb2_grpc, script_pb2_grpc,
@@ -26,7 +27,7 @@ def init_stubs() -> None:
     _stubs["deployment"]  = deployment_pb2_grpc.DeploymentServiceStub(grpc.aio.insecure_channel(s.deployment_service_grpc))
     _stubs["monitoring"]  = monitoring_pb2_grpc.MonitoringServiceStub(grpc.aio.insecure_channel(s.monitoring_service_grpc))
 
-def get_stub(name: str) -> grpc.aio.Stub:
+def get_stub(name: str) -> Any:
     """Retrieves an initialized gRPC stub by its unique key.
 
     Args:

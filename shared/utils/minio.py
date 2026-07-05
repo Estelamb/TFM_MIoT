@@ -1,25 +1,24 @@
-"""MinIO async client helpers for AURA services.
-
+"""
+MinIO async client helpers for AURA services.
+=============================================
 Wraps miniopy-async to provide initialisation, bucket bootstrapping,
 binary upload and presigned URL generation as simple module-level calls
 shared across all services.
 """
+from __future__ import annotations
+
 import hashlib
 import io
 from datetime import timedelta
+from typing import Any
+
 import miniopy_async as minio_lib
 
 _client: minio_lib.Minio | None = None
-"""Global MinIO client instance singleton."""
-
 _bucket_map: dict[str, str] = {}
-"""Dictionary mapping logical bucket keys to their real string names."""
-
 _access_key: str | None = None
-"""Access credentials key preserved for secondary client instantiation."""
-
 _secret_key: str | None = None
-"""Secret credentials key preserved for secondary client instantiation."""
+
 
 def init_minio(
     endpoint: str,
@@ -28,17 +27,22 @@ def init_minio(
     secure: bool,
     buckets: dict[str, str],
 ) -> None:
-    """Initialises the global MinIO client and registers logical bucket names.
+    """
+    Initialises the global MinIO client and registers logical bucket names.
 
     Must be called once during application startup before any other
     function in this module is used.
 
-    Args:
-        endpoint:   MinIO host and port, e.g. "minio:9000".
-        access_key: MinIO root / access key.
-        secret_key: MinIO root / secret key.
-        secure:     Whether to use TLS (False for local development).
-        buckets:    Mapping from logical bucket key to actual bucket name.
+    :param endpoint: MinIO host and port, e.g. "minio:9000".
+    :type endpoint: str
+    :param access_key: MinIO root / access key.
+    :type access_key: str
+    :param secret_key: MinIO root / secret key.
+    :type secret_key: str
+    :param secure: Whether to use TLS (False for local development).
+    :type secure: bool
+    :param buckets: Mapping from logical bucket key to actual bucket name.
+    :type buckets: dict
     """
     global _client, _bucket_map, _access_key, _secret_key
     _access_key = access_key
@@ -48,58 +52,75 @@ def init_minio(
     )
     _bucket_map = buckets
 
+
 def get_minio() -> minio_lib.Minio:
-    """Returns the initialized MinIO client instance.
+    """
+    Returns the initialized MinIO client instance.
 
-    Returns:
-        The Minio client.
-
-    Raises:
-        RuntimeError: If init_minio has not been called yet.
+    :return: The Minio client.
+    :rtype: Minio
+    :raises RuntimeError: If init_minio has not been called yet.
     """
     if _client is None:
         raise RuntimeError("MinIO not initialized. Call init_minio() first.")
     return _client
 
+
 async def ensure_buckets() -> None:
-    """Creates all registered buckets if they do not already exist."""
+    """
+    Creates all registered buckets if they do not already exist.
+    """
+    if _client is None:
+        raise RuntimeError("MinIO not initialized. Call init_minio() first.")
     for bucket in _bucket_map.values():
         if not await _client.bucket_exists(bucket):
             await _client.make_bucket(bucket)
 
+
 async def upload_bytes(bucket_key: str, object_key: str, data: bytes) -> str:
-    """Uploads raw bytes to MinIO and returns the SHA-256 hex digest.
-
-    Args:
-        bucket_key: Logical bucket key as registered in init_minio.
-        object_key: Object path inside the bucket, e.g. "{model_id}/source.pt".
-        data:       Raw bytes to upload.
-
-    Returns:
-        Hex-encoded SHA-256 digest of data.
     """
+    Uploads raw bytes to MinIO and returns the SHA-256 hex digest.
+
+    :param bucket_key: Logical bucket key as registered in init_minio.
+    :type bucket_key: str
+    :param object_key: Object path inside the bucket, e.g. "{model_id}/source.pt".
+    :type object_key: str
+    :param data: Raw bytes to upload.
+    :type data: bytes
+    :return: Hex-encoded SHA-256 digest of data.
+    :rtype: str
+    """
+    if _client is None:
+        raise RuntimeError("MinIO not initialized. Call init_minio() first.")
     bucket = _bucket_map[bucket_key]
     sha = hashlib.sha256(data).hexdigest()
     await _client.put_object(bucket, object_key, io.BytesIO(data), len(data))
     return sha
+
 
 async def presigned_url(
     bucket_key: str,
     object_key: str,
     expiry_seconds: int = 3600,
 ) -> str:
-    """Generates a presigned GET URL for a MinIO object.
+    """
+    Generates a presigned GET URL for a MinIO object.
 
-    Args:
-        bucket_key:     Logical bucket key.
-        object_key:     Object path inside the bucket.
-        expiry_seconds: URL validity in seconds. Defaults to 3600 (1 hour).
-
-    Returns:
-        A presigned HTTPS/HTTP URL string valid for expiry_seconds.
+    :param bucket_key: Logical bucket key.
+    :type bucket_key: str
+    :param object_key: Object path inside the bucket.
+    :type object_key: str
+    :param expiry_seconds: URL validity in seconds. Defaults to 3600 (1 hour).
+    :type expiry_seconds: int
+    :return: A presigned HTTPS/HTTP URL string valid for expiry_seconds.
+    :rtype: str
     """
     import os
     from urllib.parse import urlparse
+    
+    if _client is None:
+        raise RuntimeError("MinIO not initialized. Call init_minio() first.")
+        
     bucket = _bucket_map[bucket_key]
     public_url = os.getenv("MINIO_PUBLIC_URL")
     if public_url:
