@@ -13,7 +13,7 @@ TFM_MIoT/
 ├── .env.example                # Global template for environment variables
 ├── docker-compose.yml          # Container orchestration file for server stack & infra
 ├── README.md                   # Unified project overview, quick start, running guide, and developer guide
-├── docs/                       # Project documentation (Sphinx & TypeDoc configurations)
+├── docs/                       # Project documentation
 ├── services/                   # Server backend microservices (gRPC/REST/MQTT listeners)
 ├── edge-runtime/               # Python-based agent code running on edge devices
 ├── frontend/                   # Next.js 15 frontend application (App Router)
@@ -21,7 +21,7 @@ TFM_MIoT/
 └── hardware/                   # Physical device drivers, sensor/actuator libraries, and hw_arch compilation configs
 ```
 
-### `services/api-gateway/`
+### `services/api-gateway/` 
 Acts as the single REST entry point. Resolves authentication, maps routes, and proxies requests to internal gRPC endpoints.
 
 | File / Component | Folder | Description |
