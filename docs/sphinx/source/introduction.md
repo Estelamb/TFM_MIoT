@@ -45,12 +45,12 @@ The AURA ecosystem is divided into two primary blocks: the **Cloud/Server Platfo
     |  Storage & Databases   |   |   Docker Socket   |   | MQTT Broker | | Metrics & Telemetry |
     |  (PostgreSQL & MinIO)  |   |                   |   +------+------+ +---------------------+
     +------------------------+   +-------------------+          ^
-                                                                |
-                                     MQTT (Commands, Telemetry) |
-                                                                v 
-                                                         +------+------+
-                                                         |   Device    |
-                                                         | Edge Agent  |
+                |                                               |
+                |                    MQTT (Commands, Telemetry) |
+                |                                               v 
+                |                                        +------+------+
+                |   HTTP (Download + SHA-256 Checksum)   |   Device    |
+                +--------------------------------------->| Edge Agent  |
                                                          +-------------+
 ```
 

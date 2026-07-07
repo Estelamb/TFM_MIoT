@@ -19,87 +19,165 @@ Every inference script must implement the following components:
 
 ## 2. Example: Object Detection Script
 
-Below is a complete, production-ready template for a YOLOv8 object detection script:
+Below is a complete, production-ready template for a YOLO object detection script obtaining the raw images from a Camera Sensor:
 
 ```python
+"""
+AURA Script: Camera Module & Inference
+=====================================================
+Uses the generic camera library to capture a frame and the generic
+inference function to execute object detection.
+"""
+from __future__ import annotations
+import sys
+import os
+from pathlib import Path
+import json
 import numpy as np
-from PIL import Image
-import io
 
-# Import the AURA hardware execution helper
-from aura_hw import execute_inference
+# Ensure project root is in path for standalone execution
+project_root = Path(__file__).resolve().parents[2]
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
-def pre_inference(raw_input):
-    """Preprocess the raw input bytes into a normalized tensor.
+from aura_hw import execute_inference, load_model, get_model_classes
+from hardware.sensors.camera.library import Camera, take_photo
+
+CONF_THRESHOLD = float(os.environ.get("AURA_CONF_THRESHOLD", 0.2))
+CLASSES = []  # Loaded dynamically from model or classes.json
+
+def load_classes_from_json(json_path: str | Path) -> list[str]:
+    """Load class names from a JSON file (either list or dictionary mapping index to name)."""
+    try:
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            if isinstance(data, list):
+                return [str(x) for x in data]
+            elif isinstance(data, dict):
+                try:
+                    sorted_keys = sorted(data.keys(), key=lambda x: int(x))
+                    return [str(data[k]) for k in sorted_keys]
+                except ValueError:
+                    return [str(data[k]) for k in sorted(data.keys())]
+    except Exception:
+        pass
+    return []
+
+def pre_inference(raw_input) -> np.ndarray:
+    """Pass-through function. The raw captured frame is sent directly to execute_inference()
+    and resolved dynamically by the loaded model's backend library."""
+    return raw_input
+
+def post_inference(raw_output) -> dict[str, int]:
+    """Parse model raw output tensor and return count of each detected class."""
+    counts = {}
+    outputs = list(raw_output.values())[0] if isinstance(raw_output, dict) else raw_output
+    if outputs is None or len(outputs) == 0:
+        return counts
     
-    Args:
-        raw_input: Raw image bytes from the camera/sensor source.
+    classes = get_model_classes()
+    if not classes:
+        classes = CLASSES
+
+    for box in outputs[0].T:
+        scores = box[4:]
+        class_id = int(np.argmax(scores))
+        confidence = float(scores[class_id])
+        if confidence < CONF_THRESHOLD:
+            continue
+        class_name = classes[class_id] if class_id < len(classes) else str(class_id)
+        if "/" in class_name:
+            class_name = class_name.split("/")[-1]
+        counts[class_name] = counts.get(class_name, 0) + 1
+    return counts
+
+def run(raw_input=None, classes_json_path=None) -> dict[str, int]:
     """
-    # 1. Load image from bytes
-    image = Image.open(io.BytesIO(raw_input)).convert("RGB")
-    
-    # 2. Resize to YOLO default 640x640
-    image = image.resize((640, 640))
-    
-    # 3. Convert to float32 NumPy array and normalize to [0.0, 1.0]
-    img_data = np.array(image).astype(np.float32) / 255.0
-    
-    # 4. Transpose from HWC to BCHW (1, 3, 640, 640)
-    img_data = np.transpose(img_data, (2, 0, 1))
-    img_data = np.expand_dims(img_data, axis=0)
-    
-    return img_data
-
-def post_inference(raw_output):
-    """Postprocess raw output tensors to retrieve bounding boxes.
-    
-    Args:
-        raw_output: Outputs returned by the accelerator model backend.
+    Main execution script entrypoint.
+    Captures a photo using the generic camera library if raw_input is not provided,
+    preprocesses the image, performs inference, and parses the outputs.
     """
-    # Exclude dummy/empty inputs
-    if raw_output is None or len(raw_output) == 0:
-        return []
-        
-    predictions = raw_output[0]  # Shape: (1, 84, 8400) for YOLOv8
+    global CLASSES
     
-    results = []
-    # Parse bounding boxes, confidence score, and class IDs
-    # (Simplistic dummy parse; replace with actual NMS logic if running custom raw models)
-    for box in predictions[0][:5]:  # Process the top 5 boxes
-        x_center, y_center, width, height, confidence = box[:5]
-        if confidence > 0.5:
-            results.append({
-                "class": "object",
-                "confidence": float(confidence),
-                "bbox": [
-                    float(x_center - width / 2),
-                    float(y_center - height / 2),
-                    float(width),
-                    float(height)
-                ]
-            })
+    # 1. Load classes from explicitly passed path if provided
+    if classes_json_path:
+        loaded = load_classes_from_json(classes_json_path)
+        if loaded:
+            CLASSES = loaded
             
-    return results
+    # 2. If CLASSES is still empty, and we don't have model classes from backend, try to auto-discover classes.json
+    if not CLASSES and not get_model_classes():
+        auto_paths = [
+            os.environ.get("AURA_CLASSES_JSON"),
+            # Agent runtime paths (inside Docker, where /tmp/aura is mapped to ./data)
+            Path("/tmp/aura/classes.json"),
+        ]
+        for path_str in auto_paths:
+            if path_str:
+                path = Path(path_str)
+                if path.exists():
+                    loaded = load_classes_from_json(path)
+                    if loaded:
+                        CLASSES = loaded
+                        break
 
-def run(raw_input):
-    """Main entrypoint function called by the AURA agent runtime.
+    # 3. Capture image from the generic camera library
+    frame = raw_input if raw_input is not None else take_photo()
     
-    Args:
-        raw_input: The raw data payload.
-    """
-    # 1. Preprocess raw input
-    tensor = pre_inference(raw_input)
+    # 4. Run preprocessing
+    model_input = pre_inference(frame)
     
-    # 2. Execute inference on target hardware accelerator
-    raw_results = execute_inference(tensor)
+    # 5. Execute inference using the generic runtime function
+    model_output = execute_inference(model_input)
     
-    # 3. Postprocess outputs and return structured JSON objects
-    return post_inference(raw_results)
+    # 6. Parse detections
+    return post_inference(model_output)
+
+if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Run Camera Inference")
+    parser.add_argument("-m", "--model", required=True, help="Path to the compiled model file")
+    parser.add_argument("-c", "--classes", help="Path to the classes JSON file")
+    args = parser.parse_args()
+    
+    # Resolve classes path
+    classes_json = args.classes
+    if not classes_json and args.model:
+        # Check if there is a classes.json in the same directory as the model
+        model_dir = Path(args.model).parent
+        possible_classes = model_dir / "classes.json"
+        if possible_classes.exists():
+            classes_json = str(possible_classes)
+
+    class_names = None
+    if classes_json:
+        class_names = load_classes_from_json(classes_json)
+        print(f"Loaded class names: {class_names}")
+    
+    print("Loading model...")
+    load_model(args.model, class_names=class_names)
+    
+    print("Capturing photo and executing inference...")
+    try:
+        results = run(classes_json_path=classes_json)
+        print("\nDetections:")
+        import json
+        print(json.dumps(results, indent=2))
+    except Exception as e:
+        print(f"Execution failed: {e}")
+
 ```
 
 ---
 
-## 3. Uploading and deploying scripts
+## 3. Available Generic Libraries
+
+AURA provides several generic hardware proxy libraries located under the `hardware/` package. These proxies abstract the underlying physical or simulated drivers (configured in `components_config.yaml`), allowing you to write portable inference scripts that run seamlessly on different edge configurations.
+
+---
+
+## 4. Uploading and deploying scripts
 
 Once your script is ready:
 1. Save it locally as a standard Python file (e.g. `detect_people.py`).

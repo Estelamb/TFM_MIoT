@@ -34,7 +34,7 @@ All downstream microservices within the AURA backend communicate internally usin
 - **MLOps Service (`:50052`)**: Handles asynchronous machine learning model compilation and YOLOv8 training.
 - **Edge Connector Service (`:50053`)**: Manages device connection states, metrics ingestion, OTA deployment status, and MQTT event coordination.
 
-Protocol buffers definitions reside under [shared/proto/](file:///c:/Users/Estela/TFM_MIoT/shared/proto), and the compiled stubs are dynamically loaded from [shared/proto_gen/](file:///c:/Users/Estela/TFM_MIoT/shared/proto_gen).
+Protocol buffers definitions reside under `shared/proto`, and the compiled stubs are dynamically loaded from `shared/proto_gen`.
 
 ---
 

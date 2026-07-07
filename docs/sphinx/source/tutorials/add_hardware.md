@@ -1,32 +1,32 @@
 # How to Add New Hardware to the AURA Platform
 
 The AURA Platform is designed with a plug-and-play architecture for custom hardware integration. You can add new target platforms in two ways:
-1. **Hardware Compilers (`hardware/hw_arch`)**: Define how to compile generic `.pt` model files into hardware-specific binary targets.
-2. **Peripheral Drivers (`hardware/sensors`, `hardware/actuators`)**: Define how to control and fetch metrics from connected sensors or write signals to actuators.
+1. **Hardware Architectures (`hardware/hw_arch`)**: Define how to compile and how to inference generic `.pt` model files into hardware-specific binary targets.
+2. **Peripheral Drivers (`hardware/sensors`, `hardware/actuators`, `hardware/others`)**: Define how to control and fetch metrics from connected sensors or write signals to actuators.
 
 ---
 
-## 1. Adding a Hardware Compiler
+## 1. Adding a Hardware Architecture Compiler
 
-Model compilation is scanned dynamically by the `mlops-service` from the subdirectories inside [hardware/hw_arch/](file:///c:/Users/Estela/TFM_MIoT/hardware/hw_arch).
+Model compilation is scanned dynamically by the `mlops-service` from the subdirectories inside `hardware/hw_arch`.
 
 ### Step 1: Create the Compiler Module
 Create a new directory structure:
 ```bash
-hardware/hw_arch/<your_npu_name>/compilation/
+hardware/hw_arch/<your_hw_arch_name>/compilation/
 ```
 Under this directory, create `compiler.py` and declare a subclass of `CompilerBase`:
 
 ```python
 from app.compilers.base import CompilerBase, CompilationResult
 
-LABEL = "My NPU Accelerator"  # Friendly name displayed in the Web UI
+LABEL = "My Hardware Architecture"  # Friendly name displayed in the Web UI
 
-class MyNPUCompiler(CompilerBase):
+class MyHWArchCompiler(CompilerBase):
     EXECUTION_STRATEGY = "docker"                    # Either "docker" or "python"
-    DOCKER_IMAGE = "my-npu-sdk-image:latest"         # Required if strategy is "docker"
+    DOCKER_IMAGE = "my-hw-arch-sdk-image:latest"         # Required if strategy is "docker"
     OUTPUT_FORMAT = ".hef"                           # Resulting extension
-    SUPPORTED_HARDWARE = ["my_npu_v1", "my_npu_v2"]  # Internal identifier tags
+    SUPPORTED_HARDWARE = ["my_hw_arch_v1", "my_hw_arch_v2"]  # Internal identifier tags
 ```
 
 ### Step 2: Implement the `compile()` Method
@@ -96,9 +96,13 @@ AURA dynamically scans connected peripherals so they can be monitored and manage
 
 ### Directory Convention
 Peripherals must follow this directory pattern:
-* **Sensors**: `hardware/sensors/<category>/<peripheral_name>/library.py`
-* **Actuators**: `hardware/actuators/<category>/<peripheral_name>/library.py`
-* **Others**: `hardware/others/<category>/<peripheral_name>/library.py`
+* **Sensors**: `hardware/sensors/<device_type>/<driver_name>/library.py`
+* **Actuators**: `hardware/actuators/<device_type>/<driver_name>/library.py`
+* **Others**: `hardware/others/<device_type>/<driver_name>/library.py`
+
+Where:
+* `<device_type>` is the type/category classification of the peripheral (e.g., `camera`, `gps`, `temperature`).
+* `<driver_name>` is the name of the specific driver implementation (e.g., `imx500`, `bme280`, `gps_simulated`).
 
 ### Step 1: Create `library.py`
 Define a class in `library.py` representing your peripheral device. It must define a module-level variable `LABEL`.
@@ -150,6 +154,29 @@ Since developers test the platform on different OS environments, drivers must no
 
 ---
 
-## 3. Registering components config
+## 3. Integrating with the Hardware Daemon
+
+When running the Edge Agent inside a Docker container, accessing native host hardware resources (such as cameras and hardware accelerators like Hailo-8 or IMX500) can be complex and typically requires privileged container flags or complex device mounts.
+
+AURA solves this by running a lightweight host-level **Hardware Daemon** (`hardware_daemon.py`). The daemon runs directly on the host operating system, interfaces with native drivers (e.g. `picamera2`), and exposes a local HTTP API for the containerized Edge Agent.
+
+The standard daemon API includes:
+* `GET /capture`: Returns the latest camera frame as raw image bytes.
+* `GET /status`: Returns a JSON object with system capability details.
+* `POST /load`: Accepts model bytes (such as a compiled HEF) and initializes the hardware context.
+* `POST /infer`: Performs inference on input RGB bytes and returns model outputs.
+* `POST /unload`: Cleans up the hardware context.
+
+### Extending the Daemon for New Accelerators
+
+If you are adding a new hardware accelerator that cannot be accessed directly from inside Docker, you should extend the Hardware Daemon:
+
+1. **Create a manager module** under `edge-runtime/daemon/<your_accelerator>.py`.
+2. **Implement your manager class** and instantiate a global singleton instance ending in `_manager` (for example, `my_accel_manager = MyAcceleratorManager()`). The daemon's `__init__.py` will automatically scan and export it.
+3. **Update the HTTP Router** in `hardware_daemon.py` to forward requests from `/load` or `/infer` to your manager based on the active `AURA_HARDWARE_TYPE` environment variable.
+
+---
+
+## 4. Registering components config
 
 When running on an edge device, the active driver and parameters are configured in the `components_config.yaml` file located in the configuration directory of the agent. The PAL wrapper reads the current layout and dynamically resolves and runs the specified drivers.
