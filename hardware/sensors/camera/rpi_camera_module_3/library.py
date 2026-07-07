@@ -1,5 +1,5 @@
 """
-AURA Sensor Library: RPi Camera Module 3.
+AURA Sensor Library: RPi Camera Module 3
 ========================================
 Integrates with physical Raspberry Pi Camera Module 3 using Picamera2 APIs or HTTP socket streams.
 """

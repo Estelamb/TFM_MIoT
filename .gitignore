@@ -16,9 +16,9 @@ frontend/.env.local
 .venv_ubuntu/
 runs/
 run/
-*.pt
-datasets/
-data/
+*.zip
+data/train/
+data/hw_arch/
 
 # Local configuration overrides
 docker-compose.override.yml
