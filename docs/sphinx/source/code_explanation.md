@@ -14,6 +14,7 @@ TFM_MIoT/
 ├── docker-compose.yml          # Container orchestration file for server stack & infra
 ├── README.md                   # Unified project overview, quick start, running guide, and developer guide
 ├── docs/                       # Project documentation
+├── data/                       # Local data storage (models, datasets, scripts, and device configurations)
 ├── services/                   # Server backend microservices (gRPC/REST/MQTT listeners)
 ├── edge-runtime/               # Python-based agent code running on edge devices
 ├── frontend/                   # Next.js 15 frontend application (App Router)
@@ -200,3 +201,15 @@ Each target subdirectory contains two modules that plug into the AURA compilatio
 | `hailo8l` | Same pipeline as `hailo8`, targeting the lower-power Hailo-8L variant. | Hailo-8L SDK inference backend. |
 | `rpi` | Exports the model to ONNX format inside a Docker container. | ONNX Runtime CPU inference backend. |
 | `rpi_ai_cam` | Runs the MCT + `imx500-converter` pipeline to produce `packerOut.zip`. | IMX500 on-chip inference backend using `picamera2`. |
+
+---
+
+## 6. Local Data Storage (`data/`)
+
+The `data/` directory is used for local developer assets, configuration templates, pre-trained models, and script files that bootstrap or run on the edge devices.
+
+* **`data/edge-configs/`**: Device-specific configuration templates (containing `components_config.yaml` and `device_config.yaml`) for Hailo-8, Hailo-8L, Raspberry Pi AI Camera, and Raspberry Pi CPU setups.
+* **`data/models/`**: Stores YOLO model weights (like `drowsiness_v8.pt` and `forgotten_v8.pt`) and raw dataset `.zip` archives.
+* **`data/scripts/`**: Default user-defined inference scripts (like `camera_infer.py` and `child_object_detection.py`) that are deployed OTA to edge devices.
+* **`data/train/` & `data/hw_arch/`**: Build artifacts generated dynamically during model training or architecture-specific builds (git-ignored).
+
