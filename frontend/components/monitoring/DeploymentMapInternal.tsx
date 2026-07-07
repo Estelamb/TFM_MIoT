@@ -110,11 +110,13 @@ export default function DeploymentMapInternal({
   const activeDeviceState = activeNode ? states.find((s: any) => s.device_id === activeNode.id) : null;
   
   // Try to find the deployment reported by the edge agent telemetry first
-  let activeDeployment = activeDeviceState && deployments.find((d: any) => d.id === activeDeviceState.active_deployment_id);
+  let activeDeployment = activeDeviceState && activeDeviceState.active_deployment_id
+    ? deployments.find((d: any) => d.id === activeDeviceState.active_deployment_id)
+    : undefined;
   
-  // Fallback: search for the latest active/running deployment for this device in the deployments list
+  // Fallback: search for the latest deployment for this device in the deployments list
   if (!activeDeployment && activeNode) {
-    activeDeployment = deployments.find((d: any) => d.device_id === activeNode.id && (d.status === "running" || d.status === "sent"));
+    activeDeployment = deployments.find((d: any) => d.device_id === activeNode.id);
   }
 
   const activeModel = activeDeployment && models.find((m: any) => m.id === activeDeployment.model_id);

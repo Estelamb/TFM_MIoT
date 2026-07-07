@@ -38,6 +38,15 @@ const CATEGORY_ICONS: Record<string, any> = {
   led: Lightbulb,
 };
 
+const STATUS_VARIANT: Record<string, any> = {
+  running: "success",
+  sent: "info",
+  pending: "secondary",
+  compiling: "warning",
+  failed: "destructive",
+  stopped: "destructive",
+};
+
 const getPeripheralIcon = (name: string, defaultIcon: any) => {
   const parts = name.split("/");
   const category = parts.length > 1 ? parts[0] : "";
@@ -87,6 +96,7 @@ export default function DeviceDetailPage() {
   const { data: deployments = [] } = useQuery({
     queryKey: ["deployments"],
     queryFn: getDeployments,
+    refetchInterval: 5000,
   });
   const { data: models = [] } = useQuery({
     queryKey: ["models"],
@@ -163,9 +173,14 @@ export default function DeviceDetailPage() {
 
   // Find deployment details
   const activeDeploymentId = deviceState?.active_deployment_id;
-  const activeDeployment = activeDeploymentId
+  let activeDeployment = activeDeploymentId
     ? deployments.find((d: any) => d.id === activeDeploymentId)
-    : deployments.find((d: any) => d.device_id === deviceId && d.status === "running");
+    : undefined;
+
+  // Fallback: search for the latest deployment for this device in the deployments list
+  if (!activeDeployment) {
+    activeDeployment = deployments.find((d: any) => d.device_id === deviceId);
+  }
 
   const activeModel = activeDeployment && models.find((m: any) => m.id === activeDeployment.model_id);
   const activeScript = activeDeployment && scripts.find((s: any) => s.id === activeDeployment.script_id);
@@ -443,7 +458,7 @@ export default function DeviceDetailPage() {
                       </h3>
                       <p className="text-xs text-gray-400 font-mono mt-0.5">ID: {activeDeployment.id.slice(0, 8)}</p>
                     </div>
-                    <Badge variant={activeDeployment.status === "running" ? "success" : "warning"} className="font-bold tracking-wider uppercase text-[9px]">
+                    <Badge variant={STATUS_VARIANT[activeDeployment.status] || "default"} className="font-bold tracking-wider uppercase text-[9px]">
                       {activeDeployment.status}
                     </Badge>
                   </div>
