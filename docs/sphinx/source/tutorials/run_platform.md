@@ -1,4 +1,4 @@
-# How to Run AURA Platform and Edge Agent
+# How to Run the AURA Platform (Server & Edge Agent)
 
 This guide provides a detailed, step-by-step walkthrough to set up and run both the core server services (Backend, Frontend, and Databases) and the local agent running on the perimetral hardware.
 
@@ -91,7 +91,59 @@ docker compose logs -f edge-connector-service
 
 ## 5. Running the Edge Agent on a Physical Device
 
-For step-by-step instructions on transferring runtime files, installing dependencies, configuring environment variables, and running the agent on physical hardware (e.g., Raspberry Pi 5), please refer to the [Edge Runtime](edge_runtime.md) guide.
+The edge agent runs on the target physical hardware (e.g., Raspberry Pi 5). It connects to the AURA Platform via MQTT to receive deployment commands and report device telemetry.
+
+### Step 1: Copy runtime files to the edge device
+Transfer the `edge-runtime/` folder from the project to the local storage of your edge device (using `scp`, `rsync`, or cloning the repository directly on the device).
+
+### Step 2: Install dependencies on the device
+The edge agent requires Python 3.10 or higher. Navigate to the runtime folder and install dependencies:
+
+```bash
+# Navigate to the runtime folder
+cd edge-runtime
+
+# Install required Python packages
+pip install -r requirements.txt
+```
+
+> [!IMPORTANT]
+> If you plan to use accelerators such as the Hailo-8 or the Sony IMX500 AI Camera, make sure that the hardware vendor SDK, firmware, and kernel drivers are installed on the device operating system before starting the agent.
+
+### Step 3: Configure the Environment Variables
+Before starting the agent, copy the template `.env.example` to `.env` in the `edge-runtime/` directory:
+
+```bash
+cp .env.example .env
+```
+
+Open the `.env` file and customize the connection and identifier settings as needed (e.g. `AURA_DEVICE_ID`, `AURA_MQTT_HOST`, `AURA_HARDWARE_TYPE`, etc.).
+
+### Step 4: Run the Edge Runtime Stack
+The Edge Runtime is composed of a host-level Hardware Daemon and the containerized Edge Agent. You can automatically build, launch, and run both components using the provided startup scripts:
+
+* **On Linux / macOS**:
+  ```bash
+  chmod +x run_edge.sh
+  ./run_edge.sh
+  ```
+
+* **On Windows (PowerShell)**:
+  ```powershell
+  .\run_edge.ps1
+  ```
+
+### Agent Configuration Parameters
+
+| Variable | Default Value | Description |
+|---|---|---|
+| `AURA_DEVICE_ID` | `dev-device-001` | Unique device identifier. Must exactly match the Device ID registered in the AURA web console. |
+| `AURA_MQTT_HOST` | `localhost` | IP address or domain name where the platform's MQTT broker is running. |
+| `AURA_MQTT_PORT` | `1883` | MQTT broker port (usually `1883`). |
+| `AURA_HARDWARE_TYPE` | *Auto-detected* | Overrides automatic hardware detection. Valid values: `hailo8`, `hailo8l`, `imx500`, `rpi` (CPU). |
+| `AURA_TELEMETRY_INTERVAL` | `10` | Frequency in seconds at which the agent sends CPU/RAM telemetry messages. |
+
+The scripts will establish the connection with the broker. Upon success, the device state will change to **Online** in the AURA web dashboard.
 
 ---
 

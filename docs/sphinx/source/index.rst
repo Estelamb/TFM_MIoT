@@ -44,7 +44,6 @@ and extend the system with new compilation targets or hardware driver peripheral
 
    tutorials/run_platform
    tutorials/use_platform
-   tutorials/edge_runtime
    tutorials/add_hardware
    tutorials/create_script
    tutorials/hardware/index

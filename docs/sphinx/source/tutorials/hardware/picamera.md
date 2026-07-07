@@ -118,44 +118,16 @@ Install the library packages using apt:
 sudo apt install python3-picamera2 python3-opencv -y
 ```
 
-### Standalone Test Script
+### Programmatic Capture Steps
 
-Create a Python script named `test_cam.py` to capture a frame programmatically:
+To capture a frame programmatically using Python and the `Picamera2` API, follow these configuration steps in your script:
 
-```python
-import time
-from picamera2 import Picamera2
-
-# 1. Initialize Picamera2 context
-print("Initializing camera...")
-picam2 = Picamera2()
-
-# 2. Configure capture parameters (RGB888 stream)
-config = picam2.create_preview_configuration(
-    main={"size": (1920, 1080), "format": "RGB888"}
-)
-picam2.configure(config)
-
-# 3. Start the camera stream
-picam2.start()
-print("Camera stream started. Waiting 2 seconds for auto-exposure...")
-time.sleep(2)  # Allow sensor settings to settle
-
-# 4. Capture a frame and save to disk
-output_file = "python_capture.jpg"
-picam2.capture_file(output_file)
-print(f"Frame captured successfully and saved to: {output_file}")
-
-# 5. Stop camera context
-picam2.stop()
-print("Camera released. Exit.")
-```
-
-Run the script:
-
-```bash
-python test_cam.py
-```
+1. **Initialize the camera**: Instantiate the `Picamera2` device connection context.
+2. **Configure capture properties**: Call the configuration builder (using `create_preview_configuration`) to set your stream details, specifying the resolution (e.g. `1920x1080`) and frame format (RGB888). Apply the settings by calling the `configure` method.
+3. **Start the camera**: Launch the capture engine by calling `start()`.
+4. **Allow sensor stabilization**: Sleep or pause execution for a short period (e.g., 2 seconds) to allow the image sensor algorithms (auto-exposure, auto-gain, auto-white-balance) to settle.
+5. **Serialize image**: Save the current camera frame array directly to your local storage using `capture_file` with the output filename.
+6. **Release resources**: Release the hardware camera sensor resource by calling `stop()`.
 
 ---
 
