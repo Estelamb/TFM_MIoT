@@ -50,21 +50,13 @@ and extend the system with new compilation targets or hardware driver peripheral
 
 ----
 
-Codebase & API Reference
--------------------------
+Codebase Explanation
+--------------------
 
-Codebase walk-throughs and module-level API documentation compiled automatically from source
-docstrings for all backend services, the edge runtime, and shared libraries.
+A detailed structural walkthrough of the AURA codebase, components, files, and physical device integrations.
 
 .. toctree::
    :maxdepth: 1
    :caption: Codebase Explanation
 
    code_explanation
-
-----
-
-.. note::
-   This documentation is auto-generated from source code docstrings using
-   `sphinx-autoapi <https://sphinx-autoapi.readthedocs.io>`_. Keep docstrings
-   up to date to ensure the reference pages remain accurate.

@@ -19,7 +19,8 @@ TFM_MIoT/
 ├── edge-runtime/               # Python-based agent code running on edge devices
 ├── frontend/                   # Next.js 15 frontend application (App Router)
 ├── shared/                     # Shared modules, utility code, and generated gRPC stubs
-└── hardware/                   # Physical device drivers, sensor/actuator libraries, and hw_arch compilation configs
+├── hardware/                   # Physical device drivers, sensor/actuator libraries, and hw_arch compilation configs
+└── others/                     # Boilerplate for other devices / peripherals
 ```
 
 ### `services/api-gateway/` 
@@ -27,60 +28,60 @@ Acts as the single REST entry point. Resolves authentication, maps routes, and p
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [main.py](autoapi/api_gateway_service/main/index) | `services/api-gateway/app` | Initializes the FastAPI application, mounts CORS configurations, and binds REST routers. |
-| [config.py](autoapi/api_gateway_service/config/index) | `services/api-gateway/app` | Declares and validates configuration parameters (ports, hosts, JWT secrets). |
-| [stubs.py](autoapi/api_gateway_service/stubs/index) | `services/api-gateway/app` | Implements cached gRPC channel stubs singleton connection pool. |
-| [jwt.py](autoapi/api_gateway_service/auth/jwt/index) | `services/api-gateway/app/auth` | Implements JWT token signing, verification, and mock user validation. |
-| [datasets.py](autoapi/api_gateway_service/routers/datasets/index) | `services/api-gateway/app/routers` | Handles dataset zip validation and S3 uploads. |
-| [deployments.py](autoapi/api_gateway_service/routers/deployments/index) | `services/api-gateway/app/routers` | Manages OTA deployment lifecycle and triggers. |
-| [devices.py](autoapi/api_gateway_service/routers/devices/index) | `services/api-gateway/app/routers` | Manages device registration and queries peripheral catalogs. |
-| [models.py](autoapi/api_gateway_service/routers/models/index) | `services/api-gateway/app/routers` | Handles ML model uploads and compiler activation. |
-| [monitoring.py](autoapi/api_gateway_service/routers/monitoring/index) | `services/api-gateway/app/routers` | Establishes telemetry queries and historical inference endpoints. |
-| [scripts.py](autoapi/api_gateway_service/routers/scripts/index) | `services/api-gateway/app/routers` | Handles user-defined inference scripts registration. |
+| [main.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/main.py) | `services/api-gateway/app` | Initializes the FastAPI application, mounts CORS configurations, and binds REST routers. |
+| [config.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/config.py) | `services/api-gateway/app` | Declares and validates configuration parameters (ports, hosts, JWT secrets). |
+| [stubs.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/stubs.py) | `services/api-gateway/app` | Implements cached gRPC channel stubs singleton connection pool. |
+| [jwt.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/auth/jwt.py) | `services/api-gateway/app/auth` | Implements JWT token signing, verification, and mock user validation. |
+| [datasets.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/routers/datasets.py) | `services/api-gateway/app/routers` | Handles dataset zip validation and S3 uploads. |
+| [deployments.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/routers/deployments.py) | `services/api-gateway/app/routers` | Manages OTA deployment lifecycle and triggers. |
+| [devices.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/routers/devices.py) | `services/api-gateway/app/routers` | Manages device registration and queries peripheral catalogs. |
+| [models.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/routers/models.py) | `services/api-gateway/app/routers` | Handles ML model uploads and compiler activation. |
+| [monitoring.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/routers/monitoring.py) | `services/api-gateway/app/routers` | Establishes telemetry queries and historical inference endpoints. |
+| [scripts.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/api-gateway/app/routers/scripts.py) | `services/api-gateway/app/routers` | Handles user-defined inference scripts registration. |
 
 ### `services/registry-service/`
 Acts as the metadata catalog. Persists data about registered hardware, uploaded model assets, and scripts.
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [main.py](autoapi/registry_service/main/index) | `services/registry-service/app` | Instantiates and starts the registry service gRPC listener on port `50051`. |
-| [config.py](autoapi/registry_service/config/index) | `services/registry-service/app` | Service settings loader. |
-| [update_existing_datasets.py](autoapi/registry_service/update_existing_datasets/index) | `services/registry-service/app` | Migration scripts to bootstrap database datasets logic. |
-| [ai_handler.py](autoapi/registry_service/grpc_handlers/ai_handler/index) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to models registration, dataset files, and compiler reports. |
-| [device_handler.py](autoapi/registry_service/grpc_handlers/device_handler/index) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to device registrations, updates, and deletes. |
-| [script_handler.py](autoapi/registry_service/grpc_handlers/script_handler/index) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to script file catalog storage. |
-| [devices.py](autoapi/registry_service/repositories/devices/index) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for device records. |
-| [models.py](autoapi/registry_service/repositories/models/index) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for models and datasets records. |
-| [scripts.py](autoapi/registry_service/repositories/scripts/index) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for scripts metadata. |
-| [orm.py](autoapi/registry_service/models/orm/index) | `services/registry-service/app/models` | SQLAlchemy ORM classes mapping database tables (`devices`, `models`, `scripts`, `deployments`). |
+| [main.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/main.py) | `services/registry-service/app` | Instantiates and starts the registry service gRPC listener on port `50051`. |
+| [config.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/config.py) | `services/registry-service/app` | Service settings loader. |
+| [update_existing_datasets.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/update_existing_datasets.py) | `services/registry-service/app` | Migration scripts to bootstrap database datasets logic. |
+| [ai_handler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/grpc_handlers/ai_handler.py) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to models registration, dataset files, and compiler reports. |
+| [device_handler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/grpc_handlers/device_handler.py) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to device registrations, updates, and deletes. |
+| [script_handler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/grpc_handlers/script_handler.py) | `services/registry-service/app/grpc_handlers` | Resolves RPCs relating to script file catalog storage. |
+| [devices.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/repositories/devices.py) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for device records. |
+| [models.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/repositories/models.py) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for models and datasets records. |
+| [scripts.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/repositories/scripts.py) | `services/registry-service/app/repositories` | PostgreSQL DB queries interface for scripts metadata. |
+| [orm.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/registry-service/app/models/orm.py) | `services/registry-service/app/models` | SQLAlchemy ORM classes mapping database tables (`devices`, `models`, `scripts`, `deployments`). |
 
 ### `services/mlops-service/`
 Runs asynchronous compilation and optimization pipelines using isolated Docker runtimes.
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [main.py](autoapi/mlops_service/main/index) | `services/mlops-service/app` | Starts the gRPC compilation listener server on port `50052`. |
-| [config.py](autoapi/mlops_service/config/index) | `services/mlops-service/app` | MLOps environmental parameters validation settings. |
-| [worker.py](autoapi/mlops_service/worker/index) | `services/mlops-service/app` | ARQ Redis worker processing compiled models and yolo training runs. |
-| [compilation_handler.py](autoapi/mlops_service/grpc_handlers/compilation_handler/index) | `services/mlops-service/app/grpc_handlers` | Listens to and launches job compilation requests. |
-| [base.py](autoapi/mlops_service/compilers/base/index) | `services/mlops-service/app/compilers` | Defines abstract `CompilerBase` interface and Redis logs streamer tools. |
-| [yolo_train.py](autoapi/mlops_service/compilers/yolo_train/index) | `services/mlops-service/app/compilers` | Pipeline trigger that executes YOLOv8 model training. |
+| [main.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/mlops-service/app/main.py) | `services/mlops-service/app` | Starts the gRPC compilation listener server on port `50052`. |
+| [config.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/mlops-service/app/config.py) | `services/mlops-service/app` | MLOps environmental parameters validation settings. |
+| [worker.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/mlops-service/app/worker.py) | `services/mlops-service/app` | ARQ Redis worker processing compiled models and yolo training runs. |
+| [compilation_handler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/mlops-service/app/grpc_handlers/compilation_handler.py) | `services/mlops-service/app/grpc_handlers` | Listens to and launches job compilation requests. |
+| [base.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/mlops-service/app/compilers/base.py) | `services/mlops-service/app/compilers` | Defines abstract `CompilerBase` interface and Redis logs streamer tools. |
+| [yolo_train.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/mlops-service/app/compilers/yolo_train.py) | `services/mlops-service/app/compilers` | Pipeline trigger that executes YOLOv8 model training. |
 
 ### `services/edge-connector-service/`
 Connects the cloud services to the physical hardware devices.
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [main.py](autoapi/edge_connector_service/main/index) | `services/edge-connector-service/app` | Entry point starting the gRPC connector server on port `50053` and the Prometheus metrics exporter on port `9100`. |
-| [config.py](autoapi/edge_connector_service/config/index) | `services/edge-connector-service/app` | Service database and broker credentials validation. |
-| [worker.py](autoapi/edge_connector_service/worker/index) | `services/edge-connector-service/app` | ARQ queue worker monitoring active deployments status. |
-| [deployment_handler.py](autoapi/edge_connector_service/grpc_handlers/deployment_handler/index) | `services/edge-connector-service/app/grpc_handlers` | Handles RPCs for scheduling OTA deployments. |
-| [monitoring_handler.py](autoapi/edge_connector_service/grpc_handlers/monitoring_handler/index) | `services/edge-connector-service/app/grpc_handlers` | Handles RPC queries retrieving active telemetry statuses. |
-| [listener.py](autoapi/edge_connector_service/mqtt/listener/index) | `services/edge-connector-service/app/mqtt` | MQTT loop client ingesting telemetry, acknowledgements, and inference payloads. |
-| [orm.py](autoapi/edge_connector_service/models/orm/index) | `services/edge-connector-service/app/models` | SQLAlchemy structures tracking active deployments. |
-| [mongo.py](autoapi/edge_connector_service/models/mongo/index) | `services/edge-connector-service/app/models` | Time-series metrics document structures. |
-| [deployments.py](autoapi/edge_connector_service/repositories/deployments/index) | `services/edge-connector-service/app/repositories` | Query interface for deployment statuses. |
-| [monitoring.py](autoapi/edge_connector_service/repositories/monitoring/index) | `services/edge-connector-service/app/repositories` | Ingest log controller inserting states to MongoDB and updating Prometheus gauges. |
+| [main.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/main.py) | `services/edge-connector-service/app` | Entry point starting the gRPC connector server on port `50053` and the Prometheus metrics exporter on port `9100`. |
+| [config.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/config.py) | `services/edge-connector-service/app` | Service database and broker credentials validation. |
+| [worker.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/worker.py) | `services/edge-connector-service/app` | ARQ queue worker monitoring active deployments status. |
+| [deployment_handler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/grpc_handlers/deployment_handler.py) | `services/edge-connector-service/app/grpc_handlers` | Handles RPCs for scheduling OTA deployments. |
+| [monitoring_handler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/grpc_handlers/monitoring_handler.py) | `services/edge-connector-service/app/grpc_handlers` | Handles RPC queries retrieving active telemetry statuses. |
+| [listener.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/mqtt/listener.py) | `services/edge-connector-service/app/mqtt` | MQTT loop client ingesting telemetry, acknowledgements, and inference payloads. |
+| [orm.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/models/orm.py) | `services/edge-connector-service/app/models` | SQLAlchemy structures tracking active deployments. |
+| [mongo.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/models/mongo.py) | `services/edge-connector-service/app/models` | Time-series metrics document structures. |
+| [deployments.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/repositories/deployments.py) | `services/edge-connector-service/app/repositories` | Query interface for deployment statuses. |
+| [monitoring.py](https://github.com/Estelamb/TFM_MIoT/blob/main/services/edge-connector-service/app/repositories/monitoring.py) | `services/edge-connector-service/app/repositories` | Ingest log controller inserting states to MongoDB and updating Prometheus gauges. |
 
 ---
 
@@ -90,15 +91,15 @@ Designed to run locally on the physical target computer (e.g., Raspberry Pi 5).
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [agent.py](autoapi/edge_runtime/agent/index) | `edge-runtime` | Main client entrypoint launching MQTT subscriptions, periodic telemetry updates, and active inference runtime loops. |
-| [hardware_daemon.py](autoapi/edge_runtime/hardware_daemon/index) | `edge-runtime` | Host-level HTTP server exposing cameras and accelerators natively to Docker containers. |
-| [detect.py](autoapi/edge_runtime/aura_hw/detect/index) | `edge-runtime/aura_hw` | Probes host system hardware to detect connected accelerators (Hailo, IMX500, CPU). |
-| [device_manager.py](autoapi/edge_runtime/aura_hw/device_manager/index) | `edge-runtime/aura_hw` | Controls dynamic sensor configuration and peripheral drivers instantiation. |
-| [loader.py](autoapi/edge_runtime/aura_hw/loader/index) | `edge-runtime/aura_hw` | Dynamically compiles and loads the user's inference script in memory. |
-| [runtime.py](autoapi/edge_runtime/aura_hw/runtime/index) | `edge-runtime/aura_hw` | Public hardware interfaces managing model execution backends. |
-| [comm_client.py](autoapi/edge_runtime/pal/comm_client/index) | `edge-runtime/pal` | Stable MQTT wrapper client mapping telemetry payload conventions. |
-| [orchestrator.py](autoapi/edge_runtime/pal/orchestrator/index) | `edge-runtime/pal` | Handles parallel telemetry metrics and inference loops execution. |
-| [ota_handler.py](autoapi/edge_runtime/pal/ota_handler/index) | `edge-runtime/pal` | Manages secure HTTP downloads of model files and executes SHA-256 integrity validation checks. |
+| [agent.py](https://github.com/Estelamb/TFM_MIoT/blob/main/edge-runtime/agent.py) | `edge-runtime` | Main client entrypoint launching MQTT subscriptions, periodic telemetry updates, and active inference runtime loops. |
+| [hardware_daemon.py](https://github.com/Estelamb/TFM_MIoT/blob/main/edge-runtime/hardware_daemon.py) | `edge-runtime` | Host-level HTTP server exposing cameras and accelerators natively to Docker containers. |
+| [detect.py](https://github.com/Estelamb/TFM_MIoT/blob/main/edge-runtime/aura_hw/detect.py) | `edge-runtime/aura_hw` | Probes host system hardware to detect connected accelerators (Hailo, IMX500, CPU). |
+| [device_manager.py](https://github.com/Estelamb/TFM_MIoT/blob/main/edge-runtime/aura_hw/device_manager.py) | `edge-runtime/aura_hw` | Controls dynamic sensor configuration and peripheral drivers instantiation. |
+| [loader.py](https://github.com/Estelamb/TFM_MIoT/blob/main/edge-runtime/aura_hw/loader.py) | `edge-runtime/aura_hw` | Dynamically compiles and loads the user's inference script in memory. |
+| [runtime.py](https://github.com/Estelamb/TFM_MIoT/blob/main/edge-runtime/aura_hw/runtime.py) | `edge-runtime/aura_hw` | Public hardware interfaces managing model execution backends. |
+| [comm_client.py](https://github.com/Estelamb/TFM_MIoT/blob/main/edge-runtime/pal/comm_client.py) | `edge-runtime/pal` | Stable MQTT wrapper client mapping telemetry payload conventions. |
+| [orchestrator.py](https://github.com/Estelamb/TFM_MIoT/blob/main/edge-runtime/pal/orchestrator.py) | `edge-runtime/pal` | Handles parallel telemetry metrics and inference loops execution. |
+| [ota_handler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/edge-runtime/pal/ota_handler.py) | `edge-runtime/pal` | Manages secure HTTP downloads of model files and executes SHA-256 integrity validation checks. |
 
 ---
 
@@ -125,89 +126,57 @@ Common modules imported by both backend microservices and edge runtimes.
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [proto_gen/](autoapi/shared/transport/index) | `shared` | Generated Protocol Buffer Python message stubs and services bindings. |
-| [base.py](autoapi/shared/transport/base/index) | `shared/transport` | Defines abstract transport layers interfaces. |
-| [mqtt.py](autoapi/shared/transport/mqtt/index) | `shared/transport` | Reusable MQTT connection and publish wrappers logic. |
-| [database.py](autoapi/shared/utils/database/index) | `shared/utils` | Shared SQLAlchemy engine connection context helpers. |
-| [minio.py](autoapi/shared/utils/minio/index) | `shared/utils` | Wraps client logic for presigned URL signatures and uploads. |
-| [logging.py](autoapi/shared/utils/logging/index) | `shared/utils` | Unified format configuration settings for all console outputs. |
-| [grpc_server.py](autoapi/shared/utils/grpc_server/index) | `shared/utils` | Core listener startup helper wrapping standard gRPC parameters. |
+| [proto_gen/](https://github.com/Estelamb/TFM_MIoT/blob/main/shared/proto_gen) | `shared` | Generated Protocol Buffer Python message stubs and services bindings. |
+| [base.py](https://github.com/Estelamb/TFM_MIoT/blob/main/shared/transport/base.py) | `shared/transport` | Defines abstract transport layers interfaces. |
+| [mqtt.py](https://github.com/Estelamb/TFM_MIoT/blob/main/shared/transport/mqtt.py) | `shared/transport` | Reusable MQTT connection and publish wrappers logic. |
+| [database.py](https://github.com/Estelamb/TFM_MIoT/blob/main/shared/utils/database.py) | `shared/utils` | Shared SQLAlchemy engine connection context helpers. |
+| [minio.py](https://github.com/Estelamb/TFM_MIoT/blob/main/shared/utils/minio.py) | `shared/utils` | Wraps client logic for presigned URL signatures and uploads. |
+| [logging.py](https://github.com/Estelamb/TFM_MIoT/blob/main/shared/utils/logging.py) | `shared/utils` | Unified format configuration settings for all console outputs. |
+| [grpc_server.py](https://github.com/Estelamb/TFM_MIoT/blob/main/shared/utils/grpc_server.py) | `shared/utils` | Core listener startup helper wrapping standard gRPC parameters. |
 
 ---
 
 ## 5. Physical Hardware Integration (`hardware/`)
 
-Standalone Python drivers and hardware-specific compilation/inference scripts that extend AURA with support for real peripherals. The runtime loads these modules dynamically at startup via `utils.py`.
-
-```
-hardware/
-├── utils.py            # Shared driver loader and MockDevice fallback
-├── sensors/            # Sensor driver implementations
-│   ├── camera/         # Camera backends
-│   │   ├── imx500/     # Sony IMX500 AI camera (RPi AI Camera module)
-│   │   └── rpi_camera_module_3/   # Raspberry Pi Camera Module 3
-│   ├── gps/            # GPS receiver
-│   │   └── gps_simulated/         # Simulated GPS driver for testing
-│   └── template/       # Boilerplate for new sensor drivers
-├── actuators/          # Actuator driver implementations
-│   ├── template/       # Boilerplate for new actuator drivers
-│   │   └── dummy_actuator/        # No-op actuator stub for testing
-└── hw_arch/            # Hardware-specific compilation & inference configurations
-│   ├── hailo8/         # Hailo-8 M.2 accelerator
-│   │   ├── compilation/compiler.py  # Docker-based HEF model compiler
-│   │   └── inference/library.py     # Hailo SDK inference backend
-│   ├── hailo8l/        # Hailo-8L (lower power) accelerator
-│   │   ├── compilation/
-│   │   └── inference/
-│   ├── rpi/            # Raspberry Pi 5 CPU (ONNX Runtime)
-│   │   ├── compilation/
-│   │   └── inference/
-│   └── rpi_ai_cam/     # Raspberry Pi AI Camera (IMX500)
-│       ├── compilation/
-│       └── inference/
-└── others/
-    └── template/       # Boilerplate for new peripheral categories
-```
+Driver bindings and compilation workflows connecting deep learning accelerators and sensor peripherals to the AURA Agent.
 
 ### Driver system
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [utils.py](autoapi/hardware/utils/index) | `hardware` | Shared utilities: `get_active_driver()` reads `components_config.yaml` to resolve the configured driver for each device type; `load_specific_driver()` dynamically imports the matching `library.py`; `MockDevice` provides a safe no-op fallback when no real hardware is present. |
+| [utils.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/utils.py) | `hardware` | Shared utilities resolving active hardware configurations and loading target-specific library modules. |
+
+### Hardware architecture backends (`hw_arch/`)
+
+| Target | `compilation/compiler.py` | `inference/library.py` |
+|---|---|---|
+| `hailo8` | [compiler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/hw_arch/hailo8/compilation/compiler.py) | [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/hw_arch/hailo8/inference/library.py) |
+| `hailo8l` | [compiler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/hw_arch/hailo8l/compilation/compiler.py) | [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/hw_arch/hailo8l/inference/library.py) |
+| `rpi` | [compiler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/hw_arch/rpi/compilation/compiler.py) | [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/hw_arch/rpi/inference/library.py) |
+| `rpi_ai_cam` | [compiler.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/hw_arch/rpi_ai_cam/compilation/compiler.py) | [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/hw_arch/rpi_ai_cam/inference/library.py) |
 
 ### Sensors
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [library.py](autoapi/hardware/sensors/camera/imx500/library/index) | `hardware/sensors/camera/imx500` | Captures frames from the Sony IMX500 AI camera via `picamera2`. |
-| [library.py](autoapi/hardware/sensors/camera/rpi_camera_module_3/library/index) | `hardware/sensors/camera/rpi_camera_module_3` | Standard Raspberry Pi Camera Module 3 using `picamera2`. |
-| [library.py](autoapi/hardware/sensors/gps/gps_simulated/library/index) | `hardware/sensors/gps/gps_simulated` | Software-emulated GPS feed for development and testing without physical hardware. |
-| [library.py](autoapi/hardware/sensors/template/library/index) | `hardware/sensors/template` | Reference skeleton implementing the sensor driver interface. |
+| [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/sensors/camera/imx500/library.py) | `hardware/sensors/camera/imx500` | Sony IMX500 camera capture driver interface mapping on-sensor metadata structures. |
+| [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/sensors/camera/rpi_camera_module_3/library.py) | `hardware/sensors/camera/rpi_camera_module_3` | Standard Raspberry Pi Camera Module 3 driver using `picamera2`. |
+| [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/sensors/gps/gps_simulated/library.py) | `hardware/sensors/gps/gps_simulated` | Simulated GPS receiver serial parser feed for hardware testing. |
+| [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/sensors/template/library.py) | `hardware/sensors/template` | Reference skeleton implementing generic sensor category models. |
 
 ### Actuators
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [library.py](autoapi/hardware/actuators/template/dummy_actuator/library/index) | `hardware/actuators/template/dummy_actuator` | No-op actuator stub used for integration tests. |
-| [library.py](autoapi/hardware/actuators/template/library/index) | `hardware/actuators/template` | Reference skeleton implementing the actuator driver interface. |
+| [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/actuators/template/dummy_actuator/library.py) | `hardware/actuators/template/dummy_actuator` | No-op actuator module stub handling testing logs output. |
+| [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/actuators/template/library.py) | `hardware/actuators/template` | Reference skeleton implementing generic actuator category models. |
 
 ### Others
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [library.py](autoapi/hardware/others/template/dummy_other/library/index) | `hardware/others/template/dummy_other` | No-op peripheral stub used for testing other devices. |
-| [library.py](autoapi/hardware/others/template/library/index) | `hardware/others/template` | Reference skeleton implementing custom driver categories interfaces. |
-
-### Hardware architecture backends (`hw_arch/`)
-
-Each target subdirectory contains two modules that plug into the AURA compilation and inference pipeline:
-
-| Target | `compilation/compiler.py` | `inference/library.py` |
-|---|---|---|
-| `hailo8` | [compiler.py](autoapi/hardware/hw_arch/hailo8/compilation/compiler/index) (Launches the Hailo AI SW Suite Docker container and runs `hailo compiler` to produce `.hef` files.) | [library.py](autoapi/hardware/hw_arch/hailo8/inference/library/index) (Hailo SDK (`hailo_platform`) inference backend used at runtime by the edge agent.) |
-| `hailo8l` | [compiler.py](autoapi/hardware/hw_arch/hailo8l/compilation/compiler/index) (Same pipeline as `hailo8`, targeting the lower-power Hailo-8L variant.) | [library.py](autoapi/hardware/hw_arch/hailo8l/inference/library/index) (Hailo-8L SDK inference backend.) |
-| `rpi` | [compiler.py](autoapi/hardware/hw_arch/rpi/compilation/compiler/index) (Exports the model to ONNX format inside a Docker container.) | [library.py](autoapi/hardware/hw_arch/rpi/inference/library/index) (ONNX Runtime CPU inference backend.) |
-| `rpi_ai_cam` | [compiler.py](autoapi/hardware/hw_arch/rpi_ai_cam/compilation/compiler/index) (Runs the MCT + `imx500-converter` pipeline to produce `packerOut.zip`.) | [library.py](autoapi/hardware/hw_arch/rpi_ai_cam/inference/library/index) (IMX500 on-chip inference backend using `picamera2`.) |
+| [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/others/template/dummy_other/library.py) | `hardware/others/template/dummy_other` | No-op peripheral device stub used for integration testing. |
+| [library.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/others/template/library.py) | `hardware/others/template` | Reference skeleton implementing general custom device categories. |
 
 ---
 
@@ -218,4 +187,3 @@ The `data/` directory is used for data samples to use within the platform.
 * **`data/edge-configs/`**: Device-specific configuration templates (containing `components_config.yaml` and `device_config.yaml`) for Hailo-8, Hailo-8L, Raspberry Pi AI Camera, and Raspberry Pi CPU setups.
 * **`data/models/`**: Stores YOLO model weights (like `drowsiness_v8.pt` and `forgotten_v8.pt`).
 * **`data/scripts/`**: Default user-defined inference scripts (like `camera_infer.py` and `child_object_detection.py`) that are deployed OTA to edge devices.
-
