@@ -114,7 +114,7 @@ class Hailo8LCompiler(CompilerBase):
                     if f"yolov11{s}" in base_name or f"yolo11{s}" in base_name:
                         size = s
                         break
-                yaml_name = f"yolo11{size}.yaml"
+                yaml_name = f"yolov11{size}.yaml"
             else:
                 yaml_name = f"{base_name}.yaml"
 

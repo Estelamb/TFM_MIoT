@@ -198,11 +198,16 @@ class OTAHandler:
             hw_dir = get_hardware_dir()
             logger.info(f"Extracting libraries to hardware directory: {hw_dir}")
 
-            # Delete old dynamic libraries subfolders for safety
-            for subdir in ("sensors", "actuators", "hw_arch"):
-                sub_path = hw_dir / subdir
-                if sub_path.exists():
-                    shutil.rmtree(sub_path)
+            # Delete all old dynamic libraries for safety to ensure a clean state
+            if hw_dir.exists():
+                for item in hw_dir.iterdir():
+                    try:
+                        if item.is_dir():
+                            shutil.rmtree(item)
+                        else:
+                            item.unlink()
+                    except Exception as e:
+                        logger.warning(f"Could not delete {item} during library cleanup: {e}")
 
             # Extract new zip archive contents
             hw_dir.mkdir(parents=True, exist_ok=True)
