@@ -20,9 +20,6 @@ from app.routers import devices, models, scripts, deployments, monitoring, datas
 from shared.utils.logging import configure_logging
 from shared.utils.minio import init_minio, ensure_buckets
 
-"""
-Settings
-"""
 s = get_settings()
 configure_logging("api-gateway", s.log_level)
 
