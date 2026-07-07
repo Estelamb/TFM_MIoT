@@ -9,7 +9,7 @@ This section provides a detailed walk-through of the **AURA Platform** codebase 
 AURA is architected as a set of loosely coupled microservices communicating via **gRPC** internally, with an independent Python **Edge Agent** and a Next.js frontend web dashboard.
 
 ```
-TFM_MIoT/
+AURA/
 ├── .env.example                # Global template for environment variables
 ├── docker-compose.yml          # Container orchestration file for server stack & infra
 ├── README.md                   # Unified project overview, quick start, running guide, and developer guide
