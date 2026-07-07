@@ -18,6 +18,7 @@ dynamic_packages = {
     "edge_connector_service": os.path.join(_root, "services/edge-connector-service/app"),
     "edge_runtime":           os.path.join(_root, "edge-runtime"),
     "shared":                 os.path.join(_root, "shared"),
+    "hardware":               os.path.join(_root, "hardware"),
 }
 
 autoapi_dirs = []

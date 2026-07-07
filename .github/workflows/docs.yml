@@ -54,41 +54,9 @@ jobs:
           path: docs/sphinx/build/html
           retention-days: 1
 
-  # ── Build TypeDoc (TypeScript) docs ───────────────────────────────────────
-  build-typedoc:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install frontend dependencies
-        run: npm ci --legacy-peer-deps
-        working-directory: frontend
-
-      - name: Install TypeDoc
-        run: npm install -g typedoc
-        working-directory: frontend
-
-      - name: Build TypeDoc HTML
-        run: npx typedoc --options ../docs/typedoc/typedoc.json
-        working-directory: frontend
-
-      - name: Upload TypeDoc artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: typedoc-html
-          path: docs/typedoc/output
-          retention-days: 1
-
   # ── Assemble and deploy to GitHub Pages ──────────────────────────────────
   deploy:
-    needs: [build-sphinx, build-typedoc]
+    needs: [build-sphinx]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -100,12 +68,6 @@ jobs:
         with:
           name: sphinx-html
           path: site/
-
-      - name: Download TypeDoc HTML
-        uses: actions/download-artifact@v4
-        with:
-          name: typedoc-html
-          path: site/frontend/
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

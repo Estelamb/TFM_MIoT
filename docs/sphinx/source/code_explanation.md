@@ -173,23 +173,30 @@ hardware/
 
 | File / Component | Folder | Description |
 |---|---|---|
-| [utils.py](https://github.com/Estelamb/TFM_MIoT/blob/main/hardware/utils.py) | `hardware` | Shared utilities: `get_active_driver()` reads `components_config.yaml` to resolve the configured driver for each device type; `load_specific_driver()` dynamically imports the matching `library.py`; `MockDevice` provides a safe no-op fallback when no real hardware is present. |
+| [utils.py](autoapi/hardware/utils/index) | `hardware` | Shared utilities: `get_active_driver()` reads `components_config.yaml` to resolve the configured driver for each device type; `load_specific_driver()` dynamically imports the matching `library.py`; `MockDevice` provides a safe no-op fallback when no real hardware is present. |
 
 ### Sensors
 
-| Driver | Path | Description |
+| File / Component | Folder | Description |
 |---|---|---|
-| IMX500 camera | `hardware/sensors/camera/imx500/library.py` | Captures frames from the Sony IMX500 AI camera via `picamera2`. |
-| RPi Camera Module 3 | `hardware/sensors/camera/rpi_camera_module_3/library.py` | Standard Raspberry Pi Camera Module 3 using `picamera2`. |
-| GPS simulated | `hardware/sensors/gps/gps_simulated/library.py` | Software-emulated GPS feed for development and testing without physical hardware. |
-| Sensor template | `hardware/sensors/template/library.py` | Reference skeleton implementing the sensor driver interface. |
+| [library.py](autoapi/hardware/sensors/camera/imx500/library/index) | `hardware/sensors/camera/imx500` | Captures frames from the Sony IMX500 AI camera via `picamera2`. |
+| [library.py](autoapi/hardware/sensors/camera/rpi_camera_module_3/library/index) | `hardware/sensors/camera/rpi_camera_module_3` | Standard Raspberry Pi Camera Module 3 using `picamera2`. |
+| [library.py](autoapi/hardware/sensors/gps/gps_simulated/library/index) | `hardware/sensors/gps/gps_simulated` | Software-emulated GPS feed for development and testing without physical hardware. |
+| [library.py](autoapi/hardware/sensors/template/library/index) | `hardware/sensors/template` | Reference skeleton implementing the sensor driver interface. |
 
 ### Actuators
 
-| Driver | Path | Description |
+| File / Component | Folder | Description |
 |---|---|---|
-| Dummy actuator | `hardware/actuators/template/dummy_actuator/library.py` | No-op actuator stub used for integration tests. |
-| Actuator template | `hardware/actuators/template/library.py` | Reference skeleton implementing the actuator driver interface. |
+| [library.py](autoapi/hardware/actuators/template/dummy_actuator/library/index) | `hardware/actuators/template/dummy_actuator` | No-op actuator stub used for integration tests. |
+| [library.py](autoapi/hardware/actuators/template/library/index) | `hardware/actuators/template` | Reference skeleton implementing the actuator driver interface. |
+
+### Others
+
+| File / Component | Folder | Description |
+|---|---|---|
+| [library.py](autoapi/hardware/others/template/dummy_other/library/index) | `hardware/others/template/dummy_other` | No-op peripheral stub used for testing other devices. |
+| [library.py](autoapi/hardware/others/template/library/index) | `hardware/others/template` | Reference skeleton implementing custom driver categories interfaces. |
 
 ### Hardware architecture backends (`hw_arch/`)
 
@@ -197,19 +204,18 @@ Each target subdirectory contains two modules that plug into the AURA compilatio
 
 | Target | `compilation/compiler.py` | `inference/library.py` |
 |---|---|---|
-| `hailo8` | Launches the Hailo AI SW Suite Docker container and runs `hailo compiler` to produce `.hef` files. | Hailo SDK (`hailo_platform`) inference backend used at runtime by the edge agent. |
-| `hailo8l` | Same pipeline as `hailo8`, targeting the lower-power Hailo-8L variant. | Hailo-8L SDK inference backend. |
-| `rpi` | Exports the model to ONNX format inside a Docker container. | ONNX Runtime CPU inference backend. |
-| `rpi_ai_cam` | Runs the MCT + `imx500-converter` pipeline to produce `packerOut.zip`. | IMX500 on-chip inference backend using `picamera2`. |
+| `hailo8` | [compiler.py](autoapi/hardware/hw_arch/hailo8/compilation/compiler/index) (Launches the Hailo AI SW Suite Docker container and runs `hailo compiler` to produce `.hef` files.) | [library.py](autoapi/hardware/hw_arch/hailo8/inference/library/index) (Hailo SDK (`hailo_platform`) inference backend used at runtime by the edge agent.) |
+| `hailo8l` | [compiler.py](autoapi/hardware/hw_arch/hailo8l/compilation/compiler/index) (Same pipeline as `hailo8`, targeting the lower-power Hailo-8L variant.) | [library.py](autoapi/hardware/hw_arch/hailo8l/inference/library/index) (Hailo-8L SDK inference backend.) |
+| `rpi` | [compiler.py](autoapi/hardware/hw_arch/rpi/compilation/compiler/index) (Exports the model to ONNX format inside a Docker container.) | [library.py](autoapi/hardware/hw_arch/rpi/inference/library/index) (ONNX Runtime CPU inference backend.) |
+| `rpi_ai_cam` | [compiler.py](autoapi/hardware/hw_arch/rpi_ai_cam/compilation/compiler/index) (Runs the MCT + `imx500-converter` pipeline to produce `packerOut.zip`.) | [library.py](autoapi/hardware/hw_arch/rpi_ai_cam/inference/library/index) (IMX500 on-chip inference backend using `picamera2`.) |
 
 ---
 
 ## 6. Local Data Storage (`data/`)
 
-The `data/` directory is used for local developer assets, configuration templates, pre-trained models, and script files that bootstrap or run on the edge devices.
+The `data/` directory is used for data samples to use within the platform.
 
 * **`data/edge-configs/`**: Device-specific configuration templates (containing `components_config.yaml` and `device_config.yaml`) for Hailo-8, Hailo-8L, Raspberry Pi AI Camera, and Raspberry Pi CPU setups.
-* **`data/models/`**: Stores YOLO model weights (like `drowsiness_v8.pt` and `forgotten_v8.pt`) and raw dataset `.zip` archives.
+* **`data/models/`**: Stores YOLO model weights (like `drowsiness_v8.pt` and `forgotten_v8.pt`).
 * **`data/scripts/`**: Default user-defined inference scripts (like `camera_infer.py` and `child_object_detection.py`) that are deployed OTA to edge devices.
-* **`data/train/` & `data/hw_arch/`**: Build artifacts generated dynamically during model training or architecture-specific builds (git-ignored).
 
