@@ -206,7 +206,7 @@ class RPiCPUCompiler(CompilerBase):
                     onnx_data = f.read()
 
                 sha = hashlib.sha256(onnx_data).hexdigest()
-                compiled_key = f"{model_id}/model.onnx"
+                compiled_key = f"{model_id}/model_{hardware_type}.onnx"
 
                 logger.info(f"[RPiCPU] Uploading compiled model to MinIO: {compiled_key}...")
                 await upload_bytes("compiled", compiled_key, onnx_data)

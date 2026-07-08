@@ -27,18 +27,20 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <aside className={cn(
-      "fixed left-0 top-0 h-screen transition-all duration-300",
+      "fixed left-0 top-0 h-screen transition-all duration-300 flex flex-col",
       "z-30", // LOWERED from z-50 to z-30 so that modals and popups stay on top
-      "flex flex-col",
       "bg-slate-100/85 dark:bg-gray-950/85 backdrop-blur-md",
       "border-r border-slate-200/60 dark:border-gray-800/50",
-      collapsed ? "w-20" : "w-56"
+      // Responsive width: always w-56 on mobile, collapses to w-20 on desktop
+      collapsed ? "w-56 md:w-20" : "w-56",
+      // Responsive translate position: hidden off-screen on mobile when collapsed
+      collapsed ? "-translate-x-full md:translate-x-0" : "translate-x-0"
     )}>
 
       {/* --- HORIZONTAL ARROW EXPANDER EDGE --- */}
       <div
         onClick={onToggle}
-        className="absolute top-0 -right-2 w-4 h-full cursor-ew-resize z-50 flex items-center justify-center group/edge"
+        className="absolute top-0 -right-2 w-4 h-full cursor-ew-resize z-50 hidden md:flex items-center justify-center group/edge"
       >
         <div className="w-1 h-12 rounded-full bg-blue-500/50 opacity-0 group-hover/edge:opacity-100 transition-opacity" />
       </div>

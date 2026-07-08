@@ -97,7 +97,8 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
         """
         self._ai_channel = grpc.aio.insecure_channel(ai_service_grpc)
         self._ai_stub = ai_pb2_grpc.AIServiceStub(self._ai_channel)
-        self._registry = _build_registry(minio_bucket_models, minio_bucket_compiled)
+        self._minio_bucket_models = minio_bucket_models
+        self._minio_bucket_compiled = minio_bucket_compiled
         self._redis_settings = RedisSettings.from_dsn(redis_url)
         self._redis_pool = None
 
@@ -126,7 +127,8 @@ class CompilationServiceHandler(compilation_pb2_grpc.CompilationServiceServicer)
         logger.info(f"CompileModel: model_id={req.model_id} hw={req.hardware_type}")
         dataset_key = (req.dataset_key or "").strip()
 
-        compiler = self._registry.get(req.hardware_type)
+        registry = _build_registry(self._minio_bucket_models, self._minio_bucket_compiled)
+        compiler = registry.get(req.hardware_type)
         if compiler is None:
             await self._notify(req.model_id, "failed", "", "", req.hardware_type,
                                f"No compiler for hardware: {req.hardware_type}")

@@ -5,20 +5,13 @@ Exposes the supported actuators catalog names and information labels mapping.
 """
 from __future__ import annotations
 
-def get_actuators() -> list[str]:
-    """Returns a list of supported actuator identifiers.
-
-    :return: List of actuators.
-    :rtype: list
-    """
-    return ["template/dummy_actuator"]
+from app.sensors import discover_peripherals
 
 def get_actuators_data() -> dict[str, str]:
-    """Returns a dictionary mapping actuator identifiers to human-readable labels.
+    """Returns a dictionary mapping actuator identifiers to human-readable labels."""
+    return discover_peripherals("actuators")
 
-    :return: Actuators mapping.
-    :rtype: dict
-    """
-    return {
-        "template/dummy_actuator": "Dummy Actuator"
-    }
+def get_actuators() -> list[str]:
+    """Returns a list of supported actuator identifiers."""
+    return sorted(list(get_actuators_data().keys()))
+

@@ -50,6 +50,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     } else {
       setHasToken(true);
     }
+
+    // Collapse sidebar by default on mobile screens
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setSidebarCollapsed(true);
+    }
   }, [router]);
 
   if (!mounted || hasToken === null || hasToken === false) return null;
@@ -61,12 +66,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         
         <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
         
+        {/* Backdrop overlay for mobile screens when sidebar is expanded */}
+        {!sidebarCollapsed && (
+          <div 
+            onClick={() => setSidebarCollapsed(true)}
+            className="fixed inset-0 z-20 bg-slate-900/20 dark:bg-gray-950/40 backdrop-blur-[2px] md:hidden transition-all duration-300 cursor-pointer"
+          />
+        )}
+        
         <div className={cn(
           "flex-1 flex flex-col overflow-hidden relative transition-all duration-300",
           sidebarCollapsed ? "ml-0 md:ml-20" : "ml-0 md:ml-56"
         )}>
           <div className="z-10 flex flex-col h-full">
-            <TopBar />
+            <TopBar sidebarCollapsed={sidebarCollapsed} onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} />
             <main className="flex-1 overflow-y-auto p-4 md:p-8 dot-grid scroll-smooth">
               {children}
             </main>

@@ -5,20 +5,13 @@ Exposes other supported auxiliary peripheral catalog names and labels.
 """
 from __future__ import annotations
 
-def get_others() -> list[str]:
-    """Returns a list of other supported peripheral identifiers.
-
-    :return: List of peripherals.
-    :rtype: list
-    """
-    return ["template/dummy_other"]
+from app.sensors import discover_peripherals
 
 def get_others_data() -> dict[str, str]:
-    """Returns a dictionary mapping peripheral identifiers to human-readable labels.
+    """Returns a dictionary mapping peripheral identifiers to human-readable labels."""
+    return discover_peripherals("others")
 
-    :return: Peripherals mapping.
-    :rtype: dict
-    """
-    return {
-        "template/dummy_other": "Dummy Other Device"
-    }
+def get_others() -> list[str]:
+    """Returns a list of other supported peripheral identifiers."""
+    return sorted(list(get_others_data().keys()))
+

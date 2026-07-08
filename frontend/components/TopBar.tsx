@@ -4,6 +4,7 @@ import { StatusDot } from "@/components/ui/StatusDot";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Menu } from "lucide-react";
 
 const TITLES: Record<string, string> = {
   "/dashboard": "Overview",
@@ -14,7 +15,12 @@ const TITLES: Record<string, string> = {
   "/monitoring": "Monitoring",
 };
 
-export function TopBar() {
+interface TopBarProps {
+  sidebarCollapsed: boolean;
+  onToggleSidebar: () => void;
+}
+
+export function TopBar({ sidebarCollapsed, onToggleSidebar }: TopBarProps) {
   const path = usePathname();
   const title = Object.entries(TITLES).find(([k]) => path.startsWith(k))?.[1] || "AURA Platform";
 
@@ -33,9 +39,19 @@ export function TopBar() {
       "border-b border-slate-200/60 dark:border-gray-800/50", // Soft matte border
       "px-4 md:px-8 transition-all duration-300"
     )}>
-      <h1 className="text-sm font-bold text-gray-900 dark:text-white tracking-wide uppercase">
-        {title}
-      </h1>
+      <div className="flex items-center">
+        {/* Hamburger Menu Button for mobile screens */}
+        <button
+          onClick={onToggleSidebar}
+          className="p-2 mr-3 rounded-xl border border-slate-200 dark:border-gray-800 hover:bg-slate-100/80 dark:hover:bg-gray-800/80 transition-colors md:hidden text-gray-700 dark:text-gray-300 cursor-pointer"
+          aria-label="Toggle Sidebar"
+        >
+          <Menu size={18} />
+        </button>
+        <h1 className="text-sm font-bold text-gray-900 dark:text-white tracking-wide uppercase">
+          {title}
+        </h1>
+      </div>
 
       <div className="flex-1" />
 

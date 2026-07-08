@@ -388,7 +388,7 @@ names:
                     rpk_data = f.read()
 
                 sha = hashlib.sha256(rpk_data).hexdigest()
-                compiled_key = f"{model_id}/model.rpk"
+                compiled_key = f"{model_id}/model_{hardware_type}.rpk"
 
                 logger.info(f"[RPiAICam] Uploading compiled model to MinIO: {compiled_key}...")
                 await upload_bytes("compiled", compiled_key, rpk_data)

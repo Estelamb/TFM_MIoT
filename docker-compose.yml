@@ -59,7 +59,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-aura}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-aura_dev}
     volumes: [minio-data:/data]
-    ports: ["9000:9000", "9001:9001"]
+    ports: ["9010:9000", "9011:9001"]
     networks: [aura-net]
 
   mosquitto:
@@ -156,7 +156,7 @@ services:
       MINIO_SECURE: "false"
       MINIO_BUCKET_COMPILED: ${MINIO_BUCKET_COMPILED:-compiled}
       MINIO_BUCKET_SCRIPTS: ${MINIO_BUCKET_SCRIPTS:-scripts}
-      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9000}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9010}
       MONGO_URI: mongodb://${POSTGRES_USER:-aura}:${POSTGRES_PASSWORD:-aura_dev}@mongodb:27017/aura?authSource=admin
       MONGO_DB: aura
       MQTT_HOST: mosquitto
@@ -195,7 +195,7 @@ services:
       MINIO_SECURE: "false"
       MINIO_BUCKET_DATASETS: ${MINIO_BUCKET_DATASETS:-datasets}
       MINIO_BUCKET_BASE_MODELS: ${MINIO_BUCKET_BASE_MODELS:-base-models}
-      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9000}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9010}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports: ["8000:8000"]
     networks: [aura-net]

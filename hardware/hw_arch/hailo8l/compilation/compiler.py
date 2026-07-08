@@ -317,7 +317,7 @@ class Hailo8LCompiler(CompilerBase):
                     hef_data = f.read()
 
                 sha = hashlib.sha256(hef_data).hexdigest()
-                compiled_key = f"{model_id}/model.hef"
+                compiled_key = f"{model_id}/model_{hardware_type}.hef"
 
                 logger.info(f"[Hailo8L] Uploading compiled model to MinIO: {compiled_key}...")
                 await upload_bytes("compiled", compiled_key, hef_data)

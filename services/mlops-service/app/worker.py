@@ -381,7 +381,15 @@ async def compile_job(
         await redis.rpush(f"train_logs:{model_id}_list", f"[Compiler] Iniciando proceso de compilación para target={hardware_type}...")
         await redis.publish(f"train_logs:{model_id}", f"[Compiler] Iniciando proceso de compilación para target={hardware_type}...")
 
-    compiler = ctx["compiler_registry"].get(hardware_type)
+    from app.config import get_settings
+    from app.compilers import discover_compilers
+    s = get_settings()
+    compiler_registry = discover_compilers(s.minio_bucket_models, s.minio_bucket_compiled)
+    if redis:
+        for comp in compiler_registry.values():
+            comp.redis_client = redis
+
+    compiler = compiler_registry.get(hardware_type)
     if compiler is None:
         error_msg = f"No compiler for hardware: {hardware_type}"
         await _notify_compilation(ctx, model_id, "failed", "", "", hardware_type, error_msg)
@@ -490,12 +498,8 @@ class WorkerSettings:
         ctx["ai_stub"] = ai_pb2_grpc.AIServiceStub(ai_channel)
         ctx["ai_channel"] = ai_channel
 
-        ctx["compiler_registry"] = discover_compilers(s.minio_bucket_models, s.minio_bucket_compiled)
-
         redis_client = aioredis.from_url(s.redis_url)
         ctx["redis"] = redis_client
-        for compiler in ctx["compiler_registry"].values():
-            compiler.redis_client = redis_client
 
     @staticmethod
     async def on_shutdown(ctx: dict) -> None:
