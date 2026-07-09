@@ -59,7 +59,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-aura}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-aura_dev}
     volumes: [minio-data:/data]
-    ports: ["9010:9000", "9011:9001"]
+    ports: ["9000:9000", "9001:9001"]
     networks: [aura-net]
 
   mosquitto:
